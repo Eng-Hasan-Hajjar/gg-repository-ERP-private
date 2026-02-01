@@ -352,12 +352,37 @@
         </a>
 
 
+
+        <a href="{{ route('attendance.index') }}" class="grad-rose {{ $activeModule==='attendance' ? 'active' : '' }}" title="الدوام">
+  <i class="bi bi-calendar2-week fs-6"></i>
+</a>
+
+<a href="{{ route('tasks.index') }}" class="grad-slate {{ $activeModule==='tasks' ? 'active' : '' }}" title="المهام">
+  <i class="bi bi-check2-square fs-6"></i>
+</a>
+
+
+
+<a href="{{ route('leaves.index') }}" class="grad-amber {{ $activeModule==='attendance' ? 'active' : '' }}" title="الإجازات">
+  <i class="bi bi-clipboard2-check fs-6"></i>
+</a>
+
+
+<a href="{{ route('attendance.calendar') }}"
+   class="grad-rose {{ $activeModule==='attendance' ? 'active' : '' }}"
+   title="الدوام">
+  <i class="bi bi-calendar2-week fs-6"></i>
+</a>
+
+<a href="{{ route('attendance.reports') }}"
+   class="grad-slate {{ $activeModule==='attendance-reports' ? 'active' : '' }}"
+   title="تقارير الدوام">
+  <i class="bi bi-clipboard-data fs-6"></i>
+</a>
+
         {{-- لاحقاً --}}
         
 
-        <a href="#" class="grad-rose" title="الدوام (قريباً)">
-          <i class="bi bi-calendar2-week fs-6"></i>
-        </a>
 
         <a href="#" class="grad-primary" title="التقارير (قريباً)">
           <i class="bi bi-graph-up-arrow fs-6"></i>

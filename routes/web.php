@@ -14,7 +14,14 @@ use App\Http\Controllers\AssetCategoryController;
 use App\Http\Controllers\CashboxController;
 use App\Http\Controllers\CashboxTransactionController;
 use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\AttendanceCalendarController;
+use App\Http\Controllers\EmployeeSchedule;
 
+//طلبات الإجازات + صفحة موافقات الأدمن
+use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\AttendanceReportController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\TaskController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -157,13 +164,61 @@ Route::delete('employees/{employee}/payouts/{payout}', [EmployeePayoutController
 
 
 
+// Attendance
+Route::get('attendance', [AttendanceController::class,'index'])->name('attendance.index');
+Route::get('attendance/today/{employee}', [AttendanceController::class,'createForToday'])->name('attendance.today.create');
+
+Route::post('attendance/{record}/check-in', [AttendanceController::class,'checkIn'])->name('attendance.checkin');
+Route::post('attendance/{record}/check-out', [AttendanceController::class,'checkOut'])->name('attendance.checkout');
+
+Route::get('attendance/{record}/edit', [AttendanceController::class,'edit'])->name('attendance.edit');
+Route::put('attendance/{record}', [AttendanceController::class,'update'])->name('attendance.update');
+
+// Tasks
+Route::resource('tasks', TaskController::class);
+Route::post('tasks/{task}/quick-status', [TaskController::class,'quickStatus'])->name('tasks.quickStatus');
 
 
 
 
+Route::resource('leaves', LeaveRequestController::class)
+    ->only(['index','create','store','show'])
+    ->parameters(['leaves' => 'leave']);
+Route::post('leaves/{leave}/approve', [LeaveRequestController::class,'approve'])->name('leaves.approve');
+Route::post('leaves/{leave}/reject',  [LeaveRequestController::class,'reject'])->name('leaves.reject');
 
 
 
+//توليد تلقائي لسجلات الأسبوع من employee_schedules
 
+    use App\Http\Controllers\AttendanceGeneratorController;
+
+Route::post('attendance/generate-week', [AttendanceGeneratorController::class,'generateWeek'])->name('attendance.generateWeek');
+
+//Calendar Month View (شهرية) لكل فرع/موظف
+Route::get('attendance/calendar', [AttendanceCalendarController::class,'month'])->name('attendance.calendar');
+
+//تقارير: ساعات/تأخير/غياب لكل موظف خلال فترة
+
+Route::get('attendance/reports', [AttendanceReportController::class,'index'])->name('attendance.reports');
+
+
+
+Route::get('attendance/reports/export-excel', [AttendanceReportController::class,'exportExcel'])->name('attendance.reports.exportExcel');
+
+
+Route::get('attendance/reports/export-pdf', [AttendanceReportController::class,'exportPdf'])->name('attendance.reports.exportPdf');
+
+
+
+Route::get('attendance/calendar/export-excel', [AttendanceCalendarController::class,'exportExcel'])
+  ->name('attendance.calendar.exportExcel');
+
+Route::get('attendance/calendar/export-pdf', [AttendanceCalendarController::class,'exportPdf'])
+  ->name('attendance.calendar.exportPdf');
+
+
+
+  
 
 require __DIR__.'/auth.php';

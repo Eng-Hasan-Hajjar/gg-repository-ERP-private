@@ -79,3 +79,30 @@
   <button class="btn btn-namaa rounded-pill px-4 fw-bold">حفظ</button>
   <a href="{{ route('employees.index') }}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">إلغاء</a>
 </div>
+
+
+
+
+
+
+<hr class="my-4">
+<h6 class="fw-bold mb-2">جدول الدوام الأسبوعي</h6>
+<div class="text-muted small mb-3">اختر شيفت لكل يوم. اختر "عطلة" إذا كان اليوم Off.</div>
+
+<div class="row g-2">
+  @foreach($weekdays as $wd => $label)
+    <div class="col-12 col-md-6 col-lg-4">
+      <label class="form-label fw-bold">{{ $label }}</label>
+      <select name="schedule[{{ $wd }}]" class="form-select">
+        <option value="">عطلة (OFF)</option>
+        @foreach($shifts as $s)
+          <option value="{{ $s->id }}"
+            @selected((old("schedule.$wd", $scheduleMap[$wd] ?? '') == $s->id))>
+            {{ $s->name }} ({{ $s->start_time }} - {{ $s->end_time }})
+          </option>
+        @endforeach
+      </select>
+    </div>
+  @endforeach
+</div>
+

@@ -29,7 +29,8 @@ return new class extends Migration
 
             $table->text('notes')->nullable();
 
-
+ $table->enum('schedule_mode', ['weekly','custom'])->default('weekly');
+    $table->date('schedule_effective_from')->nullable();
 
             $table->timestamps();
 

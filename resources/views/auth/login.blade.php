@@ -48,7 +48,7 @@
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
-                <!-- Remember -->
+                <!-- Remember 
                 <div class="flex items-center justify-between">
                     <label for="remember_me" class="inline-flex items-center gap-2">
                         <input id="remember_me"
@@ -58,14 +58,14 @@
                         <span class="text-sm text-gray-700">تذكرني</span>
                     </label>
 
-                    @if (Route::has('password.request'))
+                    @ if (Route::has('password.request'))
                         <a class="text-sm font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4"
                            href="{{ route('password.request') }}">
                             نسيت كلمة المرور؟
                         </a>
-                    @endif
+                    @ endif
                 </div>
-
+-->
                 <!-- Submit -->
                 <div class="pt-2">
                     <button type="submit"

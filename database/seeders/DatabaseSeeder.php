@@ -16,12 +16,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            UserSeeder::class,
         BranchSeeder::class,
         AssetCategorySeeder::class,
         DiplomaSeeder::class,
            EmployeeSeeder::class,
         StudentSeeder::class,
           CashboxSeeder::class,
+           AssetSeeder::class,   // ✅ هنا
+             // ✅ الدوام والمهام
+            WorkShiftSeeder::class,
+            EmployeeScheduleSeeder::class,
+            AttendanceRecordSeeder::class,
+            LeaveRequestSeeder::class,
+            TaskSeeder::class,
+
+           
     ]);
         // User::factory(10)->create();
 

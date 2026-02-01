@@ -150,28 +150,35 @@
     </div>
 
     {{-- Attendance / Leaves --}}
-    <div class="col-12 col-md-6 col-xl-4">
-      <div class="module-card">
-        <div class="module-head">
-          <div class="module-icon grad-rose">
-            <i class="bi bi-calendar2-week fs-3"></i>
-          </div>
-          <div>
-            <p class="module-title">الدوام والإجازات</p>
-            <p class="module-sub">حضور — أذونات — رصيد إجازات — تقارير</p>
-          </div>
-        </div>
-        <div class="module-body">
-          <p class="section-note">
-            تسجيل الدخول/الخروج، احتساب الساعات تلقائيًا، طلبات الإجازات والموافقات والغياب.
-          </p>
-        </div>
-        <div class="module-actions">
-          <a href="#" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
-          <a href="#" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
-        </div>
+<div class="col-12 col-md-6 col-xl-4">
+  <div class="module-card">
+    <div class="module-head">
+      <div class="module-icon grad-rose">
+        <i class="bi bi-calendar2-week fs-3"></i>
+      </div>
+      <div>
+        <p class="module-title">الدوام والإجازات</p>
+        <p class="module-sub">حضور/انصراف — طلبات إجازة — تقارير</p>
       </div>
     </div>
+    <div class="module-body">
+      <p class="section-note">
+        تقويم شهري، سجلات حضور يومية، تقارير ساعات/تأخير/غياب مع تصدير Excel/PDF.
+      </p>
+    </div>
+    <div class="module-actions">
+      <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
+      <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
+      <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
+      <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+    </div>
+
+  </div>
+</div>
+
+
+
+
 
     {{-- Tasks --}}
     <div class="col-12 col-md-6 col-xl-4">
@@ -191,8 +198,10 @@
           </p>
         </div>
         <div class="module-actions">
-          <a href="#" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
-          <a href="#" class="btn btn-soft w-100 w-sm-auto">التقارير اليومية</a>
+          <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
+          <a href="{{ route('tasks.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة مهمة</a>
+  <a href="{{ route('tasks.index', ['status'=>'todo']) }}" class="btn btn-soft w-100 w-sm-auto">مهام اليوم </a>
+         
         </div>
       </div>
     </div>
