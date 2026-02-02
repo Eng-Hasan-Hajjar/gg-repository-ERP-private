@@ -16,6 +16,13 @@ use App\Http\Controllers\CashboxTransactionController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\AttendanceCalendarController;
 use App\Http\Controllers\EmployeeSchedule;
+  use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamResultController;
+use App\Http\Controllers\LeadController;
+use App\Http\Controllers\LeadFollowupController;
+use App\Http\Controllers\LeadReportController;
+
+use App\Http\Controllers\ExamEnrollmentController;
 
 //طلبات الإجازات + صفحة موافقات الأدمن
 use App\Http\Controllers\LeaveRequestController;
@@ -219,6 +226,67 @@ Route::get('attendance/calendar/export-pdf', [AttendanceCalendarController::clas
 
 
 
-  
+
+
+
+
+Route::resource('exams', ExamController::class);
+
+// إدخال درجات امتحان
+Route::get('exams/{exam}/results', [ExamResultController::class,'edit'])->name('exams.results.edit');
+Route::put('exams/{exam}/results', [ExamResultController::class,'update'])->name('exams.results.update');
+
+// سجل امتحانات طالب
+Route::get('students/{student}/exams', [ExamResultController::class,'studentTranscript'])->name('students.exams');
+
+
+use App\Http\Controllers\ExamComponentController;
+use App\Http\Controllers\ExamMarksController;
+
+// Components management
+Route::get('exams/{exam}/components', [ExamComponentController::class,'index'])->name('exams.components.index');
+Route::post('exams/{exam}/components', [ExamComponentController::class,'store'])->name('exams.components.store');
+Route::delete('exams/{exam}/components/{component}', [ExamComponentController::class,'destroy'])->name('exams.components.destroy');
+
+// Marks entry (dynamic components)
+Route::get('exams/{exam}/marks', [ExamMarksController::class,'edit'])->name('exams.marks.edit');
+Route::put('exams/{exam}/marks', [ExamMarksController::class,'update'])->name('exams.marks.update');
+
+ Route::get('exams/{exam}/marks/student/{student}', function (\App\Models\Exam $exam, \App\Models\Student $student) {
+    return redirect()->route('exams.marks.edit', $exam).'?student_id='.$student->id;
+})->name('exams.marks.student');
+
+
+
+Route::get('exams/{exam}/students', [ExamEnrollmentController::class,'edit'])
+    ->name('exams.students.edit');
+
+Route::put('exams/{exam}/students', [ExamEnrollmentController::class,'update'])
+    ->name('exams.students.update');
+
+
+
+
+
+
+
+    
+
+    Route::resource('leads', LeadController::class);
+
+    Route::post('leads/{lead}/convert', [LeadController::class,'convertToStudent'])
+      ->name('leads.convert');
+
+    Route::post('leads/{lead}/followups', [LeadFollowupController::class,'store'])
+      ->name('leads.followups.store');
+
+    Route::delete('leads/{lead}/followups/{followup}', [LeadFollowupController::class,'destroy'])
+      ->name('leads.followups.destroy');
+
+    // Optional reports
+    Route::get('reports', [LeadReportController::class,'index'])->name('crm.reports.index');
+ 
+
+
 
 require __DIR__.'/auth.php';

@@ -151,6 +151,13 @@
           الدبلومة: <b>{{ $student->diploma->name }}</b> <span class="text-muted">({{ $student->diploma->code }})</span>
         @endif
 
+        <div class="mt-2">
+        <b>الدبلومات:</b>
+        @foreach($student->diplomas as $d)
+          <span class="badge bg-light text-dark border">{{ $d->name }}</span>
+        @endforeach
+      </div>
+
 
         @if($student->is_confirmed)
           <a class="btn btn-primary rounded-pill px-4 fw-bold"
@@ -159,7 +166,19 @@
           </a>
         @endif
 
-        
+        <a class="btn btn-outline-primary btn-pill" href="{{ route('students.exams',$student) }}">
+          <i class="bi bi-journal-check"></i> سجل الامتحانات
+        </a>
+
+
+        <a class="btn btn-outline-success btn-pill"
+          href="{{ route('exams.index', ['branch_id'=>$student->branch_id, 'diploma_id'=>$student->diploma_id]) }}">
+          <i class="bi bi-plus-circle"></i> إضافة/تعديل علامات (اختر امتحان)
+        </a>
+
+
+
+
       </div>
 
       <div class="mt-2">
@@ -210,6 +229,51 @@
 
   </div>
 </div>
+
+
+
+
+
+
+
+@if($student->crmInfo)
+  <div class="glass-card mt-3">
+    <div class="p-3 p-md-4">
+      <h6 class="card-title mb-2">بيانات CRM (الاستشارات)</h6>
+      <div class="soft-divider"></div>
+
+      <div class="kv">
+        <div class="k">تاريخ أول تواصل</div>
+        <div class="v">{{ $student->crmInfo->first_contact_date?->format('Y-m-d') ?? '-' }}</div>
+      </div>
+
+      <div class="kv">
+        <div class="k">السكن</div>
+        <div class="v">{{ $student->crmInfo->residence ?? '-' }}</div>
+      </div>
+
+      <div class="kv">
+        <div class="k">العمر</div>
+        <div class="v">{{ $student->crmInfo->age ?? '-' }}</div>
+      </div>
+
+      <div class="kv">
+        <div class="k">المصدر</div>
+        <div class="v">{{ $student->crmInfo->source }}</div>
+      </div>
+
+      <div class="kv">
+        <div class="k">المرحلة</div>
+        <div class="v">{{ $student->crmInfo->stage }}</div>
+      </div>
+
+      <div class="kv">
+        <div class="k">الاحتياج</div>
+        <div class="v">{{ $student->crmInfo->need ?? '-' }}</div>
+      </div>
+    </div>
+  </div>
+@endif
 
 {{-- ===================== Content Grid ===================== --}}
 <div class="row g-3">

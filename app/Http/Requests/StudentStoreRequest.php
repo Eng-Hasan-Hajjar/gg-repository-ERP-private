@@ -31,6 +31,19 @@ class StudentStoreRequest extends FormRequest
 
             // حالة التسجيل (تبقى pending عند الإنشاء)
             'registration_status' => ['nullable','in:pending,confirmed,archived,dismissed,frozen'],
+
+
+
+
+              // ✅ crm
+        'crm.first_contact_date' => ['nullable','date'],
+        'crm.residence' => ['nullable','string','max:255'],
+        'crm.age' => ['nullable','integer','min:10','max:80'],
+        'crm.organization' => ['nullable','string','max:255'],
+        'crm.source' => ['nullable','in:ad,referral,social,website,expo,other'],
+        'crm.need' => ['nullable','string'],
+        'crm.stage' => ['nullable','in:new,follow_up,interested,registered,rejected,postponed'],
+   
         ];
     }
 }

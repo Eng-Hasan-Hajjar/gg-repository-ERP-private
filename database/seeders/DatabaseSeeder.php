@@ -30,7 +30,11 @@ class DatabaseSeeder extends Seeder
             AttendanceRecordSeeder::class,
             LeaveRequestSeeder::class,
             TaskSeeder::class,
-
+            ExamSeeder::class,
+   // ✅ CRM
+        LeadSeeder::class,
+         LeadFollowupSeeder::class, // اختياري إذا فصلته
+           
            
     ]);
         // User::factory(10)->create();

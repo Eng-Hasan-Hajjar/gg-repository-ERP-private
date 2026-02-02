@@ -13,8 +13,19 @@ class Diploma extends Model
         'is_active' => 'boolean',
     ];
 
-    public function students(): HasMany
+
+
+
+    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(\App\Models\Exam::class);
     }
+public function students()
+{
+    return $this->belongsToMany(\App\Models\Student::class, 'diploma_student')
+        ->withPivot(['is_primary','enrolled_at','status','notes'])
+        ->withTimestamps();
+}
+
+
 }

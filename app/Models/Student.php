@@ -22,7 +22,8 @@ class Student extends Model
     
         'registration_status',
         
-
+        // ✅ هذا هو المهم
+        'diploma_id',
 
     ];
 
@@ -49,11 +50,7 @@ class Student extends Model
     }
 
 
-       public function diploma(): BelongsTo
-    {
-        return $this->belongsTo(Diploma::class);
-    }
-
+  
 
     /**
      * *************************/
@@ -62,4 +59,25 @@ class Student extends Model
     {
         return $this->hasOne(StudentExtraField::class);
     }
+    public function exams()
+    {
+        return $this->belongsToMany(\App\Models\Exam::class, 'exam_registrations')
+            ->withPivot(['status','registered_at','notes'])
+            ->withTimestamps();
+    }
+
+   public function diploma()
+{
+  return $this->belongsTo(\App\Models\Diploma::class, 'diploma_id');
+}
+
+public function diplomas()
+{
+  return $this->belongsToMany(\App\Models\Diploma::class, 'diploma_student')
+      ->withPivot(['is_primary','enrolled_at','status','notes'])
+      ->withTimestamps();
+}
+
+
+
 }

@@ -13,7 +13,7 @@
       <div>
         <h1>لوحة التحكم — نظام نماء أكاديمي</h1>
         <p>
-          اختر القسم الذي تريد العمل عليه. تم تصميم الموديولات لتكون قابلة للتوسع وإضافة أقسام جديدة لاحقاً بسهولة.
+         
         </p>
       </div>
 
@@ -37,7 +37,7 @@
           </div>
           <div>
             <p class="module-title">اللوحة الرئيسية والتقارير</p>
-            <p class="module-sub">ملخص شامل — مؤشرات الأداء — تقارير مالية وأكاديمية</p>
+            <p class="module-sub">ملخص شامل — مؤشرات الأداء — تقارير مالية </p>
           </div>
         </div>
         <div class="module-body">
@@ -94,8 +94,8 @@
           </p>
         </div>
         <div class="module-actions">
-          <a href="#" class="btn btn-namaa w-100 w-sm-auto">فتح CRM</a>
-          <a href="#" class="btn btn-soft w-100 w-sm-auto">تقارير المبيعات</a>
+          <a href="{{ route( 'leads.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح CRM</a>
+          <a href="{{ route('crm.reports.index') }}" class="btn btn-soft w-100 w-sm-auto">تقارير المبيعات</a>
         </div>
       </div>
     </div>
@@ -118,8 +118,10 @@
           </p>
         </div>
         <div class="module-actions">
-          <a href="#" class="btn btn-namaa w-100 w-sm-auto">إدارة الامتحانات</a>
-          <a href="#" class="btn btn-soft w-100 w-sm-auto">إدخال العلامات</a>
+          <a href="{{ route('exams.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الامتحانات</a>
+          <a href="{{ route('exams.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة امتحان</a>
+
+    
         </div>
       </div>
     </div>

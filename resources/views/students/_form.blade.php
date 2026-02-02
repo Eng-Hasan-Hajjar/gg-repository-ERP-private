@@ -73,6 +73,57 @@
   </div>
 </div>
 
+<hr class="my-4">
+<h6 class="fw-bold mb-3">بيانات الاستشارات (CRM) — اختياري</h6>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <label class="form-label fw-bold">تاريخ أول تواصل</label>
+    <input type="date" name="crm[first_contact_date]" class="form-control"
+      value="{{ old('crm.first_contact_date') }}">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label fw-bold">السكن</label>
+    <input name="crm[residence]" class="form-control" value="{{ old('crm.residence') }}">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label fw-bold">العمر</label>
+    <input type="number" min="10" max="80" name="crm[age]" class="form-control"
+      value="{{ old('crm.age') }}">
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label fw-bold">الجهة / المؤسسة</label>
+    <input name="crm[organization]" class="form-control" value="{{ old('crm.organization') }}">
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label fw-bold">المصدر</label>
+    <select name="crm[source]" class="form-select">
+      @foreach(['ad'=>'إعلان','referral'=>'توصية','social'=>'سوشيال','website'=>'موقع','expo'=>'معرض','other'=>'أخرى'] as $k=>$v)
+        <option value="{{ $k }}" @selected(old('crm.source','other')==$k)>{{ $v }}</option>
+      @endforeach
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label fw-bold">مرحلة العميل</label>
+    <select name="crm[stage]" class="form-select">
+      @foreach(['new'=>'جديد','follow_up'=>'قيد المتابعة','interested'=>'مهتم','registered'=>'تم التسجيل','rejected'=>'مرفوض','postponed'=>'مؤجل'] as $k=>$v)
+        <option value="{{ $k }}" @selected(old('crm.stage','new')==$k)>{{ $v }}</option>
+      @endforeach
+    </select>
+  </div>
+
+  <div class="col-12">
+    <label class="form-label fw-bold">الاحتياج</label>
+    <textarea name="crm[need]" class="form-control" rows="2">{{ old('crm.need') }}</textarea>
+  </div>
+</div>
+
+
 @if($errors->any())
   <div class="alert alert-danger mt-3">
     <ul class="mb-0">

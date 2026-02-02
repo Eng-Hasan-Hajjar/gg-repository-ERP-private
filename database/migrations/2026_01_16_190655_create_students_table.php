@@ -28,6 +28,11 @@ return new class extends Migration
 
             // فرع + نوع الطالب (حضوري/أونلاين)
             $table->foreignId('branch_id')->constrained()->cascadeOnDelete();
+
+                                // ربط الدبلومة (اختياري حسب وجودها)
+            $table->foreignId('diploma_id')->nullable()->constrained()->nullOnDelete();
+
+
             $table->enum('mode', ['onsite', 'online'])->default('onsite');
 
             // حالة الطالب (حسب وصفك)
@@ -58,10 +63,7 @@ return new class extends Migration
 
 
 
-                        // ربط الدبلومة (اختياري حسب وجودها)
-            $table->foreignId('diploma_id')->nullable()->constrained()->nullOnDelete();
-
-
+    
             $table->timestamps();
         });
     }

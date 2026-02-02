@@ -7,49 +7,56 @@ use App\Http\Requests\StudentUpdateRequest;
 use App\Models\Branch;
 use App\Models\Student;
 use App\Models\Diploma;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
-    public function index(Request $request)
-    {
-        $q = Student::query()->with('branch','diploma');
+public function index(Request $request)
+{
+    $q = Student::query()->with(['branch','diplomas','profile','crmInfo']);
 
-        if ($request->filled('branch_id')) {
-            $q->where('branch_id', $request->branch_id);
-        }
-
-
-        if ($request->filled('diploma_id')) {
-            $q->where('diploma_id', $request->diploma_id);
-        }
-
-
-        if ($request->filled('status')) {
-            $q->where('status', $request->status);
-        }
-
-        if ($request->filled('registration_status')) {
-            $q->where('registration_status', $request->registration_status);
-        }
-
-        if ($request->filled('search')) {
-            $s = trim($request->search);
-            $q->where(function($x) use ($s) {
-                $x->where('full_name','like',"%$s%")
-                  ->orWhere('university_id','like',"%$s%")
-                  ->orWhere('phone','like',"%$s%")
-                  ;
-            });
-        }
-
-        return view('students.index', [
-            'students' => $q->latest()->paginate(15)->withQueryString(),
-            'branches' => Branch::orderBy('name')->get(),
-              'diplomas' => Diploma::orderBy('name')->get(),
-        ]);
+    if ($request->filled('branch_id')) {
+        $q->where('branch_id', $request->branch_id);
     }
+
+    // ✅ فلترة دبلومة عبر pivot
+    if ($request->filled('diploma_id')) {
+        $diplomaId = $request->diploma_id;
+        $q->whereHas('diplomas', function ($x) use ($diplomaId) {
+            $x->where('diplomas.id', $diplomaId);
+        });
+    }
+
+    if ($request->filled('status')) {
+        $q->where('status', $request->status);
+    }
+
+    if ($request->filled('registration_status')) {
+        $q->where('registration_status', $request->registration_status);
+    }
+
+    if ($request->filled('search')) {
+        $s = trim($request->search);
+        $q->where(function($x) use ($s) {
+            $x->where('full_name','like',"%$s%")
+              ->orWhere('university_id','like',"%$s%")
+              ->orWhere('phone','like',"%$s%");
+        });
+    }
+
+    // ✅ فقط المثبتين
+    $q->where('is_confirmed', true);
+
+    return view('students.index', [
+        'students' => $q->latest()->paginate(15)->withQueryString(),
+        'branches' => Branch::orderBy('name')->get(),
+        'diplomas' => Diploma::orderBy('name')->get(),
+    ]);
+}
+
 
     public function create()
     {
@@ -61,28 +68,70 @@ class StudentController extends Controller
         ]);
     }
 
-    public function store(StudentStoreRequest $request)
-    {
-        $data = $request->validated();
 
-        // enforce pending in initial creation
-        $data['registration_status'] = 'pending';
+  public function store(StudentStoreRequest $request)
+{
+    $data = $request->validated();
 
-        // university id
-        $data['university_id'] = $this->generateUniversityId();
+    $data['registration_status'] = 'confirmed';
+    $data['is_confirmed'] = true;
+    $data['confirmed_at'] = now();
+    $data['university_id'] = $this->generateUniversityId();
+
+    $student = DB::transaction(function () use ($data, $request) {
 
         $student = Student::create($data);
 
-        return redirect()
-            ->route('students.show', $student)
-            ->with('success', 'تم إنشاء الطالب (بيانات أولية) بنجاح.');
-    }
+        // ✅ Profile
+        $profileData = $request->input('profile', []);
+        if (!empty(array_filter($profileData))) {
+            $student->profile()->updateOrCreate(
+                ['student_id' => $student->id],
+                $profileData
+            );
+        }
+
+        // ✅ CRM Info
+        $crmData = $request->input('crm', []);
+        if (!empty(array_filter($crmData))) {
+            $student->crmInfo()->updateOrCreate(
+                ['student_id' => $student->id],
+                $crmData + ['converted_at' => now()]
+            );
+        }
+
+        // ✅ الدبلومات (Multi)
+        // إذا أنت عامل بالـ form: name="diploma_ids[]"
+        $diplomaIds = $request->input('diploma_ids', []);
+        if (!empty($diplomaIds)) {
+            $sync = [];
+            foreach ($diplomaIds as $i => $id) {
+                $sync[$id] = [
+                    'is_primary'  => $i === 0,
+                    'enrolled_at' => now()->toDateString(),
+                    'status'      => 'active',
+                ];
+            }
+            $student->diplomas()->sync($sync);
+        }
+
+        return $student;
+    });
+
+    return redirect()
+        ->route('students.show', $student)
+        ->with('success', 'تم إنشاء الطالب مع التفاصيل بنجاح.');
+}
+
+
+    
 
     public function show(Student $student)
     {
       //  $this->authorizeByPermission('students.view');
 
-        $student->load(['branch','diploma','profile']);
+       $student->load(['branch','profile','diplomas','crmInfo']);
+
 
         return view('students.show', compact('student'));
     }
@@ -97,31 +146,54 @@ class StudentController extends Controller
              'diplomas' => Diploma::orderBy('name')->get(),
         ]);
     }
+public function update(StudentUpdateRequest $request, Student $student)
+{
+    $data = $request->validated();
 
-    public function update(StudentUpdateRequest $request, Student $student)
-    {
-        $data = $request->validated();
+    unset($data['registration_status']); // كما عندك
 
-        // لا تسمح بتغيير registration_status إلى confirmed من هنا (التثبيت له زر خاص)
-        unset($data['registration_status']);
+    DB::transaction(function () use ($request, $student, $data) {
 
         $student->update($data);
 
-        return redirect()
-            ->route('students.show', $student)
-            ->with('success', 'تم تحديث بيانات الطالب الأساسية.');
-    }
+        // ✅ Profile update
+        $profileData = $request->input('profile', []);
+        if (!empty($profileData)) {
+            $student->profile()->updateOrCreate(
+                ['student_id' => $student->id],
+                $profileData
+            );
+        }
 
-    public function destroy(Student $student)
-    {
-      //  $this->authorizeByPermission('students.delete');
+        // ✅ CRM update
+        $crmData = $request->input('crm', []);
+        if (!empty($crmData)) {
+            $student->crmInfo()->updateOrCreate(
+                ['student_id' => $student->id],
+                $crmData
+            );
+        }
 
-        $student->delete();
+        // ✅ diplomas sync (optional)
+        $diplomaIds = $request->input('diploma_ids', null);
+        if (is_array($diplomaIds)) {
+            $sync = [];
+            foreach ($diplomaIds as $i => $id) {
+                $sync[$id] = [
+                    'is_primary'  => $i === 0,
+                    'enrolled_at' => now()->toDateString(),
+                    'status'      => 'active',
+                ];
+            }
+            $student->diplomas()->sync($sync);
+        }
+    });
 
-        return redirect()
-            ->route('students.index')
-            ->with('success', 'تم حذف الطالب.');
-    }
+    return redirect()
+        ->route('students.show', $student)
+        ->with('success', 'تم تحديث بيانات الطالب بنجاح.');
+}
+
 
     private function generateUniversityId(): string
     {
