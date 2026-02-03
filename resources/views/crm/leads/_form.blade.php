@@ -33,7 +33,7 @@
   </div>
 
   <div class="col-md-6">
-    <label class="form-label fw-bold">الجهة/المؤسسة</label>
+    <label class="form-label fw-bold">الجهة / المؤسسة</label>
     <input name="organization" class="form-control" value="{{ old('organization',$lead->organization ?? '') }}">
   </div>
 
@@ -41,7 +41,9 @@
     <label class="form-label fw-bold">الفرع</label>
     <select name="branch_id" class="form-select" required>
       @foreach($branches as $b)
-        <option value="{{ $b->id }}" @selected(old('branch_id',$lead->branch_id ?? '')==$b->id)>{{ $b->name }}</option>
+        <option value="{{ $b->id }}" @selected(old('branch_id',$lead->branch_id ?? '')==$b->id)>
+          {{ $b->name }}
+        </option>
       @endforeach
     </select>
   </div>
@@ -49,8 +51,17 @@
   <div class="col-md-3">
     <label class="form-label fw-bold">المصدر</label>
     <select name="source" class="form-select" required>
-      @foreach(['ad','referral','social','website','expo','other'] as $s)
-        <option value="{{ $s }}" @selected(old('source',$lead->source ?? 'other')==$s)>{{ $s }}</option>
+      @foreach([
+        'ad'       => 'إعلان مدفوع',
+        'referral' => 'إحالة / توصية',
+        'social'   => 'وسائل التواصل الاجتماعي',
+        'website'  => 'الموقع الإلكتروني',
+        'expo'     => 'معرض / فعالية',
+        'other'    => 'أخرى'
+      ] as $value => $label)
+        <option value="{{ $value }}" @selected(old('source',$lead->source ?? 'other')==$value)>
+          {{ $label }}
+        </option>
       @endforeach
     </select>
   </div>
@@ -58,8 +69,17 @@
   <div class="col-md-3">
     <label class="form-label fw-bold">المرحلة</label>
     <select name="stage" class="form-select" required>
-      @foreach(['new','follow_up','interested','registered','rejected','postponed'] as $st)
-        <option value="{{ $st }}" @selected(old('stage',$lead->stage ?? 'new')==$st)>{{ $st }}</option>
+      @foreach([
+        'new'         => 'جديد',
+        'follow_up'   => 'متابعة',
+        'interested'  => 'مهتم',
+        'registered'  => 'مسجل',
+        'rejected'    => 'مرفوض',
+        'postponed'   => 'مؤجل'
+      ] as $value => $label)
+        <option value="{{ $value }}" @selected(old('stage',$lead->stage ?? 'new')==$value)>
+          {{ $label }}
+        </option>
       @endforeach
     </select>
   </div>
@@ -67,8 +87,14 @@
   <div class="col-md-3">
     <label class="form-label fw-bold">حالة التسجيل</label>
     <select name="registration_status" class="form-select">
-      @foreach(['pending','converted','lost'] as $rs)
-        <option value="{{ $rs }}" @selected(old('registration_status',$lead->registration_status ?? 'pending')==$rs)>{{ $rs }}</option>
+      @foreach([
+        'pending'   => 'قيد الانتظار',
+        'converted' => 'تم التحويل',
+        'lost'      => 'مفقود'
+      ] as $value => $label)
+        <option value="{{ $value }}" @selected(old('registration_status',$lead->registration_status ?? 'pending')==$value)>
+          {{ $label }}
+        </option>
       @endforeach
     </select>
   </div>
@@ -79,10 +105,14 @@
     @php($selected = old('diploma_ids', isset($lead)? $lead->diplomas->pluck('id')->toArray() : []))
     <select name="diploma_ids[]" class="form-select" multiple size="6">
       @foreach($diplomas as $d)
-        <option value="{{ $d->id }}" @selected(in_array($d->id,$selected))>{{ $d->name }} ({{ $d->code }})</option>
+        <option value="{{ $d->id }}" @selected(in_array($d->id,$selected))>
+          {{ $d->name }} ({{ $d->code }})
+        </option>
       @endforeach
     </select>
-    <div class="text-muted small mt-1">أول خيار يعتبر دبلومة رئيسية عند التحويل.</div>
+    <div class="text-muted small mt-1">
+      أول خيار يعتبر دبلومة رئيسية عند التحويل.
+    </div>
   </div>
 
   <div class="col-12">
@@ -99,12 +129,16 @@
 @if($errors->any())
   <div class="alert alert-danger mt-3">
     <ul class="mb-0">
-      @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+      @foreach($errors->all() as $e)
+        <li>{{ $e }}</li>
+      @endforeach
     </ul>
   </div>
 @endif
 
 <div class="mt-3 d-flex gap-2">
   <button class="btn btn-primary fw-bold px-4">حفظ</button>
-  <a class="btn btn-outline-secondary fw-bold px-4" href="{{ route('leads.index') }}">إلغاء</a>
+  <a class="btn btn-outline-secondary fw-bold px-4" href="{{ route('leads.index') }}">
+    إلغاء
+  </a>
 </div>
