@@ -106,5 +106,5 @@
 
 <div class="mt-3 d-flex gap-2">
   <button class="btn btn-primary fw-bold px-4">حفظ</button>
-  <a class="btn btn-outline-secondary fw-bold px-4" href="{{ route('crm.leads.index') }}">إلغاء</a>
+  <a class="btn btn-outline-secondary fw-bold px-4" href="{{ route('leads.index') }}">إلغاء</a>
 </div>

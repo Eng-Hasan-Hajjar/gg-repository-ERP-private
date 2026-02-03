@@ -131,11 +131,52 @@ class StudentController extends Controller
     return redirect()->route('students.show',$student)->with('success','تم إنشاء الطالب مع التفاصيل بنجاح.');
   }
 
-  public function show(Student $student)
-  {
+public function show(Student $student)
+{
     $student->load(['branch','diplomas','profile','crmInfo']);
-    return view('students.show', compact('student'));
-  }
+
+    $p = $student->profile;
+
+    // WhatsApp link (digits only)
+    $waDigits = $student->whatsapp ? preg_replace('/\D+/', '', $student->whatsapp) : null;
+    $waLink   = $waDigits ? "https://wa.me/{$waDigits}" : null;
+
+    // Files flags + urls
+    $files = [
+        'photo' => [
+            'exists' => (bool)($p?->photo_path),
+            'url'    => $p?->photo_path ? asset('storage/'.$p->photo_path) : null,
+        ],
+        'info' => [
+            'exists' => (bool)($p?->info_file_path),
+            'url'    => $p?->info_file_path ? asset('storage/'.$p->info_file_path) : null,
+        ],
+        'identity' => [
+            'exists' => (bool)($p?->identity_file_path),
+            'url'    => $p?->identity_file_path ? asset('storage/'.$p->identity_file_path) : null,
+        ],
+        'attendance' => [
+            'exists' => (bool)($p?->attendance_certificate_path),
+            'url'    => $p?->attendance_certificate_path ? asset('storage/'.$p->attendance_certificate_path) : null,
+        ],
+        'certificate_pdf' => [
+            'exists' => (bool)($p?->certificate_pdf_path),
+            'url'    => $p?->certificate_pdf_path ? asset('storage/'.$p->certificate_pdf_path) : null,
+        ],
+        'certificate_card' => [
+            'exists' => (bool)($p?->certificate_card_path),
+            'url'    => $p?->certificate_card_path ? asset('storage/'.$p->certificate_card_path) : null,
+        ],
+    ];
+
+    return view('students.show', [
+        'student' => $student,
+        'p'       => $p,
+        'waLink'  => $waLink,
+        'files'   => $files,
+    ]);
+}
+
 
   public function edit(Student $student)
   {
