@@ -8,40 +8,36 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Student extends Model
 {
-        protected $fillable = [
-        'university_id',
-        'first_name','last_name','full_name',
-        'phone','whatsapp',
-        'branch_id','mode',
-        'status',
-        'is_confirmed','confirmed_at',
+    protected $fillable = [
+    'university_id','first_name','last_name','full_name',
+    'phone','whatsapp','email',
+    'branch_id','mode','status',
+    'registration_status','is_confirmed','confirmed_at',
+  ];
 
+  protected $casts = [
+    'is_confirmed' => 'boolean',
+    'confirmed_at' => 'datetime',
+  ];
 
-        'diploma_name','diploma_code','level',
-        'email',
-    
-        'registration_status',
-        
-        // ✅ هذا هو المهم
-        'diploma_id',
+  public function branch() {
+    return $this->belongsTo(Branch::class);
+  }
 
-    ];
+  public function diplomas() {
+    return $this->belongsToMany(Diploma::class, 'diploma_student')
+      ->withPivot(['is_primary','enrolled_at','status','notes'])
+      ->withTimestamps();
+  }
 
-    protected $casts = [
-        'is_confirmed' => 'boolean',
-        'confirmed_at' => 'datetime',
-    ];
+  public function profile() {
+    return $this->hasOne(StudentProfile::class);
+  }
 
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(Branch::class);
-    }
-
-
-        public function profile(): HasOne
-    {
-        return $this->hasOne(StudentProfile::class);
-    }
+  public function crmInfo() {
+    return $this->hasOne(StudentCrmInfo::class);
+  }
+ 
 
     // مساعدات عرض
     public function getIsPendingAttribute(): bool
@@ -70,14 +66,5 @@ class Student extends Model
 {
   return $this->belongsTo(\App\Models\Diploma::class, 'diploma_id');
 }
-
-public function diplomas()
-{
-  return $this->belongsToMany(\App\Models\Diploma::class, 'diploma_student')
-      ->withPivot(['is_primary','enrolled_at','status','notes'])
-      ->withTimestamps();
-}
-
-
 
 }

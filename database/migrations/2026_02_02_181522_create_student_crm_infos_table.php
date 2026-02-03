@@ -10,26 +10,21 @@ return new class extends Migration {
         Schema::create('student_crm_infos', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
-            $table->unique('student_id');
+      $table->foreignId('student_id')->unique()->constrained()->cascadeOnDelete();
 
-            $table->foreignId('lead_id')->nullable()->constrained('leads')->nullOnDelete();
+      $table->date('first_contact_date')->nullable();
+      $table->string('residence')->nullable();
+      $table->unsignedTinyInteger('age')->nullable();
+      $table->string('organization')->nullable();
 
-            $table->date('first_contact_date')->nullable();
-            $table->string('residence')->nullable();
-            $table->unsignedTinyInteger('age')->nullable();
-            $table->string('organization')->nullable();
+      $table->enum('source', ['ad','referral','social','website','expo','other'])->default('other');
+      $table->text('need')->nullable();
 
-            $table->enum('source', ['ad','referral','social','website','expo','other'])->default('other');
-            $table->text('need')->nullable();
+      $table->enum('stage', ['new','follow_up','interested','registered','rejected','postponed'])->default('registered');
+      $table->timestamp('converted_at')->nullable();
 
-            $table->enum('stage', ['new','follow_up','interested','registered','rejected','postponed'])->default('new');
-
-            $table->timestamp('converted_at')->nullable();
-
-            $table->timestamps();
-
-            $table->index(['source','stage']);
+      $table->text('notes')->nullable();
+      $table->timestamps();
         });
     }
 

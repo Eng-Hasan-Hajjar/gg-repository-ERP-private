@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('lead_followups', function (Blueprint $table) {
             $table->id();
-              $table->foreignId('lead_id')->constrained('leads')->cascadeOnDelete();
+             $table->foreignId('lead_id')->constrained()->cascadeOnDelete();
       $table->date('followup_date')->nullable();
-      $table->string('result')->nullable(); // نتيجة المتابعة
+      $table->string('result')->nullable();
       $table->text('notes')->nullable();
       $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
       $table->timestamps();
-
-      $table->index(['lead_id','followup_date']);
 
         });
     }

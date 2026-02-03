@@ -4,12 +4,10 @@
 @section('content')
 <div class="card border-0 shadow-sm">
   <div class="card-body">
-    <h5 class="mb-3 fw-bold">إضافة طالب (بيانات أولية)</h5>
-
- <form method="POST" action="{{ route('students.store') }}" enctype="multipart/form-data">
-  @include('students._form')
-</form>
-
+    <h5 class="fw-bold mb-3">إضافة طالب (شؤون الطلاب)</h5>
+    <form method="POST" action="{{ route('students.store') }}">
+      @include('students._form')
+    </form>
   </div>
 </div>
 @endsection

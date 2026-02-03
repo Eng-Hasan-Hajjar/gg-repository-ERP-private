@@ -1,29 +1,27 @@
 <?php
-
+// app/Http/Controllers/LeadFollowupController.php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LeadFollowupStoreRequest;
 use App\Models\Lead;
-use App\Models\LeadFollowup;
+use Illuminate\Http\Request;
 
 class LeadFollowupController extends Controller
 {
-  public function store(LeadFollowupStoreRequest $request, Lead $lead)
+  public function store(Request $request, Lead $lead)
   {
-    $data = $request->validated();
-    $data['created_by'] = auth()->id();
-    $data['lead_id'] = $lead->id;
+    $data = $request->validate([
+      'followup_date' => 'nullable|date',
+      'result' => 'nullable|string|max:255',
+      'notes' => 'nullable|string',
+    ]);
 
-    LeadFollowup::create($data);
+    $lead->followups()->create($data + ['created_by'=>auth()->id()]);
 
-    return redirect()->route('leads.show',$lead)->with('success','تمت إضافة المتابعة.');
-  }
+    // تحديث stage تلقائياً (اختياري)
+    if ($lead->stage === 'new') {
+      $lead->update(['stage'=>'follow_up']);
+    }
 
-  public function destroy(Lead $lead, LeadFollowup $followup)
-  {
-    abort_unless($followup->lead_id === $lead->id, 403);
-    $followup->delete();
-
-    return redirect()->route('leads.show',$lead)->with('success','تم حذف المتابعة.');
+    return back()->with('success','تمت إضافة متابعة.');
   }
 }

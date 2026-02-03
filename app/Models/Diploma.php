@@ -7,9 +7,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Diploma extends Model
 {
-    protected $fillable = ['name','code','field','is_active'];
+      protected $fillable = ['name','code','is_active'];
 
-    protected $casts = [
+  public function students() {
+    return $this->belongsToMany(Student::class, 'diploma_student')->withTimestamps();
+  }
+
+  public function leads() {
+    return $this->belongsToMany(Lead::class, 'diploma_lead')->withTimestamps();
+  }
+       protected $casts = [
         'is_active' => 'boolean',
     ];
 
@@ -20,12 +27,6 @@ class Diploma extends Model
     {
         return $this->hasMany(\App\Models\Exam::class);
     }
-public function students()
-{
-    return $this->belongsToMany(\App\Models\Student::class, 'diploma_student')
-        ->withPivot(['is_primary','enrolled_at','status','notes'])
-        ->withTimestamps();
-}
 
-
+  
 }

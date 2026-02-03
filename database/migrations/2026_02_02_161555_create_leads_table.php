@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id(); 
-            $table->string('full_name');
+           
+       $table->string('full_name');
       $table->string('phone')->nullable();
       $table->string('whatsapp')->nullable();
 
@@ -34,13 +35,10 @@ return new class extends Migration
       $table->foreignId('branch_id')->constrained()->cascadeOnDelete();
       $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
-      $table->foreignId('student_id')->nullable()->constrained('students')->nullOnDelete();
+      $table->foreignId('student_id')->nullable()->constrained()->nullOnDelete();
 
       $table->timestamps();
-
       $table->index(['branch_id','stage','registration_status']);
-      $table->index(['phone']);
-      $table->index(['full_name']);
         });
     }
 

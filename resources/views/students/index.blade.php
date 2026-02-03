@@ -63,7 +63,7 @@
           <th>#</th>
           <th>الرقم الجامعي</th>
           <th>الاسم</th>
-          <th>الدبلومة</th>
+          
           <th>الفرع</th>
           <th>المستوى</th>
           <th>الحالة</th>
@@ -78,16 +78,7 @@
             <td>{{ $s->id }}</td>
             <td><code>{{ $s->university_id }}</code></td>
             <td class="fw-semibold">{{ $s->full_name }}</td>
-            <td>
-              <div class="col-lg-2">
-                <select name="diploma_id" class="form-select">
-                  <option value="">كل الدبلومات</option>
-                  @foreach($diplomas as $d)
-                    <option value="{{ $d->id }}" @selected(request('diploma_id')==$d->id)>{{ $d->name }} ({{ $d->code }})</option>
-                  @endforeach
-                </select>
-              </div>
-            </td>
+            
             <td>{{ $s->branch->name ?? '-' }}</td>
             <td>{{ $s->level ?? '-' }}</td>
             <td><span class="badge bg-secondary">{{ $s->status }}</span></td>

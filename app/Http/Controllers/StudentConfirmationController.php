@@ -1,38 +1,23 @@
 <?php
-
+// app/Http/Controllers/StudentConfirmationController.php
 namespace App\Http\Controllers;
 
 use App\Models\Student;
 
 class StudentConfirmationController extends Controller
 {
-    public function __construct()
-    {
-        // لا تستخدم $this->middleware() إذا كان Controller لا يرث من Illuminate\Routing\Controller
-        // عندك صحيح لأنه يرث من App\Http\Controllers\Controller
-        $this->middleware(['auth']);
+  public function confirm(Student $student)
+  {
+    if ($student->is_confirmed) {
+      return back()->with('info','الطالب مثبت مسبقاً.');
     }
 
-    public function confirm(Student $student)
-    {
-      //  abort_unless(auth()->user()->can('students.confirm'), 403);
+    $student->update([
+      'is_confirmed' => true,
+      'confirmed_at' => now(),
+      'registration_status' => 'confirmed',
+    ]);
 
-        if (!$student->is_confirmed) {
-            $student->update([
-                'is_confirmed' => true,
-                'confirmed_at' => now(),
-                'registration_status' => 'confirmed',
-            ]);
-
-            // إنشاء ملف تفصيلي فارغ
-            $student->profile()->firstOrCreate(
-                ['student_id' => $student->id],
-                []
-            );
-        }
-
-        return redirect()
-            ->route('students.show', $student)
-            ->with('success', 'تم تثبيت الطالب، ويمكن الآن إضافة الملف التفصيلي والمعلومات الإضافية.');
-    }
+    return back()->with('success','تم تثبيت الطالب بنجاح.');
+  }
 }

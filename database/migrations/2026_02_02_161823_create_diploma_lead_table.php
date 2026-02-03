@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('diploma_lead', function (Blueprint $table) {
             $table->id();
-             $table->foreignId('lead_id')->constrained('leads')->cascadeOnDelete();
-      $table->foreignId('diploma_id')->constrained('diplomas')->cascadeOnDelete();
+             $table->foreignId('lead_id')->constrained()->cascadeOnDelete();
+      $table->foreignId('diploma_id')->constrained()->cascadeOnDelete();
       $table->boolean('is_primary')->default(false);
       $table->timestamps();
-
       $table->unique(['lead_id','diploma_id']);
         });
     }
