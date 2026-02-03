@@ -44,6 +44,22 @@ class StudentStoreRequest extends FormRequest
       'profile.address' => 'nullable|string|max:255',
       'profile.exam_score' => 'nullable|numeric|min:0|max:999.99',
       'profile.notes' => 'nullable|string',
+
+
+      'profile.photo' => 'nullable|image|max:2048',
+'profile.info_file' => 'nullable|file|max:5120',
+'profile.identity_file' => 'nullable|file|max:5120',
+'profile.attendance_certificate' => 'nullable|file|max:5120',
+'profile.certificate_pdf' => 'nullable|mimes:pdf|max:5120',
+'profile.certificate_card' => 'nullable|file|max:5120',
+
+
+'profile.level' => 'nullable|string|max:100',
+'profile.stage_in_state' => 'nullable|string|max:120',
+'profile.job' => 'nullable|string|max:120',
+'profile.education_level' => 'nullable|string|max:120',
+'profile.message_to_send' => 'nullable|string',
+
     ];
   }
 }

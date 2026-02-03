@@ -69,10 +69,38 @@ class StudentController extends Controller
       $student = Student::create($data);
 
       // profile
-      $profileData = $request->input('profile', []);
-      if (!empty(array_filter($profileData))) {
-        $student->profile()->updateOrCreate(['student_id'=>$student->id], $profileData);
-      }
+     // ✅ إنشاء/تحديث Profile + رفع ملفات
+        $profileData = $request->input('profile', []);
+
+        // تعبئة الاسم بالعربي تلقائياً إذا لم يُرسل
+        if (empty($profileData['arabic_full_name'] ?? null)) {
+            $profileData['arabic_full_name'] = $student->full_name;
+        }
+
+        // ✅ Uploads
+        $uploadsMap = [
+        'photo' => ['col'=>'photo_path', 'dir'=>'students/photos'],
+        'info_file' => ['col'=>'info_file_path', 'dir'=>'students/info_files'],
+        'identity_file' => ['col'=>'identity_file_path', 'dir'=>'students/identity_files'],
+        'attendance_certificate' => ['col'=>'attendance_certificate_path', 'dir'=>'students/attendance_certificates'],
+        'certificate_pdf' => ['col'=>'certificate_pdf_path', 'dir'=>'students/certificates/pdf'],
+        'certificate_card' => ['col'=>'certificate_card_path', 'dir'=>'students/certificates/card'],
+        ];
+
+        foreach ($uploadsMap as $key => $cfg) {
+            if ($request->hasFile("profile.$key")) {
+                $profileData[$cfg['col']] = $request->file("profile.$key")->store($cfg['dir'], 'public');
+            }
+        }
+
+        // لا تنشئ Profile فارغ بدون بيانات
+        if (!empty(array_filter($profileData))) {
+            $student->profile()->updateOrCreate(
+                ['student_id' => $student->id],
+                $profileData
+            );
+        }
+
 
       // crm
       $crmData = $request->input('crm', []);

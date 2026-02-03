@@ -26,6 +26,24 @@ return new class extends Migration {
       $table->decimal('exam_score', 6, 2)->nullable();
       $table->text('notes')->nullable();
 
+
+
+        // ✅ بيانات تفصيلية (بدون تكرار غير ضروري)
+      $table->string('level')->nullable(); // المستوى
+      $table->string('stage_in_state')->nullable(); // ستاج/مرحلة بالولاية
+      $table->string('job')->nullable(); // العمل
+      $table->string('education_level')->nullable(); // المستوى التعليمي
+
+      // ✅ رسالة لاحقة للطالب
+      $table->text('message_to_send')->nullable();
+
+      // ✅ وثائق إضافية
+      $table->string('attendance_certificate_path')->nullable(); // شهادة حضور
+      $table->string('certificate_card_path')->nullable(); // شهادة كرتون
+ 
+
+
+
       $table->timestamps();
         });
     }

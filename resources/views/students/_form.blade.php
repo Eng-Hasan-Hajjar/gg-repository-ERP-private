@@ -139,50 +139,155 @@
     </div>
   </div>
 
-  {{-- ✅ Profile section --}}
-  <div class="col-12">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body">
-        <h6 class="fw-bold mb-3">الملف التفصيلي للطالب</h6>
+{{-- ✅ Profile section --}}
+<div class="col-12">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h6 class="fw-bold mb-3">الملف التفصيلي للطالب</h6>
 
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label fw-bold">الاسم بالعربي</label>
-            <input name="profile[arabic_full_name]" class="form-control" value="{{ $profile['arabic_full_name'] ?? '' }}">
-          </div>
-          <div class="col-md-3">
-            <label class="form-label fw-bold">الجنسية</label>
-            <input name="profile[nationality]" class="form-control" value="{{ $profile['nationality'] ?? '' }}">
-          </div>
-          <div class="col-md-3">
-            <label class="form-label fw-bold">تاريخ الولادة</label>
-            <input type="date" name="profile[birth_date]" class="form-control" value="{{ $profile['birth_date'] ?? '' }}">
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label fw-bold">الرقم الوطني</label>
-            <input name="profile[national_id]" class="form-control" value="{{ $profile['national_id'] ?? '' }}">
-          </div>
-
-          <div class="col-md-8">
-            <label class="form-label fw-bold">العنوان</label>
-            <input name="profile[address]" class="form-control" value="{{ $profile['address'] ?? '' }}">
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label fw-bold">العلامة</label>
-            <input type="number" step="0.01" name="profile[exam_score]" class="form-control" value="{{ $profile['exam_score'] ?? '' }}">
-          </div>
-
-          <div class="col-12">
-            <label class="form-label fw-bold">ملاحظات</label>
-            <textarea name="profile[notes]" class="form-control" rows="2">{{ $profile['notes'] ?? '' }}</textarea>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">الاسم بالعربي</label>
+          <input name="profile[arabic_full_name]" class="form-control"
+                 value="{{ $profile['arabic_full_name'] ?? '' }}">
+          <div class="text-muted small mt-1">
+            إذا لم تدخل الاسم بالعربي سنملؤه تلقائياً من الاسم الكامل.
           </div>
         </div>
 
+        <div class="col-md-3">
+          <label class="form-label fw-bold">الجنسية</label>
+          <input name="profile[nationality]" class="form-control"
+                 value="{{ $profile['nationality'] ?? '' }}">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">تاريخ التولد</label>
+          <input type="date" name="profile[birth_date]" class="form-control"
+                 value="{{ $profile['birth_date'] ?? '' }}">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">الرقم الوطني</label>
+          <input name="profile[national_id]" class="form-control"
+                 value="{{ $profile['national_id'] ?? '' }}">
+        </div>
+
+        <div class="col-md-8">
+          <label class="form-label fw-bold">العنوان</label>
+          <input name="profile[address]" class="form-control"
+                 value="{{ $profile['address'] ?? '' }}">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">المستوى</label>
+          <input name="profile[level]" class="form-control"
+                 value="{{ $profile['level'] ?? '' }}" placeholder="مثال: مبتدئ / متوسط / متقدم">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">ستاج/مرحلة بالولاية</label>
+          <input name="profile[stage_in_state]" class="form-control"
+                 value="{{ $profile['stage_in_state'] ?? '' }}">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">العمل</label>
+          <input name="profile[job]" class="form-control"
+                 value="{{ $profile['job'] ?? '' }}">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">المستوى التعليمي</label>
+          <input name="profile[education_level]" class="form-control"
+                 value="{{ $profile['education_level'] ?? '' }}" placeholder="ثانوي / جامعة / ...">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">العلامة الامتحانية</label>
+          <input type="number" step="0.01" name="profile[exam_score]" class="form-control"
+                 value="{{ $profile['exam_score'] ?? '' }}">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold">ملاحظات</label>
+          <textarea name="profile[notes]" class="form-control" rows="2">{{ $profile['notes'] ?? '' }}</textarea>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold">الرسالة التي سيتم ارسالها لاحقاً للطالب</label>
+          <textarea name="profile[message_to_send]" class="form-control" rows="2">{{ $profile['message_to_send'] ?? '' }}</textarea>
+        </div>
+
+        {{-- ✅ ملفات الطالب --}}
+        <div class="col-12"><hr class="my-2"></div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">صورة الطالب</label>
+          <input type="file" name="profile[photo]" class="form-control" accept="image/*">
+          @if(!empty($profile['photo_path']))
+            <div class="small mt-2">
+              <a target="_blank" href="{{ asset('storage/'.$profile['photo_path']) }}">عرض الصورة الحالية</a>
+            </div>
+          @endif
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">رابط/ملف المعلومات</label>
+          <input type="file" name="profile[info_file]" class="form-control" accept=".pdf,.doc,.docx,.png,.jpg">
+          @if(!empty($profile['info_file_path']))
+            <div class="small mt-2">
+              <a target="_blank" href="{{ asset('storage/'.$profile['info_file_path']) }}">عرض الملف الحالي</a>
+            </div>
+          @endif
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">ملف الهوية</label>
+          <input type="file" name="profile[identity_file]" class="form-control" accept=".pdf,.png,.jpg">
+          @if(!empty($profile['identity_file_path']))
+            <div class="small mt-2">
+              <a target="_blank" href="{{ asset('storage/'.$profile['identity_file_path']) }}">عرض الهوية الحالية</a>
+            </div>
+          @endif
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">شهادة حضور</label>
+          <input type="file" name="profile[attendance_certificate]" class="form-control" accept=".pdf,.png,.jpg">
+          @if(!empty($profile['attendance_certificate_path']))
+            <div class="small mt-2">
+              <a target="_blank" href="{{ asset('storage/'.$profile['attendance_certificate_path']) }}">عرض شهادة الحضور</a>
+            </div>
+          @endif
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">الشهادة PDF</label>
+          <input type="file" name="profile[certificate_pdf]" class="form-control" accept=".pdf">
+          @if(!empty($profile['certificate_pdf_path']))
+            <div class="small mt-2">
+              <a target="_blank" href="{{ asset('storage/'.$profile['certificate_pdf_path']) }}">عرض شهادة PDF</a>
+            </div>
+          @endif
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">الشهادة (كرتون)</label>
+          <input type="file" name="profile[certificate_card]" class="form-control" accept=".pdf,.png,.jpg">
+          @if(!empty($profile['certificate_card_path']))
+            <div class="small mt-2">
+              <a target="_blank" href="{{ asset('storage/'.$profile['certificate_card_path']) }}">عرض شهادة الكرتون</a>
+            </div>
+          @endif
+        </div>
+
       </div>
+
     </div>
   </div>
+</div>
+
 
 </div>
 
