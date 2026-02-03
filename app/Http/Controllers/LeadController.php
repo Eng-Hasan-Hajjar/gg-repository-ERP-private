@@ -71,7 +71,7 @@ class LeadController extends Controller
       return $lead;
     });
 
-    return redirect()->route('crm.leads.show',$lead)->with('success','تم إنشاء العميل المحتمل.');
+    return redirect()->route('leads.show',$lead)->with('success','تم إنشاء العميل المحتمل.');
   }
 
   public function show(Lead $lead)
@@ -107,13 +107,13 @@ class LeadController extends Controller
       }
     });
 
-    return redirect()->route('crm.leads.show',$lead)->with('success','تم تحديث العميل المحتمل.');
+    return redirect()->route('leads.show',$lead)->with('success','تم تحديث العميل المحتمل.');
   }
 
   public function destroy(Lead $lead)
   {
     $lead->delete();
-    return redirect()->route('crm.leads.index')->with('success','تم حذف العميل المحتمل.');
+    return redirect()->route('leads.index')->with('success','تم حذف العميل المحتمل.');
   }
 
   // ✅ تحويل إلى طالب

@@ -59,14 +59,29 @@
     </select>
   </div>
 
-  <div class="col-md-4">
-    <label class="form-label fw-bold">حالة الطالب</label>
-    <select name="status" class="form-select" required>
-      @foreach(['active','waiting','paid','withdrawn','failed','absent_exam','certificate_delivered','certificate_waiting','registration_ended','dismissed','frozen'] as $st)
-        <option value="{{ $st }}" @selected(old('status',$student->status ?? 'waiting')===$st)>{{ $st }}</option>
-      @endforeach
-    </select>
-  </div>
+ <div class="col-md-4">
+  <label class="form-label fw-bold">حالة الطالب</label>
+  <select name="status" class="form-select" required>
+    @foreach([
+      'active'                => 'نشط',
+      'waiting'               => 'بانتظار التأكيد',
+      'paid'                  => 'مدفوع',
+      'withdrawn'             => 'منسحب',
+      'failed'                => 'راسب',
+      'absent_exam'           => 'متغيب عن الامتحان',
+      'certificate_delivered' => 'تم تسليم الشهادة',
+      'certificate_waiting'   => 'بانتظار الشهادة',
+      'registration_ended'    => 'انتهى التسجيل',
+      'dismissed'             => 'مفصول',
+      'frozen'                => 'مجمّد'
+    ] as $st => $label)
+      <option value="{{ $st }}" @selected(old('status',$student->status ?? 'waiting') === $st)>
+        {{ $label }}
+      </option>
+    @endforeach
+  </select>
+</div>
+
 
   {{-- ✅ Multi Diplomas --}}
   <div class="col-12">
@@ -106,23 +121,41 @@
             <input name="crm[organization]" class="form-control" value="{{ $crm['organization'] ?? '' }}">
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label fw-bold">المصدر</label>
-            <select name="crm[source]" class="form-select">
-              @foreach(['ad','referral','social','website','expo','other'] as $src)
-                <option value="{{ $src }}" @selected(($crm['source'] ?? 'other')===$src)>{{ $src }}</option>
-              @endforeach
-            </select>
-          </div>
+<div class="col-md-3">
+  <label class="form-label fw-bold">المصدر</label>
+  <select name="crm[source]" class="form-select">
+    @foreach([
+      'ad'       => 'إعلان مدفوع',
+      'referral' => 'إحالة / توصية',
+      'social'   => 'وسائل التواصل الاجتماعي',
+      'website'  => 'الموقع الإلكتروني',
+      'expo'     => 'معرض / فعالية',
+      'other'    => 'أخرى'
+    ] as $src => $label)
+      <option value="{{ $src }}" @selected(($crm['source'] ?? 'other') === $src)>
+        {{ $label }}
+      </option>
+    @endforeach
+  </select>
+</div>
 
-          <div class="col-md-3">
-            <label class="form-label fw-bold">المرحلة</label>
-            <select name="crm[stage]" class="form-select">
-              @foreach(['new','follow_up','interested','registered','rejected','postponed'] as $st)
-                <option value="{{ $st }}" @selected(($crm['stage'] ?? 'registered')===$st)>{{ $st }}</option>
-              @endforeach
-            </select>
-          </div>
+<div class="col-md-3">
+  <label class="form-label fw-bold">المرحلة</label>
+  <select name="crm[stage]" class="form-select">
+    @foreach([
+      'new'        => 'جديد',
+      'follow_up'  => 'متابعة',
+      'interested' => 'مهتم',
+      'registered' => 'مسجل',
+      'rejected'   => 'مرفوض',
+      'postponed'  => 'مؤجل'
+    ] as $st => $label)
+      <option value="{{ $st }}" @selected(($crm['stage'] ?? 'registered') === $st)>
+        {{ $label }}
+      </option>
+    @endforeach
+  </select>
+</div>
 
           <div class="col-12">
             <label class="form-label fw-bold">الاحتياج</label>
