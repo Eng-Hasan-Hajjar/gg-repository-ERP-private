@@ -313,6 +313,9 @@
         <a href="{{ route('students.index') }}" class="grad-blue {{ $activeModule==='students' ? 'active' : '' }}" title="الطلاب">
           <i class="bi bi-people-fill fs-6"></i>
         </a>
+         <a href="{{ route('leads.index') }}" class="grad-green {{ $activeModule==='leads' ? 'active' : '' }}" title="CRM">
+          <i class="bi bi-headset fs-3"></i>
+        </a>
 
         <a href="{{ route('diplomas.index') }}" class="grad-purple {{ $activeModule==='diplomas' ? 'active' : '' }}" title="الدبلومات">
           <i class="bi bi-mortarboard-fill fs-6"></i>

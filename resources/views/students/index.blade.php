@@ -34,18 +34,20 @@
     <div class="col-6 col-md-3">
       <select name="status" class="form-select">
         <option value="">كل حالات الطالب</option>
-        @foreach(['active','waiting','paid','withdrawn','failed','absent_exam','certificate_delivered','certificate_waiting','registration_ended','dismissed','frozen'] as $st)
-          <option value="{{ $st }}" @selected(request('status')==$st)>{{ $st }}</option>
-        @endforeach
+     @foreach($statusOptions as $key => $label)
+  <option value="{{ $key }}" @selected(request('status')==$key)>{{ $label }}</option>
+@endforeach
+
       </select>
     </div>
 
     <div class="col-12 col-md-2">
       <select name="registration_status" class="form-select">
         <option value="">حالة التسجيل</option>
-        @foreach(['pending'=>'قيد الانتظار','confirmed'=>'مثبت','archived'=>'مؤرشف','dismissed'=>'مفصول','frozen'=>'مجمّد'] as $key=>$label)
-          <option value="{{ $key }}" @selected(request('registration_status')==$key)>{{ $label }}</option>
-        @endforeach
+  @foreach($registrationOptions as $key => $label)
+  <option value="{{ $key }}" @selected(request('registration_status')==$key)>{{ $label }}</option>
+@endforeach
+
       </select>
     </div>
 
@@ -81,11 +83,11 @@
             
             <td>{{ $s->branch->name ?? '-' }}</td>
             <td>{{ $s->level ?? '-' }}</td>
-            <td><span class="badge bg-secondary">{{ $s->status }}</span></td>
+            <td><span class="badge bg-secondary">{{ $s->status_ar }}</span></td>
             <td>
               @php($map = ['pending'=>'warning','confirmed'=>'success','archived'=>'secondary','dismissed'=>'danger','frozen'=>'info'])
-              <span class="badge bg-{{ $map[$s->registration_status] ?? 'secondary' }}">
-                {{ $s->registration_status }}
+              <span class="badge bg-{{ $map[$s->registration_ar] ?? 'secondary' }}">
+                {{ $s->registration_ar }}
               </span>
             </td>
             <td>

@@ -29,55 +29,38 @@ class StudentProfileController extends Controller
 
         return view('students.profile_edit', compact('student','profile'));
     }
+public function update(StudentProfileUpdateRequest $request, Student $student)
+{
+    if (!$student->is_confirmed) abort(403, 'Student not confirmed.');
 
-    public function update(StudentProfileUpdateRequest $request, Student $student)
-    {
-       // abort_unless(auth()->user()->can('students.extra.update'), 403);
+    $profile = $student->profile()->firstOrCreate(['student_id' => $student->id], []);
+    $data = $request->validated();
 
-        if (!$student->is_confirmed) {
-            abort(403, 'Student not confirmed.');
+    $uploadsMap = [
+        'photo' => ['col'=>'photo_path', 'dir'=>'students/photos'],
+        'info_file' => ['col'=>'info_file_path', 'dir'=>'students/info_files'],
+        'identity_file' => ['col'=>'identity_file_path', 'dir'=>'students/identity_files'],
+        'attendance_certificate' => ['col'=>'attendance_certificate_path', 'dir'=>'students/attendance_certificates'],
+        'certificate_pdf' => ['col'=>'certificate_pdf_path', 'dir'=>'students/certificates/pdf'],
+        'certificate_card' => ['col'=>'certificate_card_path', 'dir'=>'students/certificates/card'],
+    ];
+
+    foreach ($uploadsMap as $key => $cfg) {
+        if ($request->hasFile($key)) {
+
+            $old = $profile->{$cfg['col']} ?? null;
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
+            }
+
+            $data[$cfg['col']] = $request->file($key)->store($cfg['dir'], 'public');
         }
-
-        $profile = $student->profile()->firstOrCreate(['student_id' => $student->id], []);
-
-        $data = $request->validated();
-
-        // booleans من checkbox
-        $data['has_attendance_certificate'] = (bool)($request->boolean('has_attendance_certificate'));
-        $data['has_certificate_card']       = (bool)($request->boolean('has_certificate_card'));
-
-        // رفع الملفات (storage/app/public/students/...)
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('students/photos', 'public');
-            $data['photo_path'] = $path;
-        }
-
-        if ($request->hasFile('info_file')) {
-            $path = $request->file('info_file')->store('students/info_files', 'public');
-            $data['info_file_path'] = $path;
-        }
-
-        if ($request->hasFile('identity_file')) {
-            $path = $request->file('identity_file')->store('students/identity_files', 'public');
-            $data['identity_file_path'] = $path;
-        }
-
-        if ($request->hasFile('certificate_pdf')) {
-            $path = $request->file('certificate_pdf')->store('students/certificates', 'public');
-            $data['certificate_pdf_path'] = $path;
-            $data['has_certificate_pdf']  = true;
-        }
-
-        // إذا المستخدم أزال تفعيل PDF يدوياً
-        if (!$request->hasFile('certificate_pdf') && $request->input('has_certificate_pdf') === '0') {
-            $data['has_certificate_pdf'] = false;
-            $data['certificate_pdf_path'] = null;
-        }
-
-        $profile->update($data);
-
-        return redirect()
-            ->route('students.show', $student)
-            ->with('success', 'تم تحديث الملف التفصيلي للطالب بنجاح.');
     }
+
+    $profile->update($data);
+
+    return redirect()->route('students.show', $student)
+        ->with('success', 'تم تحديث الملف التفصيلي للطالب بنجاح.');
+}
+
 }
