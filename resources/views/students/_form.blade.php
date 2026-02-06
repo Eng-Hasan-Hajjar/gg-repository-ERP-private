@@ -332,6 +332,114 @@
           @endif
         </div>
 
+
+
+       
+
+      <hr>
+<h5 class="fw-bold">تفاصيل وملفات حسب الدبلومة</h5>
+
+@foreach($student->diplomas as $d)
+
+<div class="card p-3 mb-3 border">
+
+  <h6 class="fw-bold">{{ $d->name }}</h6>
+
+  <input type="hidden" name="diplomas[{{ $d->id }}][id]" value="{{ $d->id }}">
+
+  <div class="row g-3">
+
+    <div class="col-md-3">
+      <label>الحالة في الدبلومة</label>
+      <select name="diplomas[{{ $d->id }}][status]" class="form-select">
+        <option value="active" @selected($d->pivot->status=='active')>نشط</option>
+        <option value="waiting" @selected($d->pivot->status=='waiting')>بانتظار</option>
+        <option value="finished" @selected($d->pivot->status=='finished')>منتهي</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label>التقييم (1–5)</label>
+      <input type="number" min="1" max="5"
+             name="diplomas[{{ $d->id }}][rating]"
+             value="{{ $d->pivot->rating }}"
+             class="form-control">
+    </div>
+
+    <div class="col-md-3">
+      <label>تاريخ انتهاء الدبلومة</label>
+      <input type="date"
+             name="diplomas[{{ $d->id }}][ended_at]"
+             value="{{ $d->pivot->ended_at }}"
+             class="form-control">
+    </div>
+
+    <div class="col-md-3">
+      <label>تم تسليم الشهادة؟</label>
+      <input type="checkbox"
+             name="diplomas[{{ $d->id }}][certificate_delivered]"
+             @checked($d->pivot->certificate_delivered)>
+    </div>
+
+    <div class="col-md-6">
+      <label>ملاحظات خاصة بهذه الدبلومة</label>
+      <textarea name="diplomas[{{ $d->id }}][notes]"
+                class="form-control" rows="2">{{ $d->pivot->notes }}</textarea>
+    </div>
+
+    <div class="col-md-4">
+      <label>شهادة الحضور</label>
+      <input type="file"
+             name="diplomas[{{ $d->id }}][attendance_certificate]"
+             class="form-control">
+
+      @if($d->pivot->attendance_certificate_path)
+        <a target="_blank"
+           href="{{ asset('storage/'.$d->pivot->attendance_certificate_path) }}">
+           عرض الحالي
+        </a>
+      @endif
+    </div>
+
+    <div class="col-md-4">
+      <label>الشهادة PDF</label>
+      <input type="file"
+             name="diplomas[{{ $d->id }}][certificate_pdf]"
+             class="form-control" accept=".pdf">
+
+      @if($d->pivot->certificate_pdf_path)
+        <a target="_blank"
+           href="{{ asset('storage/'.$d->pivot->certificate_pdf_path) }}">
+           عرض الحالي
+        </a>
+      @endif
+    </div>
+
+    <div class="col-md-4">
+      <label>كرت الشهادة</label>
+      <input type="file"
+             name="diplomas[{{ $d->id }}][certificate_card]"
+             class="form-control">
+
+      @if($d->pivot->certificate_card_path)
+        <a target="_blank"
+           href="{{ asset('storage/'.$d->pivot->certificate_card_path) }}">
+           عرض الحالي
+        </a>
+      @endif
+    </div>
+
+  </div>
+</div>
+
+@endforeach
+
+
+
+
+
+
+
       </div>
 
     </div>

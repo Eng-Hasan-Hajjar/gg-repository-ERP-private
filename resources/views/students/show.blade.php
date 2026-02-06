@@ -5,83 +5,100 @@
 
 @push('styles')
 <style>
-  .page-head{
-    background: rgba(255,255,255,.75);
-    border: 1px solid rgba(226,232,240,.92);
-    border-radius: 18px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 20px 60px rgba(2,6,23,.08);
-    padding: 16px;
-  }
-  .page-title{ font-weight: 900; margin: 0; font-size: 1.15rem; }
-  .meta-line{ color: var(--namaa-muted); font-weight: 700; line-height: 1.9; }
+  :root{
+  --namaa-blue:#0ea5e9;
+  --namaa-green:#10b981;
+  --namaa-ink:#0f172a;
+  --namaa-muted:#64748b;
+  --namaa-soft-bg:#f8fafc;
+}
+/* ===== رأس الصفحة ===== */
+.page-head{
+  background: rgba(255,255,255,.75);
+  border: 1px solid rgba(226,232,240,.92);
+  border-radius: 18px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 60px rgba(2,6,23,.08);
+  padding: 16px;
+}
 
-  .glass-card{
-    background: rgba(255,255,255,.82);
-    border: 1px solid rgba(226,232,240,.92);
-    border-radius: 18px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 18px 55px rgba(2,6,23,.08);
-    overflow: hidden;
-  }
+/* ===== كارد زجاجي أساسي ===== */
+.glass-card{
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(226,232,240,.95);
+  border-radius: 18px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 18px 55px rgba(2,6,23,.08);
+  overflow: hidden;
+}
 
-  .card-title{ font-weight: 900; margin: 0; font-size: 1.02rem; }
-  .soft-divider{ border-top: 1px solid rgba(226,232,240,.9); margin: 14px 0; }
+/* ===== رأس ملوّن لكل قسم (هوية نماء) ===== */
+.section-header{
+  background: linear-gradient(90deg, var(--namaa-blue) 0%, var(--namaa-green) 100%);
+  color:#fff;
+  padding: 12px 16px;
+  font-weight: 900;
+  border-radius: 16px 16px 0 0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
 
-  .btn-pill{ border-radius: 999px !important; font-weight: 900; padding: 10px 14px; }
+/* ===== جسم القسم ===== */
+.section-body{
+  padding: 16px;
+}
 
-  .btn-namaa{
-    border: 0;
-    font-weight: 900;
-    border-radius: 999px;
-    padding: 10px 14px;
-    background: linear-gradient(90deg, var(--namaa-blue) 0%, var(--namaa-green) 100%);
-    color: #fff !important;
-    box-shadow: 0 18px 35px rgba(16,185,129,.18), 0 16px 26px rgba(14,165,233,.14);
-  }
-  .btn-namaa:hover{ filter: brightness(.96); }
+/* ===== أزواج المفتاح/القيمة ===== */
+.kv{
+  display:grid;
+  grid-template-columns: 170px 1fr;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px dashed rgba(226,232,240,.95);
+}
+.kv:last-child{border-bottom:0;}
+.k{color:var(--namaa-muted);font-weight:800;}
+.v{font-weight:800;color:var(--namaa-ink);}
 
-  .badge-soft{
-    border-radius: 999px;
-    padding: 7px 10px;
-    font-weight: 900;
-    font-size: .82rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid rgba(226,232,240,.95);
-    background: rgba(255,255,255,.85);
-    color: var(--namaa-ink);
-  }
-  .badge-soft.success{ background: rgba(16,185,129,.10); border-color: rgba(16,185,129,.22); color: #0f766e; }
-  .badge-soft.gray{ background: rgba(100,116,139,.10); border-color: rgba(100,116,139,.22); color: #334155; }
-  .badge-soft.warn{ background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.25); color: #92400e; }
+/* ===== الصورة الشخصية ===== */
+.avatar{
+  width:74px;
+  height:74px;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid rgba(226,232,240,.95);
+  background:rgba(248,250,252,.9);
+  display:grid;
+  place-items:center;
+}
 
-  .kv{
-    display: grid;
-    grid-template-columns: 170px 1fr;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px dashed rgba(226,232,240,.95);
-  }
-  .kv:last-child{ border-bottom: 0; }
-  .k{ color: var(--namaa-muted); font-weight: 800; }
-  .v{ font-weight: 800; color: var(--namaa-ink); word-break: break-word; }
+/* ===== أزرار مستديرة ===== */
+.btn-pill{
+  border-radius:999px;
+  font-weight:900;
+}
 
-  .avatar{
-    width: 74px;
-    height: 74px;
-    border-radius: 999px;
-    overflow: hidden;
-    border: 1px solid rgba(226,232,240,.95);
-    background: rgba(248,250,252,.9);
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-  }
-  .avatar img{ width:100%; height:100%; object-fit:cover; }
+/* ===== زر نماء ===== */
+.btn-namaa{
+  border:0;
+  background:linear-gradient(90deg, var(--namaa-blue), var(--namaa-green));
+  color:#fff !important;
+  box-shadow:0 18px 35px rgba(16,185,129,.18);
+}
 
-  .file-btn{ border-radius: 14px; font-weight: 900; }
+/* ===== شارات الحالة ===== */
+.badge-soft{
+  border-radius:999px;
+  padding:7px 10px;
+  font-weight:900;
+  border:1px solid rgba(226,232,240,.95);
+  background:#fff;
+}
+
+.badge-soft.success{background:rgba(16,185,129,.12);color:#0f766e;}
+.badge-soft.warn{background:rgba(245,158,11,.12);color:#92400e;}
+.badge-soft.gray{background:rgba(100,116,139,.12);color:#334155;}
 
   @media (max-width: 575.98px){
     .kv{ grid-template-columns: 1fr; gap: 6px; }
@@ -168,9 +185,12 @@
 
   <div class="col-12 col-lg-6">
     <div class="glass-card h-100">
+          <div class="section-header">
+      <i class="bi bi-person-vcard"></i>
+      البيانات الأساسية
+    </div>
       <div class="p-3 p-md-4">
-        <h6 class="card-title mb-2">البيانات الأساسية</h6>
-        <div class="soft-divider"></div>
+       
 
         <div class="kv"><div class="k">الاسم</div><div class="v">{{ $student->first_name ?? '-' }}</div></div>
         <div class="kv"><div class="k">الكنية</div><div class="v">{{ $student->last_name ?? '-' }}</div></div>
@@ -203,8 +223,12 @@
 
   <div class="col-12 col-lg-6">
     <div class="glass-card h-100">
+          <div class="section-header">
+      <i class="bi bi-headset"></i>
+      بيانات CRM
+    </div>
       <div class="p-3 p-md-4">
-        <h6 class="card-title mb-2">بيانات CRM (الاستشارات)</h6>
+       
         <div class="soft-divider"></div>
 
         @if(!$student->crmInfo)
@@ -287,7 +311,7 @@
                   <h6 class="card-title mb-2">معلومات إضافية</h6>
                   <div class="soft-divider"></div>
 
-                  <div class="kv"><div class="k">المستوى</div><div class="v">{{ $p->level ?? '-' }}</div></div>
+                  <div class="kv"><div class="k">مستوى اللغة</div><div class="v">{{ $p->level ?? '-' }}</div></div>
                   <div class="kv"><div class="k">ستاج/مرحلة بالولاية</div><div class="v">{{ $p->stage_in_state ?? '-' }}</div></div>
                   <div class="kv"><div class="k">المستوى التعليمي</div><div class="v">{{ $p->education_level ?? '-' }}</div></div>
                   <div class="kv"><div class="k">العلامة الامتحانية</div><div class="v">{{ $p->exam_score ?? '-' }}</div></div>
@@ -412,6 +436,114 @@
   </div>
 </div>
 {{-- ===================== End Files Section ===================== --}}
+<h6 class="mt-4 fw-bold">تفاصيل الدبلومات</h6>
+
+@foreach($student->diplomas as $d)
+
+<div class="glass-card mb-3 p-3">
+
+  <h6>{{ $d->name }}</h6>
+
+  <div class="kv">
+    <div class="k">الحالة</div>
+      <div class="v">
+  {{ $d->pivot->status_ar }}
+</div>
+
+
+  </div>
+
+<div class="kv">
+  <div class="k">التقييم</div>
+  <div class="v">
+
+    <span 
+      class="star-rating"
+      data-rating="{{ $d->pivot->rating ?? 0 }}"
+      style="font-size: 1.35rem; color: #f59e0b;">
+    </span>
+
+    <script>
+      (function(){
+        const el = document.currentScript.previousElementSibling;
+        const r = parseInt(el.dataset.rating || 0);
+
+        let stars = '';
+        for(let i=1; i<=5; i++){
+          stars += i <= r ? '★' : '☆';
+        }
+       el.innerText = stars + "  (" + r + "/5)";
+
+      })();
+    </script>
+
+  </div>
+</div>
+
+
+  <div class="kv">
+    <div class="k">تاريخ الانتهاء</div>
+    <div class="v">{{ $d->pivot->ended_at ?? '-' }}</div>
+  </div>
+
+  <div class="kv">
+    <div class="k">تسليم الشهادة</div>
+    <div class="v">
+      {{ $d->pivot->certificate_delivered ? 'نعم' : 'لا' }}
+    </div>
+  </div>
+
+  <div class="kv">
+    <div class="k">شهادة الحضور</div>
+    <div class="v">
+      @if($d->pivot->attendance_certificate_path)
+        <a target="_blank"
+           href="{{ asset('storage/'.$d->pivot->attendance_certificate_path) }}">
+           فتح الملف
+        </a>
+      @else
+        غير موجودة
+      @endif
+    </div>
+  </div>
+
+  <div class="kv">
+    <div class="k">الشهادة PDF</div>
+    <div class="v">
+      @if($d->pivot->certificate_pdf_path)
+        <a target="_blank"
+           href="{{ asset('storage/'.$d->pivot->certificate_pdf_path) }}">
+           فتح الملف
+        </a>
+      @else
+        غير موجودة
+      @endif
+    </div>
+  </div>
+
+  <div class="kv">
+    <div class="k">كرت الشهادة</div>
+    <div class="v">
+      @if($d->pivot->certificate_card_path)
+        <a target="_blank"
+           href="{{ asset('storage/'.$d->pivot->certificate_card_path) }}">
+           فتح الملف
+        </a>
+      @else
+        غير موجود
+      @endif
+    </div>
+  </div>
+
+  <div class="kv">
+    <div class="k">ملاحظات</div>
+    <div class="v">{{ $d->pivot->notes ?? '-' }}</div>
+  </div>
+
+</div>
+
+@endforeach
+
 
 
                   </div>

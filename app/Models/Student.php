@@ -26,7 +26,15 @@ class Student extends Model
 
   public function diplomas() {
     return $this->belongsToMany(Diploma::class, 'diploma_student')
-      ->withPivot(['is_primary','enrolled_at','status','notes'])
+      ->withPivot(['is_primary','enrolled_at','status','notes'    ,  'has_attendance_certificate',
+        'attendance_certificate_path',
+        'certificate_pdf_path',
+        'certificate_card_path',
+               'rating',
+        
+        'ended_at',
+        'certificate_delivered'
+        ])
       ->withTimestamps();
   }
 

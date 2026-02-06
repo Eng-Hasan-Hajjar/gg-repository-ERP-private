@@ -5,7 +5,7 @@
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-3 gap-2">
   <div>
     <h4 class="mb-1 fw-bold">الملف التفصيلي — {{ $student->full_name }}</h4>
-    <div class="text-muted">رقم جامعي: <code>{{ $student->university_id }}</code></div>
+    <div class="text-muted">رقم : <code>{{ $student->university_id }}</code></div>
   </div>
 
   <a class="btn btn-outline-dark rounded-pill px-4 fw-bold" href="{{ route('students.show',$student) }}">
@@ -21,7 +21,7 @@
 
       <div class="row g-3">
         <div class="col-md-6">
-          <label class="form-label fw-bold">الاسم بالعربي</label>
+          <label class="form-label fw-bold">الاسم باللاتيني</label>
           <input name="arabic_full_name" class="form-control" value="{{ old('arabic_full_name', $profile->arabic_full_name) }}">
         </div>
 
@@ -40,30 +40,8 @@
           <input name="nationality" class="form-control" value="{{ old('nationality', $profile->nationality) }}">
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label fw-bold">العلامة الامتحانية</label>
-          <input type="number" step="0.01" name="exam_score" class="form-control" value="{{ old('exam_score', $profile->exam_score) }}" placeholder="0 - 100">
-        </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-bold">العنوان</label>
-          <input name="address" class="form-control" value="{{ old('address', $profile->address) }}">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label fw-bold">الموقع</label>
-          <input name="location" class="form-control" value="{{ old('location', $profile->location) }}">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label fw-bold">المرحلة (Stage)</label>
-          <input name="stage" class="form-control" value="{{ old('stage', $profile->stage) }}">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label fw-bold">العمل</label>
-          <input name="work" class="form-control" value="{{ old('work', $profile->work) }}">
-        </div>
+        
 
         <div class="col-md-4">
           <label class="form-label fw-bold">المستوى التعليمي</label>
@@ -116,28 +94,11 @@
             </div>
           @endif
 
-          <input type="hidden" name="has_certificate_pdf" value="0">
         </div>
 
-        <div class="col-md-4 d-flex align-items-center">
-          <div class="form-check mt-4">
-            <input class="form-check-input" type="checkbox" id="has_attendance_certificate" name="has_attendance_certificate" value="1"
-                   @checked(old('has_attendance_certificate', $profile->has_attendance_certificate))>
-            <label class="form-check-label fw-bold" for="has_attendance_certificate">
-              شهادة حضور موجودة؟
-            </label>
-          </div>
-        </div>
+ 
 
-        <div class="col-md-4 d-flex align-items-center">
-          <div class="form-check mt-4">
-            <input class="form-check-input" type="checkbox" id="has_certificate_card" name="has_certificate_card" value="1"
-                   @checked(old('has_certificate_card', $profile->has_certificate_card))>
-            <label class="form-check-label fw-bold" for="has_certificate_card">
-              شهادة كرتون موجودة؟
-            </label>
-          </div>
-        </div>
+
 
         <div class="col-12">
           <label class="form-label fw-bold">رسالة للطالب (لاحقًا)</label>

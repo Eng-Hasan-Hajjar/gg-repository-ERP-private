@@ -170,31 +170,51 @@ public function show(Student $student)
 
     $p = $student->profile;
 
-    // ✅ WhatsApp link (digits only)
     $waDigits = $student->whatsapp ? preg_replace('/\D+/', '', $student->whatsapp) : null;
     $waLink   = $waDigits ? "https://wa.me/{$waDigits}" : null;
 
-    // ✅ ملفات البروفايل (روابط + exists)
     $files = $this->buildProfileFiles($p);
 
-    // ✅ خرائط ترجمة عربية للقيم المخزنة بالإنجليزي
+    $diplomaFiles = $this->buildDiplomaFiles($student);
+
     $labels = $this->studentArabicLabels();
 
-    // ✅ قيم جاهزة للعرض (عربي)
-    $status_ar        = $labels['student_status'][$student->status] ?? ($student->status ?? '-');
-    $registration_ar  = $labels['registration_status'][$student->registration_status] ?? ($student->registration_status ?? '-');
-    $mode_ar          = $labels['mode'][$student->mode] ?? ($student->mode ?? '-');
+    $status_ar = $labels['student_status'][$student->status] ?? ($student->status ?? '-');
+    $registration_ar = $labels['registration_status'][$student->registration_status] ?? '-';
+    $mode_ar = $labels['mode'][$student->mode] ?? '-';
 
-    $crm_source_ar    = $student->crmInfo ? ($labels['crm_source'][$student->crmInfo->source] ?? ($student->crmInfo->source ?? '-')) : '-';
-    $crm_stage_ar     = $student->crmInfo ? ($labels['crm_stage'][$student->crmInfo->stage] ?? ($student->crmInfo->stage ?? '-')) : '-';
+    $crm_source_ar = $student->crmInfo
+        ? ($labels['crm_source'][$student->crmInfo->source] ?? '-')
+        : '-';
 
-    // ✅ ممكن كمان تعرّب الدبلوم/الفرع إذا بدك (بس غالباً أسماؤهم عربية أصلاً)
+    $crm_stage_ar = $student->crmInfo
+        ? ($labels['crm_stage'][$student->crmInfo->stage] ?? '-')
+        : '-';
+
+
+        // ======= 🔹 تعريب حالة الدبلومة (خاص بالـ Pivot) =======
+$diplomaStatusMap = [
+    'active'   => 'نشط',
+    'waiting'  => 'بانتظار',
+    'finished' => 'منتهي',
+];
+
+$student->diplomas->transform(function ($d) use ($diplomaStatusMap) {
+    $d->pivot->status_ar =
+        $diplomaStatusMap[$d->pivot->status] ?? $d->pivot->status;
+
+    return $d;
+});
+
+
+
+
 
     return view('students.show', compact(
-        'student', 'p', 'waLink', 'files',
-        'labels',
-        'status_ar', 'registration_ar', 'mode_ar',
-        'crm_source_ar', 'crm_stage_ar'
+        'student','p','waLink','files',
+        'diplomaFiles',
+        'status_ar','registration_ar','mode_ar',
+        'crm_source_ar','crm_stage_ar'
     ));
 }
 
@@ -297,6 +317,59 @@ private function studentArabicLabels(): array
     DB::transaction(function () use ($request,$student,$data) {
 
       $student->update($data);
+
+ 
+      
+
+// ========== ✅ حفظ بيانات كل دبلومة (ملفات + حقول نصية) ==========
+foreach ($request->input('diplomas', []) as $did => $data) {
+
+    // 1) ملفات الدبلومة
+    if ($request->hasFile("diplomas.$did.attendance_certificate")) {
+        $path = $request->file("diplomas.$did.attendance_certificate")
+            ->store("students/diplomas/{$student->id}", 'public');
+
+        $student->diplomas()->updateExistingPivot($did, [
+            'attendance_certificate_path' => $path,
+            'has_attendance_certificate' => true,
+        ]);
+    }
+
+    if ($request->hasFile("diplomas.$did.certificate_pdf")) {
+        $path = $request->file("diplomas.$did.certificate_pdf")
+            ->store("students/diplomas/{$student->id}", 'public');
+
+        $student->diplomas()->updateExistingPivot($did, [
+            'certificate_pdf_path' => $path,
+        ]);
+    }
+
+    if ($request->hasFile("diplomas.$did.certificate_card")) {
+        $path = $request->file("diplomas.$did.certificate_card")
+            ->store("students/diplomas/{$student->id}", 'public');
+
+        $student->diplomas()->updateExistingPivot($did, [
+            'certificate_card_path' => $path,
+        ]);
+    }
+
+    // 2) حفظ الحقول النصية + التاريخ + التقييم + التسليم
+    $student->diplomas()->updateExistingPivot($did, [
+        'status' => $data['status'] ?? 'active',
+        'rating' => $data['rating'] ?? null,
+        'notes'  => $data['notes'] ?? null,
+        'ended_at' => $data['ended_at'] ?? null,
+        'certificate_delivered' => isset($data['certificate_delivered']),
+    ]);
+}
+
+
+
+
+
+
+
+
 $this->saveProfileWithUploads($student, $request);
 
       $profileData = $request->input('profile', []);
@@ -319,9 +392,24 @@ $this->saveProfileWithUploads($student, $request);
             'status'      => 'active',
           ];
         }
-        $student->diplomas()->sync($sync);
+        
+        $student->diplomas()->syncWithoutDetaching($sync);
+
+        //   $student->diplomas()->sync($sync);
       }
     });
+
+/*
+
+    foreach ($request->input('diplomas', []) as $did => $data) {
+   $student->diplomas()->updateExistingPivot($did, [
+      'status' => $data['status'] ?? 'active',
+   ]);
+}
+
+*/
+
+
 
     return redirect()->route('students.show',$student)->with('success','تم تحديث الطالب بنجاح.');
   }
@@ -382,4 +470,35 @@ private function saveProfileWithUploads(Student $student, \Illuminate\Http\Reque
         $profile->update($profileData);
     }
 }
+
+
+
+
+private function buildDiplomaFiles($student)
+{
+    $disk = Storage::disk('public');
+
+    $out = [];
+
+    foreach ($student->diplomas as $d) {
+
+        $path = $d->pivot->attendance_certificate_path;
+
+        $exists = ($path && $disk->exists($path));
+
+        $out[$d->id] = [
+            'exists' => $exists,
+            'url' => $exists ? $disk->url($path) : null,
+            'status' => $d->pivot->status,
+            'has_attendance' => $d->pivot->has_attendance_certificate,
+        ];
+    }
+
+    return $out;
+}
+
+
+
+
+
 }

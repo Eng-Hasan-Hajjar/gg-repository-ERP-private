@@ -21,6 +21,24 @@ return new class extends Migration
       $table->string('status')->default('active');
       $table->text('notes')->nullable();
 
+
+
+        $table->boolean('has_attendance_certificate')->default(false);
+    $table->string('attendance_certificate_path')->nullable();
+    $table->string('certificate_pdf_path')->nullable();
+    $table->string('certificate_card_path')->nullable();
+
+
+
+
+        $table->tinyInteger('rating')->nullable(); // التقييم 1-5
+    
+    $table->date('ended_at')->nullable(); // تاريخ انتهاء الدبلومة
+    $table->boolean('certificate_delivered')->default(false); // هل سُلّمت الشهادة؟
+
+
+
+
       $table->timestamps();
       $table->unique(['student_id','diploma_id']);
         });
