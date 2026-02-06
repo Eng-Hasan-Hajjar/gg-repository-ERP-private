@@ -22,7 +22,7 @@ return new class extends Migration
 
       $table->string('phone')->nullable();
       $table->string('whatsapp')->nullable();
-      $table->string('email')->nullable();
+     
 
       $table->foreignId('branch_id')->constrained()->cascadeOnDelete();
 

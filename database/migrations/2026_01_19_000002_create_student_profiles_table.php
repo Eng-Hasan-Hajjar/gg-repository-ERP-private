@@ -31,7 +31,7 @@ return new class extends Migration {
         // ✅ بيانات تفصيلية (بدون تكرار غير ضروري)
       $table->string('level')->nullable(); // المستوى
       $table->string('stage_in_state')->nullable(); // ستاج/مرحلة بالولاية
-      $table->string('job')->nullable(); // العمل
+     
       $table->string('education_level')->nullable(); // المستوى التعليمي
 
       // ✅ رسالة لاحقة للطالب

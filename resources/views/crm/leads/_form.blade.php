@@ -26,6 +26,31 @@
     <label class="form-label fw-bold">العمر</label>
     <input type="number" name="age" class="form-control" value="{{ old('age',$lead->age ?? '') }}">
   </div>
+  <div class="col-md-4">
+    <label class="form-label fw-bold">الإيميل</label>
+    <input name="email" type="email" class="form-control" value="{{ old('email',$lead->email ?? '') }}">
+  </div>
+
+    <div class="col-md-3">
+      <label class="form-label fw-bold">العمل</label>
+     <input name="job" class="form-control"
+       value="{{ old('job', $lead->job ?? '') }}">
+
+    </div>
+    <div class="col-md-4">
+  <label class="form-label fw-bold">البلد</label>
+  <input name="country" class="form-control" value="{{ old('country',$lead->country ?? '') }}">
+</div>
+
+<div class="col-md-4">
+  <label class="form-label fw-bold">المحافظة</label>
+  <input name="province" class="form-control" value="{{ old('province',$lead->province ?? '') }}">
+</div>
+
+<div class="col-md-4">
+  <label class="form-label fw-bold">الدراسة</label>
+  <input name="study" class="form-control" value="{{ old('study',$lead->study ?? '') }}">
+</div>
 
   <div class="col-md-6">
     <label class="form-label fw-bold">مكان السكن</label>

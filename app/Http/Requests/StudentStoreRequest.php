@@ -16,7 +16,7 @@ class StudentStoreRequest extends FormRequest
       'full_name'  => 'required|string|max:190',
       'phone'      => 'nullable|string|max:50',
       'whatsapp'   => 'nullable|string|max:120',
-      'email'      => 'nullable|email|max:190',
+     
 
       'branch_id'  => 'required|exists:branches,id',
       'mode'       => 'required|in:onsite,online',
@@ -47,18 +47,18 @@ class StudentStoreRequest extends FormRequest
 
 
       'profile.photo' => 'nullable|image|max:2048',
-'profile.info_file' => 'nullable|file|max:5120',
-'profile.identity_file' => 'nullable|file|max:5120',
-'profile.attendance_certificate' => 'nullable|file|max:5120',
-'profile.certificate_pdf' => 'nullable|mimes:pdf|max:5120',
-'profile.certificate_card' => 'nullable|file|max:5120',
+      'profile.info_file' => 'nullable|file|max:5120',
+      'profile.identity_file' => 'nullable|file|max:5120',
+      'profile.attendance_certificate' => 'nullable|file|max:5120',
+      'profile.certificate_pdf' => 'nullable|mimes:pdf|max:5120',
+      'profile.certificate_card' => 'nullable|file|max:5120',
 
 
-'profile.level' => 'nullable|string|max:100',
-'profile.stage_in_state' => 'nullable|string|max:120',
-'profile.job' => 'nullable|string|max:120',
-'profile.education_level' => 'nullable|string|max:120',
-'profile.message_to_send' => 'nullable|string',
+      'profile.level' => 'nullable|string|max:100',
+      'profile.stage_in_state' => 'nullable|string|max:120',
+      
+      'profile.education_level' => 'nullable|string|max:120',
+      'profile.message_to_send' => 'nullable|string',
 
     ];
   }

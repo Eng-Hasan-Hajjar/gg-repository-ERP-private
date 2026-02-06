@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Lead;
 use App\Models\Branch;
+use App\Models\User;
+
 use App\Models\Diploma;
 use Illuminate\Support\Str;
 
@@ -24,12 +26,15 @@ class LeadSeeder extends Seeder
     $stages  = ['new','follow_up','interested','registered','rejected','postponed'];
 
     for ($i=1; $i<=60; $i++) {
+      $defaultUser = User::first();
+
       $branch = $branches->random();
 
       $lead = Lead::create([
         'full_name' => 'عميل محتمل '.$i.' '.Str::random(4),
         'phone' => '+9639'.rand(10000000,99999999),
         'whatsapp' => '+9639'.rand(10000000,99999999),
+          'email'      => "student{$i}@test.local",
         'first_contact_date' => now()->subDays(rand(0,60))->toDateString(),
         'residence' => ['حلب','ادلب','اسطنبول','مرسين','بورصة','عنتاب','كليس','اونلاين'][rand(0,7)],
         'age' => rand(16,45),
@@ -40,7 +45,8 @@ class LeadSeeder extends Seeder
         'registration_status' => 'pending',
         'notes' => 'ملاحظات افتراضية للعميل '.$i,
         'branch_id' => $branch->id,
-        'created_by' => null,
+        'created_by' => $defaultUser?->id,
+
       ]);
 
       // attach 1-3 diplomas

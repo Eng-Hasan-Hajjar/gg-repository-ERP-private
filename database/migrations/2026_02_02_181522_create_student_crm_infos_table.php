@@ -14,6 +14,8 @@ return new class extends Migration {
 
       $table->date('first_contact_date')->nullable();
       $table->string('residence')->nullable();
+    $table->string('email')->nullable();
+     $table->string('job')->nullable(); // العمل
       $table->unsignedTinyInteger('age')->nullable();
       $table->string('organization')->nullable();
 
@@ -24,6 +26,15 @@ return new class extends Migration {
       $table->timestamp('converted_at')->nullable();
 
       $table->text('notes')->nullable();
+
+
+              $table->string('country')->nullable();
+        $table->string('province')->nullable();
+        $table->string('study')->nullable();
+        $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+
+
+        
       $table->timestamps();
         });
     }

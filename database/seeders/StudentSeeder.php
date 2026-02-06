@@ -34,7 +34,7 @@ class StudentSeeder extends Seeder
                 'first_name' => $first,
                 'last_name'  => $last,
                 'full_name'  => "$first $last",
-                'email'      => "student{$i}@test.local",
+              
                 'phone'      => '0096399' . rand(1000000, 9999999),
                 'whatsapp'   => '0096399' . rand(1000000, 9999999),
                 'branch_id'  => $branches->random()->id,

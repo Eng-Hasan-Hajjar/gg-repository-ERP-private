@@ -284,9 +284,17 @@ Route::put('exams/{exam}/students', [ExamEnrollmentController::class,'update'])
       ->name('leads.followups.destroy');
 
     // Optional reports
-    Route::get('reports', [LeadReportController::class,'index'])->name('crm.reports.index');
+    Route::get('crm_lead_reports', [LeadReportController::class,'index'])->name('crm.reports.index');
  
 
+
+    use App\Http\Controllers\Reports\ReportsController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/reports/pdf', [ReportsController::class, 'exportPdf'])->name('reports.pdf');
+    Route::get('/reports/excel', [ReportsController::class, 'exportExcel'])->name('reports.excel');
+});
 
 
 require __DIR__.'/auth.php';

@@ -190,7 +190,6 @@
           </div>
         </div>
 
-        <div class="kv"><div class="k">الإيميل</div><div class="v">{{ $student->email ?? '-' }}</div></div>
         <div class="kv"><div class="k">الفرع</div><div class="v">{{ $student->branch->name ?? '-' }}</div></div>
         <div class="kv"><div class="k">نوع الطالب</div><div class="v">{{ $mode_ar ?? '-' }}</div></div>
         <div class="kv"><div class="k">حالة الطالب</div><div class="v">{{  $status_ar ?? '-' }}</div></div>
@@ -219,6 +218,34 @@
           <div class="kv"><div class="k">الجهة/المؤسسة</div><div class="v">{{ $student->crmInfo->organization ?? '-' }}</div></div>
           <div class="kv"><div class="k">المصدر</div><div class="v">{{ $crm_source_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">المرحلة</div><div class="v">{{ $crm_stage_ar  ?? '-' }}</div></div>
+           <div class="kv"><div class="k">الإيميل</div><div class="v">{{ $student->crmInfo->email ?? '-' }}</div></div>
+           <div class="kv"><div class="k">العمل</div><div class="v">{{ $student->crmInfo->job ?? '-' }}</div></div>
+
+           <div class="kv">
+              <div class="k">البلد</div>
+              <div class="v">{{ $student->crmInfo->country ?? '-' }}</div>
+            </div>
+
+            <div class="kv">
+              <div class="k">المحافظة</div>
+              <div class="v">{{ $student->crmInfo->province ?? '-' }}</div>
+            </div>
+
+            <div class="kv">
+              <div class="k">الدراسة</div>
+              <div class="v">{{ $student->crmInfo->study ?? '-' }}</div>
+            </div>
+
+            <div class="kv">
+              <div class="k">مسؤول التواصل</div>
+              <div class="v">
+                {{ $student->crmInfo->creator->name ?? $student->crmInfo->creator->email ?? '-' }}
+              </div>
+            </div>
+
+
+
+
           <div class="kv"><div class="k">الاحتياج</div><div class="v">{{ $student->crmInfo->need ?? '-' }}</div></div>
           <div class="kv"><div class="k">ملاحظات CRM</div><div class="v">{{ $student->crmInfo->notes ?? '-' }}</div></div>
           <div class="kv"><div class="k">تاريخ التحويل</div><div class="v">{{ $student->crmInfo->converted_at?->format('Y-m-d H:i') ?? '-' }}</div></div>
@@ -250,7 +277,6 @@
                   <div class="kv"><div class="k">الجنسية</div><div class="v">{{ $p->nationality ?? '-' }}</div></div>
                   <div class="kv"><div class="k">تاريخ التولد</div><div class="v">{{ $p->birth_date?->format('Y-m-d') ?? '-' }}</div></div>
                   <div class="kv"><div class="k">الرقم الوطني</div><div class="v">{{ $p->national_id ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">العنوان</div><div class="v">{{ $p->address ?? '-' }}</div></div>
                 </div>
               </div>
             </div>
@@ -263,7 +289,6 @@
 
                   <div class="kv"><div class="k">المستوى</div><div class="v">{{ $p->level ?? '-' }}</div></div>
                   <div class="kv"><div class="k">ستاج/مرحلة بالولاية</div><div class="v">{{ $p->stage_in_state ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">العمل</div><div class="v">{{ $p->job ?? '-' }}</div></div>
                   <div class="kv"><div class="k">المستوى التعليمي</div><div class="v">{{ $p->education_level ?? '-' }}</div></div>
                   <div class="kv"><div class="k">العلامة الامتحانية</div><div class="v">{{ $p->exam_score ?? '-' }}</div></div>
                 </div>

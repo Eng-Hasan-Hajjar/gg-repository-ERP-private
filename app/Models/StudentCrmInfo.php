@@ -9,8 +9,8 @@ class StudentCrmInfo extends Model
 { 
     
 protected $fillable = [
-    'student_id','first_contact_date','residence','age','organization',
-    'source','need','stage','converted_at','notes'
+    'student_id','first_contact_date','residence','age','organization','email','job',
+    'source','need','stage','converted_at','notes','country','province','study','created_by',
   ];
 
   protected $casts = [
@@ -24,4 +24,13 @@ protected $fillable = [
     {
         return $this->belongsTo(Lead::class);
     }
+
+
+    public function creator()
+{
+    return $this->belongsTo(User::class, 'created_by');
+}
+
+
+
 }

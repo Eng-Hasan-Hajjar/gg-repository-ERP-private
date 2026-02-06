@@ -37,10 +37,7 @@
     <input name="whatsapp" class="form-control" value="{{ old('whatsapp',$student->whatsapp ?? '') }}">
   </div>
 
-  <div class="col-md-4">
-    <label class="form-label fw-bold">الإيميل</label>
-    <input name="email" type="email" class="form-control" value="{{ old('email',$student->email ?? '') }}">
-  </div>
+
 
   <div class="col-md-4">
     <label class="form-label fw-bold">الفرع</label>
@@ -180,7 +177,7 @@
 
       <div class="row g-3">
         <div class="col-md-6">
-          <label class="form-label fw-bold">الاسم بالعربي</label>
+          <label class="form-label fw-bold">الاسم باللاتيني </label>
           <input name="profile[arabic_full_name]" class="form-control"
                  value="{{ $profile['arabic_full_name'] ?? '' }}">
           <div class="text-muted small mt-1">
@@ -206,12 +203,7 @@
                  value="{{ $profile['national_id'] ?? '' }}">
         </div>
 
-        <div class="col-md-8">
-          <label class="form-label fw-bold">العنوان</label>
-          <input name="profile[address]" class="form-control"
-                 value="{{ $profile['address'] ?? '' }}">
-        </div>
-
+    
         <div class="col-md-3">
           <label class="form-label fw-bold">المستوى</label>
           <input name="profile[level]" class="form-control"
@@ -224,11 +216,36 @@
                  value="{{ $profile['stage_in_state'] ?? '' }}">
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">العمل</label>
-          <input name="profile[job]" class="form-control"
-                 value="{{ $profile['job'] ?? '' }}">
-        </div>
+         <div class="col-md-3">
+      <label class="form-label fw-bold">العمل</label>
+      <input name="crm[job]" class="form-control"
+              value="{{ $crm['job'] ?? '' }}">
+    </div>
+<div class="col-md-6">
+  <label class="form-label fw-bold">مسؤول التواصل</label>
+  <input class="form-control" value="{{ $student->crmInfo->creator->name ?? '-' }}" disabled>
+</div>
+
+<div class="col-md-4">
+  <label class="form-label fw-bold">البلد</label>
+  <input name="crm[country]" class="form-control"
+         value="{{ $crm['country'] ?? '' }}">
+</div>
+
+<div class="col-md-4">
+  <label class="form-label fw-bold">المحافظة</label>
+  <input name="crm[province]" class="form-control"
+         value="{{ $crm['province'] ?? '' }}">
+</div>
+
+<div class="col-md-4">
+  <label class="form-label fw-bold">الدراسة</label>
+  <input name="crm[study]" class="form-control"
+         value="{{ $crm['study'] ?? '' }}">
+</div>
+
+
+
 
         <div class="col-md-3">
           <label class="form-label fw-bold">المستوى التعليمي</label>

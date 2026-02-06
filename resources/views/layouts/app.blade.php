@@ -309,6 +309,9 @@
         <a href="{{ route('dashboard') }}" class="grad-slate {{ $activeModule==='dashboard' ? 'active' : '' }}" title="لوحة التحكم">
           <i class="bi bi-grid-fill fs-6"></i>
         </a>
+        <a href="{{ route('reports.index') }}" class="grad-green {{ $activeModule==='reports' ? 'active' : '' }}" title="التقارير والإحصائيات ">
+          <i class="bi bi-bar-chart fs-6"></i> 
+        </a>
 
         <a href="{{ route('students.index') }}" class="grad-blue {{ $activeModule==='students' ? 'active' : '' }}" title="الطلاب">
           <i class="bi bi-people-fill fs-6"></i>

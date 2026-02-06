@@ -131,14 +131,24 @@ class LeadController extends Controller
 
         'phone'    => $lead->phone,
         'whatsapp' => $lead->whatsapp,
-        'email'    => null,
 
+        'email'    =>  $lead->email,
+
+        'job'    =>  $lead->job, 
+        
         'branch_id' => $lead->branch_id,
         'mode'      => 'onsite',
         'status'    => 'active',
 
         'registration_status' => 'confirmed',
         'is_confirmed' => true,
+
+        'country' => $lead->country,
+        'province' => $lead->province,
+        'study' => $lead->study,
+        'created_by' => $lead->created_by,   // ✅ مسؤول التواصل
+
+
         'confirmed_at' => now(),
       ]);
 
@@ -161,11 +171,20 @@ class LeadController extends Controller
           'first_contact_date' => $lead->first_contact_date,
           'residence' => $lead->residence,
           'age' => $lead->age,
+          
+          'email'  =>  $lead->email,
+          'job'    =>  $lead->job, 
           'organization' => $lead->organization,
           'source' => $lead->source,
           'need' => $lead->need,
           'stage' => $lead->stage,
           'notes' => $lead->notes,
+              // ✅ هنا أهم جزء كنتَ ناسيه
+          'country'  => $lead->country,
+          'province' => $lead->province,
+          'study'    => $lead->study,
+          'created_by' => $lead->created_by,   // مسؤول التواصل
+
           'converted_at' => now(),
         ]
       );

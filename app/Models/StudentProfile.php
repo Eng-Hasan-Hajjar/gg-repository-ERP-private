@@ -10,10 +10,10 @@ class StudentProfile extends Model
     'student_id',
 
     // شخصي
-    'arabic_full_name','nationality','birth_date','national_id','address',
+    'arabic_full_name','nationality','birth_date','national_id',
 
     // دراسة/عمل
-    'level','stage_in_state','job','education_level',
+    'level','stage_in_state','education_level',
 
     // ملفات ووثائق
     'photo_path','info_file_path','identity_file_path',

@@ -17,11 +17,13 @@ return new class extends Migration
        $table->string('full_name');
       $table->string('phone')->nullable();
       $table->string('whatsapp')->nullable();
-
+       $table->string('email')->nullable();
+ $table->string('job')->nullable(); // العمل
       $table->date('first_contact_date')->nullable();
       $table->string('residence')->nullable();
       $table->unsignedTinyInteger('age')->nullable();
       $table->string('organization')->nullable();
+
 
       $table->enum('source', ['ad','referral','social','website','expo','other'])->default('other');
       $table->text('need')->nullable();
@@ -37,6 +39,14 @@ return new class extends Migration
 
       $table->foreignId('student_id')->nullable()->constrained()->nullOnDelete();
 
+
+
+          $table->string('country')->nullable();
+        $table->string('province')->nullable();
+        $table->string('study')->nullable();
+
+
+        
       $table->timestamps();
       $table->index(['branch_id','stage','registration_status']);
         });

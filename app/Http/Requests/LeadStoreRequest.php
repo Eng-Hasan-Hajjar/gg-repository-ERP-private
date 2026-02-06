@@ -15,6 +15,11 @@ class LeadStoreRequest extends FormRequest
       'full_name' => 'required|string|max:190',
       'phone' => 'nullable|string|max:50',
       'whatsapp' => 'nullable|string|max:120',
+     'email'      => 'nullable|email|max:190',
+     'job' => 'nullable|string|max:120',
+
+     
+     'profile.job' => 'nullable|string|max:120',
       'first_contact_date' => 'nullable|date',
       'residence' => 'nullable|string|max:190',
       'age' => 'nullable|integer|min:1|max:120',
@@ -25,6 +30,14 @@ class LeadStoreRequest extends FormRequest
       'registration_status' => 'nullable|in:pending,converted,lost',
       'notes' => 'nullable|string',
       'branch_id' => 'required|exists:branches,id',
+
+
+      'country'  => 'nullable|string|max:100',
+'province' => 'nullable|string|max:100',
+'study'    => 'nullable|string|max:150',
+
+
+
 
       'diploma_ids' => 'nullable|array',
       'diploma_ids.*' => 'exists:diplomas,id',

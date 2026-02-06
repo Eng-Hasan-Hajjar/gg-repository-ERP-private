@@ -46,7 +46,7 @@
           </p>
         </div>
         <div class="module-actions">
-          <a href="#" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
+          <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
           <a href="#" class="btn btn-soft w-100 w-sm-auto">عرض لوحة التحكم</a>
         </div>
       </div>

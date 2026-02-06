@@ -37,8 +37,20 @@
       <div class="col-12"><b>الاحتياج:</b> {{ $lead->need ?? '-' }}</div>
       <div class="col-12"><b>ملاحظات:</b> {{ $lead->notes ?? '-' }}</div>
     </div>
+
+    <div class="col-md-4">
+  <b>مسؤول التواصل:</b> 
+  {{ $lead->creator->name ?? $lead->creator->email ?? '-' }}
+</div>
+<div class="col-md-4"><b>العمل:</b> {{ $lead->job ?? '-' }}</div>
+<div class="col-md-4"><b>البلد:</b> {{ $lead->country ?? '-' }}</div>
+<div class="col-md-4"><b>المحافظة:</b> {{ $lead->province ?? '-' }}</div>
+<div class="col-md-4"><b>الدراسة:</b> {{ $lead->study ?? '-' }}</div>
+
   </div>
 </div>
+
+
 
 {{-- Followups --}}
 <div class="card shadow-sm border-0">

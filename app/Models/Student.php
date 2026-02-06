@@ -10,7 +10,7 @@ class Student extends Model
 {
     protected $fillable = [
     'university_id','first_name','last_name','full_name',
-    'phone','whatsapp','email',
+    'phone','whatsapp',
     'branch_id','mode','status',
     'registration_status','is_confirmed','confirmed_at',
   ];
