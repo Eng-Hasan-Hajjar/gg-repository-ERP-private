@@ -14,8 +14,8 @@ use App\Http\Requests\LeadUpdateRequest;
 
 class LeadController extends Controller
 {
-  public function index(Request $request)
-  {
+public function index(Request $request)
+{
     $q = Lead::query()->with(['branch','diplomas','followups']);
 
     if ($request->filled('branch_id')) $q->where('branch_id',$request->branch_id);
@@ -23,25 +23,50 @@ class LeadController extends Controller
     if ($request->filled('registration_status')) $q->where('registration_status',$request->registration_status);
 
     if ($request->filled('diploma_id')) {
-      $did = $request->diploma_id;
-      $q->whereHas('diplomas', fn($x)=>$x->where('diplomas.id',$did));
+        $did = $request->diploma_id;
+        $q->whereHas('diplomas', fn($x)=>$x->where('diplomas.id',$did));
     }
 
     if ($request->filled('search')) {
-      $s = trim($request->search);
-      $q->where(fn($x)=>$x
-        ->where('full_name','like',"%$s%")
-        ->orWhere('phone','like',"%$s%")
-        ->orWhere('whatsapp','like',"%$s%")
-      );
+        $s = trim($request->search);
+        $q->where(fn($x)=>$x
+            ->where('full_name','like',"%$s%")
+            ->orWhere('phone','like',"%$s%")
+            ->orWhere('whatsapp','like',"%$s%")
+        );
     }
 
+    $leads = $q->latest()->paginate(15)->withQueryString();
+
+    // ======= خرائط التعريب =======
+    $labels = $this->leadArabicLabels();
+
+    // ======= خيارات الفلاتر بالعربي =======
+    $stageOptions = $labels['stage']; // key => عربي
+    $registrationOptions = $labels['registration_status']; // key => عربي
+
+    // ======= أضف ترجمة جاهزة لكل Lead للعرض =======
+    $leads->getCollection()->transform(function ($l) use ($labels) {
+        $l->stage_ar = $labels['stage'][$l->stage] 
+            ?? ($l->stage ?? '-');
+
+        $l->registration_ar = $labels['registration_status'][$l->registration_status] 
+            ?? ($l->registration_status ?? '-');
+
+        return $l;
+    });
+
     return view('crm.leads.index', [
-      'leads' => $q->latest()->paginate(15)->withQueryString(),
-      'branches' => Branch::orderBy('name')->get(),
-      'diplomas' => Diploma::orderBy('name')->get(),
+        'leads' => $leads,
+        'branches' => Branch::orderBy('name')->get(),
+        'diplomas' => Diploma::orderBy('name')->get(),
+
+        // للفلاتر:
+        'stageOptions' => $stageOptions,
+        'registrationOptions' => $registrationOptions,
     ]);
-  }
+}
+
 
   public function create()
   {
@@ -74,11 +99,28 @@ class LeadController extends Controller
     return redirect()->route('leads.show',$lead)->with('success','تم إنشاء العميل المحتمل.');
   }
 
-  public function show(Lead $lead)
-  {
-    $lead->load(['branch','diplomas','followups']);
-    return view('crm.leads.show', compact('lead'));
-  }
+public function show(Lead $lead)
+{
+    $lead->load(['branch','diplomas','followups','creator']);
+
+    $labels = $this->leadArabicLabels();
+
+    $stage_ar = $labels['stage'][$lead->stage] 
+        ?? ($lead->stage ?? '-');
+
+    $registration_ar = $labels['registration_status'][$lead->registration_status] 
+        ?? ($lead->registration_status ?? '-');
+
+    $source_ar = $labels['source'][$lead->source] 
+        ?? ($lead->source ?? '-');
+
+    return view('crm.leads.show', compact(
+        'lead',
+        'stage_ar',
+        'registration_ar',
+        'source_ar'
+    ));
+}
 
   public function edit(Lead $lead)
   {
@@ -209,4 +251,42 @@ class LeadController extends Controller
 
     return redirect()->route('students.show',$student)->with('success','تم تحويل العميل إلى طالب رسمي.');
   }
+
+
+
+
+
+  private function leadArabicLabels(): array
+{
+    return [
+
+        'registration_status' => [
+            'pending'   => 'قيد الانتظار',
+            'converted' => 'تم التحويل إلى طالب',
+            'canceled'  => 'مُلغي',
+        ],
+
+        'stage' => [
+            'new'        => 'جديد',
+            'follow_up'  => 'متابعة',
+            'interested' => 'مهتم',
+            'registered' => 'مسجّل',
+            'rejected'   => 'مرفوض',
+            'postponed'  => 'مؤجّل',
+        ],
+
+        'source' => [
+            'ad'       => 'إعلان مدفوع',
+            'referral' => 'إحالة / توصية',
+            'social'   => 'وسائل التواصل الاجتماعي',
+            'website'  => 'الموقع الإلكتروني',
+            'expo'     => 'معرض / فعالية',
+            'other'    => 'أخرى',
+        ],
+    ];
+}
+
+
+
+
 }

@@ -78,13 +78,21 @@ public function index(Request $request)
 }
 
 
-  public function create()
-  {
+public function create()
+{
+    $labels = $this->studentArabicLabels();
+
     return view('students.create', [
-      'branches' => Branch::orderBy('name')->get(),
-      'diplomas' => Diploma::orderBy('name')->get(),
+        'student' => new Student(),   // ✅ مهم جدًا
+        'branches' => Branch::orderBy('name')->get(),
+        'diplomas' => Diploma::orderBy('name')->get(),
+
+        'statusOptions' => $labels['student_status'],
+        'registrationOptions' => $labels['registration_status'],
+        'modeOptions' => $labels['mode'],
     ]);
-  }
+}
+
 
   public function store(StudentStoreRequest $request)
   {
@@ -193,18 +201,18 @@ public function show(Student $student)
 
 
         // ======= 🔹 تعريب حالة الدبلومة (خاص بالـ Pivot) =======
-$diplomaStatusMap = [
-    'active'   => 'نشط',
-    'waiting'  => 'بانتظار',
-    'finished' => 'منتهي',
-];
+        $diplomaStatusMap = [
+            'active'   => 'مستمر',
+            'waiting'  => 'قيد الانتظار',
+            'finished' => 'منتهي',
+        ];
 
-$student->diplomas->transform(function ($d) use ($diplomaStatusMap) {
-    $d->pivot->status_ar =
-        $diplomaStatusMap[$d->pivot->status] ?? $d->pivot->status;
+        $student->diplomas->transform(function ($d) use ($diplomaStatusMap) {
+            $d->pivot->status_ar =
+                $diplomaStatusMap[$d->pivot->status] ?? $d->pivot->status;
 
-    return $d;
-});
+            return $d;
+        });
 
 
 
@@ -253,29 +261,30 @@ private function buildProfileFiles($p): array
 private function studentArabicLabels(): array
 {
     return [
+
         'mode' => [
             'onsite' => 'حضوري',
             'online' => 'أونلاين',
         ],
 
         'registration_status' => [
-            'confirmed' => 'مثبت',
-            'pending'   => 'بانتظار التأكيد',
-            'canceled'  => 'ملغي',
+            'confirmed' => 'مُثبت',
+            'pending'   => 'قيد الانتظار',
+            'canceled'  => 'مُلغي',
         ],
 
         'student_status' => [
-            'active'                => 'نشط',
-            'waiting'               => 'بانتظار التأكيد',
+            'active'                => 'مستمر في الدراسة',
+            'waiting'               => 'قيد الانتظار',
             'paid'                  => 'مدفوع',
             'withdrawn'             => 'منسحب',
             'failed'                => 'راسب',
-            'absent_exam'           => 'متغيب عن الامتحان',
-            'certificate_delivered' => 'تم تسليم الشهادة',
-            'certificate_waiting'   => 'بانتظار الشهادة',
+            'absent_exam'           => 'لم يتقدّم للامتحان',
+            'certificate_delivered' => 'جرى تسليم الشهادة',
+            'certificate_waiting'   => 'الشهادة قيد الإصدار',
             'registration_ended'    => 'انتهى التسجيل',
-            'dismissed'             => 'مفصول',
-            'frozen'                => 'مجمّد',
+            'dismissed'             => 'فُصل الطالب',
+            'frozen'                => 'تم تجميد القيد الدراسي',
         ],
 
         'crm_source' => [
@@ -297,17 +306,24 @@ private function studentArabicLabels(): array
         ],
     ];
 }
-
-  public function edit(Student $student)
-  {
+public function edit(Student $student)
+{
     $student->load(['diplomas','profile','crmInfo']);
 
+    // === مهم جدًا === جلب خرائط التعريب
+    $labels = $this->studentArabicLabels();
+
     return view('students.edit', [
-      'student' => $student,
-      'branches' => Branch::orderBy('name')->get(),
-      'diplomas' => Diploma::orderBy('name')->get(),
+        'student' => $student,
+        'branches' => Branch::orderBy('name')->get(),
+        'diplomas' => Diploma::orderBy('name')->get(),
+
+        // 🔹 هذه هي التي كانت مفقودة لديك:
+        'statusOptions' => $labels['student_status'],
+        'registrationOptions' => $labels['registration_status'],
+        'modeOptions' => $labels['mode'],
     ]);
-  }
+}
 
   public function update(StudentUpdateRequest $request, Student $student)
   {

@@ -35,6 +35,15 @@ class DatabaseSeeder extends Seeder
         LeadSeeder::class,
          LeadFollowupSeeder::class, // اختياري إذا فصلته
            
+
+
+
+             RoleSeeder::class,
+        PermissionSeeder::class,
+        RolePermissionSeeder::class,
+
+
+        
            
     ]);
         // User::factory(10)->create();

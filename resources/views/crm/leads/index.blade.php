@@ -37,19 +37,24 @@
     </div>
 
     <div class="col-md-2">
-      <select class="form-select" name="stage">
+     <select class="form-select" name="stage">
         <option value="">المرحلة</option>
-        @foreach(['new','follow_up','interested','registered','rejected','postponed'] as $st)
-          <option value="{{ $st }}" @selected(request('stage')==$st)>{{ $st }}</option>
+        @foreach($stageOptions as $key => $label)
+          <option value="{{ $key }}" @selected(request('stage')==$key)>
+            {{ $label }}
+          </option>
         @endforeach
       </select>
+
     </div>
 
     <div class="col-md-2">
       <select class="form-select" name="registration_status">
         <option value="">حالة التسجيل</option>
-        @foreach(['pending','converted','lost'] as $rs)
-          <option value="{{ $rs }}" @selected(request('registration_status')==$rs)>{{ $rs }}</option>
+        @foreach($registrationOptions as $key => $label)
+          <option value="{{ $key }}" @selected(request('registration_status')==$key)>
+            {{ $label }}
+          </option>
         @endforeach
       </select>
     </div>
@@ -87,8 +92,14 @@
                 <span class="badge bg-light text-dark border">{{ $d->name }}</span>
               @endforeach
             </td>
-            <td><span class="badge bg-info">{{ $l->stage }}</span></td>
-            <td><span class="badge bg-{{ $l->registration_status==='pending'?'warning':($l->registration_status==='converted'?'success':'secondary') }}">{{ $l->registration_status }}</span></td>
+            <td><span class="badge bg-info">{{ $l->stage_ar }}</span></td>
+
+            <td>
+              <span class="badge bg-{{ $l->registration_status==='pending'?'warning':($l->registration_status==='converted'?'success':'secondary') }}">
+                {{ $l->registration_ar }}
+              </span>
+            </td>
+            
             <td class="text-end">
               <a class="btn btn-sm btn-outline-primary" href="{{ route('leads.show',$l) }}">عرض</a>
               <a class="btn btn-sm btn-outline-dark" href="{{ route('leads.edit',$l) }}">تعديل</a>

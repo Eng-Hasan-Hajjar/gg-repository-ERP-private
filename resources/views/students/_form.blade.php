@@ -1,6 +1,7 @@
 @csrf
-@if(isset($student)) @method('PUT') @endif
-
+@if(isset($student) && $student->exists)
+  @method('PUT')
+@endif
 @php
   $selectedDiplomas = old('diploma_ids',
     isset($student) ? $student->diplomas->pluck('id')->toArray() : []
@@ -56,23 +57,13 @@
     </select>
   </div>
 
- <div class="col-md-4">
+<div class="col-md-4">
   <label class="form-label fw-bold">حالة الطالب</label>
+
   <select name="status" class="form-select" required>
-    @foreach([
-      'active'                => 'نشط',
-      'waiting'               => 'بانتظار التأكيد',
-      'paid'                  => 'مدفوع',
-      'withdrawn'             => 'منسحب',
-      'failed'                => 'راسب',
-      'absent_exam'           => 'متغيب عن الامتحان',
-      'certificate_delivered' => 'تم تسليم الشهادة',
-      'certificate_waiting'   => 'بانتظار الشهادة',
-      'registration_ended'    => 'انتهى التسجيل',
-      'dismissed'             => 'مفصول',
-      'frozen'                => 'مجمّد'
-    ] as $st => $label)
-      <option value="{{ $st }}" @selected(old('status',$student->status ?? 'waiting') === $st)>
+    @foreach($statusOptions as $st => $label)
+      <option value="{{ $st }}"
+        @selected(old('status', $student->status ?? 'waiting') === $st)>
         {{ $label }}
       </option>
     @endforeach
@@ -84,6 +75,7 @@
   <div class="col-12">
     <label class="form-label fw-bold">الدبلومات (يمكن اختيار عدة دبلومات)</label>
     <select class="form-select" name="diploma_ids[]" multiple size="6">
+      
       @foreach($diplomas as $d)
         <option value="{{ $d->id }}" @selected(in_array($d->id,$selectedDiplomas))>{{ $d->name }} ({{ $d->code }})</option>
       @endforeach
@@ -205,7 +197,7 @@
 
     
         <div class="col-md-3">
-          <label class="form-label fw-bold">المستوى</label>
+          <label class="form-label fw-bold">مستوى اللغة</label>
           <input name="profile[level]" class="form-control"
                  value="{{ $profile['level'] ?? '' }}" placeholder="مثال: مبتدئ / متوسط / متقدم">
         </div>
@@ -358,7 +350,7 @@
       </select>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-3" hidden>
       <label>التقييم (1–5)</label>
       <input type="number" min="1" max="5"
              name="diplomas[{{ $d->id }}][rating]"
@@ -374,8 +366,8 @@
              class="form-control">
     </div>
 
-    <div class="col-md-3">
-      <label>تم تسليم الشهادة؟</label>
+    <div class="col-md-3" >
+      <label style="margin-top: 10%;"  >تم  تسليم الشهادة الكرتون ؟</label>
       <input type="checkbox"
              name="diplomas[{{ $d->id }}][certificate_delivered]"
              @checked($d->pivot->certificate_delivered)>

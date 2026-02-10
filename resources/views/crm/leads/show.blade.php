@@ -5,7 +5,11 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div>
     <h4 class="fw-bold mb-0">{{ $lead->full_name }}</h4>
-    <div class="text-muted small">مرحلة: {{ $lead->stage }} — حالة: {{ $lead->registration_status }}</div>
+<div class="text-muted small">
+  المرحلة: <b>{{ $stage_ar }}</b>
+  —
+  حالة التسجيل: <b>{{ $registration_ar }}</b>
+</div>
   </div>
 
   <div class="d-flex gap-2">
@@ -33,7 +37,7 @@
       <div class="col-md-4"><b>الفرع:</b> {{ $lead->branch->name ?? '-' }}</div>
       <div class="col-md-4"><b>السكن:</b> {{ $lead->residence ?? '-' }}</div>
       <div class="col-md-4"><b>العمر:</b> {{ $lead->age ?? '-' }}</div>
-      <div class="col-md-4"><b>المصدر:</b> {{ $lead->source }}</div>
+<div class="col-md-4"><b>المصدر:</b> {{ $source_ar }}</div>
       <div class="col-12"><b>الاحتياج:</b> {{ $lead->need ?? '-' }}</div>
       <div class="col-12"><b>ملاحظات:</b> {{ $lead->notes ?? '-' }}</div>
     </div>

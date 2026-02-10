@@ -297,4 +297,18 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
+
+Route::middleware(['auth', 'permission:manage_roles'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::resource('roles', RoleController::class);
+        Route::resource('permissions', PermissionController::class)
+            ->only(['index', 'store']);
+    });
+
+
 require __DIR__.'/auth.php';

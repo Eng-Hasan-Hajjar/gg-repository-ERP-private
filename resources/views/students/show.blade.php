@@ -150,10 +150,10 @@
               <i class="bi bi-info-circle"></i> الحالة: {{ $status_ar }}
             </span>
 
-            <span class="badge-soft">
-              <i class="bi bi-shield-check"></i>
-              التسجيل: {{ $student->registration_status ?? '-' }}
-            </span>
+          <span class="badge-soft">
+  <i class="bi bi-shield-check"></i>
+  التسجيل: {{ $registration_ar ?? '-' }}
+</span>
           </div>
 
           <div class="mt-2">
@@ -462,29 +462,7 @@
             </div>
           </div>
 
-          <div class="kv">
-            <div class="k">التقييم</div>
-            <div class="v">
-              <span
-                class="star-rating"
-                data-rating="{{ $d->pivot->rating ?? 0 }}"
-                style="font-size: 1.35rem; color: #f59e0b;">
-              </span>
-
-              <script>
-              (function(){
-                const el = document.currentScript.previousElementSibling;
-                const r = parseInt(el.dataset.rating || 0);
-
-                let stars = '';
-                for(let i=1; i<=5; i++){
-                  stars += i <= r ? '★' : '☆';
-                }
-                el.innerText = stars + " (" + r + "/5)";
-              })();
-              </script>
-            </div>
-          </div>
+      
 
           <div class="kv">
             <div class="k">تاريخ الانتهاء</div>
@@ -492,7 +470,7 @@
           </div>
 
           <div class="kv">
-            <div class="k">تسليم الشهادة</div>
+            <div class="k">   تسليم الشهادة كرنون </div>
             <div class="v">
               {{ $d->pivot->certificate_delivered ? 'نعم' : 'لا' }}
             </div>
