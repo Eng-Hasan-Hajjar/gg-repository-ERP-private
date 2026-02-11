@@ -267,4 +267,66 @@ class ReportsRepository
             ->map(fn($r) => ['branch' => $r->branch, 'total' => (int)$r->total])
             ->toArray();
     }
+
+
+
+    // =========================
+// REAL-TIME EXECUTIVE DATA
+// =========================
+
+public function revenueToday(?int $branchId = null): float
+{
+    $table = $this->has('payments') ? 'payments'
+        : ($this->has('transactions') ? 'transactions' : null);
+
+    if (!$table) return 0;
+
+    $amountCol = Schema::hasColumn($table,'amount') ? 'amount'
+        : (Schema::hasColumn($table,'total') ? 'total' : null);
+
+    $dateCol = Schema::hasColumn($table,'paid_at') ? 'paid_at'
+        : (Schema::hasColumn($table,'date') ? 'date' : 'created_at');
+
+    $q = DB::table($table)
+        ->whereDate($dateCol, now()->toDateString());
+
+    if ($branchId && Schema::hasColumn($table,'branch_id')) {
+        $q->where('branch_id', $branchId);
+    }
+
+    return (float) $q->sum($amountCol);
+}
+
+public function systemHealthStatus(): string
+{
+    // بسيط وعملي
+    $lastAudit = DB::table('audit_logs')->latest()->first();
+
+    if (!$lastAudit) return 'unknown';
+
+    $minutes = now()->diffInMinutes($lastAudit->created_at);
+
+    if ($minutes <= 10) return 'online';
+    if ($minutes <= 60) return 'degraded';
+
+    return 'issues';
+}
+
+public function latestAudit(int $limit = 5): array
+{
+    return DB::table('audit_logs')
+        ->orderByDesc('created_at')
+        ->limit($limit)
+        ->get()
+        ->map(fn($l) => [
+            'time' => $l->created_at,
+            'action' => $l->action,
+            'model' => $l->model,
+            'description' => $l->description,
+        ])->toArray();
+}
+
+
+
+
 }

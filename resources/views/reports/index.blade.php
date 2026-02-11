@@ -160,6 +160,44 @@
   @endif
 </div>
 
+
+
+<div class="d-flex gap-2 mt-3">
+  <a href="{{ route('reports.executive') }}" class="btn btn-namaa">
+    لوحة القيادة التنفيذية
+  </a>
+
+  <a href="{{ route('reports.branches.map') }}" class="btn btn-soft">
+    خريطة الفروع
+  </a>
+</div>
+
+
+
+<div class="d-flex gap-2 mt-3">
+  <a href="{{ route('reports.executive') }}" class="btn btn-namaa">
+    لوحة القيادة التنفيذية
+  </a>
+
+  <a href="{{ route('reports.branches.map') }}" class="btn btn-soft">
+    خريطة الفروع
+  </a>
+
+  <a href="{{ route('reports.students.growth') }}" class="btn btn-soft">
+    نمو الطلاب
+  </a>
+
+  <a href="{{ route('reports.revenue.branches') }}" class="btn btn-soft">
+    إيرادات الفروع
+  </a>
+
+  <a href="{{ route('reports.system.alerts') }}" class="btn btn-soft">
+    تنبيهات النظام
+  </a>
+</div>
+
+
+
 <script>
 function toggleCustomRange(val){
   const show = (val === 'custom');

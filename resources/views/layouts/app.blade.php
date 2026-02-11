@@ -345,6 +345,9 @@
 
 
 
+
+
+
         <a href="{{ route('reports.index') }}" class="grad-green {{ $activeModule==='reports' ? 'active' : '' }}" title="التقارير والإحصائيات ">
           <i class="bi bi-bar-chart fs-6"></i> 
         </a>

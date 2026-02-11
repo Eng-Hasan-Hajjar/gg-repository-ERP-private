@@ -62,4 +62,25 @@ public function exportPdf(Request $request)
 
         return Excel::download(new \App\Exports\DashboardReportExport($data), 'reports_' . now()->format('Ymd_His') . '.xlsx');
     }
+
+
+
+
+    public function executive(ReportFiltersRequest $request)
+{
+    $filters = $request->validatedFilters();
+    $data = $this->service->getDashboard($filters);
+
+    return view('reports.executive', compact('data'));
+}
+
+public function branchesMap()
+{
+    $branches = Branch::withCount('students')->get();
+    return view('reports.branches-map', compact('branches'));
+}
+
+
+
+
 }

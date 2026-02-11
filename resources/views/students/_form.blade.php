@@ -89,7 +89,7 @@
       <div class="card-body">
         <h6 class="fw-bold mb-3">بيانات CRM (الاستشارات)</h6>
 
-        <div class="row g-3">
+        <div class="row g-3" hidden>
           <div class="col-md-3">
             <label class="form-label fw-bold">تاريخ أول تواصل</label>
             <input type="date" name="crm[first_contact_date]" class="form-control" value="{{ $crm['first_contact_date'] ?? '' }}">

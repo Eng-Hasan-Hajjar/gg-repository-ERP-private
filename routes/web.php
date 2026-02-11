@@ -371,4 +371,36 @@ Route::get('/audit-center', [\App\Http\Controllers\Admin\AuditController::class,
 
 
 
+
+
+
+
+Route::get('/reports/executive', [ReportsController::class, 'executive'])
+    ->name('reports.executive')
+    ->middleware('auth');
+
+Route::get('/reports/branches-map', [ReportsController::class, 'branchesMap'])
+    ->name('reports.branches.map')
+    ->middleware('auth');
+
+
+
+
+
+    Route::get('/reports/students-growth', function(){
+   return view('reports.students-growth');
+})->name('reports.students.growth');
+
+
+
+Route::get('/reports/revenue-branches', fn() => view('reports.revenue-by-branch'))
+   ->name('reports.revenue.branches');
+
+
+
+   Route::get('/reports/system-alerts', fn() => view('reports.system-alerts'))
+   ->name('reports.system.alerts');
+
+
+   
 require __DIR__.'/auth.php';

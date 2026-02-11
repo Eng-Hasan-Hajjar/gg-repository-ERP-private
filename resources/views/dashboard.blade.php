@@ -21,7 +21,7 @@
 
     {{-- الجزء الأيسر: ترحيب ذكي --}}
     <div>
-      <h1>مرحبًا {{ auth()->user()->name }} </h1>
+   
 
       <p class="mt-2 mb-1">
         اليوم: {{ now()->locale('ar')->translatedFormat('l d F Y') }}
@@ -42,6 +42,36 @@
       </div>
     </div>
   </div>
+
+
+
+  <div class="row g-3 mb-4">
+
+  <div class="col-md-4">
+    <div class="module-card p-3">
+      <p class="module-title mb-1">تنبيهات اليوم</p>
+      <p class="section-note">3 طلبات إجازة معلّقة • 2 امتحان قادم</p>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="module-card p-3">
+      <p class="module-title mb-1">الأولوية</p>
+      <p class="section-note">إقفال صناديق الفرع • مراجعة الرواتب</p>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="module-card p-3">
+      <p class="module-title mb-1">نشاط النظام</p>
+      <p class="section-note">12 تعديلًا اليوم • آخر تعديل قبل 5 دقائق</p>
+    </div>
+  </div>
+
+</div>
+
+
+
 
   {{-- Modules Grid --}}
   <div class="row g-3 g-lg-4 mb-4">
