@@ -24,6 +24,14 @@ class PermissionSeeder extends Seeder
             // Exams
             ['name' => 'view_exams', 'label' => 'عرض الامتحانات', 'module' => 'exams'],
             ['name' => 'manage_exams', 'label' => 'إدارة الامتحانات', 'module' => 'exams'],
+        
+            [
+    'name'   => 'manage_roles',
+    'label'  => 'إدارة الأدوار والصلاحيات',
+    'module' => 'users',
+],
+
+
         ];
 
         foreach ($permissions as $permission) {

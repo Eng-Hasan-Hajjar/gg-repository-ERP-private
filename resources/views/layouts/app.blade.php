@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="icon" href="{{ asset('images/namaa-logo.png') }}">
   <title>@yield('title', 'Namaa ERP')</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/namaa-logo.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/namaa-logo.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('images/namaa-logo.png') }}">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -48,6 +52,12 @@
   font-weight: 900;
 }
 
+/* تخطيط احترافي للأزرار: صفّان × عمودان كحد أقصى */
+.module-actions.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
 
     /* Navbar */
@@ -223,7 +233,12 @@
       }
       .iconbar{ display: block; }
     }
-
+/* في الشاشات الصغيرة يبقى زرًا واحدًا بالعرض الكامل */
+@media (max-width: 767px){
+  .module-actions.grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
     /* Mobile: iconbar becomes bottom dock (best UX) */
     @media (max-width: 991.98px){
       .iconbar{
@@ -309,9 +324,33 @@
         <a href="{{ route('dashboard') }}" class="grad-slate {{ $activeModule==='dashboard' ? 'active' : '' }}" title="لوحة التحكم">
           <i class="bi bi-grid-fill fs-6"></i>
         </a>
+
+       @if(auth()->user()?->hasPermission('manage_roles'))
+
+          <a href="{{ route('admin.audit.index') }}"
+            class="grad-rose {{ $activeModule==='audit' ? 'active' : '' }}"
+            title="سجل التدقيق">
+            <i class="bi bi-journal-text fs-6"></i>
+          </a>
+      @endif
+        @if(auth()->user()?->hasPermission('manage_roles'))
+
+            <a href="{{ route('admin.roles.index') }}"
+              class="grad-slate {{ $activeModule==='users' ? 'active' : '' }}"
+              title="المستخدمين والصلاحيات">
+              <i class="bi bi-person-gear fs-6"></i>
+            </a>
+       @endif
+
+
+
+
         <a href="{{ route('reports.index') }}" class="grad-green {{ $activeModule==='reports' ? 'active' : '' }}" title="التقارير والإحصائيات ">
           <i class="bi bi-bar-chart fs-6"></i> 
         </a>
+
+ 
+
 
         <a href="{{ route('students.index') }}" class="grad-blue {{ $activeModule==='students' ? 'active' : '' }}" title="الطلاب">
           <i class="bi bi-people-fill fs-6"></i>
@@ -345,9 +384,7 @@
 
 
 
-        <a href="{{ route('asset-categories.index') }}" class="grad-purple {{ $activeModule==='asset-categories' ? 'active' : '' }}" title="المستخدمين">
-          <i class="bi bi-person-gear fs-6"></i>
-        </a>
+
     
 
 

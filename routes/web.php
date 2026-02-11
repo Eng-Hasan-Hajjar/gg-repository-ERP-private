@@ -311,4 +311,64 @@ Route::middleware(['auth', 'permission:manage_roles'])
     });
 
 
+
+    use App\Http\Controllers\Admin\UserController;
+
+Route::middleware(['auth', 'permission:manage_roles'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('users', UserController::class);
+    });
+
+
+
+use App\Http\Controllers\Admin\AuditController;
+
+Route::get('/admin/audit-logs', [AuditController::class, 'index'])
+    ->middleware(['auth','permission:manage_roles'])
+    ->name('admin.audit.index');
+
+
+
+
+
+
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
+
+    // إضافات جديدة:
+    Route::get('roles/{role}/show', [RoleController::class, 'show'])
+        ->name('roles.show');
+
+    Route::post('roles/{role}/clone', [RoleController::class, 'clone'])
+        ->name('roles.clone');
+
+    Route::get('roles/{role}/users', [RoleController::class, 'users'])
+        ->name('roles.users');
+
+    Route::post('roles/{role}/attach-user', [RoleController::class, 'attachUser'])
+        ->name('roles.attachUser');
+
+    Route::post('roles/{role}/toggle-permission/{permission}', 
+        [RoleController::class, 'togglePermission'])
+        ->name('roles.togglePermission');
+
+
+
+
+
+});
+
+
+
+
+Route::get('/audit-center', [\App\Http\Controllers\Admin\AuditController::class, 'index'])
+    ->name('admin.audit.index');
+
+
+
 require __DIR__.'/auth.php';

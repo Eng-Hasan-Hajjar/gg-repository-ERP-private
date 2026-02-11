@@ -17,6 +17,24 @@
         </p>
       </div>
 
+
+
+    {{-- الجزء الأيسر: ترحيب ذكي --}}
+    <div>
+      <h1>مرحبًا {{ auth()->user()->name }} </h1>
+
+      <p class="mt-2 mb-1">
+        اليوم: {{ now()->locale('ar')->translatedFormat('l d F Y') }}
+      </p>
+
+      <p class="section-note">
+        {{ auth()->user()->hasRole('super_admin')
+            ? 'أنت تعمل بصلاحيات الإدارة العليا.'
+            : 'أنت تعمل ضمن نطاق صلاحياتك المصرّح بها.' }}
+      </p>
+    </div>
+
+
       <div class="d-flex gap-2 flex-wrap">
         <span class="chip"><i class="bi bi-shield-lock"></i> نظام صلاحيات</span>
         <span class="chip"><i class="bi bi-graph-up-arrow"></i> تقارير</span>
@@ -52,30 +70,7 @@
       </div>
     </div>
 
-    {{-- Students --}}
-    <div class="col-12 col-md-6 col-xl-4">
-      <div class="module-card">
-        <div class="module-head">
-          <div class="module-icon grad-blue">
-            <i class="bi bi-people-fill fs-3"></i>
-          </div>
-          <div>
-            <p class="module-title">الطلاب</p>
-            <p class="module-sub">إدارة ملفات الطلاب — حالات التسجيل — الأقساط</p>
-          </div>
-        </div>
-        <div class="module-body">
-          <p class="section-note">
-            إضافة/تعديل بيانات الطلاب، متابعة الحالة والدفعات، وبحث سريع حسب الاسم أو الرقم الجامعي.
-          </p>
-        </div>
-        <div class="module-actions">
-          <a href="{{ route('students.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الطلاب</a>
-          <a href="{{ route('students.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة طالب</a>
-        </div>
-      </div>
-    </div>
-
+    
     {{-- CRM --}}
     <div class="col-12 col-md-6 col-xl-4">
       <div class="module-card">
@@ -100,30 +95,54 @@
       </div>
     </div>
 
-    {{-- Exams --}}
+
+    {{-- Students --}}
     <div class="col-12 col-md-6 col-xl-4">
       <div class="module-card">
         <div class="module-head">
-          <div class="module-icon grad-purple">
-            <i class="bi bi-journal-check fs-3"></i>
+          <div class="module-icon grad-blue">
+            <i class="bi bi-people-fill fs-3"></i>
           </div>
           <div>
-            <p class="module-title">قسم الامتحانات</p>
-            <p class="module-sub">إدارة الامتحانات — تسجيل العلامات — نتائج</p>
+            <p class="module-title">الطلاب</p>
+            <p class="module-sub">إدارة ملفات الطلاب — حالات التسجيل — الأقساط</p>
           </div>
         </div>
         <div class="module-body">
           <p class="section-note">
-            امتحانات حضورية/أونلاين، ربط الطلاب بالامتحان، احتساب النتيجة النهائية وإصدار التقارير.
+            إضافة/تعديل بيانات الطلاب، متابعة الحالة والدفعات، وبحث سريع حسب الاسم أو الرقم الجامعي.
           </p>
         </div>
         <div class="module-actions">
-          <a href="{{ route('exams.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الامتحانات</a>
-          <a href="{{ route('exams.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة امتحان</a>
-
-    
+          <a href="{{ route('students.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الطلاب</a>
+          <a href="{{ route('students.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة طالب</a>
         </div>
       </div>
+    </div>
+
+
+    {{-- Exams --}}
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-purple">
+              <i class="bi bi-journal-check fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">قسم الامتحانات</p>
+              <p class="module-sub">إدارة الامتحانات — تسجيل العلامات — نتائج</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">
+              امتحانات حضورية/أونلاين، ربط الطلاب بالامتحان، احتساب النتيجة النهائية وإصدار التقارير.
+            </p>
+          </div>
+          <div class="module-actions">
+            <a href="{{ route('exams.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الامتحانات</a>
+            <a href="{{ route('exams.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة امتحان</a>
+          </div>
+        </div>
     </div>
 
     {{-- Finance / Cashboxes --}}
@@ -168,7 +187,7 @@
         تقويم شهري، سجلات حضور يومية، تقارير ساعات/تأخير/غياب مع تصدير Excel/PDF.
       </p>
     </div>
-    <div class="module-actions">
+    <div class="module-actions grid-2">
       <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
       <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
       <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
@@ -199,9 +218,13 @@
             إنشاء مهام حسب الفرع، متابعة حالة التنفيذ، وتقارير يومية وأرشفة تلقائية.
           </p>
         </div>
-        <div class="module-actions">
+        <div class="module-actions grid-2">
           <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
-          <a href="{{ route('tasks.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة مهمة</a>
+          <a href="{{ route('tasks.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
+         
+        </div>
+           <div class="module-actions">
+      
   <a href="{{ route('tasks.index', ['status'=>'todo']) }}" class="btn btn-soft w-100 w-sm-auto">مهام اليوم </a>
          
         </div>
@@ -225,16 +248,64 @@
             ملف كامل للمدرب/الموظف، جدولة دفعات المدربين وربطها بالصناديق، وتقارير مالية متخصصة.
           </p>
         </div>
-        <div class="module-actions">
+        <div class="module-actions grid-2">
           <a href="{{  route('employees.index')}}" class="btn btn-namaa w-100 w-sm-auto">فتح الموارد البشرية</a>
+                  <a href="{{ route('employees.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مدرب/موظف</a>
+
           <a href="{{ route('employees.index', ['type'=>'trainer']) }}" class="btn btn-soft w-100 w-sm-auto">المدربين</a>
           <a href="{{ route('employees.index', ['type'=>'employee']) }}" class="btn btn-soft w-100 w-sm-auto">الموظفين</a>
 
-          <a href="{{ route('employees.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة مدرب/موظف</a>
 
         </div>
       </div>
     </div>
+
+
+    
+    {{-- Users (System Users) - Coming Soon --}}
+
+
+@if(auth()->user()?->hasPermission('manage_roles'))
+<div class="col-12 col-md-6 col-xl-4">
+  <div class="module-card">
+    <div class="module-head">
+      <div class="module-icon grad-slate">
+        <i class="bi bi-shield-lock fs-3"></i>
+      </div>
+      <div>
+        <p class="module-title">الأمان والمستخدمون والحوكمة</p>
+        <p class="module-sub">حسابات الدخول — الأدوار — الصلاحيات  </p>
+      </div>
+    </div>
+
+    <div class="module-body">
+      <p class="section-note">
+        إدارة مستخدمي النظام، التحكم الكامل بالصلاحيات، ومراقبة كل التغييرات عبر سجل التدقيق.
+      </p>
+    </div>
+
+    <div class="module-actions grid-2">
+      <a href="{{ route('admin.users.index') }}" class="btn btn-namaa w-100 w-sm-auto">
+        إدارة المستخدمين
+      </a>
+
+      <a href="{{ route('admin.roles.index') }}" class="btn btn-namaa w-100 w-sm-auto">
+        الأدوار والصلاحيات
+      </a>
+
+
+    </div>
+     <div class="module-actions">
+      <a href="{{ route('admin.audit.index') }}" class="btn btn-soft w-100 w-sm-auto">
+        مركز التدقيق 
+      </a>
+    </div>
+  </div>
+</div>
+@endif
+
+
+
 
     {{-- Logistics / Assets --}}
     <div class="col-12 col-md-6 col-xl-4">
@@ -261,38 +332,6 @@
     </div>
 
 
-
-    {{-- Users (System Users) - Coming Soon --}}
-<div class="col-12 col-md-6 col-xl-4">
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-icon grad-slate">
-        <i class="bi bi-person-gear fs-3"></i>
-      </div>
-      <div>
-        <p class="module-title d-flex align-items-center gap-2">
-          المستخدمين وصلاحيات النظام
-          <span class="badge bg-warning text-dark">قريباً</span>
-        </p>
-        <p class="module-sub">حسابات الدخول — الأدوار والصلاحيات — سجل النشاط</p>
-      </div>
-    </div>
-
-    <div class="module-body">
-      <p class="section-note">
-        إدارة مستخدمي النظام (Admins/Staff)، تحديد الصلاحيات، ومتابعة سجل التعديلات والنشاطات.
-      </p>
-    </div>
-
-    <div class="module-actions">
-      <a href="#" class="btn btn-namaa w-100 w-sm-auto disabled" aria-disabled="true" tabindex="-1">فتح المستخدمين</a>
-      <a href="#" class="btn btn-soft w-100 w-sm-auto disabled" aria-disabled="true" tabindex="-1">الأدوار والصلاحيات</a>
-    </div>
-  </div>
-</div>
-
-
-
 {{-- Branches --}}
 <div class="col-12 col-md-6 col-xl-4">
   <div class="module-card">
@@ -302,7 +341,7 @@
       </div>
       <div>
         <p class="module-title">الفروع</p>
-        <p class="module-sub">إعدادات الفروع — الأكواد — توزيع العمليات حسب الفرع</p>
+        <p class="module-sub">إعدادات الفروع — توزيع العمليات حسب الفرع</p>
       </div>
     </div>
 
@@ -331,7 +370,7 @@
       </div>
       <div>
         <p class="module-title">الدبلومات</p>
-        <p class="module-sub">إعدادات الدبلومات — الأكواد — الربط بالطلاب والمدربين</p>
+        <p class="module-sub">إعدادات الدبلومات — الربط بالطلاب والمدربين</p>
       </div>
     </div>
 
