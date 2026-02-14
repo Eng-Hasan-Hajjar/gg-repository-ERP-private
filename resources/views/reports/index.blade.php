@@ -53,6 +53,47 @@
   </div>
 </div>
 
+
+
+
+
+<div class="d-flex gap-2 mt-3 glass-card p-3 p-md-4 mb-3">
+  <a href="{{ route('reports.executive') }}" class="btn btn-namaa">
+    لوحة القيادة التنفيذية
+  </a>
+
+  <a href="{{ route('reports.branches.map') }}" class="btn btn-namaa">
+    خريطة الفروع
+  </a>
+
+  <a href="{{ route('reports.students.growth') }}" class="btn btn-namaa">
+    نمو الطلاب
+  </a>
+
+  <a href="{{ route('reports.revenue.branches') }}" class="btn btn-namaa">
+    إيرادات الفروع
+  </a>
+
+  <a href="{{ route('reports.system.alerts') }}" class="btn btn-namaa">
+    تنبيهات النظام
+  </a>
+
+
+  <a href="{{ route('reports.charts', request()->query()) }}" 
+   class="btn btn-namaa ">
+    📊 عرض المخططات
+</a>
+
+
+
+
+
+</div>
+
+
+
+
+
 @if(session('error'))
   <div class="alert alert-warning fw-semibold">
     <i class="bi bi-exclamation-triangle"></i> {{ session('error') }}
@@ -112,6 +153,15 @@
             <div class="stat-value">
               {{ $c['value'] ?? 0 }}
               @if(!empty($c['suffix'])) <span class="text-muted fw-bold" style="font-size:.85rem">{{ $c['suffix'] }}</span> @endif
+          
+          
+           @if(isset($c['growth']))
+                        <div class="{{ $c['growth'] >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ $c['growth'] >= 0 ? '▲' : '▼' }}
+                            {{ abs($c['growth']) }}%
+                            مقارنة بالشهر السابق
+                        </div>
+                    @endif
             </div>
           </div>
           <div class="stat-icon">
@@ -162,40 +212,32 @@
 
 
 
-<div class="d-flex gap-2 mt-3">
-  <a href="{{ route('reports.executive') }}" class="btn btn-namaa">
-    لوحة القيادة التنفيذية
-  </a>
-
-  <a href="{{ route('reports.branches.map') }}" class="btn btn-soft">
-    خريطة الفروع
-  </a>
-</div>
 
 
 
-<div class="d-flex gap-2 mt-3">
-  <a href="{{ route('reports.executive') }}" class="btn btn-namaa">
-    لوحة القيادة التنفيذية
-  </a>
 
-  <a href="{{ route('reports.branches.map') }}" class="btn btn-soft">
-    خريطة الفروع
-  </a>
 
-  <a href="{{ route('reports.students.growth') }}" class="btn btn-soft">
-    نمو الطلاب
-  </a>
 
-  <a href="{{ route('reports.revenue.branches') }}" class="btn btn-soft">
-    إيرادات الفروع
-  </a>
 
-  <a href="{{ route('reports.system.alerts') }}" class="btn btn-soft">
-    تنبيهات النظام
-  </a>
-</div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{-- ApexCharts CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 
 <script>
@@ -206,6 +248,98 @@ function toggleCustomRange(val){
   });
 }
 toggleCustomRange("{{ request('range','month') }}");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // ================== PIE ==================
+    let studentsData = @json($data['charts']['students_per_branch'] ?? []);
+
+    let pieOptions = {
+        chart: { type: 'pie', height: 350 },
+        series: studentsData.map(x => x.total),
+        labels: studentsData.map(x => x.branch),
+        colors:['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6'],
+        legend:{ position:'bottom' }
+    };
+
+    new ApexCharts(document.querySelector("#studentsPie"), pieOptions).render();
+
+
+    // ================== REVENUE BAR ==================
+    let revenueData = @json($data['charts']['revenue_per_branch'] ?? []);
+
+    let barOptions = {
+        chart: { type: 'bar', height: 350 },
+        series: [{
+            name: 'الإيرادات',
+            data: revenueData.map(x => x.total)
+        }],
+        xaxis: {
+            categories: revenueData.map(x => x.branch)
+        },
+        colors:['#16a34a']
+    };
+
+    new ApexCharts(document.querySelector("#revenueBar"), barOptions).render();
+
+
+    // ================== GROWTH LINE ==================
+    let growthData = @json($data['charts']['students_growth'] ?? []);
+
+    let lineOptions = {
+        chart: { type: 'line', height: 350 },
+        series: [{
+            name: 'عدد الطلاب',
+            data: growthData.map(x => x.total)
+        }],
+        xaxis: {
+            categories: growthData.map(x => x.month)
+        },
+        stroke: { curve: 'smooth' },
+        colors:['#3b82f6']
+    };
+
+    new ApexCharts(document.querySelector("#growthLine"), lineOptions).render();
+
+
+    // ================== AUTO REFRESH ==================
+    setInterval(function(){
+        fetch("{{ route('reports.index') }}?ajax=1")
+            .then(res => res.json())
+            .then(data => {
+                console.log("Live update...");
+                location.reload(); // يمكن تطويرها لاحقاً لتحديث بدون reload
+            });
+    }, 60000);
+
+});
+
+
+
+
 </script>
+
+
+
+
+
 
 @endsection

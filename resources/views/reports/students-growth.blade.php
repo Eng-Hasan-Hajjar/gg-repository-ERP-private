@@ -5,32 +5,45 @@
 
 @section('content')
 
-<h4 class="mb-3">نمو عدد الطلاب</h4>
+<div class="mb-4">
+    <div class="page-title">نمو عدد الطلاب</div>
+    <div class="page-subtitle">
+        يوضح هذا التقرير عدد الطلاب المسجلين في كل شهر بناءً على تاريخ التسجيل الفعلي.
+    </div>
+</div>
 
-<div class="glass-card p-3">
-  <p class="text-muted">
-    هذا التقرير يوضح تطور عدد الطلاب خلال الأشهر الماضية.
-  </p>
+<div class="clean-card">
 
-  <table class="table table-sm">
-    <thead>
-      <tr>
-        <th>الشهر</th>
-        <th>عدد الطلاب</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{-- سنملؤها لاحقًا ببيانات حقيقية --}}
-      <tr>
-        <td>يناير</td>
-        <td><span class="badge bg-dark">120</span></td>
-      </tr>
-      <tr>
-        <td>فبراير</td>
-        <td><span class="badge bg-dark">150</span></td>
-      </tr>
-    </tbody>
-  </table>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>الشهر</th>
+                <th>عدد الطلاب المسجلين</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        @forelse($growth as $row)
+            <tr>
+                <td>{{ $row['month'] }}</td>
+
+                <td>
+                    <span class="stat-number">
+                        {{ $row['total'] }}
+                    </span>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="2" class="text-center text-muted">
+                    لا توجد بيانات تسجيل خلال الفترة المحددة
+                </td>
+            </tr>
+        @endforelse
+
+        </tbody>
+    </table>
+
 </div>
 
 @endsection

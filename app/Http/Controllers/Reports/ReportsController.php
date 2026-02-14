@@ -81,6 +81,46 @@ public function branchesMap()
 }
 
 
+public function charts(ReportFiltersRequest $request)
+{
+    $filters = $request->validatedFilters();
+    $data    = $this->service->getDashboard($filters);
+
+    return view('reports.charts', compact('data'));
+}
+
+
+
+
+public function studentsGrowth(ReportsService $service)
+{
+    $data = $service->studentsGrowthReport();
+
+    return view('reports.students-growth', $data);
+}
+
+
+
+
+
+public function revenuePerBranch(ReportFiltersRequest $request)
+{
+    $filters = $request->validatedFilters();
+
+    $data = $this->service->revenuePerBranchReport($filters);
+
+    return view('reports.revenue-by-branch', $data);
+}
+
+
+
+
+public function alerts()
+{
+    $data = $this->service->systemAlerts();
+
+    return view('reports.system-alerts', $data);
+}
 
 
 }

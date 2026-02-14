@@ -50,21 +50,40 @@
   <div class="col-md-4">
     <div class="module-card p-3">
       <p class="module-title mb-1">تنبيهات اليوم</p>
-      <p class="section-note">3 طلبات إجازة معلّقة • 2 امتحان قادم</p>
+      <p class="section-note">
+    {{ $highlights['alerts']['pending_leaves'] }} طلب إجازة معلّق
+    •
+    {{ $highlights['alerts']['today_tasks'] }} مهام مستحقة اليوم
+</p>
+
     </div>
   </div>
 
   <div class="col-md-4">
     <div class="module-card p-3">
       <p class="module-title mb-1">الأولوية</p>
-      <p class="section-note">إقفال صناديق الفرع • مراجعة الرواتب</p>
+      <p class="section-note">
+@if(count($highlights['priority']))
+    {{ implode(' • ', $highlights['priority']) }}
+@else
+    لا توجد أولويات حالياً
+@endif
+</p>
     </div>
   </div>
 
   <div class="col-md-4">
     <div class="module-card p-3">
       <p class="module-title mb-1">نشاط النظام</p>
-      <p class="section-note">12 تعديلًا اليوم • آخر تعديل قبل 5 دقائق</p>
+      <p class="section-note">
+    {{ $highlights['activity']['count'] }} تعديلًا اليوم
+    •
+    آخر تعديل
+    {{ $highlights['activity']['last']
+        ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
+        : '—'
+    }}
+</p>
     </div>
   </div>
 
@@ -95,7 +114,9 @@
         </div>
         <div class="module-actions">
           <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
-          <a href="#" class="btn btn-soft w-100 w-sm-auto">عرض لوحة التحكم</a>
+          <a href="{{ route('reports.executive') }}" class="btn btn-namaa w-100 w-sm-auto">
+            لوحة القيادة التنفيذية
+          </a>
         </div>
       </div>
     </div>

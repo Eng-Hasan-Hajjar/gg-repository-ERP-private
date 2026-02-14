@@ -3,6 +3,8 @@
 namespace App\Services\Reports;
 
 use App\Repositories\Reports\ReportsRepository;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ReportsService
 {
@@ -10,6 +12,30 @@ class ReportsService
 
  public function getDashboard(array $filters): array
 {
+
+
+
+$currentMonthStart = now()->startOfMonth();
+$currentMonthEnd   = now()->endOfMonth();
+
+$prevMonthStart = now()->subMonth()->startOfMonth();
+$prevMonthEnd   = now()->subMonth()->endOfMonth();
+
+$currentStudents = DB::table('students')
+    ->whereBetween('created_at',[$currentMonthStart,$currentMonthEnd])
+    ->count();
+
+$prevStudents = DB::table('students')
+    ->whereBetween('created_at',[$prevMonthStart,$prevMonthEnd])
+    ->count();
+
+$studentsKpi = $this->kpiWithGrowth($currentStudents,$prevStudents);
+
+
+
+
+
+
     $branchId = isset($filters['branch_id']) && $filters['branch_id'] !== '' 
         ? (int)$filters['branch_id'] 
         : null;
@@ -74,6 +100,19 @@ class ReportsService
             'icon'  => 'bi-graph-up-arrow',
             'suffix'=> ' (حسب العملة/الجدول)',
         ],
+
+
+        [
+    'title'=>'طلاب هذا الشهر',
+    'value'=>$studentsKpi['value'],
+    'growth'=>$studentsKpi['growth'],
+    'icon'=>'bi-people-fill'
+],
+
+
+
+
+
     ];
 
     return [
@@ -81,7 +120,10 @@ class ReportsService
         'cards'   => $cards,
         'charts'  => [
             'students_per_branch' => $this->repo->studentsPerBranch(),
-        ],
+             'revenue_per_branch'  => $this->repo->revenuePerBranch($from, $to, $branchId),
+          'students_growth'     => $this->repo->studentsGrowth(),  
+     
+             ],
 
         // ✅ المفتاح الذي تنتظره صفحة executive
         'executive' => [
@@ -91,5 +133,87 @@ class ReportsService
         ],
     ];
 }
+
+
+
+
+private function kpiWithGrowth($current, $previous)
+{
+    if ($previous == 0) {
+        return [
+            'value' => $current,
+            'growth' => 0
+        ];
+    }
+
+    $growth = (($current - $previous) / $previous) * 100;
+
+    return [
+        'value' => $current,
+        'growth' => round($growth,2)
+    ];
+}
+
+
+
+
+public function studentsGrowthReport(): array
+{
+    return [
+        'growth' => $this->repo->studentsGrowthByMonth()
+    ];
+}
+
+
+
+
+public function revenuePerBranchReport(array $filters): array
+{
+    $branchId = isset($filters['branch_id']) && $filters['branch_id'] !== ''
+        ? (int)$filters['branch_id']
+        : null;
+
+    $from = $filters['from'] ?? now()->startOfYear()->toDateString();
+    $to   = $filters['to']   ?? now()->endOfYear()->toDateString();
+
+    return [
+        'rows' => $this->repo->revenuePerBranch($from, $to, $branchId),
+        'from' => $from,
+        'to'   => $to,
+    ];
+}
+
+
+
+public function systemAlerts(): array
+{
+    return [
+        'alerts' => $this->repo->systemAlerts()
+    ];
+}
+
+public function navbarAlerts(): array
+{
+    $alerts = $this->repo->systemAlerts();
+
+    return [
+        'alerts' => $alerts,
+        'count'  => count($alerts)
+    ];
+}
+
+
+
+
+
+public function dashboardHighlights(): array
+{
+    return [
+        'alerts'   => $this->repo->todayAlertsSummary(),
+        'priority' => $this->repo->highPriorityTasks(),
+        'activity' => $this->repo->systemActivityToday(),
+    ];
+}
+
 
 }

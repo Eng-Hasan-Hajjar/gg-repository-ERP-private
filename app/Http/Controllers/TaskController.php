@@ -23,6 +23,11 @@ class TaskController extends Controller
             $s = trim($request->search);
             $q->where('title','like',"%$s%")->orWhere('description','like',"%$s%");
         }
+        
+        if ($request->filled('late')) {
+            $q->whereDate('due_date', '<', now())
+            ->where('status', '!=', 'done');
+        }
 
         return view('tasks.index', [
             'tasks' => $q->latest()->paginate(20)->withQueryString(),

@@ -329,4 +329,260 @@ public function latestAudit(int $limit = 5): array
 
 
 
+
+
+
+
+private function kpiWithGrowth($current, $previous)
+{
+    if ($previous == 0) {
+        return [
+            'value' => $current,
+            'growth' => 0
+        ];
+    }
+
+    $growth = (($current - $previous) / $previous) * 100;
+
+    return [
+        'value' => $current,
+        'growth' => round($growth,2)
+    ];
+}
+
+
+
+
+
+// =========================
+// Revenue Per Branch (Cashbox Transactions)
+// =========================
+public function revenuePerBranch(string $from, string $to, ?int $branchId = null): array
+{
+    if (!$this->has('cashbox_transactions') || !$this->has('cashboxes') || !$this->has('branches')) {
+        return [];
+    }
+
+    $query = DB::table('branches')
+        ->leftJoin('cashboxes', 'cashboxes.branch_id', '=', 'branches.id')
+        ->leftJoin('cashbox_transactions', function ($join) use ($from, $to) {
+            $join->on('cashbox_transactions.cashbox_id', '=', 'cashboxes.id')
+                ->where('cashbox_transactions.type', 'in')
+                ->where('cashbox_transactions.status', 'posted')
+                ->whereDate('cashbox_transactions.trx_date', '>=', $from)
+                ->whereDate('cashbox_transactions.trx_date', '<=', $to);
+        })
+        ->select(
+            'branches.name as branch',
+            DB::raw('COALESCE(SUM(cashbox_transactions.amount),0) as total')
+        )
+        ->groupBy('branches.name')
+        ->orderBy('branches.name');
+
+    if ($branchId) {
+        $query->where('branches.id', $branchId);
+    }
+
+    return $query->get()
+        ->map(fn($r) => [
+            'branch' => $r->branch,
+            'total'  => (float) $r->total,
+        ])
+        ->toArray();
+}
+
+
+
+
+
+// =========================
+// Students Monthly Growth
+// =========================
+public function studentsGrowth(): array
+{
+    if (!$this->has('students')) return [];
+
+    return DB::table('students')
+        ->select(
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+            DB::raw("COUNT(id) as total")
+        )
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get()
+        ->map(fn($r)=>[
+            'month' => $r->month,
+            'total' => (int)$r->total
+        ])
+        ->toArray();
+}
+
+
+
+
+
+public function studentsGrowthByMonth(int $months = 12): array
+{
+    if (!$this->has('students')) return [];
+
+    return DB::table('students')
+        ->selectRaw("
+            DATE_FORMAT(created_at, '%Y-%m') as month_key,
+            DATE_FORMAT(created_at, '%m/%Y') as month_label,
+            COUNT(*) as total
+        ")
+        ->where('created_at', '>=', now()->subMonths($months))
+        ->groupBy('month_key', 'month_label')
+        ->orderBy('month_key')
+        ->get()
+        ->map(fn($r) => [
+            'month' => $r->month_label,
+            'total' => (int) $r->total
+        ])
+        ->toArray();
+}
+
+
+
+
+
+public function systemAlerts(): array
+{
+    $alerts = [];
+
+    // =============================
+    // مهام متأخرة
+    // =============================
+    if ($this->has('tasks')) {
+
+        $lateTasks = DB::table('tasks')
+            ->whereDate('due_date','<', now())
+            ->where('status','!=','done')
+            ->count();
+
+        if ($lateTasks > 0) {
+            $alerts[] = [
+                'type' => 'warning',
+                'icon' => 'bi-list-check',
+                'message' => "يوجد {$lateTasks} مهام متأخرة",
+                'url' => route('tasks.index', [
+                    'late' => 1
+                ])
+
+            ];
+        }
+    }
+
+    // =============================
+    // لا يوجد تسجيل طلاب اليوم
+    // =============================
+    if ($this->has('students')) {
+
+        $todayStudents = DB::table('students')
+            ->whereDate('created_at', now())
+            ->count();
+
+        if ($todayStudents == 0) {
+            $alerts[] = [
+                'type' => 'info',
+                'icon' => 'bi-people',
+                'message' => 'لا يوجد تسجيل طلاب اليوم',
+                'url' => route('students.index', [
+                    'search' => now()->format('Y')
+                ])
+            ];
+        }
+    }
+
+    // =============================
+    // لا توجد حركات مالية اليوم
+    // =============================
+    if ($this->has('cashbox_transactions')) {
+
+        $trx = DB::table('cashbox_transactions')
+            ->whereDate('trx_date', now())
+            ->count();
+
+        if ($trx == 0) {
+            $alerts[] = [
+                'type' => 'danger',
+                'icon' => 'bi-cash-coin',
+                'message' => 'لا توجد أي حركة مالية اليوم',
+                'url' => route('cashboxes.index')
+            ];
+        }
+    }
+
+    return $alerts;
+}
+
+
+
+
+
+
+public function todayAlertsSummary(): array
+{
+    $result = [
+        'pending_leaves' => 0,
+        'today_tasks'    => 0,
+    ];
+
+    // طلبات الإجازة المعلقة
+    if ($this->has('leaves')) {
+        $result['pending_leaves'] = DB::table('leaves')
+            ->where('status', 'pending')
+            ->count();
+    }
+
+    // مهام اليوم
+    if ($this->has('tasks')) {
+        $result['today_tasks'] = DB::table('tasks')
+            ->whereDate('due_date', now())
+            ->where('status', '!=', 'done')
+            ->count();
+    }
+
+    return $result;
+}
+
+
+
+public function highPriorityTasks(): array
+{
+    if (!$this->has('tasks')) return [];
+
+    return DB::table('tasks')
+        ->whereIn('priority', ['high','urgent'])
+        ->where('status','!=','done')
+        ->orderBy('due_date')
+        ->limit(3)
+        ->pluck('title')
+        ->toArray();
+}
+
+
+
+
+
+public function systemActivityToday(): array
+{
+    if (!$this->has('audit_logs')) {
+        return ['count'=>0,'last'=>null];
+    }
+
+    $todayLogs = DB::table('audit_logs')
+        ->whereDate('created_at', now())
+        ->count();
+
+    $lastLog = DB::table('audit_logs')
+        ->latest()
+        ->value('created_at');
+
+    return [
+        'count' => $todayLogs,
+        'last'  => $lastLog
+    ];
+}
+
 }

@@ -295,6 +295,30 @@
         {{ auth()->user()->name ?? '' }}
       </span>
 
+
+
+      <div class="dropdown">
+
+    <button class="btn btn-light position-relative" id="alertBell"
+            data-bs-toggle="dropdown">
+
+        <i class="bi bi-bell fs-5"></i>
+
+        <span id="alertCount"
+              class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+              style="display:none">
+        </span>
+
+    </button>
+
+    <div class="dropdown-menu p-2" id="alertList" style="width:320px">
+        <div class="text-muted text-center small">جاري تحميل التنبيهات...</div>
+    </div>
+
+</div>
+
+
+
       <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button class="btn btn-sm btn-outline-light fw-bold rounded-pill px-3">تسجيل خروج</button>
@@ -446,6 +470,54 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+    fetch("{{ route('alerts.navbar') }}")
+        .then(res => res.json())
+        .then(data => {
+
+            const count = document.getElementById('alertCount');
+            const list  = document.getElementById('alertList');
+
+            if(data.count > 0){
+                count.style.display = 'inline-block';
+                count.innerText = data.count;
+            }
+
+            if(data.alerts.length === 0){
+                list.innerHTML =
+                    `<div class="text-success text-center">
+                        لا توجد تنبيهات 🎉
+                    </div>`;
+                return;
+            }
+
+            let html = '';
+
+            data.alerts.forEach(a => {
+                html += `
+                    <a href="${a.url}"
+                       class="dropdown-item d-flex gap-2 align-items-start">
+                        <i class="bi ${a.icon} text-${a.type}"></i>
+                        <div>${a.message}</div>
+                    </a>
+                `;
+            });
+
+            list.innerHTML = html;
+        });
+
+});
+</script>
+
+
+
+
 @stack('scripts')
 </body>
 </html>

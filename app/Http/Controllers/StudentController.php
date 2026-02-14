@@ -44,7 +44,7 @@ public function index(Request $request)
     }
 
     // ✅ فقط المثبتين
-    $q->where('is_confirmed', true);
+  //  $q->where('is_confirmed', true);
 
     $students = $q->latest()->paginate(15)->withQueryString();
 

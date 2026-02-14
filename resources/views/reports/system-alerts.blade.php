@@ -5,14 +5,31 @@
 
 @section('content')
 
-<h4 class="mb-3">تنبيهات ومخاطر النظام</h4>
+<div class="mb-4">
+    <div class="page-title">تنبيهات النظام</div>
+    <div class="page-subtitle">
+        تحليل ذكي لحالة النظام اعتمادًا على البيانات الفعلية.
+    </div>
+</div>
 
-<div class="glass-card p-3">
-  <ul>
-    <li>⚠️ تأخير في الدوام بفرع برلين</li>
-    <li>⚠️ انخفاض الإيرادات اليوم</li>
-    <li>⚠️ مهام متأخرة</li>
-  </ul>
+<div class="clean-card">
+
+    @forelse($alerts as $a)
+
+        <div class="alert alert-{{ $a['type'] }} d-flex align-items-center gap-2">
+            <i class="bi {{ $a['icon'] }}"></i>
+            {{ $a['message'] }}
+        </div>
+
+    @empty
+
+        <div class="text-success fw-bold">
+            <i class="bi bi-check-circle"></i>
+            لا توجد أي مخاطر حالياً — النظام يعمل بشكل طبيعي
+        </div>
+
+    @endforelse
+
 </div>
 
 @endsection

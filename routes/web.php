@@ -35,10 +35,23 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
+/*
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+*/
+
+
+use App\Http\Controllers\DashboardController;
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -387,20 +400,40 @@ Route::get('/reports/branches-map', [ReportsController::class, 'branchesMap'])
 
 
 
-    Route::get('/reports/students-growth', function(){
+   /* Route::get('/reports/students-growth', function(){
    return view('reports.students-growth');
-})->name('reports.students.growth');
+})->name('reports.students.growth');*/
+
+Route::get('/reports/students-growth', [ReportsController::class, 'studentsGrowth'])
+    ->name('reports.students.growth');
 
 
 
-Route::get('/reports/revenue-branches', fn() => view('reports.revenue-by-branch'))
-   ->name('reports.revenue.branches');
+Route::get('/reports/revenue-branches', [ReportsController::class, 'revenuePerBranch'])
+    ->name('reports.revenue.branches');
 
 
 
-   Route::get('/reports/system-alerts', fn() => view('reports.system-alerts'))
-   ->name('reports.system.alerts');
+Route::get('/reports/system-alerts', [ReportsController::class,'alerts'])
+    ->name('reports.system.alerts');
 
 
-   
+   Route::get('/reports/charts', [ReportsController::class, 'charts'])
+    ->name('reports.charts')
+    ->middleware('auth');
+
+
+
+
+   use App\Http\Controllers\AlertController;
+    Route::middleware('auth')->group(function () {
+
+        Route::get('/alerts/navbar', [AlertController::class, 'navbar'])
+            ->name('alerts.navbar');
+
+    });
+
+
+
+
 require __DIR__.'/auth.php';
