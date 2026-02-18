@@ -13,13 +13,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
-        @font-face {
-      font-family: 'Hacen Tunisia';
-      src:  url('/fonts/hacen-tunisia/Hacen-Tunisia.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
+
+@font-face {
+  font-family: 'Hacen Tunisia';
+  src: url('{{ asset('fonts/hacen-tunisia/Hacen-Tunisia-Bd.ttf') }}') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
 
 
     :root{
@@ -32,11 +36,91 @@
       --border: rgba(226,232,240,.95);
       --shadow: 0 20px 60px rgba(2,6,23,.08);
       --shadow-2: 0 24px 80px rgba(2,6,23,.14);
+
+
+
+
+
+      /* =========================================================
+   🎯 Reports Design Tokens (Namaa Identity)
+   ========================================================= */
+
+--report-students: #0ea5e9;
+--report-revenue: #10b981;
+--report-growth: #6366f1;
+--report-alerts: #f59e0b;
+--report-crm: #ec4899;
+
+/* Soft Backgrounds */
+--report-students-soft: rgba(14,165,233,.08);
+--report-revenue-soft: rgba(16,185,129,.08);
+--report-growth-soft: rgba(99,102,241,.08);
+--report-alerts-soft: rgba(245,158,11,.10);
+--report-crm-soft: rgba(236,72,153,.08);
+
+
+
+
+
     }
 
 
+/* =========================================================
+   🎯 Soft Buttons System (ERP Style)
+   ========================================================= */
+
+.btn-soft-primary{
+  background: var(--report-students-soft);
+  color: var(--report-students);
+  border: 1px solid rgba(14,165,233,.25);
+}
+
+.btn-soft-success{
+  background: var(--report-revenue-soft);
+  color: var(--report-revenue);
+  border: 1px solid rgba(16,185,129,.25);
+}
+
+.btn-soft-warning{
+  background: var(--report-alerts-soft);
+  color: #b45309;
+  border: 1px solid rgba(245,158,11,.35);
+}
+
+.btn-soft-purple{
+  background: var(--report-growth-soft);
+  color: var(--report-growth);
+  border: 1px solid rgba(99,102,241,.25);
+}
+
+.btn-soft-pink{
+  background: var(--report-crm-soft);
+  color: var(--report-crm);
+  border: 1px solid rgba(236,72,153,.25);
+}
+
+[class*="btn-soft-"]{
+  font-weight:900;
+  border-radius:14px;
+  padding:10px 16px;
+  transition:.2s ease;
+}
+
+[class*="btn-soft-"]:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 25px rgba(2,6,23,.08);
+}
+
+
+
+
+
+
+
     body{
-      font-family: 'Hacen Tunisia', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+       font-family: 'Hacen Tunisia', sans-serif !important;
+         letter-spacing: .2px;
+         
       background:
         radial-gradient(1000px 600px at 15% 10%, rgba(16,185,129,.10), transparent 60%),
         radial-gradient(1000px 600px at 85% 15%, rgba(14,165,233,.10), transparent 55%),
@@ -45,6 +129,21 @@
 
       
     }
+
+input,
+select,
+textarea,
+button,
+.table,
+.badge,
+.dropdown-menu,
+.navbar,
+.card,
+.modal,
+.form-control {
+  font-family: 'Hacen Tunisia', sans-serif !important;
+}
+
 
 
 
@@ -202,6 +301,25 @@
     .module-sub{ margin: 0; color: var(--namaa-muted); font-weight: 700; font-size: .92rem; line-height: 1.7; }
     .module-body{ padding: 12px 16px 16px 16px; }
     .module-actions{ padding: 0 16px 16px 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+
+
+
+    /* ============================
+   Table KPI Style (Soft ERP)
+============================ */
+
+.badge-namaa{
+  background:rgba(14,165,233,.08);
+  color:var(--namaa-blue);
+  border:1px solid rgba(14,165,233,.25);
+  font-weight:800;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:.75rem;
+}
+
+
 
     .btn-namaa{
       border: 0;
@@ -470,6 +588,112 @@
     }
 }
 
+
+
+
+
+
+/* =========================================================
+   📱 Reports Responsive Layout
+   ========================================================= */
+/* =========================================
+   ERP REPORTS GRID SYSTEM
+========================================= */
+
+.reports-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+
+/* الكرت نفسه */
+.report-tile{
+  position:relative;
+  padding:20px;
+  border-radius:18px;
+  text-decoration:none;
+  transition:.25s ease;
+  overflow:hidden;
+  border:1px solid rgba(226,232,240,.9);
+  background:#fff;
+}
+
+/* Hover احترافي */
+.report-tile:hover{
+  transform:translateY(-6px);
+  box-shadow:0 25px 60px rgba(2,6,23,.12);
+}
+
+/* أيقونة كبيرة */
+.report-icon{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  margin-bottom:12px;
+}
+
+/* العنوان */
+.report-title{
+  font-weight:900;
+  font-size:1.05rem;
+  margin-bottom:4px;
+}
+
+/* الوصف */
+.report-desc{
+  font-size:.85rem;
+  color:#64748b;
+}
+
+/* خط زخرفي */
+.report-tile::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:4px;
+  background:linear-gradient(90deg,var(--namaa-blue),var(--namaa-green));
+  opacity:.2;
+}
+
+
+@media (max-width:768px){
+  .reports-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media (max-width:480px){
+  .reports-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+
+
+
+
+@media (max-width:768px){
+
+  .stat-card{
+    padding:12px;
+    border-radius:14px;
+  }
+
+  .stat-value{
+    font-size:1.1rem;
+  }
+
+  .glass-card{
+    padding:14px !important;
+  }
+}
 
 
 
