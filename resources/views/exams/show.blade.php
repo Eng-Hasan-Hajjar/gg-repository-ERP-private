@@ -21,11 +21,11 @@
   <i class="bi bi-people"></i> طلاب الامتحان
 </a>
 
-<a class="btn btn-dark fw-bold rounded-pill px-4" href="{{ route('exams.marks.edit',$exam) }}">
+<a class="btn btn-namaa fw-bold rounded-pill px-4" href="{{ route('exams.marks.edit',$exam) }}">
   <i class="bi bi-pencil-square"></i> إدخال الدرجات
 </a>
 
-    <a class="btn btn-dark fw-bold rounded-pill px-4" href="{{ route('exams.results.edit',$exam) }}">
+    <a class="btn btn-namaa fw-bold rounded-pill px-4" href="{{ route('exams.results.edit',$exam) }}">
       <i class="bi bi-pencil-square"></i> إدخال/تعديل الدرجات
     </a>
     <a class="btn btn-outline-secondary rounded-pill px-4 fw-bold" href="{{ route('exams.index') }}">

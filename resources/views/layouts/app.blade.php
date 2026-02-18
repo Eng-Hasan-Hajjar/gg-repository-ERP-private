@@ -120,7 +120,7 @@
     body{
        font-family: 'Hacen Tunisia', sans-serif !important;
          letter-spacing: .2px;
-         
+
       background:
         radial-gradient(1000px 600px at 15% 10%, rgba(16,185,129,.10), transparent 60%),
         radial-gradient(1000px 600px at 85% 15%, rgba(14,165,233,.10), transparent 55%),
@@ -776,6 +776,10 @@ button,
         @yield('content')
       </section>
 
+
+
+    @if(auth()->user()->hasRole('super_admin'))
+
       <aside class="iconbar" aria-label="Module icons">
         <a href="{{ route('dashboard') }}" class="grad-slate {{ $activeModule==='dashboard' ? 'active' : '' }}" title="لوحة التحكم">
           <i class="bi bi-grid-fill fs-6"></i>
@@ -887,6 +891,9 @@ button,
 
 
       </aside>
+
+    @endif  
+
 
     </div>
 

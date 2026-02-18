@@ -31,7 +31,7 @@
     </div>
 
     <div class="col-md-3 d-grid">
-      <button class="btn btn-dark">تطبيق</button>
+      <button class="btn btn-namaa">تطبيق</button>
     </div>
   </div>
 </form>

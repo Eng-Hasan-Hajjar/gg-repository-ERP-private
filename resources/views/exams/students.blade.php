@@ -20,7 +20,7 @@
       <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: اسم/رقم جامعي">
     </div>
     <div class="col-12 col-md-2 d-grid">
-      <button class="btn btn-dark fw-bold">بحث</button>
+      <button class="btn btn-namaa fw-bold">بحث</button>
     </div>
   </div>
 </form>

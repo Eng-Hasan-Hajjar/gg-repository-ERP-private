@@ -64,7 +64,7 @@
       </div>
 
       <div class="col-12 col-md-12 d-grid">
-        <button class="btn btn-dark fw-bold">تطبيق</button>
+        <button class="btn btn-namaa fw-bold">تطبيق</button>
       </div>
     </div>
   </div>

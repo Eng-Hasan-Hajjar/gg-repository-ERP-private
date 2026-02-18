@@ -54,7 +54,7 @@
     </div>
 
     <div class="col-12 col-md-1 d-grid">
-      <button class="btn btn-dark fw-bold">تطبيق</button>
+      <button class="btn btn-namaa fw-bold">تطبيق</button>
     </div>
   </div>
 </form>
@@ -97,12 +97,12 @@
 </a>
 
 @if($studentId)
-  <a class="btn btn-sm btn-dark"
+  <a class="btn btn-sm btn-namaa"
      href="{{ route('exams.marks.edit', $e).'?student_id='.$studentId }}">
      إدخال علامات هذا الطالب
   </a>
 @else
-  <a class="btn btn-sm btn-dark" href="{{ route('exams.marks.edit',$e) }}">
+  <a class="btn btn-sm btn-namaa" href="{{ route('exams.marks.edit',$e) }}">
      إدخال الدرجات (جميع الطلاب)
   </a>
 @endif

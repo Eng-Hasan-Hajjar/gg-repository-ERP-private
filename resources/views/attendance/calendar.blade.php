@@ -136,7 +136,7 @@
 
     {{-- على الشاشات الصغيرة: Dropdown للتصدير بدل زحمة أزرار --}}
     <div class="dropdown d-sm-none w-100">
-      <button class="btn btn-dark w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+      <button class="btn btn-namaa w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
         <i class="bi bi-download"></i> تصدير
       </button>
       <ul class="dropdown-menu w-100">
@@ -190,7 +190,7 @@
       </div>
 
       <div class="col-12 col-md-4 col-lg-3">
-        <button class="btn btn-dark w-100">
+        <button class="btn btn-namaa w-100">
           <i class="bi bi-funnel"></i> تطبيق
         </button>
       </div>

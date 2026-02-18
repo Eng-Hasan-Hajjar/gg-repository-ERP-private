@@ -19,7 +19,7 @@
         <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: الاسم أو الكود">
       </div>
       <div class="col-12 col-lg-2 d-grid">
-        <button class="btn btn-dark fw-bold">تطبيق</button>
+        <button class="btn btn-namaa fw-bold">تطبيق</button>
       </div>
     </div>
   </div>

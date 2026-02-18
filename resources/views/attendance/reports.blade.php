@@ -51,7 +51,7 @@
 
       <div class="col-12 col-md-2 d-grid">
         <label class="form-label fw-bold d-none d-md-block">&nbsp;</label>
-        <button class="btn btn-dark fw-bold">تطبيق</button>
+        <button class="btn btn-namaa fw-bold">تطبيق</button>
       </div>
     </div>
   </div>
