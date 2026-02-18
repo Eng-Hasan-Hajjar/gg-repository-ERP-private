@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
 
 class EmployeePayout extends Model
 {
+    use Auditable;
     protected $fillable = [
         'employee_id','payout_date','amount','currency',
         'status','reference','notes',

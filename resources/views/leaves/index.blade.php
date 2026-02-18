@@ -61,11 +61,11 @@
     <table class="table align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th class="hide-mobile">#</th>
           <th>الموظف</th>
           <th>النوع</th>
-          <th>من</th>
-          <th>إلى</th>
+          <th class="hide-mobile">من</th>
+          <th class="hide-mobile">إلى</th>
           <th>الحالة</th>
           <th class="text-end">إجراءات</th>
         </tr>
@@ -73,11 +73,11 @@
       <tbody>
         @forelse($leaves as $l)
           <tr>
-            <td>{{ $l->id }}</td>
+            <td class="hide-mobile">{{ $l->id }}</td>
             <td class="fw-bold">{{ $l->employee->full_name }}</td>
             <td>{{ $l->type=='leave'?'إجازة':'إذن' }}</td>
-            <td>{{ $l->start_date->format('Y-m-d') }}</td>
-            <td>{{ $l->end_date?->format('Y-m-d') ?? '-' }}</td>
+            <td class="hide-mobile">{{ $l->start_date->format('Y-m-d') }}</td>
+            <td class="hide-mobile">{{ $l->end_date?->format('Y-m-d') ?? '-' }}</td>
             <td>
               <span class="badge bg-{{ $l->status=='approved'?'success':($l->status=='rejected'?'danger':'secondary') }}">
                 {{ $l->status=='pending'?'معلّق':($l->status=='approved'?'مقبول':'مرفوض') }}

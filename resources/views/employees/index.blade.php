@@ -56,8 +56,8 @@
     <table class="table align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
-          <th>الكود</th>
+          <th class="hide-mobile">#</th>
+          <th class="hide-mobile">الكود</th>
           <th>الاسم</th>
           <th>النوع</th>
           <th>الفرع</th>
@@ -68,8 +68,8 @@
       <tbody>
         @forelse($employees as $e)
           <tr>
-            <td>{{ $e->id }}</td>
-            <td><code>{{ $e->code }}</code></td>
+            <td class="hide-mobile">{{ $e->id }}</td>
+            <td class="hide-mobile"><code>{{ $e->code }}</code></td>
             <td class="fw-bold">{{ $e->full_name }}</td>
             <td>
               <span class="badge bg-{{ $e->type=='trainer' ? 'primary':'secondary' }}">

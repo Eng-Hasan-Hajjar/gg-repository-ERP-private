@@ -60,8 +60,8 @@
     <table class="table align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
-          <th>الكود</th>
+          <th class="hide-mobile">#</th>
+          <th class="hide-mobile">الكود</th>
           <th>الاسم</th>
           <th>الفرع</th>
           <th>العملة</th>
@@ -72,8 +72,8 @@
       <tbody>
         @forelse($cashboxes as $c)
           <tr>
-            <td>{{ $c->id }}</td>
-            <td><code>{{ $c->code }}</code></td>
+            <td class="hide-mobile">{{ $c->id }}</td>
+            <td class="hide-mobile"><code>{{ $c->code }}</code></td>
             <td class="fw-bold">{{ $c->name }}</td>
             <td>{{ $c->branch->name ?? '-' }}</td>
             <td><span class="badge bg-light text-dark border">{{ $c->currency }}</span></td>

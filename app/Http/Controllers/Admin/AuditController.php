@@ -28,6 +28,15 @@ class AuditController extends Controller
             $query->where('model', $request->model);
         }
 
+
+        
+        // فلترة حسب التاريخ
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+
+
         $logs = $query->paginate(50);
         $users = User::orderBy('name')->get(); // ✅ هنا نمرر المتغير المفقود
 

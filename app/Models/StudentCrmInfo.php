@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
 
 class StudentCrmInfo extends Model
 { 
+  use Auditable;
     
 protected $fillable = [
     'student_id','first_contact_date','residence','age','organization','email','job',

@@ -448,7 +448,7 @@ $this->saveProfileWithUploads($student, $request);
 
 
   
-private function saveProfileWithUploads(Student $student, \Illuminate\Http\Request $request): void
+private function saveProfileWithUploads(Student $student, Request $request): void
 {
     $profileData = $request->input('profile', []);
 

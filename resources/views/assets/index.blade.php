@@ -65,8 +65,8 @@
     <table class="table align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
-          <th>التاغ</th>
+          <th class="hide-mobile">#</th>
+          <th class="hide-mobile">التاغ</th>
           <th>الأصل</th>
           <th>التصنيف</th>
           <th>الفرع</th>
@@ -78,8 +78,8 @@
       <tbody>
         @forelse($assets as $a)
           <tr>
-            <td>{{ $a->id }}</td>
-            <td><code>{{ $a->asset_tag }}</code></td>
+            <td class="hide-mobile">{{ $a->id }}</td>
+            <td class="hide-mobile"><code>{{ $a->asset_tag }}</code></td>
             <td class="fw-bold">{{ $a->name }}</td>
             <td>{{ $a->category->name ?? '-' }}</td>
             <td>{{ $a->branch->name ?? '-' }}</td>

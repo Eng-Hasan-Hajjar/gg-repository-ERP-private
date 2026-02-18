@@ -48,9 +48,10 @@
     <table class="table table-hover mb-0 align-middle">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th class="hide-mobile">#</th>
           <th>الاسم</th>
-          <th>البريد</th>
+          <th>ساعات اليوم</th>
+          <th class="hide-mobile">البريد</th>
           <th>الأدوار</th>
           <th class="text-end">إجراءات</th>
         </tr>
@@ -59,9 +60,22 @@
       <tbody>
         @forelse($users as $u)
         <tr>
-          <td>{{ $u->id }}</td>
-          <td class="fw-semibold">{{ $u->name }}</td>
-          <td><code>{{ $u->email }}</code></td>
+          <td class="hide-mobile">{{ $u->id }}</td>
+
+
+            <td class="fw-semibold">
+                <div class="user-cell">
+                    <span class="status-dot {{ $u->isOnline() ? 'online' : 'offline' }}"></span>
+                    <span class="user-name">{{ $u->name }}</span>
+                </div>
+            </td>
+
+            <td>
+              {{ round(($u->todaySession->online_minutes ?? 0) / 60, 2) }} ساعة
+              </td>
+
+
+          <td class="hide-mobile"><code>{{ $u->email }}</code></td>
           <td>
             @foreach($u->roles as $r)
               <span class="badge bg-secondary">{{ $r->label }}</span>

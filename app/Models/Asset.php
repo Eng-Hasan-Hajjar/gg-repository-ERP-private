@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use App\Traits\Auditable;
 class Asset extends Model
 {
+    use Auditable;
     protected $fillable = [
         'asset_tag','name','description',
         'asset_category_id','branch_id',

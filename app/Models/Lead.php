@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Auditable;
 
 class Lead extends Model
 {
+  use Auditable;
  protected $fillable = [
     'full_name','phone','whatsapp',
     'first_contact_date','residence','age','organization','email','job',

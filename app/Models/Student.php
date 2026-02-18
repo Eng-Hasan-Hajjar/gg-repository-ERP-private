@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Traits\Auditable;
 
 class Student extends Model
 {
+  use Auditable;
     protected $fillable = [
     'university_id','first_name','last_name','full_name',
     'phone','whatsapp',

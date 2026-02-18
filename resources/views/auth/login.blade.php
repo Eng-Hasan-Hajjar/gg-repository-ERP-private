@@ -80,12 +80,16 @@
                         تسجيل الدخول
                     </button>
 
+@if(auth()->user()?->hasPermission('manage_roles'))
                     <div class="text-center mt-4">
                         <a href="{{ route('register') }}"
                            class="text-sm font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4">
                             ليس لديك حساب؟ إنشاء حساب جديد
                         </a>
                     </div>
+@endif
+
+
                 </div>
             </form>
         </div>

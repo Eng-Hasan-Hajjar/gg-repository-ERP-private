@@ -41,7 +41,7 @@ class StudentSeeder extends Seeder
                 'mode'       => rand(0,1) ? 'onsite' : 'online',
                 'status'     => 'waiting',
                 'registration_status' => 'pending',
-                'is_confirmed' => false,
+                'is_confirmed' => true,
             ]);
 
             // Profile

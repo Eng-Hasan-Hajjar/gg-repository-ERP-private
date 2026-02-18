@@ -68,8 +68,8 @@
           <th>الامتحان</th>
           <th>الدبلومة</th>
           <th>الفرع</th>
-          <th>المدرب</th>
-          <th>الحد الأعلى</th>
+          <th class="hide-mobile">المدرب</th>
+          <th class="hide-mobile">الحد الأعلى</th>
           <th class="text-end">إجراءات</th>
         </tr>
       </thead>
@@ -83,8 +83,8 @@
             </td>
             <td>{{ $e->diploma->name ?? '-' }}</td>
             <td>{{ $e->branch->name ?? '-' }}</td>
-            <td>{{ $e->trainer->full_name ?? '-' }}</td>
-            <td>{{ $e->max_score }}</td>
+            <td class="hide-mobile">{{ $e->trainer->full_name ?? '-' }}</td>
+            <td class="hide-mobile">{{ $e->max_score }}</td>
             <td class="text-end">
               @php($studentId = request('student_id'))
 

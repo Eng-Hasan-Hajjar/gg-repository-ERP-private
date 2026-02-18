@@ -48,9 +48,9 @@
     <table class="table table-hover mb-0 align-middle">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th class="hide-mobile">#</th>
           <th>الاسم المعروض</th>
-          <th>الوصف</th>
+          <th class="hide-mobile">الوصف</th>
           <th>المستخدمون</th>
           <th class="text-end">إجراءات</th>
         </tr>
@@ -59,9 +59,9 @@
       <tbody>
         @forelse($roles as $r)
         <tr>
-          <td>{{ $r->id }}</td>
+          <td class="hide-mobile">{{ $r->id }}</td>
           <td class="fw-semibold">{{ $r->label }}</td>
-          <td>{{ $r->description ?: '-' }}</td>
+          <td class="hide-mobile">{{ $r->description ?: '-' }}</td>
           <td>
             <span class="badge bg-secondary">
               {{ $r->users_count }}

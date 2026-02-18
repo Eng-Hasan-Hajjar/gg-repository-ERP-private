@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Auditable;
 
 class Diploma extends Model
 {
+  use Auditable;
       protected $fillable = ['name','code','is_active'];
 
   public function students() {
@@ -23,7 +25,7 @@ class Diploma extends Model
 
 
 
-    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function exams()
     {
         return $this->hasMany(\App\Models\Exam::class);
     }

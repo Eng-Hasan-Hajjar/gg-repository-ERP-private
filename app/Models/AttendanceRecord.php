@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
 
 class AttendanceRecord extends Model
 {
+    use Auditable;
     protected $fillable = [
         'employee_id','work_date','work_shift_id',
         'check_in_at','check_out_at','late_minutes','worked_minutes',

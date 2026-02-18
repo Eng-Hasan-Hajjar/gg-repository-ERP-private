@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
 
 class EmployeeContract extends Model
 {
+    use Auditable;
     protected $fillable = [
         'employee_id','start_date','end_date','contract_type',
         'salary_amount','hour_rate','currency','file_path','notes',

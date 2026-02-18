@@ -6,10 +6,12 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\Auditable;
 use App\Models\Role;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
+    use Auditable;
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -70,6 +72,32 @@ public function hasPermission($permission)
             $q->where('name', $permission);
         })->exists();
 }
+
+
+
+
+
+public function todaySession()
+{
+    return $this->hasOne(UserSession::class)->whereDate('work_date', today());
+}
+
+
+public function isOnline()
+{
+    $session = $this->todaySession;
+
+    if (!$session || !$session->last_activity) {
+        return false;
+    }
+
+    return now()->diffInMinutes($session->last_activity) <= 2;
+}
+
+
+
+
+
 
 
 }

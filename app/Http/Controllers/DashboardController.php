@@ -12,7 +12,9 @@ class DashboardController extends Controller
          * البيانات العلوية الذكية (Highlights)
          */
         $highlights = $reports->dashboardHighlights();
+        $todayActivities = \App\Models\AuditLog::whereDate('created_at', today())->count();
 
+        $lastActivity = \App\Models\AuditLog::latest()->first();
         /**
          * ممكن لاحقاً نضيف KPIs أو Charts هنا
          */

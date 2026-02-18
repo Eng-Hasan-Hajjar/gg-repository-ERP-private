@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
 
 class CashboxTransaction extends Model
 {
+    use Auditable;
     protected $fillable = [
         'cashbox_id','trx_date','type','amount','currency',
         'category','reference','notes','status','posted_at','attachment_path',

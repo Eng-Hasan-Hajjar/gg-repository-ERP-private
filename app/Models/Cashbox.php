@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Auditable;
 
 class Cashbox extends Model
 {
+    use Auditable;
     protected $fillable = [
         'name','code','branch_id','currency','status','opening_balance',
     ];

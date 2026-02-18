@@ -62,35 +62,35 @@
     <table class="table table-hover mb-0 align-middle">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th class="hide-mobile">#</th>
           <th>الرقم الجامعي</th>
           <th>الاسم</th>
           
-          <th>الفرع</th>
-          <th>المستوى</th>
-          <th>الحالة</th>
-          <th>التسجيل</th>
-          <th>مثبّت؟</th>
+          <th class="hide-mobile">الفرع</th>
+          <th class="hide-mobile">المستوى</th>
+          <th class="hide-mobile">الحالة</th>
+          <th class="hide-mobile">التسجيل</th>
+          <th class="hide-mobile">مثبّت؟</th>
           <th class="text-end">إجراءات</th>
         </tr>
       </thead>
       <tbody>
         @forelse($students as $s)
           <tr>
-            <td>{{ $s->id }}</td>
+            <td class="hide-mobile">{{ $s->id }}</td>
             <td><code>{{ $s->university_id }}</code></td>
             <td class="fw-semibold">{{ $s->full_name }}</td>
             
-            <td>{{ $s->branch->name ?? '-' }}</td>
-            <td>{{ $s->level ?? '-' }}</td>
-            <td><span class="badge bg-secondary">{{ $s->status_ar }}</span></td>
-            <td>
+            <td class="hide-mobile">{{ $s->branch->name ?? '-' }}</td>
+            <td class="hide-mobile">{{ $s->level ?? '-' }}</td>
+            <td class="hide-mobile"><span class="badge bg-secondary">{{ $s->status_ar }}</span></td>
+            <td class="hide-mobile">
               @php($map = ['pending'=>'warning','confirmed'=>'success','archived'=>'secondary','dismissed'=>'danger','frozen'=>'info'])
               <span class="badge bg-{{ $map[$s->registration_ar] ?? 'secondary' }}">
                 {{ $s->registration_ar }}
               </span>
             </td>
-            <td>
+            <td class="hide-mobile">
               @if($s->is_confirmed)
                 <span class="badge bg-success">نعم</span>
               @else

@@ -42,7 +42,71 @@
         radial-gradient(1000px 600px at 85% 15%, rgba(14,165,233,.10), transparent 55%),
         linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
       color: var(--namaa-ink);
+
+      
     }
+
+
+
+
+.status-dot {
+    width:10px;
+    height:10px;
+    border-radius:50%;
+}
+
+.status-dot.online {
+    background:#22c55e;
+    box-shadow:0 0 6px #22c55e;
+}
+
+.status-dot.offline {
+    background:#ef4444;
+}
+
+
+
+
+/* ===== User Status Cell ===== */
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+}
+
+/* الدائرة */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    top: 1px;
+}
+
+/* Online */
+.status-dot.online {
+    background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+}
+
+/* Offline */
+.status-dot.offline {
+    background: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239,68,68,.15);
+}
+
+/* اسم المستخدم */
+.user-name {
+    white-space: nowrap;
+}
+
+
+
+
+
 
 
     h1, h2, h3, h4, h5, h6,
@@ -268,6 +332,150 @@
       .app-shell{ grid-template-columns: 1fr; }
       .content-surface{ padding: 14px; }
     }
+
+
+
+
+
+
+
+    
+    /* =========================================================
+   ✅ Desktop يبقى طبيعي 100%
+   ========================================================= */
+
+@media (min-width: 769px){
+
+    .table {
+        table-layout: auto; /* يرجع التمدد الطبيعي */
+    }
+
+    .table td,
+    .table th {
+        white-space: nowrap; /* يمنع التكسير في الديسكتوب */
+    }
+
+}
+
+
+/* =========================================================
+   ✅ Mobile Optimization فقط — لا يلمس الديسكتوب
+   ========================================================= */
+
+@media (max-width: 768px){
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table {
+        table-layout: fixed;
+        font-size: 13px;
+    }
+
+    .table td,
+    .table th {
+        padding: 6px 8px;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    /* اختصار البريد الطويل */
+    .table td code {
+        display: inline-block;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* تصغير الأزرار */
+    .table .btn {
+        padding: 4px 6px;
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+
+    /* ضبط الاسم */
+    .user-name {
+        max-width: 110px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+}
+
+
+
+
+
+
+/* =========================================================
+   📱 Mobile Table Cleanup (ERP Style)
+   ========================================================= */
+
+@media (max-width:768px){
+
+    /* إخفاء الأعمدة غير المهمة */
+    .hide-mobile{
+        display:none !important;
+    }
+
+    /* تصغير الجدول */
+    .table{
+        font-size:13px;
+    }
+
+    /* جعل الصف أنظف */
+    .table td{
+        vertical-align:middle;
+    }
+
+    /* عرض الإجراء الأساسي فقط */
+    .actions-cell{
+        white-space:nowrap;
+        width:1%;
+    }
+
+    .main-action{
+        padding:6px 10px;
+        font-size:12px;
+    }
+}
+
+
+
+
+
+
+
+/* =========================================================
+   📱 Dock Responsive Control
+   ========================================================= */
+
+
+/* تابلت */
+@media (min-width:769px) and (max-width:1024px){
+
+    .hide-tablet{
+        display:none !important;
+    }
+}
+
+/* ديسكتوب فقط */
+@media (max-width:1024px){
+    .show-desktop-only{
+        display:none !important;
+    }
+}
+
+
+
+
+
+
+
   </style>
 
   @stack('styles')
@@ -359,8 +567,8 @@
       @endif
         @if(auth()->user()?->hasPermission('manage_roles'))
 
-            <a href="{{ route('admin.roles.index') }}"
-              class="grad-slate {{ $activeModule==='users' ? 'active' : '' }}"
+            <a  href="{{ route('admin.roles.index') }}"
+              class="grad-slate hide-mobile show-desktop-only {{ $activeModule==='users' ? 'active' : '' }}"
               title="المستخدمين والصلاحيات">
               <i class="bi bi-person-gear fs-6"></i>
             </a>
@@ -372,21 +580,21 @@
 
 
 
-        <a href="{{ route('reports.index') }}" class="grad-green {{ $activeModule==='reports' ? 'active' : '' }}" title="التقارير والإحصائيات ">
+        <a href="{{ route('reports.index') }}" class="grad-green  {{ $activeModule==='reports' ? 'active' : '' }}" title="التقارير والإحصائيات ">
           <i class="bi bi-bar-chart fs-6"></i> 
         </a>
 
  
 
 
-        <a href="{{ route('students.index') }}" class="grad-blue {{ $activeModule==='students' ? 'active' : '' }}" title="الطلاب">
+        <a  href="{{ route('students.index') }}" class="grad-blue   {{ $activeModule==='students' ? 'active' : '' }}" title="الطلاب">
           <i class="bi bi-people-fill fs-6"></i>
         </a>
-         <a href="{{ route('leads.index') }}" class="grad-green {{ $activeModule==='leads' ? 'active' : '' }}" title="CRM">
+         <a  href="{{ route('leads.index') }}" class="grad-green  hide-mobile show-desktop-only {{ $activeModule==='leads' ? 'active' : '' }}" title="CRM">
           <i class="bi bi-headset fs-3"></i>
         </a>
 
-        <a href="{{ route('diplomas.index') }}" class="grad-purple {{ $activeModule==='diplomas' ? 'active' : '' }}" title="الدبلومات">
+        <a href="{{ route('diplomas.index') }}" class="grad-purple  hide-mobile show-desktop-only {{ $activeModule==='diplomas' ? 'active' : '' }}" title="الدبلومات">
           <i class="bi bi-mortarboard-fill fs-6"></i>
         </a>
 
@@ -398,15 +606,15 @@
 
 
 
-        <a href="{{ route('branches.index') }}" class="grad-green {{ $activeModule==='branches' ? 'active' : '' }}" title="الفروع">
+        <a  href="{{ route('branches.index') }}" class="grad-green  hide-mobile show-desktop-only {{ $activeModule==='branches' ? 'active' : '' }}" title="الفروع">
           <i class="bi bi-building fs-6"></i>
         </a>
 
-    <a href="{{ route('assets.index') }}" class="grad-blue {{ $activeModule==='assets' ? 'active' : '' }}" title="الأصول">
-          <i class="bi bi-box-seam fs-6"></i>
-        </a>
-    <a href="{{ route('asset-categories.index') }}" class="grad-purple {{ $activeModule==='asset-categories' ? 'active' : '' }}" title="تصنيفات الأصول">
-          <i class="bi bi-tags fs-6"></i>
+        <a  href="{{ route('assets.index') }}" class="grad-blue  hide-mobile show-desktop-only {{ $activeModule==='assets' ? 'active' : '' }}" title="الأصول">
+              <i class="bi bi-box-seam fs-6"></i>
+            </a>
+        <a  href="{{ route('asset-categories.index') }}" class="grad-purple  hide-mobile show-desktop-only {{ $activeModule==='asset-categories' ? 'active' : '' }}" title="تصنيفات الأصول">
+              <i class="bi bi-tags fs-6"></i>
         </a>
 
 
@@ -424,39 +632,36 @@
 
 
         <a href="{{ route('attendance.index') }}" class="grad-rose {{ $activeModule==='attendance' ? 'active' : '' }}" title="الدوام">
-  <i class="bi bi-calendar2-week fs-6"></i>
-</a>
-
-<a href="{{ route('tasks.index') }}" class="grad-slate {{ $activeModule==='tasks' ? 'active' : '' }}" title="المهام">
-  <i class="bi bi-check2-square fs-6"></i>
-</a>
-
-
-
-<a href="{{ route('leaves.index') }}" class="grad-amber {{ $activeModule==='attendance' ? 'active' : '' }}" title="الإجازات">
-  <i class="bi bi-clipboard2-check fs-6"></i>
-</a>
-
-
-<a href="{{ route('attendance.calendar') }}"
-   class="grad-rose {{ $activeModule==='attendance' ? 'active' : '' }}"
-   title="الدوام">
-  <i class="bi bi-calendar2-week fs-6"></i>
-</a>
-
-<a href="{{ route('attendance.reports') }}"
-   class="grad-slate {{ $activeModule==='attendance-reports' ? 'active' : '' }}"
-   title="تقارير الدوام">
-  <i class="bi bi-clipboard-data fs-6"></i>
-</a>
-
-        {{-- لاحقاً --}}
-        
-
-
-        <a href="#" class="grad-primary" title="التقارير (قريباً)">
-          <i class="bi bi-graph-up-arrow fs-6"></i>
+          <i class="bi bi-calendar2-week fs-6"></i>
         </a>
+
+        <a href="{{ route('tasks.index') }}" class="grad-slate {{ $activeModule==='tasks' ? 'active' : '' }}" title="المهام">
+          <i class="bi bi-check2-square fs-6"></i>
+        </a>
+
+
+
+        <a href="{{ route('leaves.index') }}" class="grad-amber  hide-mobile show-desktop-only {{ $activeModule==='attendance' ? 'active' : '' }}" title="الإجازات">
+          <i class="bi bi-clipboard2-check fs-6"></i>
+        </a>
+
+
+        <a  href="{{ route('attendance.calendar') }}"
+          class="grad-rose  hide-mobile show-desktop-only {{ $activeModule==='attendance' ? 'active' : '' }}"
+          title="الدوام">
+          <i class="bi bi-calendar2-week fs-6"></i>
+        </a>
+
+        <a  href="{{ route('attendance.reports') }}"
+          class="grad-slate  hide-mobile show-desktop-only {{ $activeModule==='attendance-reports' ? 'active' : '' }}"
+          title="تقارير الدوام">
+          <i class="bi bi-clipboard-data fs-6"></i>
+        </a>
+
+                
+
+
+
       </aside>
 
     </div>

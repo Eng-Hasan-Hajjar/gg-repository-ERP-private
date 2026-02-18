@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use App\Traits\Auditable;
 class ExamComponentResult extends Model
 {
-    protected $fillable = [
+    use Auditable;
+        protected $fillable = [
         'exam_component_id','student_id','score','notes','entered_by'
     ];
 

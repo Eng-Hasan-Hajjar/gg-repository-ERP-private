@@ -15,8 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 'otp' => \App\Http\Middleware\EnsureEmailOtpVerified::class,
                 'permission' => \App\Http\Middleware\PermissionMiddleware::class,
             ]);
+              // ✅ تسجيله داخل مجموعة WEB (المهم)
+            $middleware->web(append: [
+                \App\Http\Middleware\TrackUserActivity::class,
+            ]);
     }) 
     ->withEvents(discover: true)
+
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

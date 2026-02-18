@@ -77,13 +77,13 @@
         <tr>
           <th>التاريخ</th>
           <th>الموظف</th>
-          <th>الفرع</th>
-          <th>الشيفت</th>
-          <th>دخول</th>
-          <th>خروج</th>
-          <th>تأخير</th>
-          <th>ساعات</th>
-          <th>حالة</th>
+          <th class="hide-mobile">الفرع</th>
+          <th class="hide-mobile">الشيفت</th>
+          <th class="hide-mobile">دخول</th>
+          <th class="hide-mobile">خروج</th>
+          <th class="hide-mobile">تأخير</th>
+          <th class="hide-mobile">ساعات</th>
+          <th >حالة</th>
           <th class="text-end">إجراءات</th>
         </tr>
       </thead>
@@ -92,8 +92,8 @@
           <tr>
             <td class="fw-bold">{{ $r->work_date->format('Y-m-d') }}</td>
             <td>{{ $r->employee->full_name }}</td>
-            <td>{{ $r->employee->branch->name ?? '-' }}</td>
-            <td>
+            <td class="hide-mobile">{{ $r->employee->branch->name ?? '-' }}</td>
+            <td class="hide-mobile">
               @if($r->shift)
                 <span class="badge bg-light text-dark border">
                   {{ $r->shift->name }} ({{ $r->shift->start_time }}-{{ $r->shift->end_time }})
@@ -102,10 +102,10 @@
                 -
               @endif
             </td>
-            <td>{{ $r->check_in_at?->format('H:i') ?? '-' }}</td>
-            <td>{{ $r->check_out_at?->format('H:i') ?? '-' }}</td>
-            <td><span class="badge bg-warning text-dark">{{ $r->late_minutes }} د</span></td>
-            <td><span class="badge bg-info text-dark">{{ round($r->worked_minutes/60,2) }} س</span></td>
+            <td class="hide-mobile">{{ $r->check_in_at?->format('H:i') ?? '-' }}</td>
+            <td class="hide-mobile">{{ $r->check_out_at?->format('H:i') ?? '-' }}</td>
+            <td class="hide-mobile"><span class="badge bg-warning text-dark">{{ $r->late_minutes }} د</span></td>
+            <td class="hide-mobile"><span class="badge bg-info text-dark">{{ round($r->worked_minutes/60,2) }} س</span></td>
             <td>
               <span class="badge bg-{{ in_array($r->status,['late'])?'danger':(in_array($r->status,['present'])?'success':'secondary') }}">
                 {{ $r->status }}

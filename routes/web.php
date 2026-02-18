@@ -351,7 +351,7 @@ Route::get('/admin/audit-logs', [AuditController::class, 'index'])
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
+    Route::resource('roles', RoleController::class);
 
     // إضافات جديدة:
     Route::get('roles/{role}/show', [RoleController::class, 'show'])
@@ -379,7 +379,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
-Route::get('/audit-center', [\App\Http\Controllers\Admin\AuditController::class, 'index'])
+Route::get('/audit-center', [AuditController::class, 'index'])
     ->name('admin.audit.index');
 
 

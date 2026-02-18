@@ -69,30 +69,30 @@
     <table class="table align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th class="hide-mobile">#</th>
           <th>العنوان</th>
-          <th>الفرع</th>
+          <th class="hide-mobile">الفرع</th>
           <th>المسند له</th>
-          <th>أولوية</th>
+          <th class="hide-mobile">أولوية</th>
           <th>حالة</th>
-          <th>الاستحقاق</th>
+          <th class="hide-mobile" >الاستحقاق</th>
           <th class="text-end">إجراءات</th>
         </tr>
       </thead>
       <tbody>
         @forelse($tasks as $t)
           <tr>
-            <td>{{ $t->id }}</td>
+            <td class="hide-mobile">{{ $t->id }}</td>
             <td class="fw-bold">{{ $t->title }}</td>
-            <td>{{ $t->branch->name ?? '-' }}</td>
+            <td class="hide-mobile">{{ $t->branch->name ?? '-' }}</td>
             <td>{{ $t->assignee->full_name ?? '-' }}</td>
-            <td><span class="badge bg-light text-dark border">{{ $t->priority }}</span></td>
+            <td class="hide-mobile"><span class="badge bg-light text-dark border">{{ $t->priority }}</span></td>
             <td>
               <span class="badge bg-{{ $t->status=='done'?'success':($t->status=='blocked'?'danger':'secondary') }}">
                 {{ $t->status }}
               </span>
             </td>
-            <td>{{ $t->due_date?->format('Y-m-d') ?? '-' }}</td>
+            <td class="hide-mobile">{{ $t->due_date?->format('Y-m-d') ?? '-' }}</td>
             <td class="text-end d-flex gap-1 justify-content-end flex-wrap">
               <a class="btn btn-sm btn-outline-primary" href="{{ route('tasks.show',$t) }}"><i class="bi bi-eye"></i> عرض</a>
               <a class="btn btn-sm btn-outline-dark" href="{{ route('tasks.edit',$t) }}"><i class="bi bi-pencil"></i> تعديل</a>

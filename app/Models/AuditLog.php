@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
-
+use App\Traits\Auditable;
 class AuditLog extends Model
 {
+ 
     protected $fillable = [
         'user_id',
         'action',

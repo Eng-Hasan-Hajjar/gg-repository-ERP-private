@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div>
     <h4 class="fw-bold mb-0">قسم الاستشارات والمبيعات (CRM)</h4>
-    <div class="text-muted small">Leads + Followups + Convert to Student</div>
+    <div class="text-muted small">العملاء المحتملون + المتابعات + التحويل إلى طلاب</div>
   </div>
   <a class="btn btn-primary rounded-pill px-4 fw-bold" href="{{ route('leads.create') }}">
     <i class="bi bi-person-plus"></i> عميل محتمل جديد
@@ -70,31 +70,31 @@
     <table class="table table-hover align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th  class="hide-mobile">#</th>
           <th>الاسم</th>
-          <th>هاتف</th>
-          <th>الفرع</th>
-          <th>الدبلومات</th>
-          <th>المرحلة</th>
-          <th>الحالة</th>
+          <th class="hide-mobile">هاتف</th>
+          <th class="hide-mobile">الفرع</th>
+          <th class="hide-mobile">الدبلومات</th>
+          <th class="hide-mobile">المرحلة</th>
+          <th class="hide-mobile">الحالة</th>
           <th class="text-end">إجراءات</th>
         </tr>
       </thead>
       <tbody>
         @forelse($leads as $l)
           <tr>
-            <td>{{ $l->id }}</td>
+            <td class="hide-mobile">{{ $l->id }}</td>
             <td class="fw-bold">{{ $l->full_name }}</td>
-            <td>{{ $l->phone ?? '-' }}</td>
-            <td>{{ $l->branch->name ?? '-' }}</td>
-            <td>
+            <td class="hide-mobile">{{ $l->phone ?? '-' }}</td>
+            <td class="hide-mobile">{{ $l->branch->name ?? '-' }}</td>
+            <td class="hide-mobile">
               @foreach($l->diplomas as $d)
                 <span class="badge bg-light text-dark border">{{ $d->name }}</span>
               @endforeach
             </td>
-            <td><span class="badge bg-info">{{ $l->stage_ar }}</span></td>
+            <td class="hide-mobile"><span class="badge bg-info">{{ $l->stage_ar }}</span></td>
 
-            <td>
+            <td class="hide-mobile">
               <span class="badge bg-{{ $l->registration_status==='pending'?'warning':($l->registration_status==='converted'?'success':'secondary') }}">
                 {{ $l->registration_ar }}
               </span>

@@ -1,3 +1,5 @@
+<?php
+
 use App\Models\AuditLog;
 
 function audit_log($action, $description = null, $model = null, $modelId = null)

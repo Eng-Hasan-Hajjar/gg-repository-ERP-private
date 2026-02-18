@@ -32,7 +32,12 @@
 @foreach($permissions as $module => $items)
 <div class="card border-0 shadow-sm mb-3">
   <div class="card-header bg-light fw-bold">
-    {{ ucfirst($module) }}
+  
+    
+    {{ t($module) }}
+
+
+
   </div>
   <div class="card-body">
     <div class="row">

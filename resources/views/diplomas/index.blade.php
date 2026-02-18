@@ -41,22 +41,22 @@
     <table class="table table-hover mb-0 align-middle">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th class="hide-mobile">#</th>
           <th>اسم الدبلومة</th>
           <th>الرمز</th>
-          <th>المجال</th>
+          <th class="hide-mobile">المجال</th>
           <th>الحالة</th>
           <th>عدد الطلاب</th>
-          <th class="text-end">إجراءات</th>
+          <th class="hide-mobile text-end">إجراءات</th>
         </tr>
       </thead>
       <tbody>
         @forelse($diplomas as $d)
           <tr>
-            <td>{{ $d->id }}</td>
+            <td class="hide-mobile">{{ $d->id }}</td>
             <td class="fw-semibold">{{ $d->name }}</td>
             <td><span class="badge text-bg-secondary">{{ $d->code }}</span></td>
-            <td class="text-muted">{{ $d->field ?? '-' }}</td>
+            <td class="hide-mobile text-muted">{{ $d->field ?? '-' }}</td>
             <td>
               @if($d->is_active)
                 <span class="badge text-bg-success">مفعّلة</span>
@@ -67,7 +67,7 @@
             <td>
               <span class="badge text-bg-light border">{{ $d->students()->count() }}</span>
             </td>
-            <td class="text-end">
+            <td class="hide-mobile text-end">
               <div class="d-inline-flex gap-1">
                 <form method="POST" action="{{ route('diplomas.toggle', $d) }}">
                   @csrf
