@@ -18,7 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
               // ✅ تسجيله داخل مجموعة WEB (المهم)
             $middleware->web(append: [
                 \App\Http\Middleware\TrackUserActivity::class,
+                 \App\Http\Middleware\AuthorizeByRoute::class,
             ]);
+   
+
     }) 
     ->withEvents(discover: true)
 

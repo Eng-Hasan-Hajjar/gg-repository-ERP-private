@@ -233,16 +233,16 @@
     <div class="report-desc">تحليل البيانات عبر الرسوم البيانية</div>
 </a>
 
+  @if(auth()->user()?->hasPermission('view_reports'))
+        <a href="{{ route('reports.revenue.branches') }}" class="report-tile">
+            <div class="report-icon" style="background:var(--report-revenue-soft);color:var(--report-revenue)">
+                <i class="bi bi-cash-coin"></i>
+            </div>
 
-<a href="{{ route('reports.revenue.branches') }}" class="report-tile">
-    <div class="report-icon" style="background:var(--report-revenue-soft);color:var(--report-revenue)">
-        <i class="bi bi-cash-coin"></i>
-    </div>
-
-    <div class="report-title">إيرادات الفروع</div>
-    <div class="report-desc">تحليل الإيرادات حسب الفرع</div>
-</a>
-
+            <div class="report-title">إيرادات الفروع</div>
+            <div class="report-desc">تحليل الإيرادات حسب الفرع</div>
+        </a>
+ 
 <a href="{{ route('crm.reports.index') }}" class="report-tile">
     <div class="report-icon" style="background:var(--report-crm-soft);color:var(--report-crm)">
         <i class="bi bi-people"></i>
@@ -252,7 +252,7 @@
     <div class="report-desc">تحليل المبيعات والعملاء المحتملين</div>
 </a>
 
-
+ @endif
 
 
 </div>

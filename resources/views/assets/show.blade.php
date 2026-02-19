@@ -13,9 +13,11 @@
   </div>
 
   <div class="d-flex gap-2 flex-wrap">
+       @if(auth()->user()->hasPermission('edit_assets'))
     <a href="{{ route('assets.edit',$asset) }}" class="btn btn-outline-dark rounded-pill fw-bold px-4">
       <i class="bi bi-pencil"></i> تعديل
     </a>
+    @endif
     <a href="{{ route('assets.index') }}" class="btn btn-outline-secondary rounded-pill fw-bold px-4">
       رجوع
     </a>

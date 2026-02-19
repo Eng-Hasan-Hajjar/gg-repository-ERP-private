@@ -13,17 +13,23 @@
   </div>
 
   <div class="d-flex flex-wrap gap-2">
+    @if(auth()->user()?->hasPermission('edit_employees'))
     <a href="{{ route('employees.edit',$employee) }}" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
       <i class="bi bi-pencil"></i> تعديل
     </a>
-
+@endif
+     @if(auth()->user()?->hasPermission('manage_contracts'))
     <a href="{{ route('employees.contracts.index',$employee) }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
       <i class="bi bi-file-earmark-text"></i> العقود
     </a>
+@endif
+     @if(auth()->user()?->hasPermission('manage_salaries'))
 
     <a href="{{ route('employees.payouts.index',$employee) }}" class="btn btn-primary rounded-pill px-4 fw-bold">
       <i class="bi bi-cash-coin"></i> المستحقات
     </a>
+    @endif
+
   </div>
 </div>
 
@@ -192,12 +198,16 @@
         <hr>
 
         <div class="d-flex flex-wrap gap-2">
+          @if(auth()->user()?->hasPermission('manage_contracts'))
           <a href="{{ route('employees.contracts.create',$employee) }}" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-plus-circle"></i> إضافة عقد
           </a>
+          @endif
+          @if(auth()->user()?->hasPermission('manage_salaries'))
           <a href="{{ route('employees.payouts.create',$employee) }}" class="btn btn-sm btn-outline-success">
             <i class="bi bi-plus-circle"></i> إضافة مستحق
           </a>
+          @endif
         </div>
       </div>
     </div>

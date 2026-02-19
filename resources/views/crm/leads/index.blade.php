@@ -101,8 +101,13 @@
             </td>
             
             <td class="text-end">
-              <a class="btn btn-sm btn-outline-primary" href="{{ route('leads.show',$l) }}">عرض</a>
-              <a class="btn btn-sm btn-outline-dark" href="{{ route('leads.edit',$l) }}">تعديل</a>
+                @if(auth()->user()?->hasPermission('view_leads'))
+                     <a class="btn btn-sm btn-outline-primary" href="{{ route('leads.show',$l) }}">عرض</a>
+                @endif
+
+                @if(auth()->user()?->hasPermission('edit_leads'))
+                    <a class="btn btn-sm btn-outline-dark" href="{{ route('leads.edit',$l) }}">تعديل</a>
+                @endif
             </td>
           </tr>
         @empty

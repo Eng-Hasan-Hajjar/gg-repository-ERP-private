@@ -67,7 +67,7 @@
           <th>الاسم</th>
           
           <th class="hide-mobile">الفرع</th>
-          <th class="hide-mobile">المستوى</th>
+       
           <th class="hide-mobile">الحالة</th>
           <th class="hide-mobile">التسجيل</th>
           <th class="hide-mobile">مثبّت؟</th>
@@ -82,7 +82,7 @@
             <td class="fw-semibold">{{ $s->full_name }}</td>
             
             <td class="hide-mobile">{{ $s->branch->name ?? '-' }}</td>
-            <td class="hide-mobile">{{ $s->level ?? '-' }}</td>
+          
             <td class="hide-mobile"><span class="badge bg-secondary">{{ $s->status_ar }}</span></td>
             <td class="hide-mobile">
               @php($map = ['pending'=>'warning','confirmed'=>'success','archived'=>'secondary','dismissed'=>'danger','frozen'=>'info'])
@@ -99,14 +99,17 @@
         
             </td>
             <td class="text-end">
+               @if(auth()->user()?->hasPermission('edit_students'))
               <a class="btn btn-sm btn-outline-primary" href="{{ route('students.show',$s) }}">
                 <i class="bi bi-eye"></i> عرض
               </a>
+             @endif
              
-                <a class="btn btn-sm btn-outline-dark" href="{{ route('students.edit',$s) }}">
-                  <i class="bi bi-pencil"></i> تعديل
-                </a>
-           
+               @if(auth()->user()?->hasPermission('edit_students'))
+                    <a class="btn btn-sm btn-outline-dark" href="{{ route('students.edit',$s) }}">
+                      <i class="bi bi-pencil"></i> تعديل
+                    </a>
+               @endif
 
               @if(!$s->is_confirmed)
             

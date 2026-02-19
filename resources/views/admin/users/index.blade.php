@@ -11,9 +11,12 @@
     <div class="text-muted small">بحث + تصفية حسب الدور</div>
   </div>
 
+   @if(auth()->user()?->hasPermission('create_users'))
   <a class="btn btn-primary rounded-pill px-4 fw-bold" href="{{ route('admin.users.create') }}">
     <i class="bi bi-person-plus"></i> مستخدم جديد
   </a>
+  @endif
+
 </div>
 
 <form class="card card-body border-0 shadow-sm mb-3" method="GET">
@@ -83,26 +86,30 @@
           </td>
 
           <td class="text-end">
+              @if(auth()->user()?->hasPermission('edit_users'))
+
             <a class="btn btn-sm btn-outline-primary"
                href="{{ route('admin.users.edit',$u) }}">
               <i class="bi bi-pencil"></i> تعديل
             </a>
+@endif
 
+  @if(auth()->user()?->hasPermission('manage_roles'))
             <a class="btn btn-sm btn-outline-dark"
                href="{{ route('admin.roles.index',['user'=>$u->id]) }}">
               <i class="bi bi-shield-lock"></i> الصلاحيات
             </a>
-
+@endif
             @if(!$u->hasRole('super_admin'))
-            <form method="POST"
-                  action="{{ route('admin.users.destroy',$u) }}"
-                  class="d-inline"
-                  onsubmit="return confirm('هل أنت متأكد؟')">
-              @csrf @method('DELETE')
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-trash"></i>
-              </button>
-            </form>
+                  <form method="POST"
+                        action="{{ route('admin.users.destroy',$u) }}"
+                        class="d-inline"
+                        onsubmit="return confirm('هل أنت متأكد؟')">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-sm btn-outline-danger">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
             @endif
           </td>
         </tr>

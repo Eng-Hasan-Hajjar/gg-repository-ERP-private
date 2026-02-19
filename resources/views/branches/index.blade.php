@@ -8,9 +8,11 @@
     <h4 class="mb-1">إدارة الفروع</h4>
     <div class="text-muted small">إضافة وتعديل الفروع وربطها بالطلاب.</div>
   </div>
+  @if(auth()->user()?->hasPermission('create_branches'))
   <a class="btn btn-primary" href="{{ route('branches.create') }}">
     + إضافة فرع
   </a>
+  @endif
 </div>
 
 <form class="card card-body mb-3" method="GET" action="{{ route('branches.index') }}">
@@ -47,13 +49,17 @@
             <td><span class="badge text-bg-light border">{{ $b->students()->count() }}</span></td>
             <td class="text-end">
               <div class="d-inline-flex gap-1">
+                @if(auth()->user()?->hasPermission('edit_branches'))
                 <a class="btn btn-sm btn-outline-dark" href="{{ route('branches.edit', $b) }}">تعديل</a>
+                @endif
+                @if(auth()->user()?->hasPermission('delete_branches'))
                 <form method="POST" action="{{ route('branches.destroy', $b) }}"
                       onsubmit="return confirm('هل أنت متأكد من حذف الفرع؟');">
                   @csrf
                   @method('DELETE')
                   <button class="btn btn-sm btn-outline-danger">حذف</button>
                 </form>
+                @endif
               </div>
             </td>
           </tr>

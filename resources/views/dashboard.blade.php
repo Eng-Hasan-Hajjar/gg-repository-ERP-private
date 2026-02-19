@@ -82,7 +82,7 @@
             {{ $highlights['activity']['last']
         ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
         : '—'
-                      }}
+                          }}
           </p>
         </div>
       </div>
@@ -117,10 +117,15 @@
             </p>
           </div>
           <div class="module-actions">
-            <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
-            <a href="{{ route('reports.executive') }}" class="btn btn-namaa w-100 w-sm-auto">
-              لوحة القيادة التنفيذية
-            </a>
+
+            @if(auth()->user()?->hasPermission('view_dashboard'))
+              <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
+            @endif
+            @if(auth()->user()?->hasPermission('view_executive_dashboard'))
+              <a href="{{ route('reports.executive') }}" class="btn btn-namaa w-100 w-sm-auto">
+                لوحة القيادة التنفيذية
+              </a>
+            @endif
           </div>
         </div>
       </div>
@@ -132,7 +137,7 @@
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-green">
+            <div class="module-icon grad-red">
               <i class="bi bi-headset fs-3"></i>
             </div>
             <div>
@@ -148,7 +153,7 @@
           <div class="module-actions">
             <a href="{{ route('leads.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح CRM</a>
 
-            @if(auth()->user()?->hasPermission('view_reports'))
+            @if(auth()->user()?->hasPermission('view_reports') || auth()->user()?->hasPermission('view_crm_reports'))
               <a href="{{ route('crm.reports.index') }}" class="btn btn-soft w-100 w-sm-auto">تقارير المبيعات</a>
             @endif
           </div>
@@ -189,9 +194,10 @@
       {{-- Exams --}}
 
       <div class="col-12 col-md-6 col-xl-4">
+
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-purple">
+            <div class="module-icon grad-fuchsia ">
               <i class="bi bi-journal-check fs-3"></i>
             </div>
             <div>
@@ -209,6 +215,8 @@
             <a href="{{ route('exams.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة امتحان</a>
           </div>
         </div>
+
+
       </div>
 
 
@@ -219,7 +227,7 @@
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-amber">
+            <div class="module-icon grad-teal ">
               <i class="bi bi-cash-coin fs-3"></i>
             </div>
             <div>
@@ -265,9 +273,14 @@
           </div>
           <div class="module-actions grid-2">
             <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
+            
             <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
+
             <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
-            <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+
+            @if(auth()->user()?->hasPermission('view_leaves'))
+                 <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+            @endif
           </div>
 
         </div>
@@ -299,7 +312,10 @@
           </div>
           <div class="module-actions grid-2">
             <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
+
+             @if(auth()->user()?->hasPermission('create_tasks'))
             <a href="{{ route('tasks.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
+             @endif
 
           </div>
           <div class="module-actions">
@@ -317,7 +333,7 @@
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-primary">
+            <div class="module-icon grad-violet">
               <i class="bi bi-person-badge-fill fs-3"></i>
             </div>
             <div>
@@ -332,8 +348,10 @@
           </div>
           <div class="module-actions grid-2">
             <a href="{{  route('employees.index')}}" class="btn btn-namaa w-100 w-sm-auto">فتح الموارد البشرية</a>
-            <a href="{{ route('employees.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مدرب/موظف</a>
 
+            @if(auth()->user()?->hasPermission('create_employees'))
+            <a href="{{ route('employees.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مدرب/موظف</a>
+            @endif
             <a href="{{ route('employees.index', ['type' => 'trainer']) }}"
               class="btn btn-soft w-100 w-sm-auto">المدربين</a>
             <a href="{{ route('employees.index', ['type' => 'employee']) }}"
@@ -346,10 +364,6 @@
     @endif
 
 
-
-
-
-
     {{-- Users (System Users) - Coming Soon --}}
 
 
@@ -357,7 +371,7 @@
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-slate">
+            <div class="module-icon grad-blue">
               <i class="bi bi-shield-lock fs-3"></i>
             </div>
             <div>
@@ -399,7 +413,7 @@
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-blue">
+            <div class="module-icon grad-yellow ">
               <i class="bi bi-box-seam fs-3"></i>
             </div>
             <div>
@@ -413,6 +427,7 @@
             </p>
           </div>
           <div class="module-actions">
+
             <a href="{{  route('assets.index')}}" class="btn btn-namaa w-100 w-sm-auto">فتح الأصول</a>
             <a href="{{  route('asset-categories.index')}}" class="btn btn-soft w-100 w-sm-auto">تصنيفات الأصول</a>
           </div>
@@ -427,7 +442,7 @@
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-green">
+            <div class="module-icon grad-red ">
               <i class="bi bi-building fs-3"></i>
             </div>
             <div>
@@ -444,7 +459,9 @@
 
           <div class="module-actions">
             <a href="{{ route('branches.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الفروع</a>
+            @if(auth()->user()?->hasPermission('create_branches'))
             <a href="{{ route('branches.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة فرع</a>
+            @endif
           </div>
         </div>
       </div>
@@ -456,7 +473,7 @@
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-purple">
+            <div class="module-icon grad-lime   ">
               <i class="bi bi-mortarboard-fill fs-3"></i>
             </div>
             <div>
@@ -473,7 +490,9 @@
 
           <div class="module-actions">
             <a href="{{ route('diplomas.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الدبلومات</a>
+              @if(auth()->user()?->hasPermission('create_diplomas'))
             <a href="{{ route('diplomas.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة دبلومة</a>
+            @endif
           </div>
         </div>
       </div>

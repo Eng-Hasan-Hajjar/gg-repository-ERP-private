@@ -12,9 +12,12 @@
     <a href="{{ route('asset-categories.index') }}" class="btn btn-outline-dark rounded-pill fw-bold px-4">
       <i class="bi bi-tags"></i> تصنيفات الأصول
     </a>
-    <a href="{{ route('assets.create') }}" class="btn btn-primary rounded-pill fw-bold px-4">
-      <i class="bi bi-plus-lg"></i> أصل جديد
-    </a>
+    
+           @if(auth()->user()->hasPermission('create_assets'))
+              <a href="{{ route('assets.create') }}" class="btn btn-primary rounded-pill fw-bold px-4">
+                <i class="bi bi-plus-lg"></i> أصل جديد
+              </a>
+             @endif
   </div>
 </div>
 
@@ -90,19 +93,28 @@
             </td>
             <td>{{ $a->location ?? '-' }}</td>
             <td class="text-end">
+                     @if(auth()->user()->hasPermission('view_assets'))
               <a href="{{ route('assets.show',$a) }}" class="btn btn-sm btn-outline-primary">
                 <i class="bi bi-eye"></i> عرض
               </a>
+              @endif
+                     @if(auth()->user()->hasPermission('edit_assets'))
+
               <a href="{{ route('assets.edit',$a) }}" class="btn btn-sm btn-outline-dark">
                 <i class="bi bi-pencil"></i> تعديل
               </a>
-              <form class="d-inline" method="POST" action="{{ route('assets.destroy',$a) }}"
-                    onsubmit="return confirm('تأكيد حذف الأصل؟')">
-                @csrf @method('DELETE')
-                <button class="btn btn-sm btn-outline-danger">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </form>
+              @endif
+              
+                 @if(auth()->user()->hasPermission('delete_assets'))
+
+                            <form class="d-inline" method="POST" action="{{ route('assets.destroy',$a) }}"
+                                  onsubmit="return confirm('تأكيد حذف الأصل؟')">
+                              @csrf @method('DELETE')
+                              <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                              </button>
+                            </form>
+                    @endif
             </td>
           </tr>
         @empty

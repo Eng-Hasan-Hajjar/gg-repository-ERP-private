@@ -9,9 +9,11 @@
     <div class="text-muted fw-semibold">إسناد مهام + متابعة التنفيذ + حالات وأولويات</div>
   </div>
 
+    @if(auth()->user()?->hasPermission('create_tasks'))
   <a href="{{ route('tasks.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
     <i class="bi bi-plus-circle"></i> إضافة مهمة
   </a>
+  @endif
 </div>
 
 <form class="card border-0 shadow-sm mb-3">
@@ -94,14 +96,19 @@
             </td>
             <td class="hide-mobile">{{ $t->due_date?->format('Y-m-d') ?? '-' }}</td>
             <td class="text-end d-flex gap-1 justify-content-end flex-wrap">
+                @if(auth()->user()?->hasPermission('view_tasks'))
               <a class="btn btn-sm btn-outline-primary" href="{{ route('tasks.show',$t) }}"><i class="bi bi-eye"></i> عرض</a>
+          @endif
+            @if(auth()->user()?->hasPermission('edit_tasks'))
               <a class="btn btn-sm btn-outline-dark" href="{{ route('tasks.edit',$t) }}"><i class="bi bi-pencil"></i> تعديل</a>
-
+@endif
+  @if(auth()->user()?->hasPermission('complete_tasks'))
               <form method="POST" action="{{ route('tasks.quickStatus',$t) }}">
                 @csrf
                 <input type="hidden" name="status" value="done">
                 <button class="btn btn-sm btn-outline-success"><i class="bi bi-check2-circle"></i> تم</button>
               </form>
+              @endif
             </td>
           </tr>
         @empty

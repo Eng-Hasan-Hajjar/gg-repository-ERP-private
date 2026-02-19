@@ -8,9 +8,12 @@
     <h4 class="fw-bold mb-0">الامتحانات</h4>
     <div class="text-muted small">فلترة حسب الفرع/الدبلومة/المدرب/الفترة</div>
   </div>
+
+  @if(auth()->user()?->hasPermission('create_exams'))
   <a class="btn btn-primary rounded-pill fw-bold px-4" href="{{ route('exams.create') }}">
     <i class="bi bi-plus-circle"></i> امتحان جديد
   </a>
+  @endif
 </div>
 
 <form class="card card-body border-0 shadow-sm mb-3" method="GET" action="{{ route('exams.index') }}">
@@ -88,24 +91,33 @@
             <td class="text-end">
               @php($studentId = request('student_id'))
 
-<a class="btn btn-sm btn-outline-primary" href="{{ route('exams.show',$e) }}">
-  <i class="bi bi-eye"></i> عرض
-</a>
 
-<a class="btn btn-sm btn-outline-dark" href="{{ route('exams.edit',$e) }}">
-  <i class="bi bi-pencil"></i> تعديل
-</a>
+               @if(auth()->user()?->hasPermission('view_exams'))
 
-@if($studentId)
-  <a class="btn btn-sm btn-namaa"
-     href="{{ route('exams.marks.edit', $e).'?student_id='.$studentId }}">
-     إدخال علامات هذا الطالب
-  </a>
-@else
-  <a class="btn btn-sm btn-namaa" href="{{ route('exams.marks.edit',$e) }}">
-     إدخال الدرجات (جميع الطلاب)
-  </a>
-@endif
+                  <a class="btn btn-sm btn-outline-primary" href="{{ route('exams.show',$e) }}">
+                    <i class="bi bi-eye"></i> عرض
+                  </a>
+                  @endif
+                  @if(auth()->user()?->hasPermission('edit_exams'))
+
+                  <a class="btn btn-sm btn-outline-dark" href="{{ route('exams.edit',$e) }}">
+                    <i class="bi bi-pencil"></i> تعديل
+                  </a>
+                  @endif
+
+
+                  @if(auth()->user()?->hasPermission('enter_grades'))
+                  @if($studentId)
+                    <a class="btn btn-sm btn-namaa"
+                      href="{{ route('exams.marks.edit', $e).'?student_id='.$studentId }}">
+                      إدخال علامات هذا الطالب
+                    </a>
+                  @else
+                    <a class="btn btn-sm btn-namaa" href="{{ route('exams.marks.edit',$e) }}">
+                      إدخال الدرجات (جميع الطلاب)
+                    </a>
+                  @endif
+                    @endif
 
             </td>
           </tr>
