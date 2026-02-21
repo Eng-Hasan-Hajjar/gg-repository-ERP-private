@@ -31,19 +31,44 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
 
-    // ✅ جلب المستخدم الحالي
-    $user = Auth::user();
+        // ✅ جلب المستخدم الحالي
+        $user = Auth::user();
 
-    // ✅ إنشاء جلسة تتبع
+
+
+
+        $existingSession = UserSession::where('user_id', $user->id)
+            ->whereNull('logout_at')
+            ->latest()
+            ->first();
+
+        if ($existingSession) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'المستخدم مسجل دخول من جهاز آخر حالياً.'
+            ]);
+        }
+
+
+
+
+        // ✅ إنشاء جلسة تتبع
+
+        $now = now();
+
+        // اليوم الفعلي حسب الساعة الحالية
+        $workDate = $now->toDateString();
 
         UserSession::create([
-    'user_id' => $user->id,
-    'login_at' => now(),
-    'last_activity' => now(),
-    'ip' => request()->ip(),
-    'user_agent' => request()->userAgent(),
-    'work_date' => today(),
-]);
+            'user_id' => $user->id,
+            'login_at' => now(),
+             'session_id' => session()->getId(), // 👈 مهم
+            'last_activity' => now(), // ← أضف هذا
+            'work_date' => $workDate,
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
 
 
@@ -55,6 +80,21 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+
+
+        $user = auth()->user(); // ⚠️ خزن المستخدم قبل logout
+
+        if ($user) {
+            UserSession::where('user_id', $user->id)
+                ->whereNull('logout_at')
+                ->latest('login_at')
+                ->first()?->update([
+                        'logout_at' => now()
+                    ]);
+        }
+
+
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

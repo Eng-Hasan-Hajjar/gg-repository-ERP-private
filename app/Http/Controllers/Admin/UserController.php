@@ -8,12 +8,20 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Services\AuditService;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with('roles');
+      //  $query = User::with('roles');
+
+    $query = User::with([
+    'roles',
+    'todaySessions'
+]);
+
 
         // 🔹 البحث
         if ($request->filled('search')) {
@@ -43,6 +51,22 @@ class UserController extends Controller
         return view('admin.users.create', compact('roles'));
     }
 
+
+    public function store(UserStoreRequest $request)
+{
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'email_verified_at' => now(),
+    ]);
+
+    $user->roles()->sync($request->roles);
+
+    return redirect()->route('admin.users.index')
+        ->with('success','تم إنشاء المستخدم بنجاح');
+}
+/*
     public function store(Request $request)
     {
         $request->validate([
@@ -73,7 +97,7 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success','تم إنشاء المستخدم بنجاح');
     }
-
+*/
     public function edit(User $user)
     {
         $roles = Role::all();
@@ -82,6 +106,27 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user','roles','userRoles'));
     }
 
+    public function update(UserUpdateRequest $request, User $user)
+{
+    $user->update([
+        'name' => $request->name,
+        'email' => $request->email,
+    ]);
+
+    if ($request->filled('password')) {
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+    }
+
+    $user->roles()->sync($request->roles);
+
+    return redirect()->route('admin.users.index')
+        ->with('success','تم تحديث المستخدم');
+}
+
+
+/*
     public function update(Request $request, User $user)
     {
         $request->validate([
@@ -114,7 +159,7 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success','تم تحديث المستخدم بنجاح');
     }
-
+*/
     public function destroy(User $user)
     {
         if ($user->hasRole('super_admin')) {

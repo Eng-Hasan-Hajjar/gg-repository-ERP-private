@@ -11,7 +11,7 @@ class UserSession extends Model
         'login_at',
         'last_activity',
         'logout_at',
-        'online_minutes',
+        'session_id',
         'ip',
         'user_agent',
         'work_date',
@@ -28,4 +28,41 @@ class UserSession extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
+
+    public function getDurationInSecondsAttribute()
+{
+    if (!$this->login_at) {
+        return 0;
+    }
+
+    $end = $this->logout_at ?? now();
+
+    return $this->login_at->diffInSeconds($end);
+}
+
+public function getDurationFormattedAttribute()
+{
+    $seconds = $this->duration_in_seconds;
+
+    $hours = floor($seconds / 3600);
+    $minutes = floor(($seconds % 3600) / 60);
+
+    return "{$hours} ساعة {$minutes} دقيقة";
+}
+
+
+protected static function booted()
+{
+    static::creating(function ($session) {
+
+        if (!$session->work_date) {
+            $session->work_date = now()->toDateString();
+        }
+
+    });
+}
+
+
 }

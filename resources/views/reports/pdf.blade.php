@@ -1,152 +1,241 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>تقرير الدوام</title>
+<meta charset="UTF-8">
 
-    <style>
-        body{
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            direction: rtl;
-        }
+<style>
+/* ============================
+   Page Setup
+============================ */
+@page {
+    margin: 90px 40px 70px 40px;
+}
 
-        h2{
-            margin: 0;
-            font-size: 18px;
-        }
 
-        .muted{
-            color: #6b7280;
-            font-size: 11px;
-        }
 
-        .header{
-            margin-bottom: 15px;
-            border-bottom: 2px solid #111827;
-            padding-bottom: 8px;
-        }
 
-        table{
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+/* تحميل الخط العربي */
+@font-face {
+       font-family: 'Hacen';
+    src: url("file:///{{ str_replace('\\', '/', public_path('fonts/hacen-tunisia/Hacen-Tunisia-Bd.ttf')) }}") format("truetype");
 
-        th, td{
-            border: 1px solid #d1d5db;
-            padding: 6px;
-            text-align: center;
-            vertical-align: middle;
-        }
+    font-weight: normal;
+    font-style: normal;
+}
 
-        th{
-            background: #f3f4f6;
-            font-weight: bold;
-        }
 
-        .emp{
-            text-align: right;
-            font-weight: bold;
-        }
 
-        .badge{
-            padding: 2px 6px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 11px;
-            display: inline-block;
-        }
 
-        .bg-success{ background:#dcfce7; color:#166534; }
-        .bg-dark{ background:#e5e7eb; color:#111827; }
-        .bg-warning{ background:#fef3c7; color:#92400e; }
-        .bg-danger{ background:#fee2e2; color:#991b1b; }
 
-        .footer{
-            margin-top: 20px;
-            font-size: 10px;
-            color: #6b7280;
-            text-align: center;
-        }
-    </style>
+
+/* هنا السر الحقيقي */
+body {
+    font-family: 'Hacen';
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: isolate;
+}
+html {
+    direction: rtl;
+}
+
+table {
+    direction: rtl;
+}
+
+th, td {
+    text-align: right;
+}
+
+
+/* منع عكس الجداول */
+table {
+    direction: rtl;
+}
+
+/* ============================
+   Header (Fixed)
+============================ */
+header{
+    position: fixed;
+    top:-70px;
+    right:0;
+    left:0;
+    height:60px;
+    border-bottom:2px solid #0ea5e9;
+}
+
+.header-table{
+    width:100%;
+}
+
+.logo{
+    font-size:18px;
+    font-weight:bold;
+    color:#0f172a;
+}
+
+.subtitle{
+    font-size:11px;
+    color:#6b7280;
+}
+
+/* ============================
+   Footer
+============================ */
+footer{
+    position: fixed;
+    bottom:-50px;
+    left:0;
+    right:0;
+    height:40px;
+    border-top:1px solid #e5e7eb;
+    font-size:10px;
+    color:#6b7280;
+}
+
+.page-number:before{
+    content: "صفحة " counter(page);
+}
+
+/* ============================
+   Section Title
+============================ */
+.section-title{
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom:10px;
+    color:#0f172a;
+}
+
+/* ============================
+   KPI Cards (PDF Friendly)
+============================ */
+.kpi{
+    width:100%;
+    margin-bottom:15px;
+}
+
+.kpi td{
+    border:1px solid #e5e7eb;
+    padding:10px;
+    border-radius:6px;
+}
+
+.kpi-title{
+    font-size:11px;
+    color:#64748b;
+}
+
+.kpi-value{
+    font-size:18px;
+    font-weight:bold;
+    color:#111827;
+}
+
+/* ============================
+   Table Style
+============================ */
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #e5e7eb;
+    padding:7px;
+}
+
+th{
+    background:#f1f5f9;
+    font-weight:bold;
+}
+
+tr:nth-child(even){
+    background:#fafafa;
+}
+
+.badge{
+    padding:3px 6px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.success{ background:#dcfce7; color:#166534; }
+.warning{ background:#fef3c7; color:#92400e; }
+.danger{ background:#fee2e2; color:#991b1b; }
+
+/* ============================
+   Filters Info
+============================ */
+.filters{
+    margin:8px 0 15px 0;
+    font-size:11px;
+    color:#6b7280;
+}
+</style>
 </head>
+
 <body>
 
-    {{-- ================= Header ================= --}}
-    <div class="header">
-        <h2>تقرير الدوام</h2>
-        <div class="muted">
-            الفترة:
-            {{ $from }} →
-            {{ $to }}
-            @if($branch)
-                | الفرع: {{ $branch->name }}
-            @endif
-        </div>
-    </div>
-
-    {{-- ================= Table ================= --}}
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>الموظف</th>
-                <th>الفرع</th>
-                <th>أيام حضور</th>
-                <th>أيام غياب</th>
-                <th>أيام إجازة</th>
-                <th>تأخير (د)</th>
-                <th>ساعات عمل</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($rows as $index => $r)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td class="emp">{{ $r->employee->full_name ?? '-' }}</td>
-                    <td>{{ $r->employee->branch->name ?? '-' }}</td>
-
-                    <td>
-                        <span class="badge bg-success">
-                            {{ (int)$r->present_days }}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="badge bg-dark">
-                            {{ (int)$r->absent_days }}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="badge bg-warning">
-                            {{ (int)$r->leave_days }}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="badge bg-danger">
-                            {{ (int)$r->late_minutes }}
-                        </span>
-                    </td>
-
-                    <td>
-                        {{ round(((int)$r->worked_minutes)/60, 2) }}
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8">لا يوجد بيانات</td>
-                </tr>
-            @endforelse
-        </tbody>
+<header>
+    <table class="header-table">
+        <tr>
+            <td class="logo">نظام نماء أكاديمي</td>
+            <td style="text-align:left" class="subtitle">
+                تم إنشاء التقرير {{ now()->format('Y-m-d H:i') }}
+            </td>
+        </tr>
     </table>
+</header>
 
-    {{-- ================= Footer ================= --}}
-    <div class="footer">
-        تم إنشاء التقرير بتاريخ {{ now()->format('Y-m-d H:i') }}
-    </div>
+<footer>
+    <div class="page-number" style="text-align:center;"></div>
+</footer>
 
+<main>
+
+<div class="section-title">التقرير التحليلي للنظام</div>
+
+<div class="filters">
+الفترة:
+{{ $data['filters']['from'] }} → {{ $data['filters']['to'] }}
+</div>
+
+{{-- ================= KPI ================= --}}
+<table class="kpi">
+<tr>
+@foreach($data['cards'] as $card)
+<td>
+    <div class="kpi-title">{{ $card['title'] }}</div>
+    <div class="kpi-value">{{ $card['value'] }}</div>
+</td>
+@endforeach
+</tr>
+</table>
+
+{{-- ================= TABLE ================= --}}
+<table>
+<thead>
+<tr>
+    <th>الفرع</th>
+    <th>عدد الطلاب</th>
+</tr>
+</thead>
+
+<tbody>
+@foreach($data['charts']['students_per_branch'] ?? [] as $row)
+<tr>
+    <td>{{ $row['branch'] }}</td>
+    <td>
+        <span class="badge success">{{ $row['total'] }}</span>
+    </td>
+</tr>
+@endforeach
+</tbody>
+</table>
+
+</main>
 </body>
 </html>

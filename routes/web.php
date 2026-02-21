@@ -1,5 +1,5 @@
 <?php
-
+  use App\Http\Controllers\Reports\ReportsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentConfirmationController;
@@ -299,9 +299,14 @@ Route::put('exams/{exam}/students', [ExamEnrollmentController::class,'update'])
     // Optional reports
     Route::get('crm_lead_reports', [LeadReportController::class,'index'])->name('crm.reports.index');
  
+    Route::get('/crm/reports/pdf', [LeadReportController::class, 'exportPdf'])
+    ->name('crm.reports.pdf')
+    ->middleware('auth');
 
 
-    use App\Http\Controllers\Reports\ReportsController;
+
+
+  
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
@@ -436,4 +441,22 @@ Route::get('/reports/system-alerts', [ReportsController::class,'alerts'])
 
 
 
+use App\Http\Controllers\admin\AttendanceReportController2;
+    Route::get('/admin/reports/monthly', [AttendanceReportController2::class,'monthly'])
+    ->name('reports.monthly');
+
+
+
+    Route::get('/admin/reports/monthly/pdf', [AttendanceReportController2::class, 'monthlyPdf'])
+    ->name('reports.monthly.pdf');
+
+
+    Route::get('/admin/reports/attendance/monthly', [AttendanceReportController2::class,'monthly'])
+    ->name('reports.attendance.monthly');
+
+Route::get('/admin/reports/attendance/monthly/pdf', [AttendanceReportController2::class,'exportPdf'])
+    ->name('reports.attendance.monthly.pdf');
+
+    
+    
 require __DIR__.'/auth.php';

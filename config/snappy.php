@@ -17,7 +17,7 @@ return [
             'margin-right' => 8,
             'margin-bottom' => 8,
             'margin-left' => 8,
-
+            'enable-local-file-access' => true,
             // ✅ يساعد العربية أحياناً
             'disable-smart-shrinking' => true,
             'print-media-type' => true,

@@ -161,13 +161,15 @@
   </div>
 
   <div class="d-flex gap-2">
-    <a class="btn btn-outline-dark rounded-pill fw-bold px-4" href="{{ route('reports.pdf', request()->query()) }}">
+    <a class="btn btn-outline-danger rounded-pill fw-bold px-4" href="{{ route('reports.pdf', request()->query()) }}">
       <i class="bi bi-file-earmark-pdf"></i> تصدير PDF
     </a>
     <a class="btn btn-outline-success rounded-pill fw-bold px-4"
       href="{{ route('reports.excel', request()->query()) }}">
       <i class="bi bi-file-earmark-excel"></i> تصدير Excel
     </a>
+
+
   </div>
 </div>
 

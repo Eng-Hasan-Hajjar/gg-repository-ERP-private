@@ -20,8 +20,7 @@ return new class extends Migration
     $table->timestamp('last_activity')->nullable();
     $table->timestamp('logout_at')->nullable();
 
-    $table->integer('online_minutes')->default(0);
-
+    $table->string('session_id')->nullable()->index();
     $table->string('ip')->nullable();
     $table->string('user_agent')->nullable();
 

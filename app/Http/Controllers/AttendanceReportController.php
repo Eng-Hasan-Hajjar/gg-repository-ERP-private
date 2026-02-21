@@ -8,7 +8,8 @@ use App\Models\Employee;
 use App\Exports\AttendanceReportExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\Snappy\Facades\SnappyPdf as Pdf;
+
 use Illuminate\Support\Facades\DB;
 
 class AttendanceReportController extends Controller
@@ -77,12 +78,15 @@ public function exportPdf(Request $request)
         ->whereBetween('work_date', [$from,$to])
         ->when($branchId, fn($q)=>$q->whereHas('employee', fn($x)=>$x->where('branch_id',$branchId)))
         ->groupBy('employee_id')
-        ->with('employee')
+        ->with('employee.branch')
         ->get();
 
-    return Pdf::loadView('attendance.report_pdf', compact('rows','from','to'))
-        ->download("attendance_report_{$from}_{$to}.pdf");
+    $pdf = Pdf::loadView('attendance.report_pdf', compact('rows','from','to'))
+        ->setPaper('a4','landscape');
+
+    return $pdf->download("attendance_report_{$from}_{$to}.pdf");
 }
+
 
 
 }

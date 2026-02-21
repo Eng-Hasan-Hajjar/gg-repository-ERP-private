@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Reports;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reports\ReportFiltersRequest;
 use App\Models\Branch;
+use App\Models\AttendanceRecord;
+
 use App\Services\Reports\ReportsService;
 use Illuminate\Support\Facades\App;
 use Maatwebsite\Excel\Facades\Excel;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Controllers\Reports\Request;
+//use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\Snappy\Facades\SnappyPdf as Pdf;
+use Illuminate\Http\Request;
+//use App\Http\Controllers\Reports\Request;
 class ReportsController extends Controller
 {
     public function __construct(private ReportsService $service)
@@ -28,26 +32,36 @@ class ReportsController extends Controller
         ]);
     }
 
-public function exportPdf(Request $request)
+
+    
+public function exportPdf(ReportFiltersRequest $request)
 {
-    $from = $request->get('from', now()->startOfMonth()->toDateString());
-    $to   = $request->get('to', now()->endOfMonth()->toDateString());
+    $filters = $request->validatedFilters();
+    $data    = $this->service->getDashboard($filters);
 
-    $branchId = $request->get('branch_id');
+    $pdf = Pdf::loadView('reports.pdf', [
+        'data'    => $data,
+        'filters' => $filters,
+    ]);
 
-    $rows = $this->getReportRows($from, $to, $branchId); // نفس الدالة المستخدمة بالواجهة
-
-    $branch = $branchId ? Branch::find($branchId) : null;
-
-    $pdf = Pdf::loadView('attendance.reports.pdf', [
-        'rows'   => $rows,
-        'from'   => $from,
-        'to'     => $to,
-        'branch' => $branch,
-    ])->setPaper('a4', 'landscape');
-
-    return $pdf->download('attendance-report.pdf');
+    return $pdf->setPaper('a4', 'landscape')
+               ->download('report.pdf');
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function exportExcel(ReportFiltersRequest $request)
     {
