@@ -61,20 +61,29 @@ class Student extends Model
     /**
      * *************************/
 
-    public function extra(): HasOne
-    {
-        return $this->hasOne(StudentExtraField::class);
-    }
-    public function exams()
-    {
-        return $this->belongsToMany(\App\Models\Exam::class, 'exam_registrations')
-            ->withPivot(['status','registered_at','notes'])
-            ->withTimestamps();
-    }
+      public function extra(): HasOne
+      {
+          return $this->hasOne(StudentExtraField::class);
+      }
+      public function exams()
+      {
+          return $this->belongsToMany(\App\Models\Exam::class, 'exam_registrations')
+              ->withPivot(['status','registered_at','notes'])
+              ->withTimestamps();
+      }
 
-   public function diploma()
-{
-  return $this->belongsTo(\App\Models\Diploma::class, 'diploma_id');
-}
+      public function diploma()
+      {
+        return $this->belongsTo(\App\Models\Diploma::class, 'diploma_id');
+      }
+
+
+
+      public function financialAccount()
+      {
+          return $this->morphOne(FinancialAccount::class, 'accountable');
+      }
+
+
 
 }

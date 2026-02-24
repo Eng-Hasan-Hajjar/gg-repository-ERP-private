@@ -78,6 +78,8 @@
               <td class="fw-semibold">
                 <div class="user-cell">
 
+                   <span class="status-dot {{ $u->isOnline() ? 'online' : 'offline' }}"></span>
+<span class="user-name">{{ $u->name }}</span>
 
                   @if($u->isOnline())
                     <span class="text-success">متصل الآن</span>
@@ -89,8 +91,7 @@
                   @endif
 
 
-                  <span class="status-dot {{ $u->isOnline() ? 'online' : 'offline' }}"></span>
-                  <span class="user-name">{{ $u->name }}</span>
+                 
                 </div>
               </td>
 

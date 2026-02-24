@@ -37,18 +37,28 @@ class AuthenticatedSessionController extends Controller
 
 
 
-        $existingSession = UserSession::where('user_id', $user->id)
-            ->whereNull('logout_at')
-            ->latest()
-            ->first();
+      $existingSession = UserSession::where('user_id', $user->id)
+    ->whereNull('logout_at')
+    ->latest()
+    ->first();
 
-        if ($existingSession) {
-            Auth::logout();
+if ($existingSession) {
 
-            return back()->withErrors([
-                'email' => 'المستخدم مسجل دخول من جهاز آخر حالياً.'
-            ]);
-        }
+    $sessionFile = storage_path('framework/sessions/' . $existingSession->session_id);
+
+    // إذا ملف الجلسة غير موجود → يعني الجلسة ماتت فعلياً
+    if (!file_exists($sessionFile)) {
+        $existingSession->update([
+            'logout_at' => now()
+        ]);
+    } else {
+        Auth::logout();
+
+        return back()->withErrors([
+            'email' => 'المستخدم مسجل دخول من جهاز آخر حالياً.'
+        ]);
+    }
+}
 
 
 

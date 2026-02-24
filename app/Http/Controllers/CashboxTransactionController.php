@@ -8,6 +8,41 @@ use Illuminate\Http\Request;
 
 class CashboxTransactionController extends Controller
 {
+
+public function index(Request $request, Cashbox $cashbox)
+{
+    $q = $cashbox->transactions()
+        ->with(['account.accountable','diploma'])
+        ->newQuery();
+
+    if ($request->filled('type'))   $q->where('type', $request->type);
+    if ($request->filled('status')) $q->where('status', $request->status);
+
+    if ($request->filled('only_students')) {
+        $q->whereNotNull('financial_account_id');
+    }
+
+    if ($request->filled('search')) {
+        $s = trim($request->search);
+        $q->where(function($x) use ($s){
+            $x->where('category','like',"%$s%")
+              ->orWhere('reference','like',"%$s%")
+              ->orWhere('notes','like',"%$s%");
+        });
+    }
+
+    $transactions = $q->latest('trx_date')->paginate(20)->withQueryString();
+
+    $postedIn  = (float) $cashbox->transactions()->where('status','posted')->where('type','in')->sum('amount');
+    $postedOut = (float) $cashbox->transactions()->where('status','posted')->where('type','out')->sum('amount');
+
+    return view('cashboxes.transactions.index',
+        compact('cashbox','transactions','postedIn','postedOut'));
+}
+
+
+
+/*
     public function index(Request $request, Cashbox $cashbox)
     {
         $q = $cashbox->transactions()->newQuery();
@@ -32,7 +67,7 @@ class CashboxTransactionController extends Controller
 
         return view('cashboxes.transactions.index', compact('cashbox','transactions','postedIn','postedOut'));
     }
-
+*/
     public function create(Cashbox $cashbox)
     {
         return view('cashboxes.transactions.create', compact('cashbox'));

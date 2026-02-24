@@ -174,30 +174,30 @@ $this->saveProfileWithUploads($student, $request);
 
 public function show(Student $student)
 {
-    $student->load(['branch','diplomas','profile','crmInfo']);
+        $student->load(['branch','diplomas','profile','crmInfo']);
 
-    $p = $student->profile;
+        $p = $student->profile;
 
-    $waDigits = $student->whatsapp ? preg_replace('/\D+/', '', $student->whatsapp) : null;
-    $waLink   = $waDigits ? "https://wa.me/{$waDigits}" : null;
+        $waDigits = $student->whatsapp ? preg_replace('/\D+/', '', $student->whatsapp) : null;
+        $waLink   = $waDigits ? "https://wa.me/{$waDigits}" : null;
 
-    $files = $this->buildProfileFiles($p);
+        $files = $this->buildProfileFiles($p);
 
-    $diplomaFiles = $this->buildDiplomaFiles($student);
+        $diplomaFiles = $this->buildDiplomaFiles($student);
 
-    $labels = $this->studentArabicLabels();
+        $labels = $this->studentArabicLabels();
 
-    $status_ar = $labels['student_status'][$student->status] ?? ($student->status ?? '-');
-    $registration_ar = $labels['registration_status'][$student->registration_status] ?? '-';
-    $mode_ar = $labels['mode'][$student->mode] ?? '-';
+        $status_ar = $labels['student_status'][$student->status] ?? ($student->status ?? '-');
+        $registration_ar = $labels['registration_status'][$student->registration_status] ?? '-';
+        $mode_ar = $labels['mode'][$student->mode] ?? '-';
 
-    $crm_source_ar = $student->crmInfo
-        ? ($labels['crm_source'][$student->crmInfo->source] ?? '-')
-        : '-';
+        $crm_source_ar = $student->crmInfo
+            ? ($labels['crm_source'][$student->crmInfo->source] ?? '-')
+            : '-';
 
-    $crm_stage_ar = $student->crmInfo
-        ? ($labels['crm_stage'][$student->crmInfo->stage] ?? '-')
-        : '-';
+        $crm_stage_ar = $student->crmInfo
+            ? ($labels['crm_stage'][$student->crmInfo->stage] ?? '-')
+            : '-';
 
 
         // ======= 🔹 تعريب حالة الدبلومة (خاص بالـ Pivot) =======
@@ -218,11 +218,16 @@ public function show(Student $student)
 
 
 
+        $financial = $student->financialAccount?->load('transactions.cashbox');
+
+
+
+
     return view('students.show', compact(
         'student','p','waLink','files',
         'diplomaFiles',
         'status_ar','registration_ar','mode_ar',
-        'crm_source_ar','crm_stage_ar'
+        'crm_source_ar','crm_stage_ar','financial'
     ));
 }
 

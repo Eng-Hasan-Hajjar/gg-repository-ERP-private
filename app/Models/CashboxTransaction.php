@@ -11,7 +11,7 @@ class CashboxTransaction extends Model
     use Auditable;
     protected $fillable = [
         'cashbox_id','trx_date','type','amount','currency',
-        'category','reference','notes','status','posted_at','attachment_path',
+        'category','reference','notes','status','posted_at','attachment_path','financial_account_id','diploma_id',
     ];
 
     protected $casts = [
@@ -24,4 +24,28 @@ class CashboxTransaction extends Model
     {
         return $this->belongsTo(Cashbox::class);
     }
+
+
+
+    public function account()
+    {
+        return $this->belongsTo(FinancialAccount::class, 'financial_account_id');
+    }
+    
+
+
+    public function diploma()
+    {
+        return $this->belongsTo(\App\Models\Diploma::class);
+    }
+
+
+
+    public function student()
+    {
+        return $this->account?->accountable_type === \App\Models\Student::class
+            ? $this->account->accountable
+            : null;
+    }
+
 }

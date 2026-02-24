@@ -47,6 +47,19 @@
           </select>
         </div>
 
+
+
+        <div class="col-6 col-md-2">
+          <select name="only_students" class="form-select">
+            <option value="">كل الحركات</option>
+            <option value="1" @selected(request('only_students'))>
+              دفعات الطلاب فقط
+            </option>
+          </select>
+        </div>
+
+
+
         <div class="col-12 col-md-3 d-grid">
           <button class="btn btn-namaa fw-bold">تطبيق</button>
         </div>
@@ -66,6 +79,8 @@
           <tr>
             <th>#</th>
             <th>التاريخ</th>
+            <th>الطالب</th>
+            <th>الدبلومة</th>
             <th>النوع</th>
             <th>المبلغ</th>
             <th>تصنيف</th>
@@ -79,6 +94,20 @@
             <tr>
               <td>{{ $t->id }}</td>
               <td>{{ $t->trx_date->format('Y-m-d') }}</td>
+
+              <td>
+                {{ optional($t->account->accountable)->full_name ?? '-' }}
+
+
+                
+              </td>
+
+              <td>
+                {{ optional($t->diploma)->name ?? '-' }}
+              </td>
+
+
+
               <td>
                 <span class="badge bg-{{ $t->type == 'in' ? 'success' : 'danger' }}">
                   {{ $t->type == 'in' ? 'مقبوض' : 'مدفوع' }}

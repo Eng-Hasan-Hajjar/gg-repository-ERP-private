@@ -82,7 +82,19 @@ public function index(Request $request)
     $data['created_by'] = auth()->id();
 
     $lead = DB::transaction(function() use ($data,$request){
-      $lead = Lead::create($data);
+    $lead = Lead::create($data);
+
+
+
+////////////////////////////financialAccount////////////////////////////////////////////
+    $lead->financialAccount()->create([
+        'name' => $lead->full_name,
+        'phone' => $lead->phone,
+        'branch_id' => $lead->branch_id,
+    ]);
+
+////////////////////////////////////////////////////////////////////////
+
 
       $diplomaIds = $request->input('diploma_ids', []);
       if (!empty($diplomaIds)) {
@@ -102,6 +114,22 @@ public function index(Request $request)
 public function show(Lead $lead)
 {
     $lead->load(['branch','diplomas','followups','creator']);
+
+
+
+        // ✅ تأكد أن الحساب المالي موجود
+    if (!$lead->financialAccount) {
+        $lead->financialAccount()->create([
+            'name' => $lead->full_name,
+            'phone' => $lead->phone,
+            'branch_id' => $lead->branch_id,
+        ]);
+
+        // أعد تحميل العلاقة
+        $lead->load('financialAccount');
+    }
+
+
 
     $labels = $this->leadArabicLabels();
 
@@ -163,6 +191,19 @@ public function show(Lead $lead)
   {
     abort_unless($lead->registration_status === 'pending', 403);
 
+
+        // 🔴 منع التحويل بدون دفعة
+    $hasPayment = $lead->financialAccount
+        ? $lead->financialAccount->transactions()->where('type','in')->exists()
+        : false;
+
+    if (!$hasPayment) {
+        return back()->with('error', 'يجب تسجيل دفعة مالية أولية قبل تحويل العميل إلى طالب.');
+    }
+
+
+
+
     $student = DB::transaction(function () use ($lead) {
 
       $student = Student::create([
@@ -193,6 +234,22 @@ public function show(Lead $lead)
 
         'confirmed_at' => now(),
       ]);
+
+
+
+
+
+      // 🔹 نقل ملكية الحساب المالي من Lead إلى Student
+      if ($lead->financialAccount) {
+          $lead->financialAccount->update([
+              'accountable_type' => Student::class,
+              'accountable_id'   => $student->id,
+          ]);
+      }
+
+
+
+
 
       // ✅ نقل دبلومات الـ lead إلى الطالب
       $leadDiplomas = $lead->diplomas()->get();
@@ -245,6 +302,18 @@ public function show(Lead $lead)
         'student_id' => $student->id,
         'stage' => 'registered',
       ]);
+
+
+
+      // 🔹 نقل ملكية الحساب المالي من Lead إلى Student
+      if ($lead->financialAccount) {
+          $lead->financialAccount->update([
+              'accountable_type' => \App\Models\Student::class,
+              'accountable_id'   => $student->id,
+          ]);
+      }
+
+
 
       return $student;
     });

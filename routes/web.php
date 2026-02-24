@@ -409,17 +409,17 @@ Route::get('/reports/branches-map', [ReportsController::class, 'branchesMap'])
    return view('reports.students-growth');
 })->name('reports.students.growth');*/
 
-Route::get('/reports/students-growth', [ReportsController::class, 'studentsGrowth'])
+    Route::get('/reports/students-growth', [ReportsController::class, 'studentsGrowth'])
     ->name('reports.students.growth');
 
 
 
-Route::get('/reports/revenue-branches', [ReportsController::class, 'revenuePerBranch'])
+    Route::get('/reports/revenue-branches', [ReportsController::class, 'revenuePerBranch'])
     ->name('reports.revenue.branches');
 
 
 
-Route::get('/reports/system-alerts', [ReportsController::class,'alerts'])
+    Route::get('/reports/system-alerts', [ReportsController::class,'alerts'])
     ->name('reports.system.alerts');
 
 
@@ -430,7 +430,7 @@ Route::get('/reports/system-alerts', [ReportsController::class,'alerts'])
 
 
 
-   use App\Http\Controllers\AlertController;
+     use App\Http\Controllers\AlertController;
     Route::middleware('auth')->group(function () {
 
         Route::get('/alerts/navbar', [AlertController::class, 'navbar'])
@@ -454,9 +454,19 @@ use App\Http\Controllers\admin\AttendanceReportController2;
     Route::get('/admin/reports/attendance/monthly', [AttendanceReportController2::class,'monthly'])
     ->name('reports.attendance.monthly');
 
-Route::get('/admin/reports/attendance/monthly/pdf', [AttendanceReportController2::class,'exportPdf'])
-    ->name('reports.attendance.monthly.pdf');
+    Route::get('/admin/reports/attendance/monthly/pdf', [AttendanceReportController2::class,'exportPdf'])
+        ->name('reports.attendance.monthly.pdf');
 
+        
     
     
+
+
+    Route::post('/financial/pay', [\App\Http\Controllers\FinancialTransactionController::class, 'store'])
+    ->name('financial.pay');
+
+
+
+
+
 require __DIR__.'/auth.php';
