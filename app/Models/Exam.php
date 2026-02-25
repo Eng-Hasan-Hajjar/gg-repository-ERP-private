@@ -44,22 +44,9 @@ class Exam extends Model
     }
 
 
-    public function components()
-    {
-        return $this->hasMany(\App\Models\ExamComponent::class)->orderBy('sort_order');
-    }
+  
 
-    public function registrations()
-    {
-        return $this->hasMany(\App\Models\ExamRegistration::class);
-    }
-
-    public function students()
-    {
-        return $this->belongsToMany(\App\Models\Student::class, 'exam_registrations')
-            ->withPivot(['status','registered_at','notes'])
-            ->withTimestamps();
-    }
+ 
 
 
 

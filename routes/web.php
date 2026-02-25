@@ -22,7 +22,7 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadFollowupController;
 use App\Http\Controllers\LeadReportController;
 
-use App\Http\Controllers\ExamEnrollmentController;
+
 
 //طلبات الإجازات + صفحة موافقات الأدمن
 use App\Http\Controllers\LeaveRequestController;
@@ -249,33 +249,10 @@ Route::resource('exams', ExamController::class);
 Route::get('exams/{exam}/results', [ExamResultController::class,'edit'])->name('exams.results.edit');
 Route::put('exams/{exam}/results', [ExamResultController::class,'update'])->name('exams.results.update');
 
-// سجل امتحانات طالب
-Route::get('students/{student}/exams', [ExamResultController::class,'studentTranscript'])->name('students.exams');
-
-
-use App\Http\Controllers\ExamComponentController;
-use App\Http\Controllers\ExamMarksController;
-
-// Components management
-Route::get('exams/{exam}/components', [ExamComponentController::class,'index'])->name('exams.components.index');
-Route::post('exams/{exam}/components', [ExamComponentController::class,'store'])->name('exams.components.store');
-Route::delete('exams/{exam}/components/{component}', [ExamComponentController::class,'destroy'])->name('exams.components.destroy');
-
-// Marks entry (dynamic components)
-Route::get('exams/{exam}/marks', [ExamMarksController::class,'edit'])->name('exams.marks.edit');
-Route::put('exams/{exam}/marks', [ExamMarksController::class,'update'])->name('exams.marks.update');
-
- Route::get('exams/{exam}/marks/student/{student}', function (\App\Models\Exam $exam, \App\Models\Student $student) {
-    return redirect()->route('exams.marks.edit', $exam).'?student_id='.$student->id;
-})->name('exams.marks.student');
 
 
 
-Route::get('exams/{exam}/students', [ExamEnrollmentController::class,'edit'])
-    ->name('exams.students.edit');
 
-Route::put('exams/{exam}/students', [ExamEnrollmentController::class,'update'])
-    ->name('exams.students.update');
 
 
 
@@ -465,6 +442,25 @@ use App\Http\Controllers\admin\AttendanceReportController2;
     Route::post('/financial/pay', [\App\Http\Controllers\FinancialTransactionController::class, 'store'])
     ->name('financial.pay');
 
+
+
+
+
+    Route::prefix('finance')->name('finance.')->group(function () {
+
+            Route::get('/dashboard', [\App\Http\Controllers\FinanceController::class,'dashboard'])
+                ->name('dashboard');
+
+            Route::get('/reports/diplomas', [\App\Http\Controllers\FinanceController::class,'diplomaReport'])
+                ->name('reports.diplomas');
+
+            Route::get('/reports/profit', [\App\Http\Controllers\FinanceController::class,'profitByProgram'])
+                ->name('reports.profit');
+
+            Route::get('/reports/daily', [\App\Http\Controllers\FinanceController::class,'dailyReport'])
+                ->name('reports.daily');
+
+    });
 
 
 

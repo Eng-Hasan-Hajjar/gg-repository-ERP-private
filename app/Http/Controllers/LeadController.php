@@ -305,13 +305,6 @@ public function show(Lead $lead)
 
 
 
-      // 🔹 نقل ملكية الحساب المالي من Lead إلى Student
-      if ($lead->financialAccount) {
-          $lead->financialAccount->update([
-              'accountable_type' => \App\Models\Student::class,
-              'accountable_id'   => $student->id,
-          ]);
-      }
 
 
 

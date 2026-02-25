@@ -95,6 +95,68 @@
 .badge-soft.warn{background:rgba(245,158,11,.12);color:#92400e;}
 .badge-soft.gray{background:rgba(100,116,139,.12);color:#334155;}
 
+
+
+
+/* ===== Timeline مالية ===== */
+
+.finance-timeline {
+    position: relative;
+    padding-right: 30px;
+}
+
+.finance-timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 10px;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(var(--namaa-blue), var(--namaa-green));
+    border-radius: 10px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.timeline-dot {
+    position: absolute;
+    right: -2px;
+    top: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 3px rgba(0,0,0,.05);
+}
+
+.timeline-dot.in {
+    background: var(--namaa-green);
+}
+
+.timeline-dot.out {
+    background: #f59e0b;
+}
+
+.timeline-card {
+    background: rgba(248,250,252,.9);
+    border: 1px solid rgba(226,232,240,.9);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-right: 35px;
+    transition: .2s ease;
+}
+
+.timeline-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(2,6,23,.08);
+}
+
+
+
+
 @media (max-width: 575.98px){
   .kv{ grid-template-columns: 1fr; gap: 6px; }
   .page-head{ padding: 14px; }
@@ -562,44 +624,338 @@
 
 
 
-<hr>
-<h4 class="fw-bold">المعلومات المالية</h4>
 
-@if($financial)
 
-    <div class="alert alert-info">
-        إجمالي الرصيد: 
-        <strong>{{ number_format($financial->balance,2) }}</strong>
+
+
+
+
+{{-- ================== العلامات الامتحانية ================== --}}
+
+  <div class="section-header">
+        <i class="bi bi-journal-check"></i>
+        العلامات الامتحانية
     </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>التاريخ</th>
-                <th>الصندوق</th>
-                <th>النوع</th>
-                <th>المبلغ</th>
-                <th>ملاحظات</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($financial->transactions as $trx)
-                <tr>
-                    <td>{{ $trx->trx_date->format('Y-m-d') }}</td>
-                    <td>{{ $trx->cashbox->name ?? '-' }}</td>
-                    <td>{{ $trx->type == 'in' ? 'مقبوض' : 'مدفوع' }}</td>
-                    <td>{{ number_format($trx->amount,2) }}</td>
-                    <td>{{ $trx->notes }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
 
-@else
+<div class="row g-3">
 
-    <div class="alert alert-warning">
-        لا يوجد سجل مالي لهذا الطالب
+  
+
+    <div class="p-3 p-md-4">
+
+        @if($results->count() == 0)
+
+            <div class="alert alert-info mb-0 fw-semibold">
+                <i class="bi bi-info-circle"></i>
+                لم يقدم أي امتحان حتى الآن.
+            </div>
+
+        @else
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+
+                <thead class="small text-muted">
+                    <tr>
+                        <th>الامتحان</th>
+                        <th>الدبلومة</th>
+                        <th class="hide-mobile">التاريخ</th>
+                        <th>العلامة</th>
+                        <th class="hide-mobile">الحالة</th>
+                        <th class="text-center">إجراء</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                @foreach($results as $r)
+                    <tr>
+
+                        <td class="fw-bold">
+                            {{ $r->exam->title }}
+                        </td>
+
+                        <td>
+                            <span class="badge-soft hide-mobile">
+                                {{ $r->exam->diploma->name }}
+                               
+                            </span>
+                             <span class="text-muted">
+                                    ({{ $r->exam->diploma->code }})
+                                </span>
+
+                        </td>
+
+                        <td class="text-muted hide-mobile">
+                            {{ \Carbon\Carbon::parse($r->exam->exam_date)->format('Y-m-d') }}
+                        </td>
+
+                        <td class="fw-bold">
+                            {{ $r->score ?? '—' }}
+                        </td>
+
+                        <td class="hide-mobile">
+                            @if($r->status === 'passed')
+                                <span class="badge-soft success">
+                                    <i class="bi bi-check-circle"></i> ناجح
+                                </span>
+                            @elseif($r->status === 'failed')
+                                <span class="badge-soft warn">
+                                    <i class="bi bi-x-circle"></i> راسب
+                                </span>
+                            @else
+                                <span class="badge-soft gray">
+                                    غير محدد
+                                </span>
+                            @endif
+                        </td>
+
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-outline-primary btn-pill"
+                               href="{{ route('exams.results.edit',$r->exam) }}?student_id={{ $student->id }}">
+                                <i class="bi bi-pencil-square"></i>
+                                مراجعة
+                            </a>
+                        </td>
+
+                    </tr>
+                @endforeach
+
+                </tbody>
+            </table>
+        </div>
+
+        @endif
+
     </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{-- ================== المعلومات المالية ================== --}}
+
+
+  <div class="section-header">
+        <i class="bi bi-cash-coin"></i>
+        المعلومات المالية
+    </div>
+
+
+<div class="row g-3">
+
+  
+
+    <div class="p-3 p-md-4">
+
+        @if($financial)
+
+            {{-- الرصيد --}}
+@if(!empty($balancesByCurrency))
+
+<div class="row g-3 mb-4">
+
+    @foreach($balancesByCurrency as $currency => $amount)
+
+        <div class="col-md-4">
+
+            <div class="timeline-card text-center">
+
+                <div class="text-muted small">
+                    الرصيد — {{ $currency }}
+                </div>
+
+                <div class="fs-4 fw-bold 
+                    {{ $amount >= 0 ? 'text-success' : 'text-warning' }}">
+                    {{ number_format($amount,2) }}
+                </div>
+
+                <span class="badge-soft 
+                    {{ $amount >= 0 ? 'success' : 'warn' }}">
+                    {{ $amount >= 0 ? 'رصيد موجب' : 'رصيد مستحق' }}
+                </span>
+
+            </div>
+
+        </div>
+
+    @endforeach
+
+</div>
+
+@endif
+
+            @if($financial->transactions->count())
+
+                <div class="finance-timeline">
+
+                    @foreach($financial->transactions->sortByDesc('trx_date') as $trx)
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-dot {{ $trx->type == 'in' ? 'in' : 'out' }}"></div>
+
+                            <div class="timeline-card">
+
+                                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+
+                                    <div>
+
+                                        <div class="fw-bold">
+                                            {{ $trx->type == 'in' ? 'دفعة مقبوضة' : 'دفعة مدفوعة' }}
+                                        </div>
+
+                                        <div class="small text-muted">
+                                            {{ $trx->trx_date->format('Y-m-d') }}
+                                            —
+                                            {{ $trx->cashbox->name ?? '-' }}
+                                        </div>
+
+                                        @if($trx->notes)
+                                            <div class="mt-2 small text-muted">
+                                                {{ $trx->notes }}
+                                            </div>
+                                        @endif
+
+                                    </div>
+
+                                    <div class="text-end">
+
+                                        <div class="fw-bold fs-5 
+                                            {{ $trx->type == 'in' ? 'text-success' : 'text-warning' }}">
+                                            {{ $trx->type == 'in' ? '+' : '-' }}
+                                            {{ number_format($trx->amount,2) }}
+                                        </div>
+
+                                        <span class="badge-soft 
+                                            {{ $trx->type == 'in' ? 'success' : 'warn' }}">
+                                            {{ $trx->type == 'in' ? 'مقبوض' : 'مدفوع' }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    @endforeach
+
+                </div>
+
+            @else
+
+                <div class="alert alert-info mb-0 fw-semibold">
+                    <i class="bi bi-info-circle"></i>
+                    لا توجد حركات مالية حتى الآن.
+                </div>
+
+            @endif
+
+        @else
+
+            <div class="alert alert-warning mb-0 fw-semibold">
+                <i class="bi bi-exclamation-triangle"></i>
+                لا يوجد سجل مالي لهذا الطالب
+            </div>
+
+        @endif
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{-- ================== المعلومات المالية ================== --}}
+
+@if(auth()->user()?->hasPermission('view_leads') && $financial)
+
+
+
+ 
+
+
+<div class="row g-3">
+
+   <div class="section-header">
+        <i class="bi bi-plus-circle"></i>
+        إضافة دفعة جديدة
+    </div>
+
+    <div class="p-3 p-md-4">
+
+        <form method="POST" action="{{ route('financial.pay') }}">
+            @csrf
+
+            <input type="hidden" name="financial_account_id" value="{{ $financial->id }}">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="fw-bold mb-1">الدبلومة</label>
+                    <select name="diploma_id" class="form-select" required>
+                        @foreach($student->diplomas as $d)
+                            <option value="{{ $d->id }}">
+                                {{ $d->name }} ({{ $d->code }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="fw-bold mb-1">الصندوق</label>
+                    <select name="cashbox_id" class="form-select" required>
+                        @foreach(\App\Models\Cashbox::where('status','active')->get() as $box)
+                            <option value="{{ $box->id }}">
+                                {{ $box->name }} - {{ $box->currency }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="fw-bold mb-1">المبلغ</label>
+                    <input type="number" step="0.01" name="amount" class="form-control" required>
+                </div>
+
+                <div class="col-12 text-end">
+                    <button class="btn btn-namaa btn-pill">
+                        <i class="bi bi-check2-circle"></i>
+                        تسجيل دفعة
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
 
 @endif
 
@@ -608,52 +964,43 @@
 
 
 
- @if(auth()->user()?->hasPermission('view_leads'))
-      <hr>
-      <h5 class="fw-bold">إضافة دفعة جديدة</h5>
 
-      @if($financial)
-      <form method="POST" action="{{ route('financial.pay') }}">
-          @csrf
 
-          <input type="hidden" name="financial_account_id" value="{{ $financial->id }}">
 
-          <div class="row g-3">
 
-              <div class="col-md-4">
-                  <label>الدبلومة</label>
-                  <select name="diploma_id" class="form-select" required>
-                      @foreach($student->diplomas as $d)
-                          <option value="{{ $d->id }}">{{ $d->name }}</option>
-                      @endforeach
-                  </select>
-              </div>
 
-              <div class="col-md-4">
-                  <label>الصندوق</label>
-                  <select name="cashbox_id" class="form-select" required>
-                      @foreach(\App\Models\Cashbox::where('status','active')->get() as $box)
-                          <option value="{{ $box->id }}">
-                              {{ $box->name }} - {{ $box->currency }}
-                          </option>
-                      @endforeach
-                  </select>
-              </div>
 
-              <div class="col-md-4">
-                  <label>المبلغ</label>
-                  <input type="number" step="0.01" name="amount" class="form-control" required>
-              </div>
 
-              <div class="col-12">
-                  <button class="btn btn-success">تسجيل دفعة</button>
-              </div>
 
-          </div>
-      </form>
-      @endif
 
- @endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

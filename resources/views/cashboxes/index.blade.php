@@ -9,12 +9,39 @@
       <h4 class="mb-1 fw-bold">الصناديق والحسابات المالية</h4>
       <div class="text-muted fw-semibold">إدارة الصناديق حسب الفرع والعملة + سجل الحركات</div>
     </div>
-@if(auth()->user()?->hasPermission('create_cashboxes'))
-    <a href="{{ route('cashboxes.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
-      <i class="bi bi-plus-circle"></i> إضافة صندوق
-    </a>
-  </div>
-@endif
+
+
+    
+
+      <a href="{{ route('finance.dashboard') }}" class="btn btn-warning fw-bold">
+        📊 لوحة المالية
+      </a>
+
+      <a href="{{ route('finance.reports.diplomas') }}" class="btn btn-outline-primary">
+        📘 تقرير الدبلومات
+      </a>
+
+      <a href="{{ route('finance.reports.profit') }}" class="btn btn-outline-success">
+        💰 أرباح البرامج
+      </a>
+
+      <a href="{{ route('finance.reports.daily') }}" class="btn btn-outline-dark">
+        🗓 التقرير اليومي
+      </a>
+
+
+
+
+   
+
+
+
+    @if(auth()->user()?->hasPermission('create_cashboxes'))
+        <a href="{{ route('cashboxes.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
+          <i class="bi bi-plus-circle"></i> إضافة صندوق
+        </a>
+      </div>
+    @endif
 
   <form class="card border-0 shadow-sm mb-3">
     <div class="card-body">

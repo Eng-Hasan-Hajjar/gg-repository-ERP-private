@@ -84,7 +84,7 @@
               <div class="fw-bold">{{ $e->title }}</div>
               <div class="small text-muted">{{ $e->code ?? '-' }} — {{ $e->type }}</div>
             </td>
-            <td>{{ $e->diploma->name ?? '-' }}</td>
+            <td>{{ $e->diploma->name ?? '-' }}  {{ $e->diploma->code ?? '-' }}</td>
             <td>{{ $e->branch->name ?? '-' }}</td>
             <td class="hide-mobile">{{ $e->trainer->full_name ?? '-' }}</td>
             <td class="hide-mobile">{{ $e->max_score }}</td>
@@ -106,18 +106,11 @@
                   @endif
 
 
-                  @if(auth()->user()?->hasPermission('enter_grades'))
-                  @if($studentId)
-                    <a class="btn btn-sm btn-namaa"
-                      href="{{ route('exams.marks.edit', $e).'?student_id='.$studentId }}">
-                      إدخال علامات هذا الطالب
-                    </a>
-                  @else
-                    <a class="btn btn-sm btn-namaa" href="{{ route('exams.marks.edit',$e) }}">
-                      إدخال الدرجات (جميع الطلاب)
-                    </a>
-                  @endif
-                    @endif
+                @if(auth()->user()?->hasPermission('enter_grades'))
+                  <a class="btn btn-sm btn-namaa" href="{{ route('exams.results.edit',$e) }}">
+                      إدخال العلامات
+                  </a>
+                @endif
 
             </td>
           </tr>

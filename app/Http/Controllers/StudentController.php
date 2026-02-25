@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Http\Requests\StudentStoreRequest;
 use App\Http\Requests\StudentUpdateRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ExamResult;
 class StudentController extends Controller
 {
 public function index(Request $request)
@@ -176,6 +177,15 @@ public function show(Student $student)
 {
         $student->load(['branch','diplomas','profile','crmInfo']);
 
+
+
+
+         $results = ExamResult::with(['exam.diploma'])
+        ->where('student_id',$student->id)
+        ->get();
+
+
+
         $p = $student->profile;
 
         $waDigits = $student->whatsapp ? preg_replace('/\D+/', '', $student->whatsapp) : null;
@@ -223,11 +233,35 @@ public function show(Student $student)
 
 
 
+
+        // ===== تجميع الرصيد حسب العملة =====
+
+        $balancesByCurrency = [];
+
+        if ($financial) {
+
+            $transactions = $financial->transactions()
+                ->with('cashbox')
+                ->where('status', 'posted')
+                ->get();
+
+            $grouped = $transactions->groupBy(fn($trx) => $trx->cashbox->currency);
+
+            foreach ($grouped as $currency => $items) {
+
+                $in  = $items->where('type','in')->sum('amount');
+                $out = $items->where('type','out')->sum('amount');
+
+                $balancesByCurrency[$currency] = $in - $out;
+            }
+        }
+
+
     return view('students.show', compact(
         'student','p','waLink','files',
-        'diplomaFiles',
+        'diplomaFiles', 'results',
         'status_ar','registration_ar','mode_ar',
-        'crm_source_ar','crm_stage_ar','financial'
+        'crm_source_ar','crm_stage_ar','financial','balancesByCurrency'
     ));
 }
 

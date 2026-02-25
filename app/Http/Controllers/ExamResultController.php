@@ -2,78 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ExamResultsUpdateRequest;
 use App\Models\Exam;
 use App\Models\ExamResult;
-use App\Models\Student;
 use Illuminate\Http\Request;
 
 class ExamResultController extends Controller
 {
-    // صفحة إدخال/تعديل درجات الامتحان (قائمة طلاب الفرع+الدبلومة)
-    public function edit(Exam $exam, Request $request)
-    {
-        $exam->load(['branch','diploma','trainer']);
+public function edit(Exam $exam, Request $request)
+{
+    $exam->load(['branch','diploma','trainer']);
 
-    // إذا ما في طلاب مسجلين → وجهه لاختيار الطلاب
-    if ($exam->students()->count() === 0) {
-        return redirect()
-            ->route('exams.students.edit', $exam)
-            ->with('error','حدد أولاً الطلاب المنتسبين لهذا الامتحان.');
+    $studentsQ = \App\Models\Student::query()
+        ->where('branch_id', $exam->branch_id)
+        ->whereHas('diplomas', function ($q) use ($exam) {
+            $q->where('diplomas.id', $exam->diploma_id);
+        });
+
+    if ($request->filled('search')) {
+        $s = trim($request->search);
+        $studentsQ->where(function($x) use ($s){
+            $x->where('full_name','like',"%$s%")
+              ->orWhere('university_id','like',"%$s%");
+        });
     }
 
-    $studentsQ = $exam->students()->getQuery()->with(['branch','diploma']);
+    if ($request->filled('student_id')) {
+        $studentsQ->where('id', $request->student_id);
+    }
 
+    $students = $studentsQ->orderBy('full_name')->get();
 
-        if ($request->filled('search')) {
-            $s = trim($request->search);
-            $studentsQ->where(function($x) use ($s){
-                $x->where('full_name','like',"%$s%")
-                  ->orWhere('university_id','like',"%$s%");
-            });
+    $existing = \App\Models\ExamResult::where('exam_id', $exam->id)
+        ->get()
+        ->keyBy('student_id');
+
+    return view('exams.results_edit', compact('exam','students','existing'));
+}
+public function update(Request $request, Exam $exam)
+{
+    foreach ($request->rows ?? [] as $row) {
+
+        if (!isset($row['student_id'])) {
+            continue; // حماية إضافية
         }
 
-        $students = $studentsQ->orderBy('full_name')->get();
+        $studentId = $row['student_id'];
+        $status    = $row['status'] ?? null;
+        $score     = $row['score'] ?? null;
+        $notes     = $row['notes'] ?? null;
 
-        // خرائط نتائج موجودة
-        $existing = ExamResult::where('exam_id', $exam->id)->get()->keyBy('student_id');
-
-        return view('exams.results_edit', compact('exam','students','existing'));
-    }
-
-    // حفظ جماعي
-    public function update(ExamResultsUpdateRequest $request, Exam $exam)
-    {
-        $results = $request->validated()['results'];
-
-        foreach ($results as $row) {
-            ExamResult::updateOrCreate(
-                ['exam_id' => $exam->id, 'student_id' => $row['student_id']],
-                [
-                    'score' => $row['score'] ?? null,
-                    'status' => $row['status'],
-                    'notes' => $row['notes'] ?? null,
-                    'entered_by' => auth()->id(),
-                ]
-            );
+        if (!$status) {
+            continue;
         }
 
-        return redirect()
-            ->route('exams.show', $exam)
-            ->with('success','تم حفظ درجات الامتحان بنجاح.');
+        if (in_array($status, ['absent','excused'])) {
+            $score = null;
+        }
+
+        if (in_array($status, ['passed','failed']) && $score === null) {
+            continue;
+        }
+
+        ExamResult::updateOrCreate(
+            [
+                'exam_id' => $exam->id,
+                'student_id' => $studentId,
+            ],
+            [
+                'score' => $score,
+                'status' => $status,
+                'notes' => $notes,
+                'entered_by' => auth()->id(),
+            ]
+        );
     }
 
-    // سجل امتحانات طالب (Transcript)
-    public function studentTranscript(Student $student)
-    {
-        $student->load(['branch','diploma']);
-
-        $results = ExamResult::query()
-            ->with(['exam.branch','exam.diploma','exam.trainer'])
-            ->where('student_id', $student->id)
-            ->latest()
-            ->get();
-
-        return view('students.exams', compact('student','results'));
-    }
+    return redirect()
+        ->route('exams.show', $exam)
+        ->with('success','تم حفظ النتائج بنجاح.');
+}
 }

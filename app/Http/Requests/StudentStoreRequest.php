@@ -56,12 +56,12 @@ class StudentStoreRequest extends FormRequest
       'profile.notes' => 'required|string',
 
 
-      'profile.photo' => 'required|image|max:2048',
-      'profile.info_file' => 'required|file|max:5120',
-      'profile.identity_file' => 'required|file|max:5120',
-      'profile.attendance_certificate' => 'required|file|max:5120',
-      'profile.certificate_pdf' => 'required|mimes:pdf|max:5120',
-      'profile.certificate_card' => 'required|file|max:5120',
+      'profile.photo' => 'nullable|image|max:2048',
+      'profile.info_file' => 'nullable|file|max:5120',
+      'profile.identity_file' => 'nullable|file|max:5120',
+      'profile.attendance_certificate' => 'nullable|file|max:5120',
+      'profile.certificate_pdf' => 'nullable|mimes:pdf|max:5120',
+      'profile.certificate_card' => 'nullable|file|max:5120',
 
 
       'profile.level' => 'required|string|max:100',

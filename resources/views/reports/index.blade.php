@@ -254,7 +254,53 @@
     <div class="report-desc">تحليل المبيعات والعملاء المحتملين</div>
 </a>
 
+
+
+
  @endif
+
+
+
+ {{-- ===================== FINANCE REPORTS ===================== --}}
+@if(auth()->user()?->hasPermission('view_cashboxes'))
+
+<a href="{{ route('finance.dashboard') }}" class="report-tile">
+    <div class="report-icon" style="background:#fef3c7;color:#b45309">
+        <i class="bi bi-graph-up"></i>
+    </div>
+    <div class="report-title">لوحة المالية</div>
+    <div class="report-desc">ملخص شامل للدخل والمصروف وصافي الربح</div>
+</a>
+
+<a href="{{ route('finance.reports.diplomas') }}" class="report-tile">
+    <div class="report-icon" style="background:#dbeafe;color:#1d4ed8">
+        <i class="bi bi-book"></i>
+    </div>
+    <div class="report-title">تقرير الدبلومات</div>
+    <div class="report-desc">إجمالي دفعات الطلاب لكل دبلومة</div>
+</a>
+
+<a href="{{ route('finance.reports.profit') }}" class="report-tile">
+    <div class="report-icon" style="background:#dcfce7;color:#15803d">
+        <i class="bi bi-cash-coin"></i>
+    </div>
+    <div class="report-title">أرباح البرامج</div>
+    <div class="report-desc">تحليل الأرباح حسب البرنامج</div>
+</a>
+
+<a href="{{ route('finance.reports.daily') }}" class="report-tile">
+    <div class="report-icon" style="background:#f3f4f6;color:#111827">
+        <i class="bi bi-calendar-event"></i>
+    </div>
+    <div class="report-title">التقرير اليومي للمحاسب</div>
+    <div class="report-desc">عرض الحركات اليومية وإجمالي المقبوض والمدفوع</div>
+</a>
+
+@endif
+{{-- ============================================================ --}}
+
+
+
 
 
 </div>

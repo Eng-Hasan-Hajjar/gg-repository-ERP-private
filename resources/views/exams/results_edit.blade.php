@@ -6,7 +6,7 @@
   <div>
     <h4 class="fw-bold mb-0">إدخال الدرجات — {{ $exam->title }}</h4>
     <div class="text-muted small">
-      الفرع: {{ $exam->branch->name }} — الدبلومة: {{ $exam->diploma->name }} — الحد الأعلى: {{ $exam->max_score }}
+      الفرع: {{ $exam->branch->name }} — الدبلومة: {{ $exam->diploma->name }} {{ $exam->diploma->code }} — الحد الأعلى: {{ $exam->max_score }}
     </div>
   </div>
   <a class="btn btn-outline-secondary rounded-pill px-4 fw-bold" href="{{ route('exams.show',$exam) }}">
@@ -42,34 +42,82 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($students as $i => $s)
-            @php($r = $existing[$s->id] ?? null)
-            <tr>
-              <td class="fw-semibold">{{ $s->full_name }}</td>
-              <td><code>{{ $s->university_id }}</code></td>
+       
+          
 
-              <td>
-                <input type="hidden" name="results[{{ $i }}][student_id]" value="{{ $s->id }}">
-                <input type="number" step="0.01" name="results[{{ $i }}][score]" class="form-control"
-                  value="{{ old("results.$i.score", $r->score ?? '') }}" placeholder="0..{{ $exam->max_score }}">
-              </td>
 
-              <td>
-                <select name="results[{{ $i }}][status]" class="form-select">
-                  @foreach(['not_set','passed','failed','absent','excused'] as $st)
-                    <option value="{{ $st }}" @selected(old("results.$i.status", $r->status ?? 'not_set')==$st)>{{ $st }}</option>
-                  @endforeach
-                </select>
-              </td>
+@forelse($students as $i => $s)
+<tr>
 
-              <td>
-                <input name="results[{{ $i }}][notes]" class="form-control"
-                  value="{{ old("results.$i.notes", $r->notes ?? '') }}" placeholder="اختياري">
-              </td>
-            </tr>
-          @empty
-            <tr><td colspan="5" class="text-center text-muted py-4">لا يوجد طلاب مطابقون</td></tr>
-          @endforelse
+    <td class="fw-semibold">{{ $s->full_name }}</td>
+    <td><code>{{ $s->university_id }}</code></td>
+
+    <td>
+        <input type="hidden"
+               name="rows[{{ $i }}][student_id]"
+               value="{{ $s->id }}">
+
+        <input type="number"
+               name="rows[{{ $i }}][score]"
+               value="{{ old('rows.'.$i.'.score', optional($existing[$s->id] ?? null)->score) }}"
+               class="form-control score-input"
+               data-row="{{ $i }}"
+               min="0"
+               max="{{ $exam->max_score }}">
+    </td>
+
+    <td>
+        <select name="rows[{{ $i }}][status]"
+                class="form-select status-select"
+                data-row="{{ $i }}"
+                required>
+
+            <option value="">-- اختر الحالة --</option>
+
+            <option value="passed"
+                {{ old('rows.'.$i.'.status', optional($existing[$s->id] ?? null)->status) == 'passed' ? 'selected' : '' }}>
+                ناجح
+            </option>
+
+            <option value="failed"
+                {{ old('rows.'.$i.'.status', optional($existing[$s->id] ?? null)->status) == 'failed' ? 'selected' : '' }}>
+                راسب
+            </option>
+
+            <option value="absent"
+                {{ old('rows.'.$i.'.status', optional($existing[$s->id] ?? null)->status) == 'absent' ? 'selected' : '' }}>
+                غائب
+            </option>
+
+            <option value="excused"
+                {{ old('rows.'.$i.'.status', optional($existing[$s->id] ?? null)->status) == 'excused' ? 'selected' : '' }}>
+                معذور
+            </option>
+
+        </select>
+    </td>
+
+    <td>
+        <input name="rows[{{ $i }}][notes]"
+               value="{{ old('rows.'.$i.'.notes', optional($existing[$s->id] ?? null)->notes) }}"
+               class="form-control"
+               placeholder="اختياري">
+    </td>
+
+</tr>
+@empty
+<tr>
+    <td colspan="5" class="text-center text-muted py-4">
+        لا يوجد طلاب مطابقون
+    </td>
+</tr>
+@endforelse
+
+
+
+
+
+
         </tbody>
       </table>
     </div>
@@ -89,4 +137,76 @@
     </div>
   </div>
 </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.status-select').forEach(function(select) {
+
+    select.addEventListener('change', function() {
+
+        let rowIndex = this.dataset.row;
+        let scoreInput = document.querySelector('.score-input[data-row="'+rowIndex+'"]');
+        let score = parseFloat(scoreInput.value);
+
+        // تعطيل الدرجة في حالة غائب أو معذور
+        if (this.value === 'absent' || this.value === 'excused') {
+            scoreInput.value = '';
+            scoreInput.disabled = true;
+            return;
+        } else {
+            scoreInput.disabled = false;
+        }
+
+        // منع اختيار راسب إذا الدرجة >= 50
+        if (this.value === 'failed' && score >= 50) {
+            alert('لا يمكن وضع راسب لعلامة 50 أو أكثر');
+            this.value = '';
+        }
+
+        // منع اختيار ناجح إذا الدرجة أقل من 50
+        if (this.value === 'passed' && score < 50) {
+            alert('لا يمكن وضع ناجح لعلامة أقل من 50');
+            this.value = '';
+        }
+
+    });
+
+});
+
+
+// عند تغيير الدرجة يتم تصحيح الحالة تلقائياً
+document.querySelectorAll('.score-input').forEach(function(input){
+
+    input.addEventListener('input', function(){
+
+        let rowIndex = this.dataset.row;
+        let select = document.querySelector('.status-select[data-row="'+rowIndex+'"]');
+        let score = parseFloat(this.value);
+
+        if (isNaN(score)) return;
+
+        if (score >= 50) {
+            select.value = 'passed';
+        } else {
+            select.value = 'failed';
+        }
+
+    });
+
+});
+</script>
+
+
+
 @endsection

@@ -64,6 +64,7 @@
 
 
 
+@if($lead->registration_status === 'pending')
 
 <hr>
 <h5 class="fw-bold">إضافة دفعة مالية</h5>
@@ -118,7 +119,7 @@
     </div>
 </form>
 
-
+@endif
 
 
 

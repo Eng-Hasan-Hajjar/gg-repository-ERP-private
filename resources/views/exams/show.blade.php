@@ -2,52 +2,131 @@
 @section('title','تفاصيل الامتحان')
 
 @section('content')
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
-  <div>
-    <h4 class="fw-bold mb-0">{{ $exam->title }}</h4>
-    <div class="text-muted small">
-      {{ $exam->exam_date?->format('Y-m-d') ?? '-' }} — {{ $exam->type }} — كود: {{ $exam->code ?? '-' }}
+
+
+
+
+@php
+    if ($successRate >= 70) {
+        $progressColor = 'bg-success';
+        $textColor = 'text-success';
+    } elseif ($successRate >= 50) {
+        $progressColor = 'bg-warning';
+        $textColor = 'text-warning';
+    } else {
+        $progressColor = 'bg-danger';
+        $textColor = 'text-danger';
+    }
+@endphp
+
+<div class="row g-4 mb-4">
+
+    {{-- 🔹 كرت الإحصائيات --}}
+    <div class="col-lg-4">
+
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <div class="text-muted small">نسبة النجاح</div>
+                        <h3 class="fw-bold {{ $textColor }}">
+                            {{ $successRate }}%
+                        </h3>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-success fw-bold">
+                            {{ $passed }}
+                        </div>
+                        <small class="text-muted">ناجح</small>
+
+                        <div class="text-danger fw-bold mt-2">
+                            {{ $failed }}
+                        </div>
+                        <small class="text-muted">راسب</small>
+                    </div>
+                </div>
+
+                <div class="progress" style="height:10px;">
+                    <div class="progress-bar {{ $progressColor }}"
+                         style="width: {{ $successRate }}%">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
-  </div>
-
-  <div class="d-flex gap-2 flex-wrap">
-    <a class="btn btn-outline-dark fw-bold rounded-pill px-4" href="{{ route('exams.components.index',$exam) }}">
-  <i class="bi bi-sliders"></i> مكونات الامتحان
-</a>
 
 
-<a class="btn btn-outline-dark fw-bold rounded-pill px-4"
-   href="{{ route('exams.students.edit',$exam) }}">
-  <i class="bi bi-people"></i> طلاب الامتحان
-</a>
+    {{-- 🔹 معلومات الامتحان --}}
+    <div class="col-lg-8">
 
-<a class="btn btn-namaa fw-bold rounded-pill px-4" href="{{ route('exams.marks.edit',$exam) }}">
-  <i class="bi bi-pencil-square"></i> إدخال الدرجات
-</a>
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
 
-    <a class="btn btn-namaa fw-bold rounded-pill px-4" href="{{ route('exams.results.edit',$exam) }}">
-      <i class="bi bi-pencil-square"></i> إدخال/تعديل الدرجات
-    </a>
-    <a class="btn btn-outline-secondary rounded-pill px-4 fw-bold" href="{{ route('exams.index') }}">
-      <i class="bi bi-arrow-return-right"></i> رجوع
-    </a>
-  </div>
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ $exam->title }}</h4>
+                        <div class="text-muted small">
+                            {{ $exam->exam_date?->format('Y-m-d') ?? '-' }}
+                            — {{ $exam->type }}
+                            — كود: {{ $exam->code ?? '-' }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                      
+                        <a class="btn btn-namaa fw-bold rounded-pill px-4" href="{{ route('exams.results.edit',$exam) }}">
+                          <i class="bi bi-pencil-square"></i> إدخال/تعديل الدرجات
+                        </a>
+                        <a href="{{ route('exams.index') }}"
+                           class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                            رجوع
+                        </a>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <b>الدبلومة:</b>
+                        {{ $exam->diploma->name ?? '-' }}     {{ $exam->diploma->code ?? '-' }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <b>الفرع:</b>
+                        {{ $exam->branch->name ?? '-' }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <b>المدرب:</b>
+                        {{ $exam->trainer->full_name ?? '-' }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <b>الحد الأعلى:</b>
+                        {{ $exam->max_score }}
+                    </div>
+                </div>
+
+                @if($exam->notes)
+                    <hr>
+                    <div class="text-muted">
+                        {{ $exam->notes }}
+                    </div>
+                @endif
+
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
-<div class="card border-0 shadow-sm mb-3">
-  <div class="card-body">
-    <div class="row g-2">
-      <div class="col-md-3"><b>الدبلومة:</b> {{ $exam->diploma->name ?? '-' }}</div>
-      <div class="col-md-3"><b>الفرع:</b> {{ $exam->branch->name ?? '-' }}</div>
-      <div class="col-md-3"><b>المدرب:</b> {{ $exam->trainer->full_name ?? '-' }}</div>
-      <div class="col-md-3"><b>الحد الأعلى:</b> {{ $exam->max_score }}</div>
-    </div>
-    @if($exam->notes)
-      <hr>
-      <div class="text-muted">{{ $exam->notes }}</div>
-    @endif
-  </div>
-</div>
+
+
 
 <div class="card border-0 shadow-sm">
   <div class="card-body">
@@ -73,8 +152,28 @@
                 </a>
               </td>
               <td><code>{{ $r->student->university_id }}</code></td>
-              <td>{{ $r->score ?? '-' }}</td>
-              <td><span class="badge bg-secondary">{{ $r->status }}</span></td>
+                 {{-- ✅ عرض الدرجة --}}
+              <td class="fw-bold">
+                  {{ $r->score ?? '-' }}
+              </td>
+
+              {{-- ✅ عرض الحالة --}}
+              <td>
+                  <span class="badge 
+                      @if($r->status === 'passed') bg-success
+                      @elseif($r->status === 'failed') bg-danger
+                      @elseif($r->status === 'absent') bg-dark
+                      @elseif($r->status === 'excused') bg-info
+                      @else bg-secondary
+                      @endif">
+                      {{ 
+                          $r->status === 'passed' ? 'ناجح' :
+                          ($r->status === 'failed' ? 'راسب' :
+                          ($r->status === 'absent' ? 'غائب' :
+                          ($r->status === 'excused' ? 'معذور' : 'لم تحدد')))
+                      }}
+                  </span>
+              </td>
               <td>{{ $r->notes ?? '-' }}</td>
             </tr>
           @empty

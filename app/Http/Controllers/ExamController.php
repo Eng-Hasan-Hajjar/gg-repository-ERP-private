@@ -56,13 +56,43 @@ class ExamController extends Controller
             ->route('exams.show', $exam)
             ->with('success','تم إنشاء الامتحان بنجاح.');
     }
-
+/*
     public function show(Exam $exam)
     {
         $exam->load(['branch','diploma','trainer','results.student.branch','results.student.diploma']);
 
         return view('exams.show', compact('exam'));
     }
+*/
+    public function show(Exam $exam)
+{
+    $exam->load(['branch','diploma','trainer','results.student','results.student.branch','results.student.diploma']);
+
+    $total = $exam->results
+        ->whereNotIn('status', ['absent','excused'])
+        ->count();
+
+    $passed = $exam->results
+        ->where('status','passed')
+        ->count();
+    
+    //$total   = $exam->results->count();
+    $passed  = $exam->results->where('status','passed')->count();
+    $failed  = $exam->results->where('status','failed')->count();
+
+    $successRate = $total > 0 
+        ? round(($passed / $total) * 100)
+        : 0;
+
+    return view('exams.show', compact(
+        'exam',
+        'total',
+        'passed',
+        'failed',
+        'successRate'
+    ));
+}
+
 
     public function edit(Exam $exam)
     {
@@ -73,7 +103,7 @@ class ExamController extends Controller
             'trainers' => Employee::orderBy('full_name')->get(),
         ]);
     }
-
+/*
     public function update(ExamUpdateRequest $request, Exam $exam)
     {
         $exam->update($request->validated());
@@ -82,6 +112,45 @@ class ExamController extends Controller
             ->route('exams.show', $exam)
             ->with('success','تم تحديث الامتحان.');
     }
+*/
+    public function update(Request $request, Exam $exam)
+{
+    foreach ($request->statuses ?? [] as $studentId => $status) {
+
+        $score = $request->scores[$studentId] ?? null;
+
+        // إذا لم يتم اختيار أي حالة → تجاهل
+        if (!$status) {
+            continue;
+        }
+
+        // لو الحالة absent أو excused → لا يوجد درجة
+        if (in_array($status, ['absent','excused'])) {
+            $score = null;
+        }
+
+        // لو الحالة passed/failed ولم يدخل درجة → تجاهل
+        if (in_array($status, ['passed','failed']) && $score === null) {
+            continue;
+        }
+
+        ExamResult::updateOrCreate(
+            [
+                'exam_id'    => $exam->id,
+                'student_id' => $studentId,
+            ],
+            [
+                'score'      => $score,
+                'status'     => $status,
+                'entered_by' => auth()->id(),
+            ]
+        );
+    }
+
+    return redirect()
+        ->route('exams.results.edit', $exam)
+        ->with('success', 'تم حفظ النتائج بنجاح');
+}
 
     public function destroy(Exam $exam)
     {

@@ -9,29 +9,48 @@ use Illuminate\Http\Request;
 
 class FinancialTransactionController extends Controller
 {
-    public function store(Request $request)
-    {
-        $request->validate([
-            'financial_account_id' => 'required|exists:financial_accounts,id',
-            'cashbox_id' => 'required|exists:cashboxes,id',
-            'diploma_id' => 'required|exists:diplomas,id',
-            'amount' => 'required|numeric|min:0.01',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'financial_account_id' => 'required|exists:financial_accounts,id',
+        'cashbox_id' => 'required|exists:cashboxes,id',
+        'diploma_id' => 'required|exists:diplomas,id',
+        'amount' => 'required|numeric|min:0.01',
+    ]);
 
-       CashboxTransaction::create([
-            'cashbox_id' => $request->cashbox_id,
-            'financial_account_id' => $request->financial_account_id,
-            'diploma_id' => $request->diploma_id,
-            'trx_date' => now(),
-            'type' => 'in',
-            'amount' => $request->amount,
-            'currency' => 'USD',
-            'category' => 'registration',
-            'notes' => $request->notes,
-            'status' => 'posted',
-            'posted_at' => now(),
-        ]);
 
-        return back()->with('success','تم تسجيل الدفعة بنجاح');
+    $account =FinancialAccount::findOrFail($request->financial_account_id);
+
+if ($account->accountable_type === \App\Models\Lead::class) {
+
+    $lead = \App\Models\Lead::find($account->accountable_id);
+
+    if ($lead && $lead->registration_status !== 'pending') {
+        abort(403, 'تم تحويل هذا العميل إلى طالب. أضف الدفعات من صفحة الطالب.');
     }
+}
+
+
+
+
+    $cashbox = Cashbox::findOrFail($request->cashbox_id);
+
+    CashboxTransaction::create([
+        'cashbox_id' => $request->cashbox_id,
+        'financial_account_id' => $request->financial_account_id,
+        'diploma_id' => $request->diploma_id,
+        'trx_date' => now(),
+        'type' => 'in',
+        'amount' => $request->amount,
+        'currency' => $cashbox->currency, // ✅ الصحيح
+        'category' => 'registration',
+        'notes' => $request->notes,
+        'status' => 'posted',
+        'posted_at' => now(),
+    ]);
+
+    return back()->with('success','تم تسجيل الدفعة بنجاح');
+}
+
+
 }
