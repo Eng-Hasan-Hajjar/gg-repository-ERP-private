@@ -10,21 +10,21 @@
       <h4 class="mb-0 fw-bold">إدارة المستخدمين</h4>
       <div class="text-muted small">بحث + تصفية حسب الدور</div>
     </div>
-<div>
+    <div>
 
-   @if(auth()->user()?->hasPermission('create_users'))
-      <a class="btn btn-primary rounded-pill px-4 fw-bold" href="{{ route('admin.users.create') }}">
-        <i class="bi bi-person-plus"></i> مستخدم جديد
+      @if(auth()->user()?->hasPermission('create_users'))
+        <a class="btn btn-primary rounded-pill px-4 fw-bold" href="{{ route('admin.users.create') }}">
+          <i class="bi bi-person-plus"></i> مستخدم جديد
+        </a>
+      @endif
+
+      <a href="{{ route('reports.monthly') }}" class="btn btn-success rounded-pill px-4 fw-bold">
+        <i class="bi bi-calendar3"></i> تقرير الحضور الشهري
       </a>
-    @endif
-
-    <a href="{{ route('reports.monthly') }}" class="btn btn-success rounded-pill px-4 fw-bold">
-      <i class="bi bi-calendar3"></i> تقرير الحضور الشهري
-    </a>
 
 
-</div>
-   
+    </div>
+
 
 
 
@@ -78,8 +78,8 @@
               <td class="fw-semibold">
                 <div class="user-cell">
 
-                   <span class="status-dot {{ $u->isOnline() ? 'online' : 'offline' }}"></span>
-<span class="user-name">{{ $u->name }}</span>
+                  <span class="status-dot {{ $u->isOnline() ? 'online' : 'offline' }}"></span>
+                  <span class="user-name">{{ $u->name }}</span>
 
                   @if($u->isOnline())
                     <span class="text-success">متصل الآن</span>
@@ -91,7 +91,7 @@
                   @endif
 
 
-                 
+
                 </div>
               </td>
 

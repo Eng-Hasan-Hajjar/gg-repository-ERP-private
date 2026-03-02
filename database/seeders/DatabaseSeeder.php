@@ -22,11 +22,11 @@ class DatabaseSeeder extends Seeder
 
 
           UserSeeder::class,
-        BranchSeeder::class,
-        AssetCategorySeeder::class,
-        DiplomaSeeder::class,
-           EmployeeSeeder::class,
-        StudentSeeder::class,
+          BranchSeeder::class,
+          AssetCategorySeeder::class,
+          DiplomaSeeder::class,
+          EmployeeSeeder::class,
+          StudentSeeder::class,
           CashboxSeeder::class,
            AssetSeeder::class,   // ✅ هنا
              // ✅ الدوام والمهام
@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             AttendanceRecordSeeder::class,
             LeaveRequestSeeder::class,
             TaskSeeder::class,
-            ExamSeeder::class,
+          //  ExamSeeder::class,
    // ✅ CRM
         LeadSeeder::class,
          LeadFollowupSeeder::class, // اختياري إذا فصلته

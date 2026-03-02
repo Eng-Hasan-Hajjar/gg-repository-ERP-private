@@ -65,6 +65,7 @@
             <th>النوع</th>
             <th>الفرع</th>
             <th>الحالة</th>
+            <th>الحساب</th>
             <th class="text-end">إجراءات</th>
           </tr>
         </thead>
@@ -85,22 +86,30 @@
                   {{ $e->status == 'active' ? 'نشط' : 'غير نشط' }}
                 </span>
               </td>
+              <td>
+                @if($e->user)
+                  <span class="badge bg-success">مرتبط</span>
+                @else
+                  <span class="badge bg-light text-dark border">—</span>
+                @endif
+              </td>
+
               <td class="text-end">
                 @if(auth()->user()?->hasPermission('view_employees'))
-                <a class="btn btn-sm btn-outline-primary" href="{{ route('employees.show', $e) }}">
-                  <i class="bi bi-eye"></i> عرض
-                </a>
+                  <a class="btn btn-sm btn-outline-primary" href="{{ route('employees.show', $e) }}">
+                    <i class="bi bi-eye"></i> عرض
+                  </a>
                 @endif
                 @if(auth()->user()?->hasPermission('edit_employees'))
-                <a class="btn btn-sm btn-outline-dark" href="{{ route('employees.edit', $e) }}">
-                  <i class="bi bi-pencil"></i> تعديل
-                </a>
+                  <a class="btn btn-sm btn-outline-dark" href="{{ route('employees.edit', $e) }}">
+                    <i class="bi bi-pencil"></i> تعديل
+                  </a>
                 @endif
               </td>
             </tr>
           @empty
             <tr>
-              <td colspan="7" class="text-center text-muted py-4">لا يوجد بيانات</td>
+              <td colspan="8" class="text-center text-muted py-4">لا يوجد بيانات</td>
             </tr>
           @endforelse
         </tbody>

@@ -10,16 +10,16 @@
   <div class="col-6 col-md-3">
     <label class="form-label fw-bold">النوع</label>
     <select name="type" class="form-select" required>
-      <option value="trainer" @selected(old('type', $employee->type ?? 'trainer')=='trainer')>مدرب</option>
-      <option value="employee" @selected(old('type', $employee->type ?? '')=='employee')>موظف</option>
+      <option value="trainer" @selected(old('type', $employee->type ?? 'trainer') == 'trainer')>مدرب</option>
+      <option value="employee" @selected(old('type', $employee->type ?? '') == 'employee')>موظف</option>
     </select>
   </div>
 
   <div class="col-6 col-md-3">
     <label class="form-label fw-bold">الحالة</label>
     <select name="status" class="form-select" required>
-      <option value="active" @selected(old('status', $employee->status ?? 'active')=='active')>نشط</option>
-      <option value="inactive" @selected(old('status', $employee->status ?? '')=='inactive')>غير نشط</option>
+      <option value="active" @selected(old('status', $employee->status ?? 'active') == 'active')>نشط</option>
+      <option value="inactive" @selected(old('status', $employee->status ?? '') == 'inactive')>غير نشط</option>
     </select>
   </div>
 
@@ -33,12 +33,30 @@
     <input name="email" type="email" class="form-control" value="{{ old('email', $employee->email ?? '') }}">
   </div>
 
+
+
+  <div class="col-12 col-md-4">
+    <label class="form-label fw-bold">ربط بحساب مستخدم (اختياري)</label>
+    <select name="user_id" class="form-select">
+      <option value="">— بدون حساب دخول —</option>
+      @foreach($users as $user)
+        <option value="{{ $user->id }}" @selected(old('user_id', $employee->user_id ?? '') == $user->id)>
+          {{ $user->name }} ({{ $user->email }})
+        </option>
+      @endforeach
+    </select>
+    <div class="small text-muted mt-1">
+      إذا تم الربط سيتمكن هذا الموظف من تسجيل الدخول.
+    </div>
+  </div>
+
   <div class="col-12 col-md-4">
     <label class="form-label fw-bold">الفرع</label>
     <select name="branch_id" class="form-select">
       <option value="">—</option>
       @foreach($branches as $b)
-        <option value="{{ $b->id }}" @selected(old('branch_id', $employee->branch_id ?? '')==$b->id)>{{ $b->name }}</option>
+        <option value="{{ $b->id }}" @selected(old('branch_id', $employee->branch_id ?? '') == $b->id)>{{ $b->name }}
+        </option>
       @endforeach
     </select>
   </div>
@@ -96,8 +114,7 @@
       <select name="schedule[{{ $wd }}]" class="form-select">
         <option value="">عطلة (OFF)</option>
         @foreach($shifts as $s)
-          <option value="{{ $s->id }}"
-            @selected((old("schedule.$wd", $scheduleMap[$wd] ?? '') == $s->id))>
+          <option value="{{ $s->id }}" @selected((old("schedule.$wd", $scheduleMap[$wd] ?? '') == $s->id))>
             {{ $s->name }} ({{ $s->start_time }} - {{ $s->end_time }})
           </option>
         @endforeach
@@ -105,4 +122,3 @@
     </div>
   @endforeach
 </div>
-

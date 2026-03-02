@@ -1,5 +1,5 @@
 <?php
-  use App\Http\Controllers\Reports\ReportsController;
+use App\Http\Controllers\Reports\ReportsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentConfirmationController;
@@ -16,7 +16,7 @@ use App\Http\Controllers\CashboxTransactionController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\AttendanceCalendarController;
 use App\Http\Controllers\EmployeeSchedule;
-  use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamResultController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadFollowupController;
@@ -105,6 +105,14 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
+    Route::post(
+        'employees/{employee}/create-user',
+        [EmployeeController::class, 'createUser']
+    )
+        ->name('employees.createUser');
+
+
     // HR (Employees/Trainers)
     Route::resource('employees', EmployeeController::class);
 
@@ -112,14 +120,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('employees/{employee}/contracts', [EmployeeContractController::class, 'index'])->name('employees.contracts.index');
     Route::get('employees/{employee}/contracts/create', [EmployeeContractController::class, 'create'])->name('employees.contracts.create');
     Route::post('employees/{employee}/contracts', [EmployeeContractController::class, 'store'])->name('employees.contracts.store');
-Route::get('employees/{employee}/contracts/{contract}/edit', [EmployeeContractController::class, 'edit'])
-  ->name('employees.contracts.edit');
+    Route::get('employees/{employee}/contracts/{contract}/edit', [EmployeeContractController::class, 'edit'])
+        ->name('employees.contracts.edit');
 
-Route::put('employees/{employee}/contracts/{contract}', [EmployeeContractController::class, 'update'])
-  ->name('employees.contracts.update');
+    Route::put('employees/{employee}/contracts/{contract}', [EmployeeContractController::class, 'update'])
+        ->name('employees.contracts.update');
 
-Route::delete('employees/{employee}/contracts/{contract}', [EmployeeContractController::class, 'destroy'])
-  ->name('employees.contracts.destroy');
+    Route::delete('employees/{employee}/contracts/{contract}', [EmployeeContractController::class, 'destroy'])
+        ->name('employees.contracts.destroy');
 
 
 
@@ -131,16 +139,16 @@ Route::delete('employees/{employee}/contracts/{contract}', [EmployeeContractCont
     Route::post('employees/{employee}/payouts', [EmployeePayoutController::class, 'store'])->name('employees.payouts.store');
 
     Route::get('employees/{employee}/payouts/{payout}/edit', [EmployeePayoutController::class, 'edit'])
-  ->name('employees.payouts.edit');
+        ->name('employees.payouts.edit');
 
-Route::put('employees/{employee}/payouts/{payout}', [EmployeePayoutController::class, 'update'])
-  ->name('employees.payouts.update');
+    Route::put('employees/{employee}/payouts/{payout}', [EmployeePayoutController::class, 'update'])
+        ->name('employees.payouts.update');
 
-Route::delete('employees/{employee}/payouts/{payout}', [EmployeePayoutController::class, 'destroy'])
-  ->name('employees.payouts.destroy');
+    Route::delete('employees/{employee}/payouts/{payout}', [EmployeePayoutController::class, 'destroy'])
+        ->name('employees.payouts.destroy');
 
-  Route::patch('employees/{employee}/payouts/{payout}/mark-paid', [EmployeePayoutController::class, 'markPaid'])
-  ->name('employees.payouts.markPaid');
+    Route::patch('employees/{employee}/payouts/{payout}/mark-paid', [EmployeePayoutController::class, 'markPaid'])
+        ->name('employees.payouts.markPaid');
 
 
 
@@ -155,28 +163,28 @@ Route::delete('employees/{employee}/payouts/{payout}', [EmployeePayoutController
 
 
 
-        
+
     Route::resource('cashboxes', CashboxController::class);
 
     // Nested Transactions
-    Route::get('cashboxes/{cashbox}/transactions', [CashboxTransactionController::class,'index'])->name('cashboxes.transactions.index');
-    Route::get('cashboxes/{cashbox}/transactions/create', [CashboxTransactionController::class,'create'])->name('cashboxes.transactions.create');
-    Route::post('cashboxes/{cashbox}/transactions', [CashboxTransactionController::class,'store'])->name('cashboxes.transactions.store');
+    Route::get('cashboxes/{cashbox}/transactions', [CashboxTransactionController::class, 'index'])->name('cashboxes.transactions.index');
+    Route::get('cashboxes/{cashbox}/transactions/create', [CashboxTransactionController::class, 'create'])->name('cashboxes.transactions.create');
+    Route::post('cashboxes/{cashbox}/transactions', [CashboxTransactionController::class, 'store'])->name('cashboxes.transactions.store');
 
-    Route::get('cashboxes/{cashbox}/transactions/{transaction}/edit', [CashboxTransactionController::class,'edit'])->name('cashboxes.transactions.edit');
-    Route::put('cashboxes/{cashbox}/transactions/{transaction}', [CashboxTransactionController::class,'update'])->name('cashboxes.transactions.update');
-    Route::delete('cashboxes/{cashbox}/transactions/{transaction}', [CashboxTransactionController::class,'destroy'])->name('cashboxes.transactions.destroy');
+    Route::get('cashboxes/{cashbox}/transactions/{transaction}/edit', [CashboxTransactionController::class, 'edit'])->name('cashboxes.transactions.edit');
+    Route::put('cashboxes/{cashbox}/transactions/{transaction}', [CashboxTransactionController::class, 'update'])->name('cashboxes.transactions.update');
+    Route::delete('cashboxes/{cashbox}/transactions/{transaction}', [CashboxTransactionController::class, 'destroy'])->name('cashboxes.transactions.destroy');
 
     // زر سريع: تحويل إلى "مُرحَّل/مدفوع" (Post)
-    Route::post('cashboxes/{cashbox}/transactions/{transaction}/post', [CashboxTransactionController::class,'post'])
+    Route::post('cashboxes/{cashbox}/transactions/{transaction}/post', [CashboxTransactionController::class, 'post'])
         ->name('cashboxes.transactions.post');
 
     // Quick Post
-    Route::post('cashboxes/{cashbox}/transactions/{transaction}/post', [CashboxTransactionController::class,'post'])
+    Route::post('cashboxes/{cashbox}/transactions/{transaction}/post', [CashboxTransactionController::class, 'post'])
         ->name('cashboxes.transactions.post');
 
 
-    });
+});
 
 
 
@@ -185,57 +193,57 @@ Route::delete('employees/{employee}/payouts/{payout}', [EmployeePayoutController
 
 
 // Attendance
-Route::get('attendance', [AttendanceController::class,'index'])->name('attendance.index');
-Route::get('attendance/today/{employee}', [AttendanceController::class,'createForToday'])->name('attendance.today.create');
+Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+Route::get('attendance/today/{employee}', [AttendanceController::class, 'createForToday'])->name('attendance.today.create');
 
-Route::post('attendance/{record}/check-in', [AttendanceController::class,'checkIn'])->name('attendance.checkin');
-Route::post('attendance/{record}/check-out', [AttendanceController::class,'checkOut'])->name('attendance.checkout');
+Route::post('attendance/{record}/check-in', [AttendanceController::class, 'checkIn'])->name('attendance.checkin');
+Route::post('attendance/{record}/check-out', [AttendanceController::class, 'checkOut'])->name('attendance.checkout');
 
-Route::get('attendance/{record}/edit', [AttendanceController::class,'edit'])->name('attendance.edit');
-Route::put('attendance/{record}', [AttendanceController::class,'update'])->name('attendance.update');
+Route::get('attendance/{record}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
+Route::put('attendance/{record}', [AttendanceController::class, 'update'])->name('attendance.update');
 
 // Tasks
 Route::resource('tasks', TaskController::class);
-Route::post('tasks/{task}/quick-status', [TaskController::class,'quickStatus'])->name('tasks.quickStatus');
+Route::post('tasks/{task}/quick-status', [TaskController::class, 'quickStatus'])->name('tasks.quickStatus');
 
 
 
 
 Route::resource('leaves', LeaveRequestController::class)
-    ->only(['index','create','store','show'])
+    ->only(['index', 'create', 'store', 'show'])
     ->parameters(['leaves' => 'leave']);
-Route::post('leaves/{leave}/approve', [LeaveRequestController::class,'approve'])->name('leaves.approve');
-Route::post('leaves/{leave}/reject',  [LeaveRequestController::class,'reject'])->name('leaves.reject');
+Route::post('leaves/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leaves.approve');
+Route::post('leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');
 
 
 
 //توليد تلقائي لسجلات الأسبوع من employee_schedules
 
-    use App\Http\Controllers\AttendanceGeneratorController;
+use App\Http\Controllers\AttendanceGeneratorController;
 
-Route::post('attendance/generate-week', [AttendanceGeneratorController::class,'generateWeek'])->name('attendance.generateWeek');
+Route::post('attendance/generate-week', [AttendanceGeneratorController::class, 'generateWeek'])->name('attendance.generateWeek');
 
 //Calendar Month View (شهرية) لكل فرع/موظف
-Route::get('attendance/calendar', [AttendanceCalendarController::class,'month'])->name('attendance.calendar');
+Route::get('attendance/calendar', [AttendanceCalendarController::class, 'month'])->name('attendance.calendar');
 
 //تقارير: ساعات/تأخير/غياب لكل موظف خلال فترة
 
-Route::get('attendance/reports', [AttendanceReportController::class,'index'])->name('attendance.reports');
+Route::get('attendance/reports', [AttendanceReportController::class, 'index'])->name('attendance.reports');
 
 
 
-Route::get('attendance/reports/export-excel', [AttendanceReportController::class,'exportExcel'])->name('attendance.reports.exportExcel');
+Route::get('attendance/reports/export-excel', [AttendanceReportController::class, 'exportExcel'])->name('attendance.reports.exportExcel');
 
 
-Route::get('attendance/reports/export-pdf', [AttendanceReportController::class,'exportPdf'])->name('attendance.reports.exportPdf');
+Route::get('attendance/reports/export-pdf', [AttendanceReportController::class, 'exportPdf'])->name('attendance.reports.exportPdf');
 
 
 
-Route::get('attendance/calendar/export-excel', [AttendanceCalendarController::class,'exportExcel'])
-  ->name('attendance.calendar.exportExcel');
+Route::get('attendance/calendar/export-excel', [AttendanceCalendarController::class, 'exportExcel'])
+    ->name('attendance.calendar.exportExcel');
 
-Route::get('attendance/calendar/export-pdf', [AttendanceCalendarController::class,'exportPdf'])
-  ->name('attendance.calendar.exportPdf');
+Route::get('attendance/calendar/export-pdf', [AttendanceCalendarController::class, 'exportPdf'])
+    ->name('attendance.calendar.exportPdf');
 
 
 
@@ -246,8 +254,8 @@ Route::get('attendance/calendar/export-pdf', [AttendanceCalendarController::clas
 Route::resource('exams', ExamController::class);
 
 // إدخال درجات امتحان
-Route::get('exams/{exam}/results', [ExamResultController::class,'edit'])->name('exams.results.edit');
-Route::put('exams/{exam}/results', [ExamResultController::class,'update'])->name('exams.results.update');
+Route::get('exams/{exam}/results', [ExamResultController::class, 'edit'])->name('exams.results.edit');
+Route::put('exams/{exam}/results', [ExamResultController::class, 'update'])->name('exams.results.update');
 
 
 
@@ -260,30 +268,30 @@ Route::put('exams/{exam}/results', [ExamResultController::class,'update'])->name
 
 
 
-    
 
-    Route::resource('leads', LeadController::class);
 
-    Route::post('leads/{lead}/convert', [LeadController::class,'convertToStudent'])
-      ->name('leads.convert');
+Route::resource('leads', LeadController::class);
 
-    Route::post('leads/{lead}/followups', [LeadFollowupController::class,'store'])
-      ->name('leads.followups.store');
+Route::post('leads/{lead}/convert', [LeadController::class, 'convertToStudent'])
+    ->name('leads.convert');
 
-    Route::delete('leads/{lead}/followups/{followup}', [LeadFollowupController::class,'destroy'])
-      ->name('leads.followups.destroy');
+Route::post('leads/{lead}/followups', [LeadFollowupController::class, 'store'])
+    ->name('leads.followups.store');
 
-    // Optional reports
-    Route::get('crm_lead_reports', [LeadReportController::class,'index'])->name('crm.reports.index');
- 
-    Route::get('/crm/reports/pdf', [LeadReportController::class, 'exportPdf'])
+Route::delete('leads/{lead}/followups/{followup}', [LeadFollowupController::class, 'destroy'])
+    ->name('leads.followups.destroy');
+
+// Optional reports
+Route::get('crm_lead_reports', [LeadReportController::class, 'index'])->name('crm.reports.index');
+
+Route::get('/crm/reports/pdf', [LeadReportController::class, 'exportPdf'])
     ->name('crm.reports.pdf')
     ->middleware('auth');
 
 
 
 
-  
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
@@ -307,7 +315,7 @@ Route::middleware(['auth', 'permission:manage_roles'])
 
 
 
-    use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::middleware(['auth', 'permission:manage_roles'])
     ->prefix('admin')
@@ -321,7 +329,7 @@ Route::middleware(['auth', 'permission:manage_roles'])
 use App\Http\Controllers\Admin\AuditController;
 
 Route::get('/admin/audit-logs', [AuditController::class, 'index'])
-    ->middleware(['auth','permission:manage_roles'])
+    ->middleware(['auth', 'permission:manage_roles'])
     ->name('admin.audit.index');
 
 
@@ -348,8 +356,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('roles/{role}/attach-user', [RoleController::class, 'attachUser'])
         ->name('roles.attachUser');
 
-    Route::post('roles/{role}/toggle-permission/{permission}', 
-        [RoleController::class, 'togglePermission'])
+    Route::post(
+        'roles/{role}/toggle-permission/{permission}',
+        [RoleController::class, 'togglePermission']
+    )
         ->name('roles.togglePermission');
 
 
@@ -382,87 +392,115 @@ Route::get('/reports/branches-map', [ReportsController::class, 'branchesMap'])
 
 
 
-   /* Route::get('/reports/students-growth', function(){
-   return view('reports.students-growth');
+/* Route::get('/reports/students-growth', function(){
+return view('reports.students-growth');
 })->name('reports.students.growth');*/
 
-    Route::get('/reports/students-growth', [ReportsController::class, 'studentsGrowth'])
+Route::get('/reports/students-growth', [ReportsController::class, 'studentsGrowth'])
     ->name('reports.students.growth');
 
 
 
-    Route::get('/reports/revenue-branches', [ReportsController::class, 'revenuePerBranch'])
+Route::get('/reports/revenue-branches', [ReportsController::class, 'revenuePerBranch'])
     ->name('reports.revenue.branches');
 
 
 
-    Route::get('/reports/system-alerts', [ReportsController::class,'alerts'])
+Route::get('/reports/system-alerts', [ReportsController::class, 'alerts'])
     ->name('reports.system.alerts');
 
 
-   Route::get('/reports/charts', [ReportsController::class, 'charts'])
+Route::get('/reports/charts', [ReportsController::class, 'charts'])
     ->name('reports.charts')
     ->middleware('auth');
 
 
 
 
-     use App\Http\Controllers\AlertController;
-    Route::middleware('auth')->group(function () {
+use App\Http\Controllers\AlertController;
+Route::middleware('auth')->group(function () {
 
-        Route::get('/alerts/navbar', [AlertController::class, 'navbar'])
-            ->name('alerts.navbar');
+    Route::get('/alerts/navbar', [AlertController::class, 'navbar'])
+        ->name('alerts.navbar');
 
-    });
+});
 
 
 
 
 use App\Http\Controllers\admin\AttendanceReportController2;
-    Route::get('/admin/reports/monthly', [AttendanceReportController2::class,'monthly'])
+Route::get('/admin/reports/monthly', [AttendanceReportController2::class, 'monthly'])
     ->name('reports.monthly');
 
 
 
-    Route::get('/admin/reports/monthly/pdf', [AttendanceReportController2::class, 'monthlyPdf'])
+Route::get('/admin/reports/monthly/pdf', [AttendanceReportController2::class, 'monthlyPdf'])
     ->name('reports.monthly.pdf');
 
 
-    Route::get('/admin/reports/attendance/monthly', [AttendanceReportController2::class,'monthly'])
+Route::get('/admin/reports/attendance/monthly', [AttendanceReportController2::class, 'monthly'])
     ->name('reports.attendance.monthly');
 
-    Route::get('/admin/reports/attendance/monthly/pdf', [AttendanceReportController2::class,'exportPdf'])
-        ->name('reports.attendance.monthly.pdf');
-
-        
-    
-    
+Route::get('/admin/reports/attendance/monthly/pdf', [AttendanceReportController2::class, 'exportPdf'])
+    ->name('reports.attendance.monthly.pdf');
 
 
-    Route::post('/financial/pay', [\App\Http\Controllers\FinancialTransactionController::class, 'store'])
+
+
+
+
+Route::post('/financial/pay', [\App\Http\Controllers\FinancialTransactionController::class, 'store'])
     ->name('financial.pay');
 
 
 
 
 
-    Route::prefix('finance')->name('finance.')->group(function () {
+Route::prefix('finance')->name('finance.')->group(function () {
 
-            Route::get('/dashboard', [\App\Http\Controllers\FinanceController::class,'dashboard'])
-                ->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\FinanceController::class, 'dashboard'])
+        ->name('dashboard');
 
-            Route::get('/reports/diplomas', [\App\Http\Controllers\FinanceController::class,'diplomaReport'])
-                ->name('reports.diplomas');
+    Route::get('/reports/diplomas', [\App\Http\Controllers\FinanceController::class, 'diplomaReport'])
+        ->name('reports.diplomas');
 
-            Route::get('/reports/profit', [\App\Http\Controllers\FinanceController::class,'profitByProgram'])
-                ->name('reports.profit');
+    Route::get('/reports/profit', [\App\Http\Controllers\FinanceController::class, 'profitByProgram'])
+        ->name('reports.profit');
 
-            Route::get('/reports/daily', [\App\Http\Controllers\FinanceController::class,'dailyReport'])
-                ->name('reports.daily');
+    Route::get('/reports/daily', [\App\Http\Controllers\FinanceController::class, 'dailyReport'])
+        ->name('reports.daily');
 
-    });
-
-
+});
 
 
-require __DIR__.'/auth.php';
+
+
+
+use App\Http\Controllers\ProgramManagementController;
+
+Route::middleware(['auth'])->group(function(){
+
+    Route::get('/programs-management', 
+        [ProgramManagementController::class,'index'])
+        ->name('programs.management.index');
+
+    Route::get('/programs-management/{diploma}', 
+        [ProgramManagementController::class,'edit'])
+        ->name('programs.management.edit');
+
+    Route::post('/programs-management/{diploma}', 
+        [ProgramManagementController::class,'update'])
+        ->name('programs.management.update');
+
+
+        Route::get('/programs-management/{diploma}/show',
+    [ProgramManagementController::class,'show'])
+    ->name('programs.management.show');
+
+});
+
+
+
+
+
+require __DIR__ . '/auth.php';

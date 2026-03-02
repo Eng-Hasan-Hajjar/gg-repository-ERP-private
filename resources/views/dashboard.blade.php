@@ -82,7 +82,7 @@
             {{ $highlights['activity']['last']
         ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
         : '—'
-                          }}
+                              }}
           </p>
         </div>
       </div>
@@ -247,7 +247,7 @@
           </div>
 
 
- 
+
 
 
 
@@ -279,13 +279,13 @@
           </div>
           <div class="module-actions grid-2">
             <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
-            
+
             <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
 
             <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
 
             @if(auth()->user()?->hasPermission('view_leaves'))
-                 <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+              <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
             @endif
           </div>
 
@@ -319,9 +319,9 @@
           <div class="module-actions grid-2">
             <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
 
-             @if(auth()->user()?->hasPermission('create_tasks'))
-            <a href="{{ route('tasks.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
-             @endif
+            @if(auth()->user()?->hasPermission('create_tasks'))
+              <a href="{{ route('tasks.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
+            @endif
 
           </div>
           <div class="module-actions">
@@ -356,7 +356,7 @@
             <a href="{{  route('employees.index')}}" class="btn btn-namaa w-100 w-sm-auto">فتح الموارد البشرية</a>
 
             @if(auth()->user()?->hasPermission('create_employees'))
-            <a href="{{ route('employees.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مدرب/موظف</a>
+              <a href="{{ route('employees.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مدرب/موظف</a>
             @endif
             <a href="{{ route('employees.index', ['type' => 'trainer']) }}"
               class="btn btn-soft w-100 w-sm-auto">المدربين</a>
@@ -466,7 +466,7 @@
           <div class="module-actions">
             <a href="{{ route('branches.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الفروع</a>
             @if(auth()->user()?->hasPermission('create_branches'))
-            <a href="{{ route('branches.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة فرع</a>
+              <a href="{{ route('branches.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة فرع</a>
             @endif
           </div>
         </div>
@@ -496,8 +496,8 @@
 
           <div class="module-actions">
             <a href="{{ route('diplomas.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الدبلومات</a>
-              @if(auth()->user()?->hasPermission('create_diplomas'))
-            <a href="{{ route('diplomas.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة دبلومة</a>
+            @if(auth()->user()?->hasPermission('create_diplomas'))
+              <a href="{{ route('diplomas.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة دبلومة</a>
             @endif
           </div>
         </div>
@@ -506,6 +506,36 @@
     @endif
 
 
+
+    @if(auth()->user()?->hasPermission('view_program_management'))
+
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-indigo">
+              <i class="bi bi-diagram-3 fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">إدارة البرامج</p>
+              <p class="module-sub">متابعة شاملة لجميع أقسام البرنامج</p>
+            </div>
+          </div>
+
+          <div class="module-body">
+            <p class="section-note">
+              متابعة قسم البرامج، الميديا، التسويق، الامتحانات وشؤون الطلاب لكل دبلومة.
+            </p>
+          </div>
+
+          <div class="module-actions">
+            <a href="{{ route('diplomas.index') }}" class="btn btn-namaa w-100">
+              فتح البرامج
+            </a>
+          </div>
+        </div>
+      </div>
+
+    @endif
 
   </div>
 

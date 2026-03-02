@@ -12,7 +12,7 @@ class AutoLogout
     public function handle(Request $request, Closure $next)
     {
         // المدة المسموحة بدون نشاط (بالثواني)
-        $timeout = 600; // دقيقة واحدة — غيّرها لاحقاً كما تريد
+        $timeout = 1000; // دقيقة واحدة — غيّرها لاحقاً كما تريد
 
         if (Auth::check()) {
 

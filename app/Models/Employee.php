@@ -12,8 +12,16 @@ class Employee extends Model
 {
     use Auditable;
     protected $fillable = [
-        'code','full_name','type','phone','email',
-        'branch_id','job_title','status','notes',
+        'code',
+        'full_name',
+        'type',
+        'phone',
+        'email',
+        'branch_id',
+        'job_title',
+        'status',
+        'notes',
+        'user_id',
     ];
 
     public function branch(): BelongsTo
@@ -36,14 +44,32 @@ class Employee extends Model
         return $this->hasMany(EmployeePayout::class);
     }
 
-    public function schedules(){ return $this->hasMany(\App\Models\EmployeeSchedule::class); }
-    public function attendanceRecords(){ return $this->hasMany(\App\Models\AttendanceRecord::class); }
-    public function tasks(){ return $this->hasMany(\App\Models\Task::class,'assigned_to'); }
+    public function schedules()
+    {
+        return $this->hasMany(\App\Models\EmployeeSchedule::class);
+    }
+    public function attendanceRecords()
+    {
+        return $this->hasMany(\App\Models\AttendanceRecord::class);
+    }
+    public function tasks()
+    {
+        return $this->hasMany(\App\Models\Task::class, 'assigned_to');
+    }
 
-public function scheduleOverrides()
-{
-    return $this->hasMany(EmployeeScheduleOverride::class);
-}
+    public function scheduleOverrides()
+    {
+        return $this->hasMany(EmployeeScheduleOverride::class);
+    }
+
+
+
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 
 

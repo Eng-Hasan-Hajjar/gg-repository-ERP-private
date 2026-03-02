@@ -78,6 +78,19 @@
                       {{ $d->is_active ? 'تعطيل' : 'تفعيل' }}
                     </button>
                   </form>
+
+                  @if(auth()->user()?->hasPermission('view_program_management'))
+
+                    <a href="{{ route('programs.management.show', $d) }}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-diagram-3"></i>
+                      إدارة البرنامج
+                    </a>
+
+                  @endif
+
+
+
+
                   @if(auth()->user()?->hasPermission('edit_diplomas'))
                     <a class="btn btn-sm btn-outline-dark" href="{{ route('diplomas.edit', $d) }}">تعديل</a>
                   @endif

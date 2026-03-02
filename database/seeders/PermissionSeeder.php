@@ -168,6 +168,13 @@ class PermissionSeeder extends Seeder
             ['name'=>'create_diplomas','label'=>'إضافة دبلومة','module'=>'diplomas'],
             ['name'=>'edit_diplomas','label'=>'تعديل دبلومة','module'=>'diplomas'],
             ['name'=>'delete_diplomas','label'=>'حذف دبلومة','module'=>'diplomas'],
+
+
+
+
+        ['name'=>'view_program_management','label'=>' إدارة البرامج ','module'=>'programs'],
+
+            
           
         ];
 
