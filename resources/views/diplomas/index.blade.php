@@ -32,6 +32,20 @@
         </select>
       </div>
 
+      <div class="col-md-3">
+        <label class="form-label mb-1">نوع الدبلومة</label>
+        <select name="type" class="form-select">
+          <option value="">الكل</option>
+          <option value="onsite" @selected(request('type') == 'onsite')>
+            حضوري
+          </option>
+          <option value="online" @selected(request('type') == 'online')>
+            أونلاين
+          </option>
+        </select>
+      </div>
+
+
       <div class="col-md-3 d-grid">
         <button class="btn btn-namaa">تطبيق</button>
       </div>
@@ -43,12 +57,14 @@
       <table class="table table-hover mb-0 align-middle">
         <thead class="table-light">
           <tr>
-            <th class="hide-mobile">#</th>
+            <th class="hide-mobile text-center">#</th>
             <th>اسم الدبلومة</th>
             <th>الرمز</th>
-            <th class="hide-mobile">المجال</th>
+            <th class="hide-mobile text-center">المجال</th>
             <th>الحالة</th>
-            <th>عدد الطلاب</th>
+          
+            <th class="text-center">عدد الطلاب</th>
+            <th class="hide-mobile text-center">النوع</th>
             <th class="hide-mobile text-end">إجراءات</th>
           </tr>
         </thead>
@@ -58,7 +74,7 @@
               <td class="hide-mobile">{{ $d->id }}</td>
               <td class="fw-semibold">{{ $d->name }}</td>
               <td><span class="badge text-bg-secondary">{{ $d->code }}</span></td>
-              <td class="hide-mobile text-muted">{{ $d->field ?? '-' }}</td>
+              <td class="hide-mobile  text-center text-muted">{{ $d->field ?? '-' }}</td>
               <td>
                 @if($d->is_active)
                   <span class="badge text-bg-success">مفعّلة</span>
@@ -66,9 +82,17 @@
                   <span class="badge text-bg-danger">غير مفعّلة</span>
                 @endif
               </td>
-              <td>
+              <td class=" text-center">
                 <span class="badge text-bg-light border">{{ $d->students()->count() }}</span>
               </td>
+
+              <td class="hide-mobile text-center">
+                  <span class="badge {{ $d->type == 'online' ? 'bg-info' : 'bg-secondary' }}">
+                      {{ $d->type_label }}
+                  </span>
+              </td>
+
+
               <td class="hide-mobile text-end">
                 <div class="d-inline-flex gap-1">
                   <form method="POST" action="{{ route('diplomas.toggle', $d) }}">

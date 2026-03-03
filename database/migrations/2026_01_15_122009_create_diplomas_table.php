@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('code')->unique(); // رمز الدبلومة
             $table->string('field')->nullable(); // مجال الدبلومة
             $table->boolean('is_active')->default(true);
+            $table->string('type')->default('online');
+        // onsite | online
+
             $table->timestamps();
         });
     }

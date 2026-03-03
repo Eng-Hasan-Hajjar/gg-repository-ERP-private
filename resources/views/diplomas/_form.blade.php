@@ -6,16 +6,14 @@
 <div class="row g-3">
   <div class="col-md-6">
     <label class="form-label">اسم الدبلومة</label>
-    <input name="name" class="form-control" required
-           value="{{ old('name', $diploma->name ?? '') }}"
-           placeholder="مثال: دبلوم البرمجة الاحترافية">
+    <input name="name" class="form-control" required value="{{ old('name', $diploma->name ?? '') }}"
+      placeholder="مثال: دبلوم البرمجة الاحترافية">
   </div>
 
   <div class="col-md-3">
     <label class="form-label">رمز الدبلومة</label>
-    <input name="code" class="form-control" required
-           value="{{ old('code', $diploma->code ?? '') }}"
-           placeholder="مثال: PROG-01">
+    <input name="code" class="form-control" required value="{{ old('code', $diploma->code ?? '') }}"
+      placeholder="مثال: PROG-01">
     <div class="form-text">يسمح: حروف/أرقام/شرطة (-) وشرطة سفلية (_).</div>
   </div>
 
@@ -27,12 +25,28 @@
     </select>
   </div>
 
-  <div class="col-12">
+  <div class="col-6">
     <label class="form-label">مجال الدبلومة</label>
-    <input name="field" class="form-control"
-           value="{{ old('field', $diploma->field ?? '') }}"
-           placeholder="مثال: تقنية معلومات / لغات / إدارة أعمال ...">
+    <input name="field" class="form-control" value="{{ old('field', $diploma->field ?? '') }}"
+      placeholder="مثال: تقنية معلومات / لغات / إدارة أعمال ...">
   </div>
+
+
+
+  <div class="col-6">
+    <label class="form-label">نوع الدبلومة</label>
+    <select name="type" class="form-select" required>
+      <option value="">اختر النوع</option>
+      <option value="onsite" @selected(old('type') == 'onsite')>
+        حضوري
+      </option>
+      <option value="online" @selected(old('type') == 'online')>
+        أونلاين
+      </option>
+    </select>
+  </div>
+
+
 </div>
 
 @if($errors->any())

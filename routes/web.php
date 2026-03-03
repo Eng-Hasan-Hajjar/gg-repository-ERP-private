@@ -478,27 +478,56 @@ Route::prefix('finance')->name('finance.')->group(function () {
 
 use App\Http\Controllers\ProgramManagementController;
 
-Route::middleware(['auth'])->group(function(){
+Route::middleware(['auth'])->group(function () {
 
-    Route::get('/programs-management', 
-        [ProgramManagementController::class,'index'])
+    Route::get(
+        '/programs-management',
+        [ProgramManagementController::class, 'index']
+    )
         ->name('programs.management.index');
 
-    Route::get('/programs-management/{diploma}', 
-        [ProgramManagementController::class,'edit'])
+    Route::get(
+        '/programs-management/{diploma}',
+        [ProgramManagementController::class, 'edit']
+    )
         ->name('programs.management.edit');
 
-    Route::post('/programs-management/{diploma}', 
-        [ProgramManagementController::class,'update'])
+    Route::post(
+        '/programs-management/{diploma}',
+        [ProgramManagementController::class, 'update']
+    )
         ->name('programs.management.update');
 
 
-        Route::get('/programs-management/{diploma}/show',
-    [ProgramManagementController::class,'show'])
-    ->name('programs.management.show');
+    Route::get(
+        '/programs-management/{diploma}/show',
+        [ProgramManagementController::class, 'show']
+    )
+        ->name('programs.management.show');
 
 });
 
+
+
+
+
+
+use App\Http\Controllers\MediaRequestController;
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/media-requests', [MediaRequestController::class, 'index'])
+        ->name('media.index');
+
+    Route::get('/media-requests/create', [MediaRequestController::class, 'create'])
+        ->name('media.create');
+
+    Route::post('/media-requests', [MediaRequestController::class, 'store'])
+        ->name('media.store');
+
+    Route::post('/media-requests/{media}', [MediaRequestController::class, 'update'])
+        ->name('media.update');
+});
 
 
 

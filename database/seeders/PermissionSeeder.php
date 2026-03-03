@@ -16,9 +16,9 @@ class PermissionSeeder extends Seeder
             | اللوحة الرئيسية والتقارير
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_dashboard','label'=>'عرض لوحة التحكم','module'=>'dashboard'],
-            ['name'=>'view_reports','label'=>'عرض التقارير المالية','module'=>'dashboard'],
-            ['name'=>'view_executive_dashboard','label'=>'عرض اللوحة التنفيذية','module'=>'dashboard'],
+            ['name' => 'view_dashboard', 'label' => 'عرض لوحة التحكم', 'module' => 'dashboard'],
+            ['name' => 'view_reports', 'label' => 'عرض التقارير المالية', 'module' => 'dashboard'],
+            ['name' => 'view_executive_dashboard', 'label' => 'عرض اللوحة التنفيذية', 'module' => 'dashboard'],
 
 
             /*
@@ -26,12 +26,12 @@ class PermissionSeeder extends Seeder
             | CRM الاستشارات والمبيعات
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_leads','label'=>'عرض العملاء المحتملين','module'=>'crm'],
-            ['name'=>'create_leads','label'=>'إضافة عميل محتمل','module'=>'crm'],
-            ['name'=>'edit_leads','label'=>'تعديل عميل محتمل','module'=>'crm'],
-            ['name'=>'convert_leads','label'=>'تحويل إلى طالب','module'=>'crm'],
-            ['name'=>'view_crm_reports','label'=>'عرض تقارير المبيعات','module'=>'crm'],
-           
+            ['name' => 'view_leads', 'label' => 'عرض العملاء المحتملين', 'module' => 'crm'],
+            ['name' => 'create_leads', 'label' => 'إضافة عميل محتمل', 'module' => 'crm'],
+            ['name' => 'edit_leads', 'label' => 'تعديل عميل محتمل', 'module' => 'crm'],
+            ['name' => 'convert_leads', 'label' => 'تحويل إلى طالب', 'module' => 'crm'],
+            ['name' => 'view_crm_reports', 'label' => 'عرض تقارير المبيعات', 'module' => 'crm'],
+
 
 
             /*
@@ -39,10 +39,10 @@ class PermissionSeeder extends Seeder
             | الطلاب
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_students','label'=>'عرض الطلاب','module'=>'students'],
-            ['name'=>'create_students','label'=>'إضافة طالب','module'=>'students'],
-            ['name'=>'edit_students','label'=>'تعديل طالب','module'=>'students'],
-            ['name'=>'view_student_financials','label'=>'عرض الوضع المالي للطالب','module'=>'students'],
+            ['name' => 'view_students', 'label' => 'عرض الطلاب', 'module' => 'students'],
+            ['name' => 'create_students', 'label' => 'إضافة طالب', 'module' => 'students'],
+            ['name' => 'edit_students', 'label' => 'تعديل طالب', 'module' => 'students'],
+            ['name' => 'view_student_financials', 'label' => 'عرض الوضع المالي للطالب', 'module' => 'students'],
 
 
             /*
@@ -50,11 +50,11 @@ class PermissionSeeder extends Seeder
             | الامتحانات
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_exams','label'=>'عرض الامتحانات','module'=>'exams'],
-            ['name'=>'create_exams','label'=>'إضافة امتحان','module'=>'exams'],
-            ['name'=>'edit_exams','label'=>'تعديل امتحان','module'=>'exams'],
-            ['name'=>'enter_grades','label'=>'إدخال العلامات','module'=>'exams'],
-         
+            ['name' => 'view_exams', 'label' => 'عرض الامتحانات', 'module' => 'exams'],
+            ['name' => 'create_exams', 'label' => 'إضافة امتحان', 'module' => 'exams'],
+            ['name' => 'edit_exams', 'label' => 'تعديل امتحان', 'module' => 'exams'],
+            ['name' => 'enter_grades', 'label' => 'إدخال العلامات', 'module' => 'exams'],
+
 
 
             /*
@@ -62,12 +62,12 @@ class PermissionSeeder extends Seeder
             | المالية والصناديق
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_cashboxes','label'=>'عرض الصناديق','module'=>'finance'],
-            ['name'=>'create_cashboxes','label'=>'إنشاء صندوق','module'=>'finance'],
-            ['name'=>'edit_cashboxes','label'=>'تعديل صندوق','module'=>'finance'],
-            ['name'=>'delete_cashboxes','label'=>'حذف صندوق','module'=>'finance'],
-            ['name'=>'add_transaction','label'=>'إضافة حركة مالية','module'=>'finance'],
-            ['name'=>'approve_transaction','label'=>'اعتماد حركة مالية','module'=>'finance'],
+            ['name' => 'view_cashboxes', 'label' => 'عرض الصناديق', 'module' => 'finance'],
+            ['name' => 'create_cashboxes', 'label' => 'إنشاء صندوق', 'module' => 'finance'],
+            ['name' => 'edit_cashboxes', 'label' => 'تعديل صندوق', 'module' => 'finance'],
+            ['name' => 'delete_cashboxes', 'label' => 'حذف صندوق', 'module' => 'finance'],
+            ['name' => 'add_transaction', 'label' => 'إضافة حركة مالية', 'module' => 'finance'],
+            ['name' => 'approve_transaction', 'label' => 'اعتماد حركة مالية', 'module' => 'finance'],
 
 
             /*
@@ -75,16 +75,16 @@ class PermissionSeeder extends Seeder
             | الدوام والإجازات
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_attendance','label'=>'عرض الدوام','module'=>'attendance'],
-            ['name'=>'mark_attendance','label'=>'تسجيل حضور وانصراف','module'=>'attendance'],
-            ['name'=>'edit_attendance','label'=>'تعديل الدوام','module'=>'attendance'],
-            ['name'=>'view_leaves','label'=>'عرض الإجازات','module'=>'attendance'],
-            ['name'=>'create_leaves','label'=>'طلب إجازة','module'=>'attendance'],
+            ['name' => 'view_attendance', 'label' => 'عرض الدوام', 'module' => 'attendance'],
+            ['name' => 'mark_attendance', 'label' => 'تسجيل حضور وانصراف', 'module' => 'attendance'],
+            ['name' => 'edit_attendance', 'label' => 'تعديل الدوام', 'module' => 'attendance'],
+            ['name' => 'view_leaves', 'label' => 'عرض الإجازات', 'module' => 'attendance'],
+            ['name' => 'create_leaves', 'label' => 'طلب إجازة', 'module' => 'attendance'],
 
-            ['name'=>'approve_leaves','label'=>'اعتماد الإجازة','module'=>'attendance'],
-            ['name'=>'reject_leaves','label'=>'رفض الإجازة','module'=>'attendance'],
+            ['name' => 'approve_leaves', 'label' => 'اعتماد الإجازة', 'module' => 'attendance'],
+            ['name' => 'reject_leaves', 'label' => 'رفض الإجازة', 'module' => 'attendance'],
 
-            ['name'=>'export_attendance_reports','label'=>'تصدير تقارير الدوام','module'=>'attendance'],
+            ['name' => 'export_attendance_reports', 'label' => 'تصدير تقارير الدوام', 'module' => 'attendance'],
 
 
             /*
@@ -92,13 +92,13 @@ class PermissionSeeder extends Seeder
             | المهام
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_tasks','label'=>'عرض المهام','module'=>'tasks'],
-            ['name'=>'create_tasks','label'=>'إضافة مهمة','module'=>'tasks'],
-            ['name'=>'edit_tasks','label'=>'تعديل مهمة','module'=>'tasks'],
-            ['name'=>'delete_tasks','label'=>'حذف مهمة','module'=>'tasks'],
-            ['name'=>'complete_tasks','label'=>'إنهاء مهمة','module'=>'tasks'],
-            
-           
+            ['name' => 'view_tasks', 'label' => 'عرض المهام', 'module' => 'tasks'],
+            ['name' => 'create_tasks', 'label' => 'إضافة مهمة', 'module' => 'tasks'],
+            ['name' => 'edit_tasks', 'label' => 'تعديل مهمة', 'module' => 'tasks'],
+            ['name' => 'delete_tasks', 'label' => 'حذف مهمة', 'module' => 'tasks'],
+            ['name' => 'complete_tasks', 'label' => 'إنهاء مهمة', 'module' => 'tasks'],
+
+
 
 
             /*
@@ -106,16 +106,16 @@ class PermissionSeeder extends Seeder
             | الموارد البشرية
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_employees','label'=>'عرض الموظفين','module'=>'hr'],
-            ['name'=>'create_employees','label'=>'إضافة موظف','module'=>'hr'],
-            ['name'=>'edit_employees','label'=>'تعديل موظف','module'=>'hr'],
+            ['name' => 'view_employees', 'label' => 'عرض الموظفين', 'module' => 'hr'],
+            ['name' => 'create_employees', 'label' => 'إضافة موظف', 'module' => 'hr'],
+            ['name' => 'edit_employees', 'label' => 'تعديل موظف', 'module' => 'hr'],
 
-            ['name'=>'manage_contracts','label'=>'إدارة العقود','module'=>'hr'],
+            ['name' => 'manage_contracts', 'label' => 'إدارة العقود', 'module' => 'hr'],
 
-            ['name'=>'manage_salaries','label'=>'إدارة المستحقات','module'=>'hr'],
+            ['name' => 'manage_salaries', 'label' => 'إدارة المستحقات', 'module' => 'hr'],
 
 
-          
+
 
 
             /*
@@ -123,16 +123,16 @@ class PermissionSeeder extends Seeder
             | المستخدمون والصلاحيات
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_users','label'=>'عرض المستخدمين','module'=>'users'],
-            ['name'=>'create_users','label'=>'إضافة مستخدم','module'=>'users'],
-            ['name'=>'edit_users','label'=>'تعديل مستخدم','module'=>'users'],
-            ['name'=>'delete_users','label'=>'حذف مستخدم','module'=>'users'],
+            ['name' => 'view_users', 'label' => 'عرض المستخدمين', 'module' => 'users'],
+            ['name' => 'create_users', 'label' => 'إضافة مستخدم', 'module' => 'users'],
+            ['name' => 'edit_users', 'label' => 'تعديل مستخدم', 'module' => 'users'],
+            ['name' => 'delete_users', 'label' => 'حذف مستخدم', 'module' => 'users'],
 
-            ['name'=>'manage_roles','label'=>'إدارة الأدوار','module'=>'users'],
+            ['name' => 'manage_roles', 'label' => 'إدارة الأدوار', 'module' => 'users'],
 
-            ['name'=>'assign_permissions','label'=>'تعيين الصلاحيات','module'=>'users'],
+            ['name' => 'assign_permissions', 'label' => 'تعيين الصلاحيات', 'module' => 'users'],
 
-            ['name'=>'view_audit_logs','label'=>'عرض سجل التعديلات','module'=>'users'],
+            ['name' => 'view_audit_logs', 'label' => 'عرض سجل التعديلات', 'module' => 'users'],
 
 
             /*
@@ -140,12 +140,12 @@ class PermissionSeeder extends Seeder
             | الأصول واللوجستيات
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_assets','label'=>'عرض الأصول','module'=>'assets'],
-            ['name'=>'create_assets','label'=>'إضافة أصل','module'=>'assets'],
-            ['name'=>'edit_assets','label'=>'تعديل أصل','module'=>'assets'],
-            ['name'=>'delete_assets','label'=>'حذف أصل','module'=>'assets'],
-           
-          
+            ['name' => 'view_assets', 'label' => 'عرض الأصول', 'module' => 'assets'],
+            ['name' => 'create_assets', 'label' => 'إضافة أصل', 'module' => 'assets'],
+            ['name' => 'edit_assets', 'label' => 'تعديل أصل', 'module' => 'assets'],
+            ['name' => 'delete_assets', 'label' => 'حذف أصل', 'module' => 'assets'],
+
+
 
 
             /*
@@ -153,10 +153,10 @@ class PermissionSeeder extends Seeder
             | الفروع
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_branches','label'=>'عرض الفروع','module'=>'branches'],
-            ['name'=>'create_branches','label'=>'إضافة فرع','module'=>'branches'],
-            ['name'=>'edit_branches','label'=>'تعديل فرع','module'=>'branches'],
-            ['name'=>'delete_branches','label'=>'حذف فرع','module'=>'branches'],
+            ['name' => 'view_branches', 'label' => 'عرض الفروع', 'module' => 'branches'],
+            ['name' => 'create_branches', 'label' => 'إضافة فرع', 'module' => 'branches'],
+            ['name' => 'edit_branches', 'label' => 'تعديل فرع', 'module' => 'branches'],
+            ['name' => 'delete_branches', 'label' => 'حذف فرع', 'module' => 'branches'],
 
 
             /*
@@ -164,23 +164,25 @@ class PermissionSeeder extends Seeder
             | الدبلومات
             |--------------------------------------------------------------------------
             */
-            ['name'=>'view_diplomas','label'=>'عرض الدبلومات','module'=>'diplomas'],
-            ['name'=>'create_diplomas','label'=>'إضافة دبلومة','module'=>'diplomas'],
-            ['name'=>'edit_diplomas','label'=>'تعديل دبلومة','module'=>'diplomas'],
-            ['name'=>'delete_diplomas','label'=>'حذف دبلومة','module'=>'diplomas'],
+            ['name' => 'view_diplomas', 'label' => 'عرض الدبلومات', 'module' => 'diplomas'],
+            ['name' => 'create_diplomas', 'label' => 'إضافة دبلومة', 'module' => 'diplomas'],
+            ['name' => 'edit_diplomas', 'label' => 'تعديل دبلومة', 'module' => 'diplomas'],
+            ['name' => 'delete_diplomas', 'label' => 'حذف دبلومة', 'module' => 'diplomas'],
 
 
 
 
-        ['name'=>'view_program_management','label'=>' إدارة البرامج ','module'=>'programs'],
+            ['name' => 'view_program_management', 'label' => ' إدارة البرامج ', 'module' => 'programs'],
 
-            
-          
+
+            ['name' => 'view_media_requests', 'label' => ' إدارة طلبات الميديا ', 'module' => 'medias'],
+
+
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(
-                ['name'=>$permission['name']],
+                ['name' => $permission['name']],
                 $permission
             );
         }

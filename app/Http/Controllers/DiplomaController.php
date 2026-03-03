@@ -17,14 +17,20 @@ class DiplomaController extends Controller
             $s = $request->search;
             $q->where(function ($x) use ($s) {
                 $x->where('name', 'like', "%$s%")
-                  ->orWhere('code', 'like', "%$s%")
-                  ->orWhere('field', 'like', "%$s%");
+                    ->orWhere('code', 'like', "%$s%")
+                    ->orWhere('field', 'like', "%$s%");
             });
         }
 
         if ($request->filled('is_active')) {
             $q->where('is_active', $request->is_active === '1');
         }
+
+
+        if ($request->filled('type')) {
+            $q->where('type', $request->type);
+        }
+
 
         return view('diplomas.index', [
             'diplomas' => $q->latest()->paginate(15)->withQueryString(),

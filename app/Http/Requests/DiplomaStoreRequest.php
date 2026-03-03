@@ -19,6 +19,8 @@ class DiplomaStoreRequest extends FormRequest
             'code'      => ['required','string','max:50', 'alpha_dash', Rule::unique('diplomas','code')],
             'field'     => ['nullable','string','max:255'],
             'is_active' => ['nullable','boolean'],
+            'type' => ['required','in:online,onsite'],
+            
         ];
     }
 
