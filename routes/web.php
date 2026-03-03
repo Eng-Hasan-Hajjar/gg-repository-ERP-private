@@ -512,22 +512,51 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
+
+
 use App\Http\Controllers\MediaRequestController;
+
+/*
+|--------------------------------------------------------------------------
+| Public Media Form (بدون تسجيل دخول)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/media-request/public', 
+    [MediaRequestController::class,'publicForm'])
+    ->name('media.public.form');
+
+Route::post('/media-request/public', 
+    [MediaRequestController::class,'publicStore'])
+    ->name('media.public.store');
+
+Route::get('/media-request/thanks',
+    [MediaRequestController::class,'thanks'])
+    ->name('media.public.thanks');
+
+
+/*
+|--------------------------------------------------------------------------
+| Media Panel (تحتاج تسجيل دخول)
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/media-requests', [MediaRequestController::class, 'index'])
+    Route::get('/media-requests', 
+        [MediaRequestController::class, 'index'])
         ->name('media.index');
 
-    Route::get('/media-requests/create', [MediaRequestController::class, 'create'])
-        ->name('media.create');
+    Route::get('/media-requests/{media}', 
+        [MediaRequestController::class, 'show'])
+        ->name('media.show');
 
-    Route::post('/media-requests', [MediaRequestController::class, 'store'])
-        ->name('media.store');
-
-    Route::post('/media-requests/{media}', [MediaRequestController::class, 'update'])
+    Route::post('/media-requests/{media}', 
+        [MediaRequestController::class, 'update'])
         ->name('media.update');
 });
+
 
 
 

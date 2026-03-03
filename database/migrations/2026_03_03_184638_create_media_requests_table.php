@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // مدير البرنامج
             $table->foreignId('diploma_id')->nullable()->constrained()->nullOnDelete();
 
-            $table->string('title');
+          
             $table->text('description')->nullable();
 
             // Checkboxes تنفيذ
@@ -28,6 +28,44 @@ return new class extends Migration {
             $table->boolean('reviews_done')->default(false);
 
             $table->text('notes')->nullable();
+
+
+
+
+
+
+                  // بيانات مقدم الطلب
+            $table->string('requester_name');
+            $table->string('requester_phone')->nullable();
+
+            // بيانات الدبلومة
+            $table->string('diploma_name')->nullable();
+            $table->string('diploma_code')->nullable();
+            $table->string('trainer_name')->nullable();
+            $table->string('trainer_location')->nullable();
+
+            $table->boolean('trainer_photography_available')->default(false);
+
+            $table->string('certificate_accreditation')->nullable();
+            $table->string('customer_service_responsible')->nullable();
+            $table->string('diploma_location')->nullable();
+
+            // رفع ملفات
+            $table->string('details_file')->nullable();
+            $table->string('trainer_image')->nullable();
+
+            // المواد المطلوبة (checkboxes)
+            $table->boolean('need_ad')->default(false);
+            $table->boolean('need_invitation')->default(false);
+            $table->boolean('need_review_video')->default(false);
+            $table->boolean('need_content')->default(false);
+            $table->boolean('need_podcast')->default(false);
+            $table->boolean('need_carousel')->default(false);
+            $table->string('need_other')->nullable();
+
+
+
+
 
             $table->timestamps();
         });
