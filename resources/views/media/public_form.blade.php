@@ -6,7 +6,7 @@
 <div class="card shadow-sm p-4">
     <h5 class="fw-bold mb-3">إرسال طلب لقسم الميديا</h5>
 
-<form method="POST" action="{{ route('media.store') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ route('media.public.store') }}" enctype="multipart/form-data">
 @csrf
 
 <div class="row g-3">

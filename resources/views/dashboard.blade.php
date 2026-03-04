@@ -82,7 +82,7 @@
             {{ $highlights['activity']['last']
         ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
         : '—'
-                              }}
+                                      }}
           </p>
         </div>
       </div>
@@ -528,8 +528,8 @@
           </div>
 
           <div class="module-actions">
-            <a href="{{ route('diplomas.index') }}" class="btn btn-namaa w-100">
-              فتح البرامج
+            <a href={{ route('programs.management.index') }} class="btn btn-namaa w-100">
+              إدارة البرامج
             </a>
           </div>
         </div>
@@ -542,94 +542,102 @@
 
     @if(auth()->user()?->hasPermission('view_program_management'))
 
-  {{-- Online Programs --}}
-  <div class="col-12 col-md-6 col-xl-4">
-    <div class="module-card">
-      <div class="module-head">
-        <div class="module-icon grad-dark">
-          <i class="bi bi-diagram-3 fs-3"></i>
-        </div>
-        <div>
-          <p class="module-title">إدارة البرامج الأونلاين</p>
-          <p class="module-sub">متابعة الدبلومات التعليمية عن بُعد</p>
-        </div>
-      </div>
+      {{-- Online Programs --}}
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-dark">
+              <i class="bi bi-diagram-3 fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">إدارة البرامج الأونلاين</p>
+              <p class="module-sub">متابعة الدبلومات التعليمية عن بُعد</p>
+            </div>
+          </div>
 
-      <div class="module-body">
-        <p class="section-note">
-          إدارة البرامج الأونلاين، الامتحانات الرقمية، المحتوى الإلكتروني، وتتبع الأداء.
-        </p>
-      </div>
+          <div class="module-body">
+            <p class="section-note">
+              إدارة البرامج الأونلاين، الامتحانات الرقمية، المحتوى الإلكتروني، وتتبع الأداء.
+            </p>
+          </div>
 
-      <div class="module-actions">
-        <a href="{{ route('diplomas.index', ['type' => 'online']) }}"
-           class="btn btn-namaa w-100">
-          فتح برامج الأونلاين
-        </a>
-      </div>
-    </div>
-  </div>
-
-
-
-  {{-- Onsite Programs --}}
-  <div class="col-12 col-md-6 col-xl-4">
-    <div class="module-card">
-      <div class="module-head">
-        <div class="module-icon grad-dark">
-          <i class="bi bi-building fs-3"></i>
-        </div>
-        <div>
-          <p class="module-title">إدارة البرامج الحضورية</p>
-          <p class="module-sub">متابعة الدبلومات داخل الفروع</p>
+          <div class="module-actions">
+            <a href="{{ route('programs.management.index', ['type' => 'online']) }}" class="btn btn-namaa w-100">
+              فتح برامج الأونلاين
+            </a>
+          </div>
         </div>
       </div>
 
-      <div class="module-body">
-        <p class="section-note">
-          إدارة البرامج داخل الفروع، الجداول الصفية، الحضور، والامتحانات الحضورية.
-        </p>
+
+
+      {{-- Onsite Programs --}}
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-dark">
+              <i class="bi bi-building fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">إدارة البرامج الحضورية</p>
+              <p class="module-sub">متابعة الدبلومات داخل الفروع</p>
+            </div>
+          </div>
+
+          <div class="module-body">
+            <p class="section-note">
+              إدارة البرامج داخل الفروع، الجداول الصفية، الحضور، والامتحانات الحضورية.
+            </p>
+          </div>
+
+          <div class="module-actions">
+            <a href="{{ route('programs.management.index', ['type' => 'onsite']) }}" class="btn btn-namaa w-100">
+              فتح البرامج الحضورية
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div class="module-actions">
-        <a href="{{ route('diplomas.index', ['type' => 'onsite']) }}"
-           class="btn btn-namaa w-100">
-          فتح البرامج الحضورية
-        </a>
+    @endif
+
+
+
+
+
+
+    @if(auth()->user()?->hasPermission('view_media_requests'))
+
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-purple">
+              <i class="bi bi-megaphone fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">طلبات الميديا</p>
+              <p class="module-sub">إدارة الطلبات وجدولة النشر</p>
+            </div>
+          </div>
+
+
+
+          <div class="module-body">
+            <p class="section-note">
+
+            </p>
+          </div>
+
+
+
+          <div class="module-actions">
+            <a href="{{ route('media.index') }}" class="btn btn-namaa w-100">
+              فتح قسم الميديا
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-@endif
-
-
-
-
-
-
-@if(auth()->user()?->hasPermission('view_media_requests'))
-
-<div class="col-12 col-md-6 col-xl-4">
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-icon grad-purple">
-        <i class="bi bi-megaphone fs-3"></i>
-      </div>
-      <div>
-        <p class="module-title">طلبات الميديا</p>
-        <p class="module-sub">إدارة الطلبات وجدولة النشر</p>
-      </div>
-    </div>
-
-    <div class="module-actions">
-      <a href="{{ route('media.index') }}" class="btn btn-namaa w-100">
-        فتح قسم الميديا
-      </a>
-    </div>
-  </div>
-</div>
-
-@endif
+    @endif
 
 
 

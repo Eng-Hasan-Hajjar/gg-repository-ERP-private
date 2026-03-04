@@ -21,6 +21,20 @@ return new class extends Migration
                 ->constrained('users')
                 ->cascadeOnDelete();
 
+
+
+            $table->unsignedBigInteger('trainer_id')->nullable();
+
+            $table->string('communication_manager')->nullable();
+
+        
+
+            $table->foreign('trainer_id')
+                ->references('id')
+                ->on('employees')
+                ->nullOnDelete();
+
+
             // ===== قسم البرامج =====
             $table->boolean('market_study')->default(false);
             $table->boolean('trainer_assigned')->default(false);
@@ -29,6 +43,7 @@ return new class extends Migration
             $table->boolean('sessions_uploaded')->default(false);
             $table->string('certificate_source')->nullable();
             $table->string('details_file')->nullable();
+              
             $table->decimal('price',10,2)->nullable();
 
             // ===== قسم الميديا =====

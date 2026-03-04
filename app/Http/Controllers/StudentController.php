@@ -434,6 +434,14 @@ $this->saveProfileWithUploads($student, $request);
 
       $crmData = $request->input('crm', []);
       if (!empty($crmData)) {
+
+        // لا تمسح تاريخ أول تواصل إذا لم يتم إرساله
+    if (!isset($crmData['first_contact_date'])) {
+        $crmData['first_contact_date'] = optional($student->crmInfo)->first_contact_date;
+    }
+
+
+    
         $student->crmInfo()->updateOrCreate(['student_id'=>$student->id], $crmData);
       }
 

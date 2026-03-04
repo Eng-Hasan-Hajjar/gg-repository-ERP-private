@@ -844,6 +844,92 @@
         padding: 14px !important;
       }
     }
+
+
+
+
+
+
+
+
+
+
+
+    /* =====================================
+ERP ICONBAR TOOLTIP (RTL FIXED)
+===================================== */
+
+    .iconbar a {
+      position: relative;
+    }
+
+    /* النص */
+    .iconbar a::after {
+
+      content: attr(data-title);
+
+      position: absolute;
+
+      left: 65px;
+      /* يظهر يمين الأيقونة */
+
+      top: 50%;
+      transform: translateY(-50%);
+
+      background: #0b1220;
+      color: #fff;
+
+      font-size: 16px;
+      font-weight: 900;
+
+      padding: 10px 16px;
+
+      border-radius: 10px;
+
+      white-space: nowrap;
+
+      opacity: 0;
+      pointer-events: none;
+
+      transition: .2s ease;
+
+      box-shadow: 0 12px 30px rgba(2, 6, 23, .25);
+
+      z-index: 9999;
+    }
+
+    /* السهم */
+    .iconbar a::before {
+
+      content: "";
+
+      position: absolute;
+
+      left: 56px;
+
+      top: 50%;
+      transform: translateY(-50%);
+
+      border: 6px solid transparent;
+
+      border-right-color: #0b1220;
+
+      opacity: 0;
+
+      transition: .2s ease;
+
+    }
+
+    /* الظهور */
+    .iconbar a:hover::after,
+    .iconbar a:hover::before {
+      opacity: 1;
+    }
+
+    /* تكبير الأيقونة */
+    .iconbar a:hover {
+      transform: scale(1.12);
+    }
   </style>
 
   @stack('styles')
@@ -872,26 +958,26 @@
         </span>
 
 
-   @if(auth()->user()->hasRole('super_admin'))
+        @if(auth()->user()->hasRole('super_admin'))
 
-        <div class="dropdown">
+          <div class="dropdown">
 
-          <button class="btn btn-light position-relative" id="alertBell" data-bs-toggle="dropdown">
+            <button class="btn btn-light position-relative" id="alertBell" data-bs-toggle="dropdown">
 
-            <i class="bi bi-bell fs-5"></i>
+              <i class="bi bi-bell fs-5"></i>
 
-            <span id="alertCount" class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
-              style="display:none">
-            </span>
+              <span id="alertCount" class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+                style="display:none">
+              </span>
 
-          </button>
+            </button>
 
-          <div class="dropdown-menu p-2" id="alertList" style="width:320px">
-            <div class="text-muted text-center small">جاري تحميل التنبيهات...</div>
+            <div class="dropdown-menu p-2" id="alertList" style="width:320px">
+              <div class="text-muted text-center small">جاري تحميل التنبيهات...</div>
+            </div>
+
           </div>
-
-        </div>
-   @endif
+        @endif
 
 
 
@@ -926,14 +1012,14 @@
 
           <aside class="iconbar" aria-label="Module icons">
             <a href="{{ route('dashboard') }}" class="grad-slate {{ $activeModule === 'dashboard' ? 'active' : '' }}"
-              title="لوحة التحكم">
+              data-title="لوحة التحكم">
               <i class="bi bi-grid-fill fs-6"></i>
             </a>
 
             @if(auth()->user()?->hasPermission('manage_roles'))
 
               <a href="{{ route('admin.audit.index') }}" class="grad-rose {{ $activeModule === 'audit' ? 'active' : '' }}"
-                title="سجل التدقيق">
+                data-title="سجل التدقيق">
                 <i class="bi bi-journal-text fs-6"></i>
               </a>
             @endif
@@ -941,7 +1027,7 @@
 
               <a href="{{ route('admin.roles.index') }}"
                 class="grad-slate hide-mobile show-desktop-only {{ $activeModule === 'users' ? 'active' : '' }}"
-                title="المستخدمين والصلاحيات">
+                data-title="المستخدمين والصلاحيات">
                 <i class="bi bi-person-gear fs-6"></i>
               </a>
             @endif
@@ -953,7 +1039,7 @@
 
 
             <a href="{{ route('reports.index') }}" class="grad-green  {{ $activeModule === 'reports' ? 'active' : '' }}"
-              title="التقارير والإحصائيات ">
+              data-title="التقارير والإحصائيات ">
               <i class="bi bi-bar-chart fs-6"></i>
             </a>
 
@@ -961,22 +1047,23 @@
 
 
             <a href="{{ route('students.index') }}" class="grad-blue   {{ $activeModule === 'students' ? 'active' : '' }}"
-              title="الطلاب">
+              data-title="الطلاب">
               <i class="bi bi-people-fill fs-6"></i>
             </a>
             <a href="{{ route('leads.index') }}"
-              class="grad-green  hide-mobile show-desktop-only {{ $activeModule === 'leads' ? 'active' : '' }}" title="CRM">
+              class="grad-green  hide-mobile show-desktop-only {{ $activeModule === 'leads' ? 'active' : '' }}"
+              data-title="CRM">
               <i class="bi bi-headset fs-3"></i>
             </a>
 
             <a href="{{ route('diplomas.index') }}"
               class="grad-purple  hide-mobile show-desktop-only {{ $activeModule === 'diplomas' ? 'active' : '' }}"
-              title="الدبلومات">
+              data-title="الدبلومات">
               <i class="bi bi-mortarboard-fill fs-6"></i>
             </a>
 
-            <a href="{{ route('employees.index') }}" class="grad-primary {{ $activeModule === 'employees' ? 'active' : '' }}"
-              title="الموارد البشرية">
+            <a href="{{ route('employees.index') }}"
+              class="grad-primary {{ $activeModule === 'employees' ? 'active' : '' }}" data-title="الموارد البشرية">
               <i class="bi bi-person-badge-fill fs-6"></i>
             </a>
 
@@ -984,18 +1071,18 @@
 
             <a href="{{ route('branches.index') }}"
               class="grad-green  hide-mobile show-desktop-only {{ $activeModule === 'branches' ? 'active' : '' }}"
-              title="الفروع">
+              data-title="الفروع">
               <i class="bi bi-building fs-6"></i>
             </a>
 
             <a href="{{ route('assets.index') }}"
               class="grad-blue  hide-mobile show-desktop-only {{ $activeModule === 'assets' ? 'active' : '' }}"
-              title="الأصول">
+              data-title="الأصول">
               <i class="bi bi-box-seam fs-6"></i>
             </a>
             <a href="{{ route('asset-categories.index') }}"
               class="grad-purple  hide-mobile show-desktop-only {{ $activeModule === 'asset-categories' ? 'active' : '' }}"
-              title="تصنيفات الأصول">
+              data-title="تصنيفات الأصول">
               <i class="bi bi-tags fs-6"></i>
             </a>
 
@@ -1006,19 +1093,19 @@
 
 
             <a href="{{ route('cashboxes.index') }}" class="grad-amber {{ $activeModule === 'finance' ? 'active' : '' }}"
-              title="المالية والصناديق">
+              data-title="المالية والصناديق">
               <i class="bi bi-cash-coin fs-6"></i>
             </a>
 
 
 
             <a href="{{ route('attendance.index') }}" class="grad-rose {{ $activeModule === 'attendance' ? 'active' : '' }}"
-              title="الدوام">
+              data-title="الدوام">
               <i class="bi bi-calendar2-week fs-6"></i>
             </a>
 
             <a href="{{ route('tasks.index') }}" class="grad-slate {{ $activeModule === 'tasks' ? 'active' : '' }}"
-              title="المهام">
+              data-title="المهام">
               <i class="bi bi-check2-square fs-6"></i>
             </a>
 
@@ -1026,25 +1113,36 @@
 
             <a href="{{ route('leaves.index') }}"
               class="grad-amber  hide-mobile show-desktop-only {{ $activeModule === 'attendance' ? 'active' : '' }}"
-              title="الإجازات">
+              data-title="الإجازات">
               <i class="bi bi-clipboard2-check fs-6"></i>
             </a>
 
 
             <a href="{{ route('attendance.calendar') }}"
               class="grad-rose  hide-mobile show-desktop-only {{ $activeModule === 'attendance' ? 'active' : '' }}"
-              title="الدوام">
+              data-title="الدوام">
               <i class="bi bi-calendar2-week fs-6"></i>
             </a>
 
             <a href="{{ route('attendance.reports') }}"
               class="grad-slate  hide-mobile show-desktop-only {{ $activeModule === 'attendance-reports' ? 'active' : '' }}"
-              title="تقارير الدوام">
+              data-title="تقارير الدوام">
               <i class="bi bi-clipboard-data fs-6"></i>
             </a>
 
 
 
+            <a href="{{ route('programs.management.index') }}"
+              class="grad-indigo {{ $activeModule === 'programs' ? 'active' : '' }}" data-title="إدارة البرامج">
+              <i class="bi bi-kanban-fill fs-5"></i>
+            </a>
+
+
+
+            <a href="{{ route('media.index') }}" class="grad-purple {{ $activeModule === 'media' ? 'active' : '' }}"
+              data-title="قسم الميديا">
+              <i class="bi bi-megaphone-fill fs-5"></i>
+            </a>
 
 
           </aside>

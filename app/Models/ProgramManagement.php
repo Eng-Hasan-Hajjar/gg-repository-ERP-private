@@ -11,6 +11,11 @@ class ProgramManagement extends Model
     protected $fillable = [
         'diploma_id',
         'manager_id',
+
+            'trainer_id',
+        'communication_manager',
+
+
         'market_study',
         'trainer_assigned',
         'contracts_ready',
@@ -82,4 +87,13 @@ class ProgramManagement extends Model
     {
         return $this->belongsTo(User::class,'manager_id');
     }
+
+  
+
+    public function trainer()
+    {
+        return $this->belongsTo(Employee::class,'trainer_id');
+    }
+
+    
 }

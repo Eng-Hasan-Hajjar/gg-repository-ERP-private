@@ -5,50 +5,72 @@ namespace App\Http\Controllers;
 use App\Models\Diploma;
 use App\Models\ProgramManagement;
 use Illuminate\Http\Request;
+use App\Models\Employee;
+use App\Http\Requests\UpdateProgramManagementRequest;
 
 class ProgramManagementController extends Controller
 {
-    public function index()
-    {
-        $query = ProgramManagement::with('diploma');
+public function index(Request $request)
+{
+    $query = ProgramManagement::with('diploma');
 
-        // مدير البرنامج يرى برامجه فقط
-        if (!auth()->user()->hasRole('super_admin')) {
-            $query->where('manager_id', auth()->id());
-        }
-
-        $records = $query->latest()->paginate(15);
-
-        return view('programs_management.index', compact('records'));
+    // مدير البرنامج يرى برامجه فقط
+    if (!auth()->user()->hasRole('super_admin')) {
+        $query->where('manager_id', auth()->id());
     }
+
+    // فلترة حسب نوع الدبلومة
+    if ($request->filled('type')) {
+        $query->whereHas('diploma', function ($q) use ($request) {
+            $q->where('type', $request->type);
+        });
+    }
+
+    $records = $query->latest()->paginate(15);
+
+    return view('programs_management.index', compact('records'));
+}
+
 
     public function edit(Diploma $diploma)
     {
-        $record = ProgramManagement::firstOrCreate(
-            [
-                'diploma_id' => $diploma->id,
-                'manager_id' => auth()->id(),
-            ]
-        );
+        $record = ProgramManagement::firstOrCreate([
+            'diploma_id' => $diploma->id,
+            'manager_id' => auth()->id(),
+        ]);
 
-        return view('programs_management.edit', compact('record','diploma'));
+        $trainers = Employee::where('type', 'trainer')->get();
+
+        return view(
+            'programs_management.edit',
+            compact('record', 'diploma', 'trainers')
+        );
     }
 
-public function update(Request $request, Diploma $diploma)
-{
-    $record = ProgramManagement::where('diploma_id',$diploma->id)
+    public function update(UpdateProgramManagementRequest  $request, Diploma $diploma)
+    {
+       $record = ProgramManagement::where('diploma_id',$diploma->id)
         ->where('manager_id',auth()->id())
         ->firstOrFail();
 
-    $data = $request->all();
+    $data = $request->validated();
 
-    // جميع الحقول البوليانية
+    if ($request->hasFile('details_file')) {
+
+        $path = $request->file('details_file')
+            ->store('program_files','public');
+
+        $data['details_file'] = $path;
+    }
+
     $booleanFields = [
+
         'market_study',
         'trainer_assigned',
         'contracts_ready',
         'materials_ready',
         'sessions_uploaded',
+
         'media_form_sent',
         'direct_ads',
         'content_ready',
@@ -57,6 +79,7 @@ public function update(Request $request, Diploma $diploma)
         'carousel',
         'designs',
         'stories',
+
         'projects',
         'attendance_certificate',
         'university_certificate',
@@ -74,20 +97,20 @@ public function update(Request $request, Diploma $diploma)
     $record->update($data);
 
     return back()->with('success','تم حفظ البيانات بنجاح');
-}
+    }
 
 
-public function show(Diploma $diploma)
-{
-    $record = ProgramManagement::firstOrCreate(
-        [
-            'diploma_id' => $diploma->id,
-            'manager_id' => auth()->id(),
-        ]
-    );
+    public function show(Diploma $diploma)
+    {
+        $record = ProgramManagement::firstOrCreate(
+            [
+                'diploma_id' => $diploma->id,
+                'manager_id' => auth()->id(),
+            ]
+        );
 
-    return view('programs_management.show', compact('record','diploma'));
-}
+        return view('programs_management.show', compact('record', 'diploma'));
+    }
 
 
 
