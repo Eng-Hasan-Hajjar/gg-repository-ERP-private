@@ -25,4 +25,14 @@ class Task extends Model
     public function creator(): BelongsTo { return $this->belongsTo(User::class,'created_by'); }
 
     public function comments(): HasMany { return $this->hasMany(TaskComment::class); }
+
+
+
+    public function reports()
+{
+    return $this->hasMany(TaskReport::class);
+}
+
+
+
 }

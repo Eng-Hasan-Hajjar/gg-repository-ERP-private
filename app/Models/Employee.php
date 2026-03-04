@@ -73,4 +73,10 @@ class Employee extends Model
 
 
 
+
+    public function reports()
+{
+    return $this->hasMany(TaskReport::class);
+}
+
 }

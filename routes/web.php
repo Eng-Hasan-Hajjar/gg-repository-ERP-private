@@ -561,4 +561,35 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
+
+
+
+
+
+
+use App\Http\Controllers\TaskReportController;
+
+Route::middleware(['auth'])->group(function(){
+
+Route::get('/reports-task',[TaskReportController::class,'index'])
+->name('reports.task.index');
+
+Route::get('/reports-task/create',[TaskReportController::class,'create'])
+->name('reports.task.create');
+
+Route::post('/reports-task',[TaskReportController::class,'store'])
+->name('reports.task.store');
+
+Route::get('/reports-task/{report}',[TaskReportController::class,'show'])
+->name('reports.task.show');
+
+Route::delete('/reports-task/{report}',[TaskReportController::class,'destroy'])
+->name('reports.task.destroy');
+
+});
+
+
+
+
 require __DIR__ . '/auth.php';

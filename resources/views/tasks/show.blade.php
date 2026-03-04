@@ -6,6 +6,15 @@
   <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-3">
     <div>
       <h4 class="mb-1 fw-bold">{{ $task->title }}</h4>
+
+      <a href="{{ route('reports.task.create',['task'=>$task->id]) }}"
+class="btn btn-outline-primary rounded-pill">
+
+<i class="bi bi-upload"></i>
+رفع تقرير لهذه المهمة
+
+</a>
+
       <div class="text-muted fw-semibold">
         الفرع: <b>{{ $task->branch->name ?? '-' }}</b>
         — المسند له: <b>{{ $task->assignee->full_name ?? '-' }}</b>

@@ -82,7 +82,7 @@
             {{ $highlights['activity']['last']
         ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
         : '—'
-                                      }}
+                                          }}
           </p>
         </div>
       </div>
@@ -324,9 +324,16 @@
             @endif
 
           </div>
-          <div class="module-actions">
+          <div class="module-actions grid-2">
 
             <a href="{{ route('tasks.index', ['status' => 'todo']) }}" class="btn btn-soft w-100 w-sm-auto">مهام اليوم </a>
+
+            <a href="{{ route('reports.task.index') }}" class="btn btn-soft w-100 w-sm-auto">
+
+              <i class="bi bi-file-earmark-text"></i>
+              تقارير المهام
+
+            </a>
 
           </div>
         </div>
