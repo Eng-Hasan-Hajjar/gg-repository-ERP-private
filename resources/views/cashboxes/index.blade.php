@@ -118,7 +118,7 @@
                   </a>
                 @endif
 
-                <a class="btn btn-sm btn-outline-success" href="{{ route('cashboxes.transactions.index', $c) }}">
+                <a class="btn btn-sm btn-outline-success" href="{{ route('cashboxes.transactions.index', $c) }}" hidden>
                   <i class="bi bi-arrow-left-right"></i> الحركات
                 </a>
 
