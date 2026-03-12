@@ -24,15 +24,15 @@
 
 
         @if ($errors->any())
-<div class="alert alert-danger">
-    <strong>يرجى تصحيح الأخطاء التالية قبل الحفظ:</strong>
-    <ul class="mb-0 mt-2">
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+            <div class="alert alert-danger">
+                <strong>يرجى تصحيح الأخطاء التالية قبل الحفظ:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
 
     </div>
@@ -52,13 +52,37 @@
 
                         <div class="row g-3">
 
-                            <div class="col-md-4 form-check">
-                                <input type="checkbox" name="market_study" class="form-check-input"
-                                    @checked($record->market_study)>
-                                <label class="form-check-label">دراسة السوق</label>
-                            </div>
+                            <!-- دراسة السوق – تظهر فقط للحضوري -->
+                            @if($diploma->type === 'online')
+                                <div class="col-md-3 form-check">
+                                    <input type="checkbox" name="market_study" class="form-check-input"
+                                        @checked($record->market_study)>
+                                    <label class="form-check-label">دراسة السوق</label>
+                                </div>
+                            @endif
+                           
 
-                            <div class="col-md-4">
+                            <div class="col-md-3 form-check">
+                                <input type="checkbox" name="contracts_ready" class="form-check-input"
+                                    @checked($record->contracts_ready)>
+                                <label class="form-check-label">العقود جاهزة</label>
+                            </div>
+                            @if($diploma->type === 'online')
+                                <div class="col-md-3 form-check">
+                                    <input type="checkbox" name="materials_ready" class="form-check-input"
+                                        @checked($record->materials_ready)>
+                                    <label class="form-check-label">المادة العلمية جاهزة</label>
+                                </div>
+
+                                <div class="col-md-3 form-check">
+                                    <input type="checkbox" name="sessions_uploaded" class="form-check-input"
+                                        @checked($record->sessions_uploaded)>
+                                    <label class="form-check-label">رفع الجلسات على الموقع</label>
+                                </div>
+                            @endif
+
+
+                             <div class="col-md-4">
                                 <label class="form-label">المدرب</label>
 
                                 <select name="trainer_id" class="form-control">
@@ -76,25 +100,6 @@
                                     @endforeach
 
                                 </select>
-                            </div>
-
-
-                            <div class="col-md-4 form-check">
-                                <input type="checkbox" name="contracts_ready" class="form-check-input"
-                                    @checked($record->contracts_ready)>
-                                <label class="form-check-label">العقود جاهزة</label>
-                            </div>
-
-                            <div class="col-md-4 form-check">
-                                <input type="checkbox" name="materials_ready" class="form-check-input"
-                                    @checked($record->materials_ready)>
-                                <label class="form-check-label">المادة العلمية جاهزة</label>
-                            </div>
-
-                            <div class="col-md-4 form-check">
-                                <input type="checkbox" name="sessions_uploaded" class="form-check-input"
-                                    @checked($record->sessions_uploaded)>
-                                <label class="form-check-label">رفع الجلسات على الموقع</label>
                             </div>
 
                             <div class="col-md-4">
@@ -143,12 +148,7 @@
 
 
 
-                            <div class="col-md-4">
-                                <label class="form-label">مسؤول التواصل</label>
 
-                                <input type="text" name="communication_manager" value="{{ $record->communication_manager }}"
-                                    class="form-control">
-                            </div>
 
 
                             @php
@@ -204,10 +204,27 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label">ميزانية الحملة</label>
+                                <label class="form-label">صرف الحملة </label>
                                 <input type="number" step="0.01" name="campaign_budget"
                                     value="{{ $record->campaign_budget }}" class="form-control">
                             </div>
+
+
+                            <div class="col-md-4">
+                                <label class="form-label">مسؤول التواصل</label>
+
+                                <input type="text" name="communication_manager" value="{{ $record->communication_manager }}"
+                                    class="form-control">
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <label class="form-label">عدد الطلاب المثبتين</label>
+                                <input type="number" name="confirmed_students" value="{{ $record->confirmed_students }}"
+                                    class="form-control">
+                            </div>
+
+
 
                         </div>
 
@@ -225,11 +242,44 @@
 
                         <div class="row g-3">
 
-                            <div class="col-md-3">
-                                <label class="form-label">عدد الطلاب المثبتين</label>
-                                <input type="number" name="confirmed_students" value="{{ $record->confirmed_students }}"
-                                    class="form-control">
+
+
+                            
+                            <div class="col-md-3 form-check">
+                                <input type="checkbox" name="projects" class="form-check-input" @checked($record->projects)>
+                                <label class="form-check-label">
+                                    مشاريع
+                                </label>
                             </div>
+
+
+
+                            <div class="col-md-3 form-check">
+                                <input type="checkbox" name="attendance_certificate" class="form-check-input"
+                                    @checked($record->attendance_certificate)>
+                                <label class="form-check-label">
+                                    استلام شهادة الحضور </label>
+                            </div>
+
+                            <div class="col-md-3 form-check">
+                                <input type="checkbox" name="university_certificate" class="form-check-input"
+                                    @checked($record->university_certificate)>
+                                <label class="form-check-label">
+                                    استلام شهادة الجامعة
+                                </label>
+                            </div>
+
+
+
+                            <div class="col-md-3 form-check">
+                                <input type="checkbox" name="cards_ready" class="form-check-input"
+                                    @checked($record->cards_ready)>
+                                <label class="form-check-label">
+                                    البطاقات جاهزة
+                                </label>
+                            </div>
+
+
 
                             <div class="col-md-3">
                                 <label class="form-label">مدة الدبلومة (شهر)</label>
@@ -238,16 +288,16 @@
                             </div>
 
                             <div class="col-md-3">
-                                <label class="form-label">عدد الساعات</label>
+                                @if($diploma->type === 'online')
+                                    <label class="form-label">عدد الساعات</label>
+                                @endif
+                                @if($diploma->type === 'onsite')
+                                    <label class="form-label">عدد الجلسات</label>
+                                @endif
                                 <input type="number" name="hours" value="{{ $record->hours }}" class="form-control">
                             </div>
 
-                            <div class="col-md-3 form-check">
-                                <input type="checkbox" name="projects" class="form-check-input" @checked($record->projects)>
-                                <label class="form-check-label">
-                                    مشاريع
-                                </label>
-                            </div>
+
 
                             <div class="col-md-3">
                                 <label class="form-label">البداية</label>
@@ -269,6 +319,10 @@
                                 <input type="date" name="final_exam" value="{{ $record->final_exam }}" class="form-control">
                             </div>
 
+
+
+
+
                         </div>
 
                     </div>
@@ -287,9 +341,7 @@
 
                             @php
                                 $studentFields = [
-                                    'attendance_certificate' => 'استلام شهادة الحضور',
-                                    'university_certificate' => 'استلام شهادة الجامعة',
-                                    'cards_ready' => 'البطاقات جاهزة',
+
                                     'admin_session_1' => 'جلسة ادارية 1',
                                     'admin_session_2' => 'جلسة ادارية 2',
                                     'admin_session_3' => 'جلسة ادارية 3',
@@ -307,12 +359,14 @@
                                 </div>
                             @endforeach
 
+
+                             @if($diploma->type === 'online')
                             <div class="col-md-3">
                                 <label class="form-label">عدد الخريجين</label>
                                 <input type="number" name="graduates_count" value="{{ $record->graduates_count }}"
                                     class="form-control">
                             </div>
-
+@endif
                             <div class="col-12">
                                 <label class="form-label">ملاحظات</label>
                                 <textarea name="notes" rows="3" class="form-control">{{ $record->notes }}</textarea>

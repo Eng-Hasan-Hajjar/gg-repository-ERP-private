@@ -12,7 +12,8 @@ class AutoLogout
     public function handle(Request $request, Closure $next)
     {
         // المدة المسموحة بدون نشاط (بالثواني)
-        $timeout = 1000; // دقيقة واحدة — غيّرها لاحقاً كما تريد
+        $timeout = 1200; // دقيقة واحدة — غيّرها لاحقاً كما تريد
+        $userId = Auth::id();
 
         if (Auth::check()) {
 
@@ -25,13 +26,13 @@ class AutoLogout
                 if ($inactiveTime > $timeout) {
 
                     // تسجيل logout حقيقي في جدول الجلسات
-                    \App\Models\UserSession::where('user_id', Auth::id())
+                    \App\Models\UserSession::where('user_id', $userId)
                         ->whereNull('logout_at')
                         ->latest('login_at')
                         ->first()?->update([
-                            'logout_at' => now(),
-                             'last_activity' => now(), // ← مهم جداً
-                        ]);
+                                'logout_at' => now(),
+                                'last_activity' => now(), // ← مهم جداً
+                            ]);
 
                     Auth::logout();
 
@@ -40,30 +41,30 @@ class AutoLogout
 
 
 
-                        // ✅ تحديث النشاط في SESSION
-    session(['last_activity' => now()->timestamp]);
+                    // ✅ تحديث النشاط في SESSION
+                    session(['last_activity' => now()->timestamp]);
 
-    // ✅ تحديث النشاط في DATABASE (هذا كان ناقص!)
-    \App\Models\UserSession::where('user_id', Auth::id())
-        ->whereNull('logout_at')
-        ->latest('login_at')
-        ->first()?->update([
-            'last_activity' => now()
-        ]);
+                    // ✅ تحديث النشاط في DATABASE (هذا كان ناقص!)
+                    \App\Models\UserSession::where('user_id', $userId)
+                        ->whereNull('logout_at')
+                        ->latest('login_at')
+                        ->first()?->update([
+                                'last_activity' => now()
+                            ]);
 
 
-$currentSessionId = session()->getId();
+                    $currentSessionId = session()->getId();
 
-$valid = \App\Models\UserSession::where('user_id', Auth::id())
-    ->where('session_id', $currentSessionId)
-    ->whereNull('logout_at')
-    ->exists();
+                    $valid = \App\Models\UserSession::where('user_id', $userId)
+                        ->where('session_id', $currentSessionId)
+                        ->whereNull('logout_at')
+                        ->exists();
 
-if (!$valid) {
-    Auth::logout();
-    session()->invalidate();
-    return redirect('/login');
-}
+                    if (!$valid) {
+                        Auth::logout();
+                        session()->invalidate();
+                        return redirect('/login');
+                    }
 
 
 

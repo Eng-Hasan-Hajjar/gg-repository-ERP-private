@@ -1166,6 +1166,13 @@ ERP ICONBAR TOOLTIP (RTL FIXED)
 
 
   <script>
+
+
+
+
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
 
       fetch("{{ route('alerts.navbar') }}")
@@ -1204,6 +1211,14 @@ ERP ICONBAR TOOLTIP (RTL FIXED)
         });
 
     });
+
+
+
+
+
+
+
+
   </script>
 
 

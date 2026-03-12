@@ -48,4 +48,37 @@ class CashboxTransaction extends Model
             : null;
     }
 
+
+
+
+
+
+
+
+    /**
+ * نوع العرض النهائي للنوع (مع التعامل مع المناقلة)
+ */
+public function getDisplayTypeAttribute(): string
+{
+    if ($this->type === 'transfer') {
+        return 'مناقلة';
+    }
+
+    return $this->type === 'in' ? 'مقبوض' : 'مدفوع';
+}
+
+/**
+ * لون البادج المناسب لكل نوع
+ */
+public function getTypeBadgeClassAttribute(): string
+{
+    if ($this->type === 'transfer') {
+        return 'warning'; // أصفر
+    }
+
+    return $this->type === 'in' ? 'success' : 'danger';
+}
+
+
+
 }

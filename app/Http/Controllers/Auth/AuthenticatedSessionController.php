@@ -24,46 +24,105 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-
-        $request->session()->regenerate();
 
 
-        // ✅ جلب المستخدم الحالي
-        $user = Auth::user();
+ public function store(LoginRequest $request): RedirectResponse
+{
+    // تحقق من صحة البيانات بدون تسجيل الدخول
+    $request->authenticate();
 
+    $user = \App\Models\User::where('email', $request->email)->first();
 
-
-
-      $existingSession = UserSession::where('user_id', $user->id)
-    ->whereNull('logout_at')
-    ->latest()
-    ->first();
-
-if ($existingSession) {
-
-    $sessionFile = storage_path('framework/sessions/' . $existingSession->session_id);
-
-    // إذا ملف الجلسة غير موجود → يعني الجلسة ماتت فعلياً
-    if (!file_exists($sessionFile)) {
-        $existingSession->update([
-            'logout_at' => now()
-        ]);
-    } else {
-        Auth::logout();
-
+    if (!$user) {
         return back()->withErrors([
-            'email' => 'المستخدم مسجل دخول من جهاز آخر حالياً.'
+            'email' => 'بيانات الدخول غير صحيحة.'
         ]);
     }
+
+    // تنظيف الجلسات القديمة للمستخدم
+    UserSession::where('user_id', $user->id)
+        ->whereNull('logout_at')
+        ->where('last_activity', '<', now()->subMinutes(5))
+        ->update([
+            'logout_at' => now()
+        ]);
+
+    // التحقق من وجود جلسة نشطة
+    $activeSession = UserSession::where('user_id', $user->id)
+        ->whereNull('logout_at')
+        ->first();
+
+    if ($activeSession) {
+        return back()->withErrors([
+            'email' => 'هذا الحساب مسجل دخول حالياً من جهاز آخر.'
+        ]);
+    }
+
+    // الآن فقط نقوم بتسجيل الدخول
+    Auth::attempt($request->only('email', 'password'));
+
+    $request->session()->regenerate();
+
+    $now = now();
+
+    UserSession::create([
+        'user_id' => Auth::id(),
+        'login_at' => $now,
+        'session_id' => session()->getId(),
+        'last_activity' => $now,
+        'work_date' => $now->toDateString(),
+        'ip' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+    ]);
+
+    return redirect()->intended(route('dashboard', absolute: false));
 }
 
 
+/*
+ public function store(LoginRequest $request): RedirectResponse
+{
+    $request->authenticate();
 
+    $request->session()->regenerate();
 
-        // ✅ إنشاء جلسة تتبع
+    $user = Auth::user();
+
+    // تنظيف الجلسات القديمة
+    UserSession::whereNull('logout_at')
+        ->where('last_activity', '<', now()->subMinutes(1))
+        ->update([
+            'logout_at' => now()
+        ]);
+
+    // التحقق من وجود جلسة نشطة
+    $existingSession = UserSession::where('user_id', $user->id)
+        ->whereNull('logout_at')
+        ->latest()
+        ->first();
+
+    if ($existingSession) {
+
+        $inactive = now()->diffInMinutes($existingSession->last_activity);
+
+        if ($inactive > 5) {
+
+            $existingSession->update([
+                'logout_at' => now()
+            ]);
+
+        } else {
+
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'هذا الحساب مسجل دخول حالياً من جهاز آخر.'
+            ]);
+        }
+    }
+
+  
+            // ✅ إنشاء جلسة تتبع
 
         $now = now();
 
@@ -73,7 +132,7 @@ if ($existingSession) {
         UserSession::create([
             'user_id' => $user->id,
             'login_at' => now(),
-             'session_id' => session()->getId(), // 👈 مهم
+            'session_id' => session()->getId(), // 👈 مهم
             'last_activity' => now(), // ← أضف هذا
             'work_date' => $workDate,
             'ip' => request()->ip(),
@@ -83,7 +142,10 @@ if ($existingSession) {
 
 
         return redirect()->intended(route('dashboard', absolute: false));
-    }
+}
+
+*/
+
 
     /**
      * Destroy an authenticated session.

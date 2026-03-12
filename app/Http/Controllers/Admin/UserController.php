@@ -19,7 +19,7 @@ class UserController extends Controller
 
     $query = User::with([
     'roles',
-    'todaySessions'
+    'sessions'
 ]);
 
 

@@ -26,7 +26,17 @@ return new class extends Migration
 
     $table->date('work_date'); // لاحتساب ساعات كل يوم
 
+
+
+        $table->string('current_route')->nullable();
+    $table->string('current_url')->nullable();
+    $table->string('current_page')->nullable();
+    $table->string('page_title')->nullable();
+    
             $table->timestamps();
+
+
+            $table->index(['user_id','logout_at','last_activity']);
         });
     }
 

@@ -591,5 +591,10 @@ Route::delete('/reports-task/{report}',[TaskReportController::class,'destroy'])
 
 
 
+Route::get('/cashboxes/{cashbox}/transactions/pdf',
+    [CashboxTransactionController::class,'exportPdf']
+)->name('cashboxes.transactions.pdf');
+
+
 
 require __DIR__ . '/auth.php';

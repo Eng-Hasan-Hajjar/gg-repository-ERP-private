@@ -14,14 +14,16 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('cashbox_id')->constrained()->cascadeOnDelete();
 
-            $table->foreignId('financial_account_id')->constrained();
+            $table->foreignId('financial_account_id')->nullable()->constrained()->nullOnDelete();
+
+
             $table->foreignId('diploma_id')->nullable()->constrained()->nullOnDelete();
 
 
 
 
             $table->date('trx_date');
-            $table->enum('type', ['in', 'out']); // مقبوض/مدفوع
+            $table->enum('type', ['in', 'out','transfer']); // مقبوض/مدفوع
             $table->decimal('amount', 12, 2);
             $table->string('currency', 3); // نفس عملة الصندوق عادة
 

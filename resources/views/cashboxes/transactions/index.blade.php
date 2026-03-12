@@ -21,6 +21,18 @@
           <i class="bi bi-plus-circle"></i> إضافة حركة
         </a>
       @endif
+
+      <a href="{{ route('cashboxes.transactions.pdf', $cashbox) }}" class="btn btn-danger rounded-pill px-4 fw-bold"
+        target="_blank">
+
+        <i class="bi bi-file-earmark-pdf"></i>
+        تصدير PDF
+
+      </a>
+
+
+    
+
     </div>
   </div>
 
@@ -60,6 +72,27 @@
 
 
 
+
+
+        <div class="col-6 col-md-2">
+          <select name="sort" class="form-select">
+            <option value="trx_date" @selected(request('sort') == 'trx_date')>ترتيب حسب التاريخ</option>
+            <option value="amount" @selected(request('sort') == 'amount')>ترتيب حسب المبلغ</option>
+            <option value="id" @selected(request('sort') == 'id')>ترتيب حسب رقم الحركة</option>
+          </select>
+        </div>
+
+        <div class="col-6 col-md-2">
+          <select name="direction" class="form-select">
+            <option value="desc" @selected(request('direction') == 'desc')>تنازلي</option>
+            <option value="asc" @selected(request('direction') == 'asc')>تصاعدي</option>
+          </select>
+        </div>
+
+
+
+
+
         <div class="col-12 col-md-3 d-grid">
           <button class="btn btn-namaa fw-bold">تطبيق</button>
         </div>
@@ -78,7 +111,10 @@
         <thead class="table-light">
           <tr>
             <th>#</th>
-            <th>التاريخ</th>
+            <th> <a href="?sort=trx_date&direction={{ request('direction') == 'asc' ? 'desc' : 'asc' }}">
+                التاريخ
+              </a>
+            </th>
             <th>الطالب</th>
             <th>الدبلومة</th>
             <th>النوع</th>
@@ -96,10 +132,10 @@
               <td>{{ $t->trx_date->format('Y-m-d') }}</td>
 
               <td>
-                {{ optional($t->account->accountable)->full_name ?? '-' }}
+                {{optional(optional($t->account)->accountable)->full_name ?? '-' }}
 
 
-                
+
               </td>
 
               <td>

@@ -62,6 +62,7 @@
           <tr>
             <th class="hide-mobile">#</th>
             <th>الاسم</th>
+            <th>ماذا يعمل الآن</th>
             <th>ساعات اليوم</th>
             <th class="hide-mobile">البريد</th>
             <th>الأدوار</th>
@@ -94,6 +95,21 @@
 
                 </div>
               </td>
+
+
+              <td>
+                @if($u->isOnline())
+
+                  <span class="badge bg-success">
+                    <i class="bi bi-activity"></i>
+                    {{ $u->current_activity ?? '—' }}
+                  </span>
+
+                @else
+                  <span class="text-muted">—</span>
+                @endif
+              </td>
+
 
               <td>
                 {{ $u->today_worked_formatted }}
