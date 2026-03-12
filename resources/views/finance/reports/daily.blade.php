@@ -64,7 +64,9 @@
                     @foreach($transactions as $t)
                         <tr>
                             <td>{{ $t->trx_date }}</td>
-                            <td>{{ optional($t->account->accountable)->full_name ?? '-' }}</td>
+                            <td>
+                                {{optional(optional($t->account)->accountable)->full_name ?? '-' }}
+                            </td>
                             <td>{{ optional($t->diploma)->name ?? '-' }}</td>
                             <td>{{ $t->cashbox->name ?? '-' }}</td>
                             <td>{{ $t->currency }}</td>
