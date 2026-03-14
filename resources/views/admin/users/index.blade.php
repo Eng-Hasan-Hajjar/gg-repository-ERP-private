@@ -1,9 +1,83 @@
 @extends('layouts.app')
 @php($activeModule = 'users')
 
+
+<style>
+  /* الأدوار في سطر منفصل */
+  .roles-cell {
+    min-width: 120px;
+  }
+
+  .role-line {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ساعات العمل */
+  .worked-cell {
+    line-height: 1.3;
+  }
+
+  .worked-hours {
+    font-weight: 700;
+  }
+
+  .worked-minutes {
+    font-size: 12px;
+    color: #64748b;
+  }
+</style>
+
+
 @section('title', 'إدارة المستخدمين')
 
 @section('content')
+  <style>
+    /* الأدوار في سطر منفصل */
+    .roles-cell {
+      min-width: 120px;
+    }
+
+    .role-line {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* ساعات العمل */
+    .worked-cell {
+      line-height: 1.3;
+    }
+
+    .worked-hours {
+      font-weight: 700;
+    }
+
+    .worked-minutes {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+
+    .worked-cell {
+      white-space: pre-line;
+      line-height: 1.3;
+    }
+
+
+    .hours {
+      display: block;
+    }
+
+    .hours::after {
+      content: "";
+      display: block;
+    }
+  </style>
+
+
+
+
+
 
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
     <div>
@@ -62,10 +136,10 @@
           <tr>
             <th class="hide-mobile">#</th>
             <th>الاسم</th>
-            <th>ماذا يعمل الآن</th>
-            <th>ساعات اليوم</th>
+            <th class="hide-mobile">ماذا يعمل الآن</th>
+            <th class="hide-mobile">ساعات اليوم</th>
             <th class="hide-mobile">البريد</th>
-            <th>الأدوار</th>
+            <th class="hide-mobile">الأدوار</th>
             <th class="text-end">إجراءات</th>
           </tr>
         </thead>
@@ -97,7 +171,7 @@
               </td>
 
 
-              <td>
+              <td class="hide-mobile">
                 @if($u->isOnline())
 
                   <span class="badge bg-success">
@@ -111,19 +185,24 @@
               </td>
 
 
-              <td>
-                {{ $u->today_worked_formatted }}
+              <td class="worked-cell roles-cell hide-mobile">
+                <div class="worked-hours">{{ $u->today_worked_hours }}</div>
+                <div class="worked-minutes">{{ $u->today_worked_minutes }}</div>
               </td>
 
 
               <td class="hide-mobile"><code>{{ $u->email }}</code></td>
-              <td>
+
+
+              <td class="roles-cell hide-mobile">
                 @foreach($u->roles as $r)
-                  <span class="badge bg-secondary">{{ $r->label }}</span>
+                  <div class="role-line">
+                    <span class="badge bg-secondary">{{ $r->label }}</span>
+                  </div>
                 @endforeach
               </td>
 
-              <td class="text-end">
+              <td class="text-end ">
                 @if(auth()->user()?->hasPermission('edit_users'))
 
                   <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.users.edit', $u) }}">

@@ -51,7 +51,10 @@ class CashboxTransaction extends Model
 
 
 
-
+public function financialAccount()
+{
+    return $this->belongsTo(\App\Models\FinancialAccount::class);
+}
 
 
 

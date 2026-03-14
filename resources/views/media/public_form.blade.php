@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('media.app')
 @section('title','طلب ميديا جديد')
 
 @section('content')
@@ -18,59 +18,59 @@
 
 <div class="col-md-6">
 <label>رقم الهاتف</label>
-<input type="text" name="requester_phone" class="form-control">
+<input type="text" name="requester_phone" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>اسم الدبلومة</label>
-<input type="text" name="diploma_name" class="form-control">
+<input type="text" name="diploma_name" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>ترميز الدبلومة</label>
-<input type="text" name="diploma_code" class="form-control">
+<input type="text" name="diploma_code" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>اسم المدرب</label>
-<input type="text" name="trainer_name" class="form-control">
+<input type="text" name="trainer_name" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>مكان تواجد المدرب</label>
-<input type="text" name="trainer_location" class="form-control">
+<input type="text" name="trainer_location" class="form-control"required>
 </div>
 
 <div class="col-12">
 <div class="form-check">
-<input type="checkbox" name="trainer_photography_available" class="form-check-input">
+<input type="checkbox" name="trainer_photography_available" class="form-check-input" >
 <label class="form-check-label">هل تصوير المدرب متاح؟</label>
 </div>
 </div>
 
 <div class="col-md-6">
 <label>اعتمادية الشهادة</label>
-<input type="text" name="certificate_accreditation" class="form-control">
+<input type="text" name="certificate_accreditation" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>مسؤول خدمة العملاء</label>
-<input type="text" name="customer_service_responsible" class="form-control">
+<input type="text" name="customer_service_responsible" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>مكان تنفيذ الدبلومة</label>
-<input type="text" name="diploma_location" class="form-control">
+<input type="text" name="diploma_location" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>رفع ملف التفاصيل</label>
-<input type="file" name="details_file" class="form-control">
+<input type="file" name="details_file" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>رفع صورة المدرب</label>
-<input type="file" name="trainer_image" class="form-control">
+<input type="file" name="trainer_image" class="form-control" required>
 </div>
 
 <hr>

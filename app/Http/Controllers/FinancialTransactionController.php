@@ -45,12 +45,55 @@ if ($account->accountable_type === \App\Models\Lead::class) {
         'currency' => $cashbox->currency, // ✅ الصحيح
         'category' => 'registration',
         'notes' => $request->notes,
-        'status' => 'posted',
+        'status' => 'draft',
         'posted_at' => now(),
     ]);
 
     return back()->with('success','تم تسجيل الدفعة بنجاح');
 }
+
+
+
+
+
+
+public function post(CashboxTransaction $trx)
+{
+
+    if($trx->status === 'posted'){
+        return back()->with('error','الحركة مرحّلة مسبقاً');
+    }
+
+    // ترحيل الحركة
+    $trx->update([
+        'status' => 'posted',
+        'posted_at' => now()
+    ]);
+
+    // =========================
+    // تحويل Lead إلى Student
+    // =========================
+
+    $account = $trx->financialAccount;
+
+    if($account && $account->accountable_type === \App\Models\Lead::class){
+
+        $lead = \App\Models\Lead::find($account->accountable_id);
+
+        if($lead && $lead->registration_status === 'pending'){
+
+            app(\App\Http\Controllers\LeadController::class)
+                ->convertToStudent($lead);
+
+        }
+
+    }
+
+    return back()->with('success','تم ترحيل الحركة بنجاح');
+}
+
+
+
 
 
 }

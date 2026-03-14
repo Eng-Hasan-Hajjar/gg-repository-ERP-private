@@ -13,6 +13,8 @@ class AuthorizeByRoute
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+
+    /*
  public function handle($request, Closure $next)
 {
     // ❌ تجاهل أي Route بدون اسم
@@ -48,7 +50,55 @@ class AuthorizeByRoute
 
     return $next($request);
 }
+*/
 
+public function handle($request, Closure $next)
+{
+    $route = $request->route();
+
+    if (!$route || !$route->getName()) {
+        return $next($request);
+    }
+
+    $routeName = $route->getName();
+
+    // السماح بالروابط العامة
+    $publicRoutes = [
+        'login',
+        'password.request',
+        'password.email',
+        'password.reset',
+        'verification.notice',
+
+        // فورم طلب الميديا
+        'media.public.form',
+        'media.public.store',
+        'media.public.thanks',
+    ];
+
+    if (in_array($routeName, $publicRoutes)) {
+        return $next($request);
+    }
+
+    $user = auth()->user();
+
+    if (!$user) {
+        abort(401);
+    }
+
+    // Super Admin bypass
+    if ($user->roles()->where('name', 'super_admin')->exists()) {
+        return $next($request);
+    }
+
+    $permission = $this->mapRouteToPermission($routeName);
+
+    if ($permission && !$user->hasPermission($permission)) {
+        abort(403);
+    }
+
+    return $next($request);
+}
 private function mapRouteToPermission($routeName)
 {
     if (!$routeName) return null;

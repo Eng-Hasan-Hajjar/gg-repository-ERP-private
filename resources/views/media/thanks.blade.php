@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('media.app')
 @section('title','شكراً لكم')
 
 @section('content')

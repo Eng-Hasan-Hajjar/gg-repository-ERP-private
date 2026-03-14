@@ -183,13 +183,13 @@ public function revenuePerBranchReport(array $filters): array
     ];
 }
 
-
-
-public function systemAlerts(): array
+public function todayStats(): array
 {
-    return [
-        'alerts' => $this->repo->systemAlerts()
-    ];
+    return $this->repo->todaySystemStats();
+}
+public function systemAlerts(?int $limit = null): array
+{
+    return $this->repo->systemAlerts($limit);
 }
 
 public function navbarAlerts(): array

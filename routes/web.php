@@ -22,7 +22,8 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadFollowupController;
 use App\Http\Controllers\LeadReportController;
 
-
+use App\Http\Controllers\FinancialTransactionController;
+use App\Http\Controllers\MediaRequestController;
 
 //طلبات الإجازات + صفحة موافقات الأدمن
 use App\Http\Controllers\LeaveRequestController;
@@ -179,9 +180,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cashboxes/{cashbox}/transactions/{transaction}/post', [CashboxTransactionController::class, 'post'])
         ->name('cashboxes.transactions.post');
 
-    // Quick Post
-    Route::post('cashboxes/{cashbox}/transactions/{transaction}/post', [CashboxTransactionController::class, 'post'])
-        ->name('cashboxes.transactions.post');
+  
 
 
 });
@@ -417,14 +416,6 @@ Route::get('/reports/charts', [ReportsController::class, 'charts'])
 
 
 
-use App\Http\Controllers\AlertController;
-Route::middleware('auth')->group(function () {
-
-    Route::get('/alerts/navbar', [AlertController::class, 'navbar'])
-        ->name('alerts.navbar');
-
-});
-
 
 
 
@@ -515,7 +506,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-use App\Http\Controllers\MediaRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -594,6 +584,38 @@ Route::delete('/reports-task/{report}',[TaskReportController::class,'destroy'])
 Route::get('/cashboxes/{cashbox}/transactions/pdf',
     [CashboxTransactionController::class,'exportPdf']
 )->name('cashboxes.transactions.pdf');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use App\Http\Controllers\AlertController;
+Route::middleware('auth')->group(function () {
+
+    Route::get('/alerts/navbar', [AlertController::class, 'navbar'])
+        ->name('alerts.navbar');
+
+});
+
+
+
+
+
+
+
+Route::post('/transactions/{trx}/post',[FinancialTransactionController::class,'post'])
+    ->name('transactions.post');
+
+
 
 
 

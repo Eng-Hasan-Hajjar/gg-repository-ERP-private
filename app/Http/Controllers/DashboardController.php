@@ -18,8 +18,13 @@ class DashboardController extends Controller
         /**
          * ممكن لاحقاً نضيف KPIs أو Charts هنا
          */
+
+        $todayStats = $reports->todayStats();
+
+
         return view('dashboard', [
             'highlights'  => $highlights,
+            'todayStats'=>$todayStats,
             'isDashboard' => true, // مهم لتفعيل Layout الخاص بالداشبورد
         ]);
     }

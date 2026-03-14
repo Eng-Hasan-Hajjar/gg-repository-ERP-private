@@ -264,7 +264,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
 
+    public function getTodayWorkedHoursAttribute()
+{
+    return explode(' ', $this->today_worked_formatted)[0] . ' ' .
+           explode(' ', $this->today_worked_formatted)[1];
+}
 
+public function getTodayWorkedMinutesAttribute()
+{
+    return explode(' ', $this->today_worked_formatted)[2] . ' ' .
+           explode(' ', $this->today_worked_formatted)[3];
+}
 
 
 

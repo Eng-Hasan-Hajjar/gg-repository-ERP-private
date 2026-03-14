@@ -44,52 +44,107 @@
   </div>
 
 
-  @if(auth()->user()?->hasPermission('manage_roles'))
+  @if(auth()->user()?->hasPermission('view_dashboard'))
+
     <div class="row g-3 mb-4">
 
-      <div class="col-md-4">
+      {{-- تنبيهات اليوم --}}
+      <div class="col-12 col-md-6 col-xl-3">
         <div class="module-card p-3">
-          <p class="module-title mb-1">تنبيهات اليوم</p>
+
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="bi bi-bell text-warning"></i>
+            <p class="module-title mb-0">تنبيهات اليوم</p>
+          </div>
+
           <p class="section-note">
-            {{ $highlights['alerts']['pending_leaves'] }} طلب إجازة معلّق
+            {{ $highlights['alerts']['pending_leaves'] }} طلب إجازة
             •
-            {{ $highlights['alerts']['today_tasks'] }} مهام مستحقة اليوم
+            {{ $highlights['alerts']['today_tasks'] }} مهام اليوم
           </p>
 
         </div>
       </div>
 
-      <div class="col-md-4">
+
+      {{-- المالية اليوم --}}
+      <div class="col-12 col-md-6 col-xl-3">
         <div class="module-card p-3">
-          <p class="module-title mb-1">الأولوية</p>
+
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="bi bi-cash-coin text-success"></i>
+            <p class="module-title mb-0">المالية اليوم</p>
+          </div>
+
           <p class="section-note">
-            @if(count($highlights['priority']))
-              {{ implode(' • ', $highlights['priority']) }}
-            @else
-              لا توجد أولويات حالياً
-            @endif
+
+            {{ $todayStats['financial_transactions'] }}
+            حركة
+
+            •
+
+            {{ number_format($todayStats['financial_amount'], 2) }}
+
           </p>
+
         </div>
       </div>
 
-      <div class="col-md-4">
+
+      {{-- الطلاب --}}
+      <div class="col-12 col-md-6 col-xl-3">
         <div class="module-card p-3">
-          <p class="module-title mb-1">نشاط النظام</p>
+
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="bi bi-mortarboard text-primary"></i>
+            <p class="module-title mb-0">نشاط الطلاب</p>
+          </div>
+
           <p class="section-note">
-            {{ $highlights['activity']['count'] }} تعديلًا اليوم
+
+            {{ $todayStats['new_students'] }}
+            جدد
+
             •
-            آخر تعديل
+
+            {{ $todayStats['confirmed_students'] }}
+            تثبيت
+
+          </p>
+
+        </div>
+      </div>
+
+
+      {{-- نشاط النظام --}}
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="module-card p-3">
+
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="bi bi-activity text-info"></i>
+            <p class="module-title mb-0">نشاط النظام</p>
+          </div>
+
+          <p class="section-note">
+
+            {{ $highlights['activity']['count'] }}
+            تعديل
+
+            •
+
             {{ $highlights['activity']['last']
         ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
         : '—'
-                                          }}
+    }}
+
           </p>
+
         </div>
       </div>
 
     </div>
-  @endif
 
+  @endif
 
 
   {{-- Modules Grid --}}
