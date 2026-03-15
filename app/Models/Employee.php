@@ -75,8 +75,40 @@ class Employee extends Model
 
 
     public function reports()
+    {
+        return $this->hasMany(TaskReport::class);
+    }
+
+public function scopeTrainers($query)
 {
-    return $this->hasMany(TaskReport::class);
+    return $query->where('type','trainer');
 }
+
+protected static function booted()
+{
+    static::addGlobalScope('branch', function ($query) {
+
+        if (!auth()->check()) {
+            return;
+        }
+
+        $user = auth()->user();
+
+        if ($user->hasRole('super_admin')) {
+            return;
+        }
+
+        // جلب الموظف بدون استخدام العلاقة
+        $employee = \App\Models\Employee::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($employee && $employee->branch_id) {
+            $query->where('branch_id', $employee->branch_id);
+        }
+
+    });
+}
+
 
 }

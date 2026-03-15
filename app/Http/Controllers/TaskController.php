@@ -35,7 +35,7 @@ class TaskController extends Controller
             'employees' => Employee::orderBy('full_name')->get(),
         ]);
     }
-
+/*
     public function create()
     {
         return view('tasks.create', [
@@ -43,6 +43,24 @@ class TaskController extends Controller
             'employees'=> Employee::orderBy('full_name')->get(),
         ]);
     }
+*/
+
+public function create()
+{
+    $user = auth()->user();
+
+    if ($user->hasRole('super_admin')) {
+        $branches = Branch::orderBy('name')->get();
+    } else {
+        $branches = Branch::where('id',$user->employee?->branch_id)->get();
+    }
+
+    return view('tasks.create', [
+        'branches' => $branches,
+        'employees'=> Employee::orderBy('full_name')->get(),
+    ]);
+}
+
 
     public function store(Request $request)
     {
@@ -56,8 +74,14 @@ class TaskController extends Controller
             'due_date' => ['nullable','date'],
         ]);
 
-        $data['created_by'] = auth()->id();
+        
+$data['created_by'] = auth()->id();
 
+$user = auth()->user();
+
+if (!$user->hasRole('super_admin')) {
+    $data['branch_id'] = $user->employee?->branch_id;
+}
         if ($data['status'] === 'done') $data['completed_at'] = now();
 
         $task = Task::create($data);

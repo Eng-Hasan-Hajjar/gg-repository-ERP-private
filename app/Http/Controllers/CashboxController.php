@@ -34,11 +34,18 @@ class CashboxController extends Controller
 
     public function create()
     {
+        $user = auth()->user();
+
+        if ($user->hasRole('super_admin')) {
+            $branches = Branch::orderBy('name')->get();
+        } else {
+            $branches = Branch::where('id', $user->employee?->branch_id)->get();
+        }
+
         return view('cashboxes.create', [
-            'branches' => Branch::orderBy('name')->get(),
+            'branches' => $branches,
         ]);
     }
-
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -51,6 +58,12 @@ class CashboxController extends Controller
         ]);
 
         $data['opening_balance'] = $data['opening_balance'] ?? 0;
+
+        $user = auth()->user();
+
+        if (!$user->hasRole('super_admin')) {
+            $data['branch_id'] = $user->employee?->branch_id;
+        }
 
         $cashbox = Cashbox::create($data);
 

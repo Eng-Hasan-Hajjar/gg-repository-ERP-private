@@ -78,7 +78,7 @@
           @forelse($leaves as $l)
             <tr>
               <td class="hide-mobile">{{ $l->id }}</td>
-              <td class="fw-bold">{{ $l->employee->full_name }}</td>
+              <td class="fw-bold">{{ $l->employee?->full_name ?? '-' }}</td>
               <td>{{ $l->type == 'leave' ? 'إجازة' : 'إذن' }}</td>
               <td class="hide-mobile">{{ $l->start_date->format('Y-m-d') }}</td>
               <td class="hide-mobile">{{ $l->end_date?->format('Y-m-d') ?? '-' }}</td>

@@ -6,8 +6,8 @@ return [
         'enabled' => true,
 
         // ✅ ضع المسار بين اقتباس
-        'binary' => '"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"',
-
+      //  'binary' => '"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"',
+'binary' => env('WKHTML_PDF_BINARY','/usr/bin/wkhtmltopdf'),
         'timeout' => false,
         'options' => [
             'encoding' => 'UTF-8',
@@ -27,7 +27,8 @@ return [
 
     'image' => [
         'enabled' => true,
-        'binary'  => '"C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe"',
+       // 'binary'  => '"C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe"',
+       'binary' => env('WKHTML_PDF_BINARY','/usr/bin/wkhtmltopdf'),
         'timeout' => false,
         'options' => [],
         'env' => [],

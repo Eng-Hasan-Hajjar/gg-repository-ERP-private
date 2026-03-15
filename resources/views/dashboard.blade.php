@@ -135,7 +135,7 @@
             {{ $highlights['activity']['last']
         ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
         : '—'
-    }}
+        }}
 
           </p>
 
@@ -702,6 +702,70 @@
     @endif
 
 
+
+
+
+
+
+
+
+
+
+    @if(auth()->user()?->hasRole('super_admin'))
+
+      <div class="col-12 col-md-6 col-xl-4" hidden>
+
+        <div class="module-card">
+
+          <div class="module-head">
+
+            <div class="module-icon grad-slate">
+              <i class="bi bi-gear-fill fs-3"></i>
+            </div>
+
+            <div>
+              <p class="module-title">إعدادات النظام</p>
+              <p class="module-sub">
+                النسخ الاحتياطية — حالة النظام — صيانة النظام
+              </p>
+            </div>
+
+          </div>
+
+          <div class="module-body">
+
+            <p class="section-note">
+
+              إدارة النسخ الاحتياطية للنظام ومراقبة حالة السيرفر وقاعدة البيانات.
+
+            </p>
+
+          </div>
+
+          <div class="module-actions grid-2">
+
+            <a href="{{ route('system.backup.index') }}" class="btn btn-namaa w-100">
+
+              <i class="bi bi-database"></i>
+              النسخ الاحتياطية
+
+            </a>
+
+
+            <a href="{{ route('system.health') }}" class="btn btn-soft w-100">
+
+              <i class="bi bi-activity"></i>
+              حالة النظام
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    @endif
 
 
 

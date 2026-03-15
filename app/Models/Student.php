@@ -10,11 +10,19 @@ use App\Traits\Auditable;
 class Student extends Model
 {
   use Auditable;
-    protected $fillable = [
-    'university_id','first_name','last_name','full_name',
-    'phone','whatsapp',
-    'branch_id','mode','status',
-    'registration_status','is_confirmed','confirmed_at',
+  protected $fillable = [
+    'university_id',
+    'first_name',
+    'last_name',
+    'full_name',
+    'phone',
+    'whatsapp',
+    'branch_id',
+    'mode',
+    'status',
+    'registration_status',
+    'is_confirmed',
+    'confirmed_at',
   ];
 
   protected $casts = [
@@ -22,67 +30,109 @@ class Student extends Model
     'confirmed_at' => 'datetime',
   ];
 
-  public function branch() {
+  public function branch()
+  {
     return $this->belongsTo(Branch::class);
   }
 
-  public function diplomas() {
+  public function diplomas()
+  {
     return $this->belongsToMany(Diploma::class, 'diploma_student')
-      ->withPivot(['is_primary','enrolled_at','status','notes'    ,  'has_attendance_certificate',
+      ->withPivot([
+        'is_primary',
+        'enrolled_at',
+        'status',
+        'notes',
+        'has_attendance_certificate',
         'attendance_certificate_path',
         'certificate_pdf_path',
         'certificate_card_path',
-               'rating',
-        
+        'rating',
+
         'ended_at',
         'certificate_delivered'
-        ])
+      ])
       ->withTimestamps();
   }
 
-  public function profile() {
+  public function profile()
+  {
     return $this->hasOne(StudentProfile::class);
   }
 
-  public function crmInfo() {
+  public function crmInfo()
+  {
     return $this->hasOne(StudentCrmInfo::class);
   }
- 
-
-    // مساعدات عرض
-    public function getIsPendingAttribute(): bool
-    {
-        return $this->registration_status === 'pending';
-    }
 
 
-  
+  // مساعدات عرض
+  public function getIsPendingAttribute(): bool
+  {
+    return $this->registration_status === 'pending';
+  }
 
-    /**
-     * *************************/
 
-      public function extra(): HasOne
-      {
-          return $this->hasOne(StudentExtraField::class);
+
+
+  /**
+   * *************************/
+
+  public function extra(): HasOne
+  {
+    return $this->hasOne(StudentExtraField::class);
+  }
+  public function exams()
+  {
+    return $this->belongsToMany(\App\Models\Exam::class, 'exam_registrations')
+      ->withPivot(['status', 'registered_at', 'notes'])
+      ->withTimestamps();
+  }
+
+  public function diploma()
+  {
+    return $this->belongsTo(\App\Models\Diploma::class, 'diploma_id');
+  }
+
+
+
+  public function financialAccount()
+  {
+    return $this->morphOne(FinancialAccount::class, 'accountable');
+  }
+
+
+
+
+
+
+
+
+
+
+  protected static function booted()
+  {
+    static::addGlobalScope('branch', function ($query) {
+
+      if (!auth()->check()) {
+        return;
       }
-      public function exams()
-      {
-          return $this->belongsToMany(\App\Models\Exam::class, 'exam_registrations')
-              ->withPivot(['status','registered_at','notes'])
-              ->withTimestamps();
+
+      $user = auth()->user();
+
+      if (!$user->hasRole('super_admin')) {
+
+        $branchId = $user->employee?->branch_id;
+
+        if ($branchId) {
+          $query->where('branch_id', $branchId);
+        }
+
       }
 
-      public function diploma()
-      {
-        return $this->belongsTo(\App\Models\Diploma::class, 'diploma_id');
-      }
+    });
+  }
 
-
-
-      public function financialAccount()
-      {
-          return $this->morphOne(FinancialAccount::class, 'accountable');
-      }
 
 
 

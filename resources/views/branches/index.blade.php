@@ -50,11 +50,11 @@
             <td class="text-end">
               <div class="d-inline-flex gap-1">
                 @if(auth()->user()?->hasPermission('edit_branches'))
-                <a class="btn btn-sm btn-outline-dark" href="{{ route('branches.edit', $b) }}">تعديل</a>
+                <a class="btn btn-sm btn-outline-dark" href="{{ route('branches.edit', $b) }}" hidden>تعديل</a>
                 @endif
                 @if(auth()->user()?->hasPermission('delete_branches'))
                 <form method="POST" action="{{ route('branches.destroy', $b) }}"
-                      onsubmit="return confirm('هل أنت متأكد من حذف الفرع؟');">
+                      onsubmit="return confirm('هل أنت متأكد من حذف الفرع؟');" hidden>
                   @csrf
                   @method('DELETE')
                   <button class="btn btn-sm btn-outline-danger">حذف</button>

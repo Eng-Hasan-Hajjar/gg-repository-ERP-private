@@ -36,7 +36,7 @@ class AssetController extends Controller
             'categories' => AssetCategory::orderBy('name')->get(),
         ]);
     }
-
+/*
     public function create()
     {
         return view('assets.create', [
@@ -44,7 +44,26 @@ class AssetController extends Controller
             'categories' => AssetCategory::orderBy('name')->get(),
         ]);
     }
+*/
+public function create()
+{
+    $user = auth()->user();
 
+    if ($user->hasRole('super_admin')) {
+        $branches = Branch::orderBy('name')->get();
+    } else {
+        $employee = \App\Models\Employee::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->first();
+
+        $branches = Branch::where('id', $employee?->branch_id)->get();
+    }
+
+    return view('assets.create', [
+        'branches' => $branches,
+        'categories' => AssetCategory::orderBy('name')->get(),
+    ]);
+}
     public function store(AssetStoreRequest $request)
     {
         $data = $request->validated();

@@ -50,4 +50,41 @@ public function scopeReport(Builder $query, $from, $to, $branchId = null)
 }
 
 
+
+
+
+
+
+
+
+protected static function booted()
+{
+    static::addGlobalScope('branch', function ($query) {
+
+        if (!auth()->check()) {
+            return;
+        }
+
+        $user = auth()->user();
+
+        if ($user->hasRole('super_admin')) {
+            return;
+        }
+
+        // جلب الموظف بدون استخدام relation
+        $employee = \App\Models\Employee::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($employee && $employee->branch_id) {
+
+            $query->whereHas('employee', function ($q) use ($employee) {
+                $q->where('branch_id', $employee->branch_id);
+            });
+
+        }
+
+    });
+}
+
 }

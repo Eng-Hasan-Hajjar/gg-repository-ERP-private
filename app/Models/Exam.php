@@ -11,16 +11,22 @@ class Exam extends Model
 {
     use Auditable;
     protected $fillable = [
-        'title','code','exam_date','type',
-        'max_score','pass_score',
-        'diploma_id','branch_id','trainer_id',
+        'title',
+        'code',
+        'exam_date',
+        'type',
+        'max_score',
+        'pass_score',
+        'diploma_id',
+        'branch_id',
+        'trainer_id',
         'notes'
     ];
 
     protected $casts = [
         'exam_date' => 'date',
         'max_score' => 'decimal:2',
-        'pass_score'=> 'decimal:2',
+        'pass_score' => 'decimal:2',
     ];
 
     public function diploma(): BelongsTo
@@ -44,10 +50,34 @@ class Exam extends Model
     }
 
 
-  
 
- 
 
+
+
+
+    protected static function booted()
+    {
+        static::addGlobalScope('branch', function ($query) {
+
+            if (!auth()->check()) {
+                return;
+            }
+
+            $user = auth()->user();
+
+            // السوبر أدمن يرى كل الامتحانات
+            if ($user->hasRole('super_admin')) {
+                return;
+            }
+
+            $branchId = $user->employee?->branch_id;
+
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            }
+
+        });
+    }
 
 
 }

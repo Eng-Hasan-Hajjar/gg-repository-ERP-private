@@ -11,7 +11,12 @@ class Cashbox extends Model
 {
     use Auditable;
     protected $fillable = [
-        'name','code','branch_id','currency','status','opening_balance',
+        'name',
+        'code',
+        'branch_id',
+        'currency',
+        'status',
+        'opening_balance',
     ];
 
     protected $casts = [
@@ -31,8 +36,46 @@ class Cashbox extends Model
     // رصيد محسوب (اختياري للاستخدام في الواجهات)
     public function getCurrentBalanceAttribute(): float
     {
-        $in  = (float) $this->transactions()->where('status','posted')->where('type','in')->sum('amount');
-        $out = (float) $this->transactions()->where('status','posted')->where('type','out')->sum('amount');
-        return (float)$this->opening_balance + $in - $out;
+        $in = (float) $this->transactions()->where('status', 'posted')->where('type', 'in')->sum('amount');
+        $out = (float) $this->transactions()->where('status', 'posted')->where('type', 'out')->sum('amount');
+        return (float) $this->opening_balance + $in - $out;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    protected static function booted()
+    {
+        static::addGlobalScope('branch', function ($query) {
+
+            if (!auth()->check()) {
+                return;
+            }
+
+            $user = auth()->user();
+
+            // السوبر أدمن يرى كل الصناديق
+            if ($user->hasRole('super_admin')) {
+                return;
+            }
+
+            $branchId = $user->employee?->branch_id;
+
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            }
+
+        });
+    }
+
+
 }

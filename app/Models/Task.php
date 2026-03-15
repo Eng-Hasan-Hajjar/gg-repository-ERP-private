@@ -11,8 +11,15 @@ class Task extends Model
 {
     use Auditable;
     protected $fillable = [
-        'title','description','assigned_to','branch_id','created_by',
-        'priority','status','due_date','completed_at'
+        'title',
+        'description',
+        'assigned_to',
+        'branch_id',
+        'created_by',
+        'priority',
+        'status',
+        'due_date',
+        'completed_at'
     ];
 
     protected $casts = [
@@ -20,19 +27,56 @@ class Task extends Model
         'completed_at' => 'datetime',
     ];
 
-    public function assignee(): BelongsTo { return $this->belongsTo(Employee::class,'assigned_to'); }
-    public function branch(): BelongsTo { return $this->belongsTo(Branch::class); }
-    public function creator(): BelongsTo { return $this->belongsTo(User::class,'created_by'); }
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'assigned_to');
+    }
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
-    public function comments(): HasMany { return $this->hasMany(TaskComment::class); }
+    public function comments(): HasMany
+    {
+        return $this->hasMany(TaskComment::class);
+    }
 
 
 
     public function reports()
-{
-    return $this->hasMany(TaskReport::class);
-}
+    {
+        return $this->hasMany(TaskReport::class);
+    }
 
 
+
+
+
+    protected static function booted()
+    {
+        static::addGlobalScope('branch', function ($query) {
+
+            if (!auth()->check()) {
+                return;
+            }
+
+            $user = auth()->user();
+
+            if ($user->hasRole('super_admin')) {
+                return;
+            }
+
+            $branchId = $user->employee?->branch_id ?? null;
+
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            }
+
+        });
+    }
 
 }

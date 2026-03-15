@@ -180,7 +180,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cashboxes/{cashbox}/transactions/{transaction}/post', [CashboxTransactionController::class, 'post'])
         ->name('cashboxes.transactions.post');
 
-  
+
 
 
 });
@@ -419,24 +419,16 @@ Route::get('/reports/charts', [ReportsController::class, 'charts'])
 
 
 
-use App\Http\Controllers\admin\AttendanceReportController2;
+use App\Http\Controllers\Admin\AttendanceReportController2;
+
 Route::get('/admin/reports/monthly', [AttendanceReportController2::class, 'monthly'])
     ->name('reports.monthly');
-
-
-
 Route::get('/admin/reports/monthly/pdf', [AttendanceReportController2::class, 'monthlyPdf'])
     ->name('reports.monthly.pdf');
-
-
 Route::get('/admin/reports/attendance/monthly', [AttendanceReportController2::class, 'monthly'])
     ->name('reports.attendance.monthly');
-
 Route::get('/admin/reports/attendance/monthly/pdf', [AttendanceReportController2::class, 'exportPdf'])
     ->name('reports.attendance.monthly.pdf');
-
-
-
 
 
 
@@ -513,16 +505,22 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/media-request/public', 
-    [MediaRequestController::class,'publicForm'])
+Route::get(
+    '/media-request/public',
+    [MediaRequestController::class, 'publicForm']
+)
     ->name('media.public.form');
 
-Route::post('/media-request/public', 
-    [MediaRequestController::class,'publicStore'])
+Route::post(
+    '/media-request/public',
+    [MediaRequestController::class, 'publicStore']
+)
     ->name('media.public.store');
 
-Route::get('/media-request/thanks',
-    [MediaRequestController::class,'thanks'])
+Route::get(
+    '/media-request/thanks',
+    [MediaRequestController::class, 'thanks']
+)
     ->name('media.public.thanks');
 
 
@@ -534,16 +532,22 @@ Route::get('/media-request/thanks',
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/media-requests', 
-        [MediaRequestController::class, 'index'])
+    Route::get(
+        '/media-requests',
+        [MediaRequestController::class, 'index']
+    )
         ->name('media.index');
 
-    Route::get('/media-requests/{media}', 
-        [MediaRequestController::class, 'show'])
+    Route::get(
+        '/media-requests/{media}',
+        [MediaRequestController::class, 'show']
+    )
         ->name('media.show');
 
-    Route::post('/media-requests/{media}', 
-        [MediaRequestController::class, 'update'])
+    Route::post(
+        '/media-requests/{media}',
+        [MediaRequestController::class, 'update']
+    )
         ->name('media.update');
 });
 
@@ -560,29 +564,30 @@ Route::middleware(['auth'])->group(function () {
 
 use App\Http\Controllers\TaskReportController;
 
-Route::middleware(['auth'])->group(function(){
+Route::middleware(['auth'])->group(function () {
 
-Route::get('/reports-task',[TaskReportController::class,'index'])
-->name('reports.task.index');
+    Route::get('/reports-task', [TaskReportController::class, 'index'])
+        ->name('reports.task.index');
 
-Route::get('/reports-task/create',[TaskReportController::class,'create'])
-->name('reports.task.create');
+    Route::get('/reports-task/create', [TaskReportController::class, 'create'])
+        ->name('reports.task.create');
 
-Route::post('/reports-task',[TaskReportController::class,'store'])
-->name('reports.task.store');
+    Route::post('/reports-task', [TaskReportController::class, 'store'])
+        ->name('reports.task.store');
 
-Route::get('/reports-task/{report}',[TaskReportController::class,'show'])
-->name('reports.task.show');
+    Route::get('/reports-task/{report}', [TaskReportController::class, 'show'])
+        ->name('reports.task.show');
 
-Route::delete('/reports-task/{report}',[TaskReportController::class,'destroy'])
-->name('reports.task.destroy');
+    Route::delete('/reports-task/{report}', [TaskReportController::class, 'destroy'])
+        ->name('reports.task.destroy');
 
 });
 
 
 
-Route::get('/cashboxes/{cashbox}/transactions/pdf',
-    [CashboxTransactionController::class,'exportPdf']
+Route::get(
+    '/cashboxes/{cashbox}/transactions/pdf',
+    [CashboxTransactionController::class, 'exportPdf']
 )->name('cashboxes.transactions.pdf');
 
 
@@ -612,10 +617,58 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::post('/transactions/{trx}/post',[FinancialTransactionController::class,'post'])
+Route::post('/transactions/{trx}/post', [FinancialTransactionController::class, 'post'])
     ->name('transactions.post');
 
 
+
+
+
+
+use App\Http\Controllers\System\BackupController;
+
+Route::middleware(['auth'])->prefix('system')->name('system.')->group(function () {
+
+    Route::get('/backup', [BackupController::class, 'index'])
+        ->name('backup.index');
+
+    Route::get('/backup/download', [BackupController::class, 'download'])
+        ->name('backup.download');
+
+    Route::post('/backup/restore', [BackupController::class, 'restore'])
+        ->name('backup.restore');
+
+});
+
+use App\Http\Controllers\System\SystemHealthController;
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/system/health', [SystemHealthController::class, 'index'])
+        ->name('system.health');
+
+});
+
+
+
+
+
+
+Route::middleware(['auth'])->prefix('system')->name('system.')->group(function () {
+
+    Route::get('/backup', [BackupController::class, 'index'])
+        ->name('backup.index');
+
+    Route::post('/backup/generate', [BackupController::class, 'generate'])
+        ->name('backup.generate');
+
+    Route::get(
+        '/backup/download/{file}',
+        [BackupController::class, 'downloadFile']
+    )
+        ->name('backup.download');
+
+});
 
 
 

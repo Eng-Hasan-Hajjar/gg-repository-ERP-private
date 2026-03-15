@@ -47,4 +47,41 @@ class Asset extends Model
             default => 'bg-danger',
         };
     }
+
+
+
+
+
+
+
+
+
+
+    protected static function booted()
+{
+    static::addGlobalScope('branch', function ($query) {
+
+        if (!auth()->check()) {
+            return;
+        }
+
+        $user = auth()->user();
+
+        if ($user->hasRole('super_admin')) {
+            return;
+        }
+
+        $employee = \App\Models\Employee::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($employee && $employee->branch_id) {
+            $query->where('branch_id', $employee->branch_id);
+        }
+
+    });
+}
+
+
+
 }
