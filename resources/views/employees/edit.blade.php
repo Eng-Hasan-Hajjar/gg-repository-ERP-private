@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','تعديل مدرب/موظف')
+@section('title','تعديل إضافة مورد بشري')
 
 @section('content')
 <div class="card border-0 shadow-sm">

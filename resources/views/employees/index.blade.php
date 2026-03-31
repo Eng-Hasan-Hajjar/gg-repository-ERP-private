@@ -1,34 +1,37 @@
 @extends('layouts.app')
-@section('title', 'المدربين والموظفين')
+@section('title', ' الموارد البشرية')
 
 @section('content')
   <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-3">
     <div>
-      <h4 class="mb-1 fw-bold">المدربين والموظفين</h4>
+      <h4 class="mb-1 fw-bold">الموارد البشرية</h4>
       <div class="text-muted fw-semibold">ملفات — عقود — مستحقات — ربط بالدبلومات</div>
     </div>
+
+    
     @if(auth()->user()?->hasPermission('create_employees'))
-      <a href="{{ route('employees.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
-        <i class="bi bi-person-plus"></i> إضافة جديد
+      <a href="{{ route('employees.create', ['type' => 'trainer']) }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
+        إضافة مدرب
       </a>
     @endif
+    @if(auth()->user()?->hasPermission('create_trainer'))
+       <a href="{{ route('employees.create', ['type' => 'employee']) }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
+        إضافة موظف
+      </a>
+    @endif
+
+
   </div>
 
   <form class="card border-0 shadow-sm mb-3">
     <div class="card-body">
       <div class="row g-2">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-3">
           <input name="search" value="{{ request('search') }}" class="form-control"
             placeholder="بحث: الاسم / الكود / الهاتف">
         </div>
 
-        <div class="col-6 col-md-2">
-          <select name="type" class="form-select">
-            <option value="">النوع (الكل)</option>
-            <option value="trainer" @selected(request('type') == 'trainer')>مدرب</option>
-            <option value="employee" @selected(request('type') == 'employee')>موظف</option>
-          </select>
-        </div>
+
 
         <div class="col-6 col-md-2">
           <select name="status" class="form-select">

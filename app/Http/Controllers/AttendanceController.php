@@ -24,7 +24,11 @@ class AttendanceController extends Controller
             $employee = \App\Models\Employee::where('user_id', $user->id)->first();
 
             if ($employee) {
+                // يظهر فقط سجل الموظف
                 $q->where('employee_id', $employee->id);
+
+                // يظهر فقط تاريخ اليوم
+                $q->whereDate('work_date', now()->toDateString());
             }
         }
         if ($request->filled('branch_id')) {

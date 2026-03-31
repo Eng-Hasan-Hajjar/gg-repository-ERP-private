@@ -29,7 +29,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'view_leads', 'label' => 'عرض العملاء المحتملين', 'module' => 'crm'],
             ['name' => 'create_leads', 'label' => 'إضافة عميل محتمل', 'module' => 'crm'],
             ['name' => 'edit_leads', 'label' => 'تعديل عميل محتمل', 'module' => 'crm'],
-           
+
             ['name' => 'convert_leads', 'label' => 'تحويل إلى طالب', 'module' => 'crm'],
             ['name' => 'view_crm_reports', 'label' => 'عرض تقارير المبيعات', 'module' => 'crm'],
             ['name' => 'delete_leads', 'label' => 'حذف عميل محتمل', 'module' => 'crm'],
@@ -108,15 +108,20 @@ class PermissionSeeder extends Seeder
             | الموارد البشرية
             |--------------------------------------------------------------------------
             */
+            ['name' => 'manage_employees', 'label' => ' إدارة الموظفين', 'module' => 'hr'],
             ['name' => 'view_employees', 'label' => 'عرض الموظفين', 'module' => 'hr'],
             ['name' => 'create_employees', 'label' => 'إضافة موظف', 'module' => 'hr'],
             ['name' => 'edit_employees', 'label' => 'تعديل موظف', 'module' => 'hr'],
+            ['name' => 'manage_trainer', 'label' => 'إدارة المدربين', 'module' => 'hr'],
 
+            ['name' => 'create_trainer', 'label' => 'إضافة مدرب', 'module' => 'hr'],
+            ['name' => 'edit_trainer', 'label' => 'تعديل مدرب', 'module' => 'hr'],
             ['name' => 'manage_contracts', 'label' => 'إدارة العقود', 'module' => 'hr'],
-
+            ['name' => 'delete_trainer', 'label' => 'حذف مدرب', 'module' => 'hr'],
+            ['name' => 'delete_employees', 'label' => 'حذف موظف', 'module' => 'hr'],
             ['name' => 'manage_salaries', 'label' => 'إدارة المستحقات', 'module' => 'hr'],
 
-
+  
 
 
 

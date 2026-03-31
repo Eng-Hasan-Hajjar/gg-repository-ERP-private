@@ -2,20 +2,35 @@
 @if(isset($employee)) @method('PUT') @endif
 
 <div class="row g-3">
-  <div class="col-12 col-md-6">
+
+    @if(!isset($employee))
+
+    <input type="hidden" name="type" value="{{ $type ?? 'trainer' }}">
+
+    <div class="alert alert-info small ">
+      نوع السجل: <strong>
+        {{ $type == 'trainer' ? 'مدرب' : 'موظف' }}
+      </strong>
+    </div>
+
+  @else
+  
+    <select name="type" class="form-select">
+      ...
+    </select>
+
+  @endif
+
+
+  <div class="col-12 col-md-4">
     <label class="form-label fw-bold">الاسم الكامل</label>
     <input name="full_name" class="form-control" required value="{{ old('full_name', $employee->full_name ?? '') }}">
   </div>
 
-  <div class="col-6 col-md-3">
-    <label class="form-label fw-bold">النوع</label>
-    <select name="type" class="form-select" required>
-      <option value="trainer" @selected(old('type', $employee->type ?? 'trainer') == 'trainer')>مدرب</option>
-      <option value="employee" @selected(old('type', $employee->type ?? '') == 'employee')>موظف</option>
-    </select>
-  </div>
 
-  <div class="col-6 col-md-3">
+
+
+  <div class="col-6 col-md-4">
     <label class="form-label fw-bold">الحالة</label>
     <select name="status" class="form-select" required>
       <option value="active" @selected(old('status', $employee->status ?? 'active') == 'active')>نشط</option>
@@ -61,12 +76,12 @@
     </select>
   </div>
 
-  <div class="col-12 col-md-6">
+  <div class="col-12 col-md-4">
     <label class="form-label fw-bold">المسمى الوظيفي</label>
     <input name="job_title" class="form-control" value="{{ old('job_title', $employee->job_title ?? '') }}">
   </div>
 
-  <div class="col-12 col-md-6">
+  <div class="col-12 col-md-6" id="diplomas-field">
     <label class="form-label fw-bold">الدبلومات المرتبطة</label>
     <select name="diploma_ids[]" multiple class="form-select" style="min-height:120px">
       @php($selected = collect(old('diploma_ids', isset($employee) ? $employee->diplomas->pluck('id')->all() : [])))
@@ -124,72 +139,72 @@
 
   @foreach($weekdays as $wd => $label)
 
-      <div class="col-12 col-md-6 col-xl-4">
+    <div class="col-12 col-md-6 col-xl-4">
 
-        <div class="card border rounded-3 shadow-sm h-100
-    {{ $scheduleMap[$wd]['is_off'] ? 'border-secondary bg-light' : 'border-primary' }}" id="card_day_{{ $wd }}">
+      <div class="card border rounded-3 shadow-sm h-100
+      {{ $scheduleMap[$wd]['is_off'] ? 'border-secondary bg-light' : 'border-primary' }}" id="card_day_{{ $wd }}">
 
-          <div class="card-body p-3">
+        <div class="card-body p-3">
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
 
-              <span class="fw-bold fs-6">{{ $label }}</span>
+            <span class="fw-bold fs-6">{{ $label }}</span>
 
-              <div class="form-check form-switch mb-0">
+            <div class="form-check form-switch mb-0">
 
-                <input class="form-check-input day-off-toggle" type="checkbox" name="schedule[{{ $wd }}][is_off]"
-                  id="off_{{ $wd }}" value="1" data-wd="{{ $wd }}" {{ $scheduleMap[$wd]['is_off'] ? 'checked' : '' }}>
+              <input class="form-check-input day-off-toggle" type="checkbox" name="schedule[{{ $wd }}][is_off]"
+                id="off_{{ $wd }}" value="1" data-wd="{{ $wd }}" {{ $scheduleMap[$wd]['is_off'] ? 'checked' : '' }}>
 
-                <label class="form-check-label small fw-semibold text-muted">
-                  عطلة
-                </label>
-
-              </div>
-
-            </div>
-
-            <div id="time_fields_{{ $wd }}" style="{{ $scheduleMap[$wd]['is_off'] ? 'display:none' : '' }}">
-
-              <div class="row g-2">
-
-                <div class="col-6">
-
-                  <label class="form-label small text-muted mb-1">
-                    <i class="bi bi-sunrise"></i> بداية الدوام
-                  </label>
-
-                  <input type="time" name="schedule[{{ $wd }}][start]" class="form-control form-control-sm"
-                    value="{{ $scheduleMap[$wd]['start'] }}">
-
-                </div>
-
-                <div class="col-6">
-
-                  <label class="form-label small text-muted mb-1">
-                    <i class="bi bi-sunset"></i> نهاية الدوام
-                  </label>
-
-                  <input type="time" name="schedule[{{ $wd }}][end]" class="form-control form-control-sm"
-                    value="{{ $scheduleMap[$wd]['end'] }}">
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <div id="off_label_{{ $wd }}"
-              class="text-center text-muted py-2 {{ $scheduleMap[$wd]['is_off'] ? '' : 'd-none' }}">
-
-              <i class="bi bi-moon-stars fs-4 d-block mb-1"></i>
-              <span class="small fw-semibold">يوم عطلة</span>
+              <label class="form-check-label small fw-semibold text-muted">
+                عطلة
+              </label>
 
             </div>
 
           </div>
-        </div>
 
+          <div id="time_fields_{{ $wd }}" style="{{ $scheduleMap[$wd]['is_off'] ? 'display:none' : '' }}">
+
+            <div class="row g-2">
+
+              <div class="col-6">
+
+                <label class="form-label small text-muted mb-1">
+                  <i class="bi bi-sunrise"></i> بداية الدوام
+                </label>
+
+                <input type="time" name="schedule[{{ $wd }}][start]" class="form-control form-control-sm"
+                  value="{{ $scheduleMap[$wd]['start'] }}">
+
+              </div>
+
+              <div class="col-6">
+
+                <label class="form-label small text-muted mb-1">
+                  <i class="bi bi-sunset"></i> نهاية الدوام
+                </label>
+
+                <input type="time" name="schedule[{{ $wd }}][end]" class="form-control form-control-sm"
+                  value="{{ $scheduleMap[$wd]['end'] }}">
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div id="off_label_{{ $wd }}"
+            class="text-center text-muted py-2 {{ $scheduleMap[$wd]['is_off'] ? '' : 'd-none' }}">
+
+            <i class="bi bi-moon-stars fs-4 d-block mb-1"></i>
+            <span class="small fw-semibold">يوم عطلة</span>
+
+          </div>
+
+        </div>
       </div>
+
+    </div>
 
   @endforeach
 
@@ -219,4 +234,31 @@
       }
     });
   });
+
+
+
+
+
+  function toggleDiplomas() {
+
+    const type = document.querySelector('[name="type"]').value
+    const field = document.getElementById('diplomas-field')
+
+    if (type === 'trainer') {
+      field.style.display = 'block'
+    } else {
+      field.style.display = 'none'
+    }
+
+  }
+
+  document.querySelector('[name="type"]').addEventListener('change', toggleDiplomas)
+
+  window.addEventListener('load', toggleDiplomas)
+
+
+
+
+
+
 </script>

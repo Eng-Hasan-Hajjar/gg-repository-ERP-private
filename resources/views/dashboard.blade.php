@@ -135,7 +135,7 @@
             {{ $highlights['activity']['last']
         ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans()
         : '—'
-        }}
+                                        }}
 
           </p>
 
@@ -414,19 +414,58 @@
               ملف كامل للمدرب/الموظف، جدولة دفعات المدربين وربطها بالصناديق، وتقارير مالية متخصصة.
             </p>
           </div>
-          <div class="module-actions grid-2">
-            <a href="{{  route('employees.index')}}" class="btn btn-namaa w-100 w-sm-auto">فتح الموارد البشرية</a>
 
-            @if(auth()->user()?->hasPermission('create_employees'))
-              <a href="{{ route('employees.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مدرب/موظف</a>
+
+
+        
+
+
+
+          <div class="module-actions grid-2">
+            @if(auth()->user()?->hasPermission('manage_trainer'))
+              <a href="{{ route('employees.index', ['type' => 'trainer']) }}" class="btn btn-namaa w-100 w-sm-auto">
+                إدارة المدربين
+              </a>
             @endif
-            <a href="{{ route('employees.index', ['type' => 'trainer']) }}"
-              class="btn btn-soft w-100 w-sm-auto">المدربين</a>
-            <a href="{{ route('employees.index', ['type' => 'employee']) }}"
-              class="btn btn-soft w-100 w-sm-auto">الموظفين</a>
+            @if(auth()->user()?->hasPermission('manage_employees'))
+              <a href="{{ route('employees.index', ['type' => 'employee']) }}" class="btn btn-namaa w-100 w-sm-auto">
+                إدارة الموظفين
+              </a>
+            @endif
+
+          </div>
+
+          <div class="module-actions">
+            <a href="{{  route('employees.index')}}" class="btn btn-namaa w-100 w-sm-auto">فتح الموارد البشرية</a>
 
 
           </div>
+
+
+            <div class="row text-center small fw-bold mt-2">
+
+            <div class="col-6 mb-2">
+              <span class="text-primary">{{ $hrStats['trainers'] }}</span><br>
+              مدرب
+            </div>
+
+            <div class="col-6 mb-2">
+              <span class="text-secondary">{{ $hrStats['employees'] }}</span><br>
+              موظف
+            </div>
+
+            <div class="col-6">
+              <span class="text-success">{{ $hrStats['active_trainers'] }}</span><br>
+              مدرب نشط
+            </div>
+
+            <div class="col-6">
+              <span class="text-success">{{ $hrStats['active_employees'] }}</span><br>
+              موظف نشط
+            </div>
+
+          </div>
+
         </div>
       </div>
     @endif

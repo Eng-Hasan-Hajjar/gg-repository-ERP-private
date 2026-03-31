@@ -11,38 +11,34 @@
   </div>
 
 
-<form method="POST" action="{{ route('attendance.generateWeek') }}" class="card border-0 shadow-sm mb-3">
-@csrf
+  <form method="POST" action="{{ route('attendance.generateWeek') }}" class="card border-0 shadow-sm mb-3">
+    @csrf
 
-<div class="card-body py-2">
+    <div class="card-body py-2">
 
-<div class="row align-items-end g-2">
+      <div class="row align-items-end g-2">
 
-<div class="col-md-3">
-<label class="fw-bold small mb-1">بداية الأسبوع</label>
+        <div class="col-md-3">
+          <label class="fw-bold small mb-1">بداية الأسبوع</label>
 
-<input 
-type="date"
-name="week_start"
-class="form-control"
-required
-value="{{ now()->startOfWeek()->format('Y-m-d') }}">
-</div>
+          <input type="date" name="week_start" class="form-control" required
+            value="{{ now()->startOfWeek()->format('Y-m-d') }}">
+        </div>
 
-<div class="col-md-auto">
+        <div class="col-md-auto">
 
-<button class="btn btn-namaa fw-bold mt-3">
-<i class="bi bi-magic"></i>
-توليد سجلات الأسبوع
-</button>
+          <button class="btn btn-namaa fw-bold mt-3">
+            <i class="bi bi-magic"></i>
+            توليد سجلات الأسبوع
+          </button>
 
-</div>
+        </div>
 
-</div>
+      </div>
 
-</div>
+    </div>
 
-</form>
+  </form>
 
 
   <div class="mb-2 text-muted small">

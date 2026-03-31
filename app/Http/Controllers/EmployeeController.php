@@ -69,8 +69,10 @@ class EmployeeController extends Controller
         ]);
     }
 
-public function create()
+public function create(Request $request)
 {
+    $type = $request->get('type','trainer'); // القيمة الافتراضية
+
     $weekdays = [
         0 => 'الأحد',
         1 => 'الإثنين',
@@ -91,14 +93,18 @@ public function create()
         ];
     }
 
-    return view('employees.create', [
-        'branches' => Branch::orderBy('name')->get(),
-        'diplomas' => Diploma::orderBy('name')->get(),
-        'scheduleMap' => $scheduleMap,
-        'weekdays' => $weekdays,
-        'users' => User::doesntHave('employee')->orderBy('name')->get(),
+    return view('employees.create',[
+        'type'=>$type,
+        'branches'=>Branch::orderBy('name')->get(),
+        'diplomas'=>Diploma::orderBy('name')->get(),
+        'scheduleMap'=>$scheduleMap,
+        'weekdays'=>$weekdays,
+        'users'=>User::doesntHave('employee')->orderBy('name')->get(),
     ]);
 }
+
+
+
     public function store(Request $request)
     {
         $data = $request->validate([
