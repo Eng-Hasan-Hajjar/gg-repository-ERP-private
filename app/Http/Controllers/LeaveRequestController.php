@@ -132,6 +132,19 @@ class LeaveRequestController extends Controller
         return view('leaves.show', ['leave' => $leave->load(['employee.branch', 'approver'])]);
     }
 
+
+
+    public function destroy(LeaveRequest $leave)
+{
+    $leave->delete();
+
+    return redirect()
+        ->route('leaves.index')
+        ->with('success','تم حذف طلب الإجازة.');
+}
+
+
+
     public function approve(Request $request, LeaveRequest $leave)
     {
         $data = $request->validate(['admin_note' => ['nullable', 'string', 'max:5000']]);

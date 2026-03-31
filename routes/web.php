@@ -209,7 +209,7 @@ Route::post('tasks/{task}/quick-status', [TaskController::class, 'quickStatus'])
 
 
 Route::resource('leaves', LeaveRequestController::class)
-    ->only(['index', 'create', 'store', 'show'])
+    ->only(['index', 'create', 'store', 'show','destroy'])
     ->parameters(['leaves' => 'leave']);
 Route::post('leaves/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leaves.approve');
 Route::post('leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');

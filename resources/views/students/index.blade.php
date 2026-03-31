@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @php($activeModule = 'students')
-@section('title','الطلاب')
+@section('title', 'الطلاب')
 
 @section('content')
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
@@ -10,23 +10,24 @@
   </div>
 
 
-    <a class="btn btn-primary rounded-pill px-4 fw-bold" href="{{ route('students.create') }}">
-      <i class="bi bi-person-plus"></i> طالب جديد
-    </a>
- 
+  <a class="btn btn-primary rounded-pill px-4 fw-bold" href="{{ route('students.create') }}">
+    <i class="bi bi-person-plus"></i> طالب جديد
+  </a>
+
 </div>
 
 <form class="card card-body border-0 shadow-sm mb-3" method="GET" action="{{ route('students.index') }}">
   <div class="row g-2">
     <div class="col-12 col-md-4">
-      <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: الاسم / الرقم الجامعي / الهاتف / رمز الدبلومة">
+      <input name="search" value="{{ request('search') }}" class="form-control"
+        placeholder="بحث: الاسم / الرقم الجامعي / الهاتف / رمز الدبلومة">
     </div>
 
     <div class="col-6 col-md-2">
       <select name="branch_id" class="form-select">
         <option value="">كل الفروع</option>
         @foreach($branches as $b)
-          <option value="{{ $b->id }}" @selected(request('branch_id')==$b->id)>{{ $b->name }}</option>
+          <option value="{{ $b->id }}" @selected(request('branch_id') == $b->id)>{{ $b->name }}</option>
         @endforeach
       </select>
     </div>
@@ -34,9 +35,9 @@
     <div class="col-6 col-md-3">
       <select name="status" class="form-select">
         <option value="">كل حالات الطالب</option>
-     @foreach($statusOptions as $key => $label)
-  <option value="{{ $key }}" @selected(request('status')==$key)>{{ $label }}</option>
-@endforeach
+        @foreach($statusOptions as $key => $label)
+          <option value="{{ $key }}" @selected(request('status') == $key)>{{ $label }}</option>
+        @endforeach
 
       </select>
     </div>
@@ -44,9 +45,9 @@
     <div class="col-12 col-md-2">
       <select name="registration_status" class="form-select">
         <option value="">حالة التسجيل</option>
-  @foreach($registrationOptions as $key => $label)
-  <option value="{{ $key }}" @selected(request('registration_status')==$key)>{{ $label }}</option>
-@endforeach
+        @foreach($registrationOptions as $key => $label)
+          <option value="{{ $key }}" @selected(request('registration_status') == $key)>{{ $label }}</option>
+        @endforeach
 
       </select>
     </div>
@@ -59,15 +60,22 @@
 
 <div class="card border-0 shadow-sm">
   <div class="table-responsive">
+
+
+
+
+
+
     <table class="table table-hover mb-0 align-middle">
       <thead class="table-light">
         <tr>
+
           <th class="hide-mobile">#</th>
           <th>الرقم الجامعي</th>
           <th>الاسم</th>
-          
+
           <th class="hide-mobile">الفرع</th>
-       
+
           <th class="hide-mobile">الحالة</th>
           <th class="hide-mobile">التسجيل</th>
           <th class="hide-mobile">مثبّت؟</th>
@@ -76,57 +84,80 @@
       </thead>
       <tbody>
         @forelse($students as $s)
-          <tr>
-            <td class="hide-mobile">{{ $s->id }}</td>
-            <td><code>{{ $s->university_id }}</code></td>
-            <td class="fw-semibold">{{ $s->full_name }}</td>
-            
-            <td class="hide-mobile">{{ $s->branch->name ?? '-' }}</td>
+        <tr>
           
-            <td class="hide-mobile"><span class="badge bg-secondary">{{ $s->status_ar }}</span></td>
-            <td class="hide-mobile">
-              @php($map = ['pending'=>'warning','confirmed'=>'success','archived'=>'secondary','dismissed'=>'danger','frozen'=>'info'])
-              <span class="badge bg-{{ $map[$s->registration_ar] ?? 'secondary' }}">
-                {{ $s->registration_ar }}
-              </span>
-            </td>
-            <td class="hide-mobile">
-              @if($s->is_confirmed)
-                <span class="badge bg-success">نعم</span>
-              @else
-                <span class="badge bg-secondary">لا</span>
-              @endif
-        
-            </td>
-            <td class="text-end">
-               @if(auth()->user()?->hasPermission('edit_students'))
-              <a class="btn btn-sm btn-outline-primary" href="{{ route('students.show',$s) }}">
-                <i class="bi bi-eye"></i> عرض
-              </a>
-             @endif
-             
-               @if(auth()->user()?->hasPermission('edit_students'))
-                    <a class="btn btn-sm btn-outline-dark" href="{{ route('students.edit',$s) }}">
-                      <i class="bi bi-pencil"></i> تعديل
-                    </a>
-               @endif
+          <td class="hide-mobile">{{ $s->id }}</td>
+          <td><code>{{ $s->university_id }}</code></td>
+          <td class="fw-semibold">{{ $s->full_name }}</td>
 
-              @if(!$s->is_confirmed)
-            
-                <form method="POST" action="{{ route('students.confirm', $s) }}" class="d-inline">
-                  @csrf
-                  <button class="btn btn-sm btn-success">تثبيت</button>
-                </form>
-            
+          <td class="hide-mobile">{{ $s->branch->name ?? '-' }}</td>
+
+          <td class="hide-mobile"><span class="badge bg-secondary">{{ $s->status_ar }}</span></td>
+          <td class="hide-mobile">
+            @php($map = ['pending' => 'warning', 'confirmed' => 'success', 'archived' => 'secondary', 'dismissed' => 'danger', 'frozen' => 'info'])
+            <span class="badge bg-{{ $map[$s->registration_ar] ?? 'secondary' }}">
+              {{ $s->registration_ar }}
+            </span>
+          </td>
+          <td class="hide-mobile">
+            @if($s->is_confirmed)
+              <span class="badge bg-success">نعم</span>
+            @else
+              <span class="badge bg-secondary">لا</span>
             @endif
 
-            </td>
-          </tr>
+          </td>
+          <td class="text-end">
+            @if(auth()->user()?->hasPermission('edit_students'))
+              <a class="btn btn-sm btn-outline-primary" href="{{ route('students.show', $s) }}">
+                <i class="bi bi-eye"></i> عرض
+              </a>
+            @endif
+
+            @if(auth()->user()?->hasPermission('edit_students'))
+              <a class="btn btn-sm btn-outline-dark" href="{{ route('students.edit', $s) }}">
+                <i class="bi bi-pencil"></i> تعديل
+              </a>
+            @endif
+            @if(auth()->user()?->hasPermission('delete_students'))
+              <form method="POST" action="{{ route('students.destroy', $s) }}" class="d-inline"
+                onsubmit="return confirm('هل أنت متأكد من حذف الطالب؟')">
+                @csrf
+                @method('DELETE')
+
+                <button class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash"></i> حذف
+                </button>
+              </form>
+            @endif
+
+
+            @if(!$s->is_confirmed)
+
+              <form method="POST" action="{{ route('students.confirm', $s) }}" class="d-inline">
+                @csrf
+                <button class="btn btn-sm btn-success">تثبيت</button>
+              </form>
+
+            @endif
+
+          </td>
+        </tr>
         @empty
-          <tr><td colspan="10" class="text-center text-muted py-4">لا يوجد بيانات</td></tr>
+        <tr>
+          <td colspan="10" class="text-center text-muted py-4">لا يوجد بيانات</td>
+        </tr>
         @endforelse
       </tbody>
     </table>
+
+
+  
+
+
+
+
+
   </div>
 </div>
 
@@ -134,3 +165,6 @@
   {{ $students->links() }}
 </div>
 @endsection
+
+
+

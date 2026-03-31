@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="d-flex justify-content-between align-items-center mb-3">
-    
+
     <div>
       <h4 class="mb-0 fw-bold">طلبات الإجازات/الأذونات</h4>
       <div class="text-muted fw-semibold">مراجعة الطلبات والموافقة/الرفض</div>
@@ -28,6 +28,7 @@
             @endforeach
           </select>
         </div>
+
 
         <div class="col-6 col-md-2">
           <select name="type" class="form-select">
@@ -83,7 +84,8 @@
               <td class="hide-mobile">{{ $l->start_date->format('Y-m-d') }}</td>
               <td class="hide-mobile">{{ $l->end_date?->format('Y-m-d') ?? '-' }}</td>
               <td>
-                <span class="badge bg-{{ $l->status == 'approved' ? 'success' : ($l->status == 'rejected' ? 'danger' : 'secondary') }}">
+                <span
+                  class="badge bg-{{ $l->status == 'approved' ? 'success' : ($l->status == 'rejected' ? 'danger' : 'secondary') }}">
                   {{ $l->status == 'pending' ? 'معلّق' : ($l->status == 'approved' ? 'مقبول' : 'مرفوض') }}
                 </span>
               </td>
@@ -91,7 +93,30 @@
 
                 <a class="btn btn-sm btn-outline-primary" href="{{ route('leaves.show', $l) }}"><i class="bi bi-eye"></i>
                   عرض</a>
+
+
+
+
+
+                @if(auth()->user()?->hasPermission('delete_leaves'))
+
+                  <form method="POST" action="{{ route('leaves.destroy', $l) }}" class="d-inline"
+                    onsubmit="return confirm('هل أنت متأكد من حذف طلب الإجازة؟')">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button class="btn btn-sm btn-outline-danger">
+                      <i class="bi bi-trash"></i> حذف
+                    </button>
+
+                  </form>
+
+                @endif
               </td>
+
+
+
             </tr>
           @empty
             <tr>

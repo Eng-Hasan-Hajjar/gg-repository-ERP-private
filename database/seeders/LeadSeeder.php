@@ -14,6 +14,8 @@ class LeadSeeder extends Seeder
 {
   public function run(): void
   {
+
+  /*
     $branches = Branch::all();
     $diplomas = Diploma::all();
 
@@ -34,7 +36,7 @@ class LeadSeeder extends Seeder
         'full_name' => 'عميل محتمل '.$i.' '.Str::random(4),
         'phone' => '+9639'.rand(10000000,99999999),
         'whatsapp' => '+9639'.rand(10000000,99999999),
-          'email'      => "student{$i}@test.local",
+        'email'      => "student{$i}@test.local",
         'first_contact_date' => now()->subDays(rand(0,60))->toDateString(),
         'residence' => ['حلب','ادلب','اسطنبول','مرسين','بورصة','عنتاب','كليس','اونلاين'][rand(0,7)],
         'age' => rand(16,45),
@@ -65,6 +67,11 @@ class LeadSeeder extends Seeder
           'created_by' => null,
         ]);
       }
-    }
+
+     
+
+
+
+    }*/
   }
 }

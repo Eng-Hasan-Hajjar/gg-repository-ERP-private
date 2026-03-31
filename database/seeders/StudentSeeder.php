@@ -13,6 +13,8 @@ class StudentSeeder extends Seeder
 {
     public function run(): void
     {
+
+    /*
         $branches = Branch::all();
         $diplomas = Diploma::all();
 
@@ -85,6 +87,6 @@ StudentCrmInfo::create([
             }
         }
 
-        $this->command->info('✅ تم إنشاء 50 طالب مع Profile و CRM و Diplomas');
+        $this->command->info('✅ تم إنشاء 50 طالب مع Profile و CRM و Diplomas');*/
     }
 }

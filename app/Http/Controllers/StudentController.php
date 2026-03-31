@@ -541,6 +541,24 @@ $plansByDiploma = $paymentPlans->keyBy('diploma_id');
         return redirect()->route('students.index')->with('success', 'تم حذف الطالب.');
     }
 
+
+
+    public function bulkDelete(Request $request)
+{
+    $ids = $request->ids;
+
+    if(!$ids){
+        return back()->with('error','لم يتم تحديد أي طالب');
+    }
+
+    Student::whereIn('id',$ids)->delete();
+
+    return back()->with('success','تم حذف الطلاب المحددين');
+}
+
+
+
+
     private function generateUniversityId(): string
     {
         do {

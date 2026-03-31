@@ -29,9 +29,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'view_leads', 'label' => 'عرض العملاء المحتملين', 'module' => 'crm'],
             ['name' => 'create_leads', 'label' => 'إضافة عميل محتمل', 'module' => 'crm'],
             ['name' => 'edit_leads', 'label' => 'تعديل عميل محتمل', 'module' => 'crm'],
+           
             ['name' => 'convert_leads', 'label' => 'تحويل إلى طالب', 'module' => 'crm'],
             ['name' => 'view_crm_reports', 'label' => 'عرض تقارير المبيعات', 'module' => 'crm'],
-
+            ['name' => 'delete_leads', 'label' => 'حذف عميل محتمل', 'module' => 'crm'],
 
 
             /*
@@ -43,7 +44,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'create_students', 'label' => 'إضافة طالب', 'module' => 'students'],
             ['name' => 'edit_students', 'label' => 'تعديل طالب', 'module' => 'students'],
             ['name' => 'view_student_financials', 'label' => 'عرض الوضع المالي للطالب', 'module' => 'students'],
-
+            ['name' => 'delete_students', 'label' => 'حذف طالب', 'module' => 'students'],
 
             /*
             |--------------------------------------------------------------------------
@@ -80,6 +81,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'edit_attendance', 'label' => 'تعديل الدوام', 'module' => 'attendance'],
             ['name' => 'view_leaves', 'label' => 'عرض الإجازات', 'module' => 'attendance'],
             ['name' => 'create_leaves', 'label' => 'طلب إجازة', 'module' => 'attendance'],
+            ['name' => 'delete_leaves', 'label' => 'حذف إجازة', 'module' => 'attendance'],
 
             ['name' => 'approve_leaves', 'label' => 'اعتماد الإجازة', 'module' => 'attendance'],
             ['name' => 'reject_leaves', 'label' => 'رفض الإجازة', 'module' => 'attendance'],

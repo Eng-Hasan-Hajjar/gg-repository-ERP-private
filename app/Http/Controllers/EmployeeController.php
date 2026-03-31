@@ -69,29 +69,36 @@ class EmployeeController extends Controller
         ]);
     }
 
-    public function create()
-    {
+public function create()
+{
+    $weekdays = [
+        0 => 'الأحد',
+        1 => 'الإثنين',
+        2 => 'الثلاثاء',
+        3 => 'الأربعاء',
+        4 => 'الخميس',
+        5 => 'الجمعة',
+        6 => 'السبت'
+    ];
 
+    $scheduleMap = [];
 
-        $weekdays = [
-            0 => 'الأحد',
-            1 => 'الإثنين',
-            2 => 'الثلاثاء',
-            3 => 'الأربعاء',
-            4 => 'الخميس',
-            5 => 'الجمعة',
-            6 => 'السبت'
+    foreach (range(0,6) as $wd) {
+        $scheduleMap[$wd] = [
+            'is_off' => true,
+            'start' => '',
+            'end' => ''
         ];
-
-        return view('employees.create', [
-            'branches' => Branch::orderBy('name')->get(),
-            'diplomas' => Diploma::orderBy('name')->get(),
-
-            'scheduleMap' => [], // create
-            'weekdays' => $weekdays,
-            'users' => User::doesntHave('employee')->orderBy('name')->get(), // 👈 أضف هذا
-        ]);
     }
+
+    return view('employees.create', [
+        'branches' => Branch::orderBy('name')->get(),
+        'diplomas' => Diploma::orderBy('name')->get(),
+        'scheduleMap' => $scheduleMap,
+        'weekdays' => $weekdays,
+        'users' => User::doesntHave('employee')->orderBy('name')->get(),
+    ]);
+}
     public function store(Request $request)
     {
         $data = $request->validate([
