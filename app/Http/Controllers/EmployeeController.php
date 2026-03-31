@@ -260,7 +260,7 @@ public function create(Request $request)
     {
         $data = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'in:trainer,employee'],
+            'type' => ['nullable', 'in:trainer,employee'],
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'branch_id' => ['nullable', 'exists:branches,id'],

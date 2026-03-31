@@ -15,9 +15,6 @@
 
   @else
   
-    <select name="type" class="form-select">
-      ...
-    </select>
 
   @endif
 

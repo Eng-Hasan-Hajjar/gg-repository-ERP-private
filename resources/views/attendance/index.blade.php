@@ -11,6 +11,7 @@
   </div>
 
 
+@if(auth()->user()?->hasRole('super_admin'))
   <form method="POST" action="{{ route('attendance.generateWeek') }}" class="card border-0 shadow-sm mb-3">
     @csrf
 
@@ -75,6 +76,8 @@
   </div>
 
 
+
+
   <form class="card border-0 shadow-sm mb-3">
     <div class="card-body">
       <div class="row g-2">
@@ -136,6 +139,8 @@
       </div>
     </div>
   </form>
+
+@endif
 
   <div class="card border-0 shadow-sm">
     <div class="table-responsive">
