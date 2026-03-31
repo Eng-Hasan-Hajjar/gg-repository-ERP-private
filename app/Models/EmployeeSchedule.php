@@ -10,10 +10,13 @@ use App\Traits\Auditable;
 class EmployeeSchedule extends Model
 {
     use Auditable;
-    protected $fillable = ['employee_id','weekday','work_shift_id'];
-
+    protected $fillable = ['employee_id','weekday',
+    'start_time',  // ← جديد
+        'end_time',    // ← جديد
+        'is_off',      // ← جديد]
+    ];
     public function employee(): BelongsTo { return $this->belongsTo(Employee::class); }
-    public function shift(): BelongsTo { return $this->belongsTo(WorkShift::class,'work_shift_id'); }
+    //public function shift(): BelongsTo { return $this->belongsTo(WorkShift::class,'work_shift_id'); }
 
 
     }

@@ -162,26 +162,37 @@
                 </thead>
                 <tbody>
                   @foreach($weekdays as $wd => $label)
-                  @php($row = $scheduleMap[$wd] ?? null)
-                  @php($shift = $row?->shift)
-                  <tr>
-                    <td class="fw-bold">{{ $label }}</td>
-                    <td>{{ $shift?->name ?? 'OFF' }}</td>
-                    <td>
-                      @if($shift)
-                        {{ $shift->start_time }} - {{ $shift->end_time }}
-                      @else
-                        -
-                      @endif
-                    </td>
-                    <td>
-                      @if($shift)
-                        <span class="badge bg-success">دوام</span>
-                      @else
-                        <span class="badge bg-secondary">عطلة</span>
-                      @endif
-                    </td>
-                  </tr>
+                    @php
+                      $row = $scheduleMap[$wd] ?? null;
+                      $isOff = !$row || ($row instanceof \App\Models\EmployeeSchedule
+                        ? $row->is_off
+                        : ($row['is_off'] ?? true));
+                    @endphp
+                    <tr>
+                      <td class="fw-bold">{{ $label }}</td>
+                      <td>
+                        @if(!$isOff)
+                          <span class="badge bg-success">دوام</span>
+                        @else
+                          <span class="badge bg-secondary">عطلة</span>
+                        @endif
+                      </td>
+                      <td>
+                        @if(!$isOff && $row)
+                          @php
+                            $start = $row instanceof \App\Models\EmployeeSchedule
+                              ? $row->start_time : ($row['start'] ?? '');
+                            $end = $row instanceof \App\Models\EmployeeSchedule
+                              ? $row->end_time : ($row['end'] ?? '');
+                          @endphp
+                          <span class="text-success fw-bold">{{ substr($start, 0, 5) }}</span>
+                          <span class="text-muted mx-1">←</span>
+                          <span class="text-danger fw-bold">{{ substr($end, 0, 5) }}</span>
+                        @else
+                          <span class="text-muted">—</span>
+                        @endif
+                      </td>
+                    </tr>
                   @endforeach
                 </tbody>
               </table>

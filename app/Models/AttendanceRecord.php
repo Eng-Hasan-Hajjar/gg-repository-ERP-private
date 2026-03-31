@@ -87,4 +87,35 @@ protected static function booted()
     });
 }
 
+
+
+
+public function getStatusLabelAttribute()
+{
+    return [
+        'scheduled' => 'مجدول',
+        'present'   => 'حاضر',
+        'late'      => 'متأخر',
+        'absent'    => 'غائب',
+        'off'       => 'عطلة',
+        'leave'     => 'إجازة',
+    ][$this->status] ?? $this->status;
+}
+
+
+
+public function getStatusColorAttribute()
+{
+    return [
+        'present' => 'success',
+        'late'    => 'danger',
+        'absent'  => 'dark',
+        'off'     => 'secondary',
+        'leave'   => 'info',
+        'scheduled'=> 'warning',
+    ][$this->status] ?? 'secondary';
+}
+
+
+
 }

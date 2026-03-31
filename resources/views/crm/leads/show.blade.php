@@ -59,12 +59,12 @@
       <hr>
       <div class="row g-2">
         <div class="col-md-4"><b>الهاتف:</b> {{ $lead->phone ?? '-' }}</div>
-        <div class="col-md-4"><b>واتساب:</b> {{ $lead->whatsapp ?? '-' }}</div>
+        <div class="col-md-4" hidden><b>واتساب:</b> {{ $lead->whatsapp ?? '-' }}</div>
         <div class="col-md-4"><b>الفرع:</b> {{ $lead->branch->name ?? '-' }}</div>
         <div class="col-md-4"><b>السكن:</b> {{ $lead->residence ?? '-' }}</div>
         <div class="col-md-4"><b>العمر:</b> {{ $lead->age ?? '-' }}</div>
         <div class="col-md-4"><b>المصدر:</b> {{ $source_ar }}</div>
-        <div class="col-12"><b>الاحتياج:</b> {{ $lead->need ?? '-' }}</div>
+        <div class="col-12" hidden><b>الاحتياج:</b> {{ $lead->need ?? '-' }}</div>
         <div class="col-12"><b>ملاحظات:</b> {{ $lead->notes ?? '-' }}</div>
       </div>
 
@@ -115,7 +115,9 @@
         <div class="col-md-4">
           <label>الصندوق</label>
           <select name="cashbox_id" class="form-select" required>
-            @foreach(\App\Models\Cashbox::where('status', 'active')->get() as $box)
+            @foreach(\App\Models\Cashbox::where('status','active')
+              ->where('branch_id',$lead->branch_id)
+              ->get() as $box)
               <option value="{{ $box->id }}" {{ $box->branch_id == $lead->branch_id ? 'selected' : '' }}>
                 {{ $box->name }} - {{ $box->currency }}
               </option>

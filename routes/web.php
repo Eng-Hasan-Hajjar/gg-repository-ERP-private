@@ -672,4 +672,33 @@ Route::middleware(['auth'])->prefix('system')->name('system.')->group(function (
 
 
 
+
+
+
+
+
+Route::get('/diplomas/{id}/groups', [LeadController::class, 'getDiplomaGroups']);
+
+//Route::get('/diplomas/groups/{name}', [LeadController::class,'getDiplomaGroups']);
+
+
+
+
+use App\Http\Controllers\PaymentPlanController;
+
+Route::post('/payment-plan/store', [PaymentPlanController::class,'store'])
+    ->name('payment.plan.store');
+
+
+    Route::get('/payment-plan/{plan}/edit',
+[PaymentPlanController::class,'edit'])
+->name('payment.plan.edit');
+
+
+
+Route::put('/payment-plan/{plan}',[PaymentPlanController::class,'update'])
+->name('payment.plan.update');
+
+
+
 require __DIR__ . '/auth.php';

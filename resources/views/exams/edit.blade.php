@@ -5,6 +5,7 @@
   <div class="card-body">
     <h5 class="fw-bold mb-3">تعديل امتحان</h5>
     <form method="POST" action="{{ route('exams.update',$exam) }}">
+      @method('PUT')
       @include('exams._form',['exam'=>$exam])
     </form>
   </div>

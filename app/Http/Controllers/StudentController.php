@@ -269,6 +269,40 @@ class StudentController extends Controller
         }
 
 
+
+
+
+        $paymentPlans = $student->paymentPlans()
+            ->with(['installments', 'diploma'])
+            ->get();
+
+
+$plansByDiploma = $paymentPlans->keyBy('diploma_id');
+
+
+        $paidAmounts = [];
+
+        foreach ($paymentPlans as $plan) {
+
+            $paid = $student->financialAccount
+                ? $student->financialAccount
+                    ->transactions()
+                    ->where('diploma_id', $plan->diploma_id)
+                    ->where('type', 'in')
+                    ->whereHas('cashbox', function ($q) use ($plan) {
+                        $q->where('currency', $plan->currency);
+                    })
+                    ->sum('amount')
+                : 0;
+
+            $plan->paid = $paid;
+
+            $remaining = max($plan->total_amount - $paid,0);
+           $plan->remaining = $plan->total_amount - $paid;
+        }
+
+       
+
         return view('students.show', compact(
             'student',
             'p',
@@ -282,7 +316,10 @@ class StudentController extends Controller
             'crm_source_ar',
             'crm_stage_ar',
             'financial',
-            'balancesByCurrency'
+            'balancesByCurrency',
+            'paymentPlans',
+            
+    'plansByDiploma'
         ));
     }
 

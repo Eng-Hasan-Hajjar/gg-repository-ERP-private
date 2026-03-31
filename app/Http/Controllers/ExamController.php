@@ -153,6 +153,27 @@ class ExamController extends Controller
                 ->with('success','تم تحديث الامتحان.');
         }
     */
+
+
+public function update(ExamUpdateRequest $request, Exam $exam)
+{
+    $data = $request->validated();
+
+    $user = auth()->user();
+
+    if (!$user->hasRole('super_admin')) {
+        $data['branch_id'] = $user->employee?->branch_id;
+    }
+
+    $exam->update($data);
+
+    return redirect()
+        ->route('exams.show', $exam)
+        ->with('success', 'تم تعديل الامتحان بنجاح');
+}
+
+
+/*
     public function update(Request $request, Exam $exam)
     {
         foreach ($request->statuses ?? [] as $studentId => $status) {
@@ -192,12 +213,24 @@ class ExamController extends Controller
             ->with('success', 'تم حفظ النتائج بنجاح');
     }
 
-    public function destroy(Exam $exam)
-    {
-        $exam->delete();
 
+    */  
+
+
+    
+public function destroy(Exam $exam)
+{
+    // تحقق إذا يوجد نتائج (طلاب)
+    if ($exam->results()->exists()) {
         return redirect()
             ->route('exams.index')
-            ->with('success', 'تم حذف الامتحان.');
+            ->with('error', 'لا يمكن حذف الامتحان لأنه يحتوي على طلاب');
     }
+
+    $exam->delete();
+
+    return redirect()
+        ->route('exams.index')
+        ->with('success', 'تم حذف الامتحان بنجاح');
+}
 }

@@ -104,7 +104,10 @@ class Student extends Model
 
 
 
-
+  public function paymentPlans()
+  {
+      return $this->hasMany(\App\Models\PaymentPlan::class);
+  }
 
 
 

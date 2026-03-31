@@ -92,24 +92,40 @@
               @php($studentId = request('student_id'))
 
 
-               @if(auth()->user()?->hasPermission('view_exams'))
+                  @if(auth()->user()?->hasPermission('view_exams'))
 
-                  <a class="btn btn-sm btn-outline-primary" href="{{ route('exams.show',$e) }}">
-                    <i class="bi bi-eye"></i> عرض
-                  </a>
+                      <a class="btn btn-sm btn-outline-primary" href="{{ route('exams.show',$e) }}">
+                        <i class="bi bi-eye"></i> عرض
+                      </a>
+
                   @endif
+
                   @if(auth()->user()?->hasPermission('edit_exams'))
 
-                  <a class="btn btn-sm btn-outline-dark" href="{{ route('exams.edit',$e) }}">
-                    <i class="bi bi-pencil"></i> تعديل
-                  </a>
+                      <a class="btn btn-sm btn-outline-dark" href="{{ route('exams.edit',$e) }}">
+                        <i class="bi bi-pencil"></i> تعديل
+                      </a>
+
                   @endif
 
 
+
+                  <form action="{{ route('exams.destroy',$e) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+
+                        <button class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('هل أنت متأكد من حذف الامتحان؟')">
+                            حذف
+                        </button>
+                    </form>
+
                 @if(auth()->user()?->hasPermission('enter_grades'))
+
                   <a class="btn btn-sm btn-namaa" href="{{ route('exams.results.edit',$e) }}">
                       إدخال العلامات
                   </a>
+
                 @endif
 
             </td>

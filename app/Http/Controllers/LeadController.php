@@ -404,4 +404,22 @@ class LeadController extends Controller
 
 
 
+
+
+  // API
+public function getDiplomaGroups($id)
+{
+    $diploma = Diploma::findOrFail($id);
+
+    $groups = Diploma::where('name', $diploma->name)
+        ->select('id','code')
+        ->get();
+
+    return response()->json($groups);
+}
+
+
+
+
+
 }

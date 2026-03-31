@@ -12,32 +12,46 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
-   
+
     public function index(Request $request)
     {
-        $q = AttendanceRecord::query()->with(['employee.branch','shift']);
+        $q = AttendanceRecord::query()->with(['employee.branch', 'shift']);
 
-        if ($request->filled('branch_id')) {
-            $q->whereHas('employee', fn($x)=>$x->where('branch_id',$request->branch_id));
+        $user = auth()->user();
+
+        if (!$user->hasRole('super_admin')) {
+
+            $employee = \App\Models\Employee::where('user_id', $user->id)->first();
+
+            if ($employee) {
+                $q->where('employee_id', $employee->id);
+            }
         }
-        if ($request->filled('employee_id')) $q->where('employee_id',$request->employee_id);
-        if ($request->filled('status')) $q->where('status',$request->status);
+        if ($request->filled('branch_id')) {
+            $q->whereHas('employee', fn($x) => $x->where('branch_id', $request->branch_id));
+        }
+        if ($request->filled('employee_id'))
+            $q->where('employee_id', $request->employee_id);
+        if ($request->filled('status'))
+            $q->where('status', $request->status);
 
-        if ($request->filled('from')) $q->whereDate('work_date','>=',$request->from);
-        if ($request->filled('to'))   $q->whereDate('work_date','<=',$request->to);
+        if ($request->filled('from'))
+            $q->whereDate('work_date', '>=', $request->from);
+        if ($request->filled('to'))
+            $q->whereDate('work_date', '<=', $request->to);
 
         // بحث بالاسم/الكود
         if ($request->filled('search')) {
             $s = trim($request->search);
-            $q->whereHas('employee', function($x) use ($s){
-                $x->where('full_name','like',"%$s%")->orWhere('code','like',"%$s%");
+            $q->whereHas('employee', function ($x) use ($s) {
+                $x->where('full_name', 'like', "%$s%")->orWhere('code', 'like', "%$s%");
             });
         }
 
         return view('attendance.index', [
             'records' => $q->latest('work_date')->paginate(20)->withQueryString(),
-            'branches'=> Branch::orderBy('name')->get(),
-            'employees'=> Employee::orderBy('full_name')->get(),
+            'branches' => Branch::orderBy('name')->get(),
+            'employees' => Employee::orderBy('full_name')->get(),
         ]);
     }
 
@@ -75,16 +89,11 @@ class AttendanceController extends Controller
         $late = 0;
         $status = 'present';
 
-        if ($record->shift) {
-            $workDate = $record->work_date instanceof Carbon
-                ? $record->work_date->toDateString()
-                : Carbon::parse($record->work_date)->toDateString();
+        // ← الآن نعتمد على scheduled_start بدل الشيفت
+        if ($record->scheduled_start) {
+            $shiftStart = Carbon::parse($record->scheduled_start);
+            $grace = 10; // دقائق سماح افتراضية (يمكن تخزينها في الإعدادات)
 
-            $shiftStart = Carbon::parse($workDate . ' ' . $record->shift->start_time);
-
-
-
-            $grace = (int) $record->shift->grace_minutes;
             if ($now->greaterThan($shiftStart->copy()->addMinutes($grace))) {
                 $late = max(0, $shiftStart->diffInMinutes($now));
                 $status = 'late';
@@ -94,11 +103,13 @@ class AttendanceController extends Controller
         $record->update([
             'check_in_at' => $now,
             'late_minutes' => $late,
-            'status' => $record->status == 'off' ? 'off' : $status,
+            'status' => $record->status === 'off' ? 'off' : $status,
         ]);
 
         return back()->with('success', 'تم تسجيل الدخول.');
     }
+
+
 
     // Check-out سريع + احتساب الساعات
     public function checkOut(AttendanceRecord $record)

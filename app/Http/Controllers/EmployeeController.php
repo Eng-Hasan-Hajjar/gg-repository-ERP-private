@@ -8,7 +8,7 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\EmployeeScheduleOverride;
-use App\Models\User; 
+use App\Models\User;
 use App\Models\EmployeeSchedule;
 use App\Models\WorkShift;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Hash;
 
 
 /*
- 
+
 
  ملحوظة معمارية مهمة
 
@@ -73,7 +73,6 @@ class EmployeeController extends Controller
     {
 
 
-        $shifts = WorkShift::orderBy('name')->get();
         $weekdays = [
             0 => 'الأحد',
             1 => 'الإثنين',
@@ -87,13 +86,12 @@ class EmployeeController extends Controller
         return view('employees.create', [
             'branches' => Branch::orderBy('name')->get(),
             'diplomas' => Diploma::orderBy('name')->get(),
-            'shifts' => $shifts,
+
             'scheduleMap' => [], // create
             'weekdays' => $weekdays,
             'users' => User::doesntHave('employee')->orderBy('name')->get(), // 👈 أضف هذا
         ]);
     }
-
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -107,58 +105,39 @@ class EmployeeController extends Controller
             'notes' => ['nullable', 'string', 'max:3000'],
             'diploma_ids' => ['nullable', 'array'],
             'diploma_ids.*' => ['exists:diplomas,id'],
-            'schedule' => ['array'],
-            'schedule.*' => ['nullable', 'integer', 'exists:work_shifts,id'],
-            'user_id' => ['nullable','exists:users,id','unique:employees,user_id'],
+            'user_id' => ['nullable', 'exists:users,id', 'unique:employees,user_id'],
 
+            // ← تعديل: لم نعد نتحقق من shift id
+            'schedule' => ['nullable', 'array'],
+            'schedule.*.is_off' => ['nullable'],
+            'schedule.*.start' => ['nullable', 'date_format:H:i'],
+            'schedule.*.end' => ['nullable', 'date_format:H:i', 'after:schedule.*.start'],
         ]);
-
-
-
-
-
-
-
 
         $data['code'] = $this->generateEmployeeCode();
 
         $employee = Employee::create($data);
 
-        // حفظ جدول الأسبوع
-        $schedule = $request->input('schedule', []);
-        foreach (range(0, 6) as $wd) {
-            EmployeeSchedule::updateOrCreate(
-                ['employee_id' => $employee->id, 'weekday' => $wd],
-                ['work_shift_id' => $schedule[$wd] ?? null]
-            );
-        }
+        // ← حفظ جدول الدوام الجديد
+        $this->saveSchedule($employee, $request->input('schedule', []));
 
-        // ربط الدبلومات
         $employee->diplomas()->sync($data['diploma_ids'] ?? []);
 
-        return redirect()->route('employees.show', $employee)->with('success', 'تم إنشاء المدرب/الموظف بنجاح.');
+        return redirect()->route('employees.show', $employee)
+            ->with('success', 'تم إنشاء المدرب/الموظف بنجاح.');
     }
+
 
     public function show(Employee $employee)
     {
-
 
         $employee->load([
             'branch',
             'diplomas',
             'contracts',
-            'payouts'
-            ,
-            'schedules.shift',
-            // جدول الأسبوع
+            'payouts',
+            'schedules'
         ]);
-
-        // آخر 30 يوم Overrides (أو خليها شهرين حسب ما بدك)
-        $overrides = EmployeeScheduleOverride::with('shift')
-            ->where('employee_id', $employee->id)
-            ->whereBetween('work_date', [now()->subDays(30)->toDateString(), now()->addDays(30)->toDateString()])
-            ->orderBy('work_date')
-            ->get();
 
         $weekdays = [
             0 => 'الأحد',
@@ -167,29 +146,46 @@ class EmployeeController extends Controller
             3 => 'الأربعاء',
             4 => 'الخميس',
             5 => 'الجمعة',
-            6 => 'السبت'
+            6 => 'السبت',
         ];
 
-        // map: weekday => shift (model) أو null
-        $scheduleMap = $employee->schedules->keyBy('weekday');
+        // تجهيز جدول الدوام للعرض
+        $scheduleMap = [];
 
+        foreach ($weekdays as $wd => $label) {
 
+            $schedule = $employee->schedules->firstWhere('weekday', $wd);
 
+            $scheduleMap[$wd] = [
+                'is_off' => $schedule ? (bool) $schedule->is_off : true,
+                'start' => $schedule && $schedule->start_time
+                    ? substr($schedule->start_time, 0, 5)
+                    : '',
+                'end' => $schedule && $schedule->end_time
+                    ? substr($schedule->end_time, 0, 5)
+                    : '',
+            ];
+        }
 
-
-
-        return view('employees.show', compact('employee', 'weekdays', 'scheduleMap', 'overrides'));
+        // هذا المتغير الذي سبب الخطأ
+        //  $overrides = collect();
+        $overrides = EmployeeScheduleOverride::where('employee_id', $employee->id)
+            ->latest('work_date')
+            ->take(20)
+            ->get();
+        return view('employees.show', compact(
+            'employee',
+            'weekdays',
+            'scheduleMap',
+            'overrides'
+        ));
     }
+
 
     public function edit(Employee $employee)
     {
         $employee->load('diplomas');
 
-        $shifts = WorkShift::orderBy('name')->get();
-
-        $scheduleMap = $employee->schedules()
-            ->pluck('work_shift_id', 'weekday')
-            ->toArray();
         $weekdays = [
             0 => 'الأحد',
             1 => 'الإثنين',
@@ -197,12 +193,37 @@ class EmployeeController extends Controller
             3 => 'الأربعاء',
             4 => 'الخميس',
             5 => 'الجمعة',
-            6 => 'السبت'
+            6 => 'السبت',
         ];
 
+        // بناء scheduleMap بالشكل الجديد: weekday => ['start', 'end', 'is_off']
+        $scheduleMap = [];
 
+        foreach (range(0, 6) as $wd) {
 
+            $schedule = $employee->schedules->firstWhere('weekday', $wd);
 
+            $scheduleMap[$wd] = [
+                'is_off' => old(
+                    "schedule.$wd.is_off",
+                    $schedule ? (bool) $schedule->is_off : true
+                ),
+
+                'start' => old(
+                    "schedule.$wd.start",
+                    $schedule && $schedule->start_time
+                    ? substr($schedule->start_time, 0, 5)
+                    : ''
+                ),
+
+                'end' => old(
+                    "schedule.$wd.end",
+                    $schedule && $schedule->end_time
+                    ? substr($schedule->end_time, 0, 5)
+                    : ''
+                ),
+            ];
+        }
         $users = User::whereDoesntHave('employee')
             ->orWhere('id', $employee->user_id)
             ->orderBy('name')
@@ -210,14 +231,15 @@ class EmployeeController extends Controller
 
 
 
+        $overrides = [];
         return view('employees.edit', [
             'employee' => $employee,
             'branches' => Branch::orderBy('name')->get(),
             'diplomas' => Diploma::orderBy('name')->get(),
-            'shifts' => $shifts,
             'scheduleMap' => $scheduleMap,
             'weekdays' => $weekdays,
-            'users' => $users, // 👈 أضف هذا
+            'users' => $users,
+
         ]);
     }
 
@@ -234,28 +256,25 @@ class EmployeeController extends Controller
             'notes' => ['nullable', 'string', 'max:3000'],
             'diploma_ids' => ['nullable', 'array'],
             'diploma_ids.*' => ['exists:diplomas,id'],
-            'schedule' => ['array'],
-            'schedule.*' => ['nullable', 'integer', 'exists:work_shifts,id'],
-            'user_id' => ['nullable','exists:users,id','unique:employees,user_id,'.$employee->id],
+            'user_id' => ['nullable', 'exists:users,id', 'unique:employees,user_id,' . $employee->id],
+
+            'schedule' => ['nullable', 'array'],
+            'schedule.*.is_off' => ['nullable'],
+            'schedule.*.start' => ['nullable', 'date_format:H:i'],
+            'schedule.*.end' => ['nullable', 'date_format:H:i'],
         ]);
 
         $employee->update($data);
 
-
-
-        $schedule = $request->input('schedule', []);
-        foreach (range(0, 6) as $wd) {
-            $employee->schedules()->updateOrCreate(
-                ['weekday' => $wd],
-                ['work_shift_id' => $schedule[$wd] ?? null]
-            );
-        }
-
+        // ← حفظ الجدول الجديد
+        $this->saveSchedule($employee, $request->input('schedule', []));
 
         $employee->diplomas()->sync($data['diploma_ids'] ?? []);
 
-        return redirect()->route('employees.show', $employee)->with('success', 'تم تحديث البيانات بنجاح.');
+        return redirect()->route('employees.show', $employee)
+            ->with('success', 'تم تحديث البيانات بنجاح.');
     }
+
 
     public function destroy(Employee $employee)
     {
@@ -275,7 +294,25 @@ class EmployeeController extends Controller
 
 
 
+    /**
+     * حفظ جدول الدوام الأسبوعي للموظف (بدون شيفتات)
+     */
+    private function saveSchedule(Employee $employee, array $schedule): void
+    {
+        foreach (range(0, 6) as $wd) {
+            $day = $schedule[$wd] ?? [];
+            $isOff = !empty($day['is_off']);
 
+            $employee->schedules()->updateOrCreate(
+                ['weekday' => $wd],
+                [
+                    'start_time' => $isOff ? null : ($day['start'] ?? null),
+                    'end_time' => $isOff ? null : ($day['end'] ?? null),
+                    'is_off' => $isOff,
+                ]
+            );
+        }
+    }
 
 
 
@@ -283,39 +320,39 @@ class EmployeeController extends Controller
 
 
     public function createUser(Employee $employee)
-{
-    // منع إنشاء حساب إذا موجود مسبقاً
-    if ($employee->user) {
-        return back()->with('error', 'هذا الموظف لديه حساب بالفعل.');
+    {
+        // منع إنشاء حساب إذا موجود مسبقاً
+        if ($employee->user) {
+            return back()->with('error', 'هذا الموظف لديه حساب بالفعل.');
+        }
+
+        // يجب أن يكون لديه بريد
+        if (!$employee->email) {
+            return back()->with('error', 'لا يمكن إنشاء حساب بدون بريد إلكتروني للموظف.');
+        }
+
+        // تأكد أن الإيميل غير مستخدم
+        if (User::where('email', $employee->email)->exists()) {
+            return back()->with('error', 'يوجد مستخدم مسجل بنفس البريد الإلكتروني.');
+        }
+
+        $password = Str::random(8);
+
+        $user = User::create([
+            'name' => $employee->full_name,
+            'email' => $employee->email,
+            'password' => Hash::make($password),
+        ]);
+
+        // ربط الموظف بالحساب
+        $employee->update([
+            'user_id' => $user->id,
+        ]);
+
+        return redirect()
+            ->route('admin.users.edit', $user)
+            ->with('success', 'تم إنشاء الحساب بنجاح. كلمة المرور المؤقتة: ' . $password);
     }
-
-    // يجب أن يكون لديه بريد
-    if (!$employee->email) {
-        return back()->with('error', 'لا يمكن إنشاء حساب بدون بريد إلكتروني للموظف.');
-    }
-
-    // تأكد أن الإيميل غير مستخدم
-    if (User::where('email', $employee->email)->exists()) {
-        return back()->with('error', 'يوجد مستخدم مسجل بنفس البريد الإلكتروني.');
-    }
-
-    $password = Str::random(8);
-
-    $user = User::create([
-        'name' => $employee->full_name,
-        'email' => $employee->email,
-        'password' => Hash::make($password),
-    ]);
-
-    // ربط الموظف بالحساب
-    $employee->update([
-        'user_id' => $user->id,
-    ]);
-
-    return redirect()
-        ->route('admin.users.edit', $user)
-        ->with('success', 'تم إنشاء الحساب بنجاح. كلمة المرور المؤقتة: '.$password);
-}
 
 
 

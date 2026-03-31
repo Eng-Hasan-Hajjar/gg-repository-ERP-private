@@ -11,22 +11,78 @@
   </div>
 
 
-  <form method="POST" action="{{ route('attendance.generateWeek') }}" class="d-flex gap-2 flex-wrap mb-3">
-    @csrf
-    <input type="date" name="week_start" class="form-control" required
-      value="{{ now()->startOfWeek()->format('Y-m-d') }}">
-    <button class="btn btn-namaa fw-bold">
-      <i class="bi bi-magic"></i> توليد سجلات الأسبوع
-    </button>
-  </form>
+<form method="POST" action="{{ route('attendance.generateWeek') }}" class="card border-0 shadow-sm mb-3">
+@csrf
+
+<div class="card-body py-2">
+
+<div class="row align-items-end g-2">
+
+<div class="col-md-3">
+<label class="fw-bold small mb-1">بداية الأسبوع</label>
+
+<input 
+type="date"
+name="week_start"
+class="form-control"
+required
+value="{{ now()->startOfWeek()->format('Y-m-d') }}">
+</div>
+
+<div class="col-md-auto">
+
+<button class="btn btn-namaa fw-bold mt-3">
+<i class="bi bi-magic"></i>
+توليد سجلات الأسبوع
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</form>
 
 
+  <div class="mb-2 text-muted small">
+    عدد السجلات: {{ $records->total() }}
+  </div>
+
+
+  <div class="d-flex flex-wrap gap-2 mt-2">
+
+    <a href="{{ route('attendance.index', [
+    'from' => now()->startOfWeek()->toDateString(),
+    'to' => now()->endOfWeek()->toDateString()
+  ]) }}" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-calendar-week"></i>
+      هذا الأسبوع
+    </a>
+
+    <a href="{{ route('attendance.index', [
+    'from' => now()->startOfMonth()->toDateString(),
+    'to' => now()->endOfMonth()->toDateString()
+  ]) }}" class="btn btn-sm btn-outline-success">
+      <i class="bi bi-calendar-month"></i>
+      هذا الشهر
+    </a>
+
+    <a href="{{ route('attendance.index', [
+    'from' => now()->subMonths(3)->startOfMonth()->toDateString(),
+    'to' => now()->endOfMonth()->toDateString()
+  ]) }}" class="btn btn-sm btn-outline-dark">
+      <i class="bi bi-calendar-range"></i>
+      آخر 3 أشهر
+    </a>
+
+  </div>
 
 
   <form class="card border-0 shadow-sm mb-3">
     <div class="card-body">
       <div class="row g-2">
-        <div class="col-12 col-md-4">
+        <div class="col-6 col-md-2">
           <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: اسم/كود">
         </div>
 
@@ -57,16 +113,30 @@
           </select>
         </div>
 
-        <div class="col-6 col-md-1">
+        <div class="col-6 col-md-2">
           <input type="date" name="from" value="{{ request('from') }}" class="form-control">
         </div>
-        <div class="col-6 col-md-1">
+        <div class="col-6 col-md-2">
           <input type="date" name="to" value="{{ request('to') }}" class="form-control">
         </div>
 
-        <div class="col-12 col-md-12 d-grid">
-          <button class="btn btn-namaa fw-bold">تطبيق</button>
+        <div class="col-6 col-md-6 d-grid">
+          <button class="btn btn-namaa fw-bold">
+            <i class="bi bi-funnel"></i>
+            تطبيق الفلتر
+          </button>
         </div>
+
+        <div class="col-6 col-md-6 d-grid">
+          <a href="{{ route('attendance.index') }}" class="btn btn-outline-secondary fw-bold">
+            <i class="bi bi-x-circle"></i>
+            تنظيف
+          </a>
+        </div>
+
+
+
+
       </div>
     </div>
   </form>
@@ -79,7 +149,6 @@
             <th>التاريخ</th>
             <th>الموظف</th>
             <th class="hide-mobile">الفرع</th>
-            <th class="hide-mobile">الشيفت</th>
             <th class="hide-mobile">دخول</th>
             <th class="hide-mobile">خروج</th>
             <th class="hide-mobile">تأخير</th>
@@ -94,24 +163,15 @@
               <td class="fw-bold">{{ $r->work_date->format('Y-m-d') }}</td>
               <td>{{ $r->employee->full_name }}</td>
               <td class="hide-mobile">{{ $r->employee->branch->name ?? '-' }}</td>
-              <td class="hide-mobile">
-                @if($r->shift)
-                  <span class="badge bg-light text-dark border">
-                    {{ $r->shift->name }} ({{ $r->shift->start_time }}-{{ $r->shift->end_time }})
-                  </span>
-                @else
-                  -
-                @endif
-              </td>
+
               <td class="hide-mobile">{{ $r->check_in_at?->format('H:i') ?? '-' }}</td>
               <td class="hide-mobile">{{ $r->check_out_at?->format('H:i') ?? '-' }}</td>
               <td class="hide-mobile"><span class="badge bg-warning text-dark">{{ $r->late_minutes }} د</span></td>
               <td class="hide-mobile"><span class="badge bg-info text-dark">{{ round($r->worked_minutes / 60, 2) }} س</span>
               </td>
               <td>
-                <span
-                  class="badge bg-{{ in_array($r->status, ['late']) ? 'danger' : (in_array($r->status, ['present']) ? 'success' : 'secondary') }}">
-                  {{ $r->status }}
+                <span class="badge bg-{{ $r->status_color }}">
+                  {{ $r->status_label }}
                 </span>
               </td>
 
@@ -133,11 +193,7 @@
                   @endif
                 @endif
 
-                @if(auth()->user()?->hasPermission('edit_attendance'))
-                  <a class="btn btn-sm btn-outline-dark" href="{{ route('attendance.edit', $r) }}">
-                    <i class="bi bi-pencil"></i> تعديل
-                  </a>
-                @endif
+
               </td>
             </tr>
           @empty
