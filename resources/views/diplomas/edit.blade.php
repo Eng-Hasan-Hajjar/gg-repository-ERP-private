@@ -9,7 +9,7 @@
       <a class="btn btn-outline-secondary btn-sm" href="{{ route('diplomas.index') }}">رجوع</a>
     </div>
 
-    <form method="POST" action="{{ route('diplomas.update', $diploma) }}">
+    <form method="POST" action="{{ route('diplomas.update', $diploma) }}" enctype="multipart/form-data">
       @include('diplomas._form', ['diploma' => $diploma])
     </form>
   </div>

@@ -9,7 +9,7 @@ use App\Traits\Auditable;
 class Diploma extends Model
 {
   use Auditable;
-  protected $fillable = ['name', 'field', 'code', 'type', 'is_active'];
+  protected $fillable = ['name', 'field', 'code', 'type', 'is_active', 'details_pdf'];
 
   public function students()
   {
@@ -45,6 +45,17 @@ class Diploma extends Model
   }
 
 
+
+
+      // ← رابط الـ PDF جاهز للاستخدام في الـ view
+    public function getPdfUrlAttribute(): ?string
+    {
+        return $this->details_pdf
+            ? asset('storage/' . $this->details_pdf)
+            : null;
+    }
+
+    
 
 
 }

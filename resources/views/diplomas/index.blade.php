@@ -62,7 +62,7 @@
             <th>الرمز</th>
             <th class="hide-mobile text-center">المجال</th>
             <th>الحالة</th>
-          
+
             <th class="text-center">عدد الطلاب</th>
             <th class="hide-mobile text-center">النوع</th>
             <th class="hide-mobile text-end">إجراءات</th>
@@ -87,9 +87,9 @@
               </td>
 
               <td class="hide-mobile text-center">
-                  <span class="badge {{ $d->type == 'online' ? 'bg-info' : 'bg-secondary' }}">
-                      {{ $d->type_label }}
-                  </span>
+                <span class="badge {{ $d->type == 'online' ? 'bg-info' : 'bg-secondary' }}">
+                  {{ $d->type_label }}
+                </span>
               </td>
 
 
@@ -113,7 +113,13 @@
                   @endif
 
 
-
+                  <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#diplomaModal"
+                    data-id="{{ $d->id }}" data-name="{{ $d->name }}" data-code="{{ $d->code }}"
+                    data-field="{{ $d->field ?? '-' }}" data-type="{{ $d->type_label }}"
+                    data-status="{{ $d->is_active ? 'مفعّلة' : 'غير مفعّلة' }}"
+                    data-students="{{ $d->students()->count() }}" data-pdf="{{ $d->pdf_url ?? '' }}">
+                    <i class="bi bi-eye"></i> تفاصيل
+                  </button>
 
                   @if(auth()->user()?->hasPermission('edit_diplomas'))
                     <a class="btn btn-sm btn-outline-dark" href="{{ route('diplomas.edit', $d) }}">تعديل</a>
@@ -142,4 +148,112 @@
   <div class="mt-3">
     {{ $diplomas->links() }}
   </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  {{-- ===== Modal تفاصيل الدبلومة ===== --}}
+<div class="modal fade" id="diplomaModal" tabindex="-1" aria-labelledby="diplomaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="diplomaModalLabel">
+          <i class="bi bi-mortarboard text-primary me-1"></i>
+          <span id="m-name"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr>
+            <th class="text-muted" width="35%">الرمز</th>
+            <td><span class="badge bg-secondary" id="m-code"></span></td>
+          </tr>
+          <tr>
+            <th class="text-muted">المجال</th>
+            <td id="m-field"></td>
+          </tr>
+          <tr>
+            <th class="text-muted">النوع</th>
+            <td id="m-type"></td>
+          </tr>
+          <tr>
+            <th class="text-muted">الحالة</th>
+            <td id="m-status"></td>
+          </tr>
+          <tr>
+            <th class="text-muted">عدد الطلاب</th>
+            <td id="m-students"></td>
+          </tr>
+        </table>
+
+        {{-- منطقة الـ PDF --}}
+        <div id="m-pdf-area" class="mt-3 d-none">
+          <hr class="my-2">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-pdf fs-4 text-danger"></i>
+            <div>
+              <div class="fw-semibold small">ملف تفاصيل الدبلومة</div>
+              <a id="m-pdf-link" href="#" target="_blank" class="small">
+                عرض / تحميل PDF
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="m-no-pdf" class="mt-3 text-muted small d-none">
+          <i class="bi bi-file-earmark-x"></i> لا يوجد ملف PDF مرفق.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">إغلاق</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('diplomaModal').addEventListener('show.bs.modal', function (e) {
+  const btn = e.relatedTarget;
+
+  document.getElementById('m-name').textContent     = btn.dataset.name;
+  document.getElementById('m-code').textContent     = btn.dataset.code;
+  document.getElementById('m-field').textContent    = btn.dataset.field;
+  document.getElementById('m-type').textContent     = btn.dataset.type;
+  document.getElementById('m-status').textContent   = btn.dataset.status;
+  document.getElementById('m-students').textContent = btn.dataset.students;
+
+  const pdfArea  = document.getElementById('m-pdf-area');
+  const noPdf    = document.getElementById('m-no-pdf');
+  const pdfLink  = document.getElementById('m-pdf-link');
+
+  if (btn.dataset.pdf) {
+    pdfLink.href = btn.dataset.pdf;
+    pdfArea.classList.remove('d-none');
+    noPdf.classList.add('d-none');
+  } else {
+    pdfArea.classList.add('d-none');
+    noPdf.classList.remove('d-none');
+  }
+});
+</script>
+
+
+
+
 @endsection

@@ -22,6 +22,7 @@ class DiplomaUpdateRequest extends FormRequest
             'field'     => ['nullable','string','max:255'],
             'is_active' => ['nullable','boolean'],
             'type' => ['required','in:online,onsite'],
+            'details_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:102400'],
         ];
     }
 

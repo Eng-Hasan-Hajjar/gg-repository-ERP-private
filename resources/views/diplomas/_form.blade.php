@@ -47,6 +47,50 @@
   </div>
 
 
+
+
+
+
+
+  {{-- حقل رفع ملف PDF --}}
+  <div class="col-12 mt-3">
+    <label class="form-label fw-semibold">
+      <i class="bi bi-file-earmark-pdf text-danger"></i>
+      ملف تفاصيل الدبلومة (PDF)
+    </label>
+
+    {{-- عرض الملف الحالي في حالة التعديل --}}
+    @if(isset($diploma) && $diploma->details_pdf)
+      <div class="alert alert-light border d-flex align-items-center gap-3 mb-2 py-2">
+        <i class="bi bi-file-earmark-pdf fs-4 text-danger"></i>
+        <div class="flex-grow-1">
+          <div class="fw-semibold small">ملف مرفق حالياً</div>
+          <a href="{{ $diploma->pdf_url }}" target="_blank" class="small text-primary">
+            عرض الملف / تحميله
+          </a>
+        </div>
+        <div class="form-check mb-0">
+          <input class="form-check-input" type="checkbox" name="remove_pdf" value="1" id="remove_pdf">
+          <label class="form-check-label small text-danger" for="remove_pdf">حذف الملف</label>
+        </div>
+      </div>
+    @endif
+
+    <input type="file" name="details_pdf" class="form-control @error('details_pdf') is-invalid @enderror"
+      accept="application/pdf">
+    <div class="form-text">الصيغة المقبولة: PDF فقط. الحجم الأقصى: 10MB.</div>
+
+    @error('details_pdf')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+
+
+
+
+
+
 </div>
 
 @if($errors->any())
