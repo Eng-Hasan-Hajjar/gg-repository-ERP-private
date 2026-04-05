@@ -23,6 +23,7 @@ class DiplomaUpdateRequest extends FormRequest
             'is_active' => ['nullable','boolean'],
             'type' => ['required','in:online,onsite'],
             'details_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:102400'],
+                'branch_id'   => 'required|exists:branches,id',
         ];
     }
 
@@ -31,5 +32,12 @@ class DiplomaUpdateRequest extends FormRequest
         $this->merge([
             'is_active' => $this->boolean('is_active'),
         ]);
+    }
+      public function messages(): array
+    {
+        return [
+            'branch_id.required' => 'يجب اختيار الفرع.',
+            'branch_id.exists'   => 'الفرع المختار غير موجود.',
+        ];
     }
 }

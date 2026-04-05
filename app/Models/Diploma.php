@@ -8,54 +8,47 @@ use App\Traits\Auditable;
 
 class Diploma extends Model
 {
-  use Auditable;
-  protected $fillable = ['name', 'field', 'code', 'type', 'is_active', 'details_pdf'];
+    use Auditable;
 
-  public function students()
-  {
-    return $this->belongsToMany(Student::class, 'diploma_student')->withTimestamps();
-  }
+    protected $fillable = ['name', 'field', 'code', 'type', 'is_active', 'details_pdf', 'branch_id'];
 
-  public function leads()
-  {
-    return $this->belongsToMany(Lead::class, 'diploma_lead')->withTimestamps();
-  }
-  protected $casts = [
-    'is_active' => 'boolean',
-  ];
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'diploma_student')->withTimestamps();
+    }
 
+    public function leads()
+    {
+        return $this->belongsToMany(Lead::class, 'diploma_lead')->withTimestamps();
+    }
 
+    public function exams()
+    {
+        return $this->hasMany(\App\Models\Exam::class);
+    }
 
-  public function exams()
-  {
-    return $this->hasMany(\App\Models\Exam::class);
-  }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
+    public function getTypeLabelAttribute()
+    {
+        return match ($this->type) {
+            'online' => 'أونلاين',
+            'onsite' => 'حضوري',
+            default  => '-',
+        };
+    }
 
-
-
-  public function getTypeLabelAttribute()
-  {
-    return match ($this->type) {
-      'online' => 'أونلاين',
-      'onsite' => 'حضوري',
-      default => '-'
-    };
-  }
-
-
-
-
-      // ← رابط الـ PDF جاهز للاستخدام في الـ view
     public function getPdfUrlAttribute(): ?string
     {
         return $this->details_pdf
             ? asset('storage/' . $this->details_pdf)
             : null;
     }
-
-    
-
-
 }

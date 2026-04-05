@@ -25,32 +25,36 @@
     </select>
   </div>
 
-  <div class="col-6">
+  <div class="col-md-4">
     <label class="form-label">مجال الدبلومة</label>
     <input name="field" class="form-control" value="{{ old('field', $diploma->field ?? '') }}"
       placeholder="مثال: تقنية معلومات / لغات / إدارة أعمال ...">
   </div>
 
-
-
-  <div class="col-6">
+  <div class="col-md-4">
     <label class="form-label">نوع الدبلومة</label>
     <select name="type" class="form-select" required>
       <option value="">اختر النوع</option>
-      <option value="onsite" @selected(old('type') == 'onsite')>
-        حضوري
-      </option>
-      <option value="online" @selected(old('type') == 'online')>
-        أونلاين
-      </option>
+      <option value="onsite" @selected(old('type', $diploma->type ?? '') == 'onsite')>حضوري</option>
+      <option value="online" @selected(old('type', $diploma->type ?? '') == 'online')>أونلاين</option>
     </select>
   </div>
 
-
-
-
-
-
+  {{-- ✅ الفرع --}}
+  <div class="col-md-4">
+    <label class="form-label">
+      <i class="bi bi-building text-primary"></i> الفرع
+    </label>
+    <select name="branch_id" class="form-select" required>
+      <option value="">اختر الفرع</option>
+      @foreach($branches as $branch)
+        <option value="{{ $branch->id }}"
+          @selected(old('branch_id', $diploma->branch_id ?? '') == $branch->id)>
+          {{ $branch->name }} ({{ $branch->code }})
+        </option>
+      @endforeach
+    </select>
+  </div>
 
   {{-- حقل رفع ملف PDF --}}
   <div class="col-12 mt-3">
@@ -59,7 +63,6 @@
       ملف تفاصيل الدبلومة (PDF)
     </label>
 
-    {{-- عرض الملف الحالي في حالة التعديل --}}
     @if(isset($diploma) && $diploma->details_pdf)
       <div class="alert alert-light border d-flex align-items-center gap-3 mb-2 py-2">
         <i class="bi bi-file-earmark-pdf fs-4 text-danger"></i>
@@ -84,13 +87,6 @@
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
-
-
-
-
-
-
-
 </div>
 
 @if($errors->any())

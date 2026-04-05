@@ -8,7 +8,7 @@ use App\Traits\Auditable;
 class Branch extends Model
 {
     use Auditable;
-        protected $fillable = ['name','code'];
+    protected $fillable = ['name', 'code'];
 
     public function students(): HasMany
     {
@@ -20,7 +20,10 @@ class Branch extends Model
     {
         return $this->hasMany(\App\Models\Exam::class);
     }
-
+    public function diplomas(): HasMany
+    {
+        return $this->hasMany(Diploma::class);
+    }
 
 
 }

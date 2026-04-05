@@ -1,11 +1,11 @@
 <?php
-// app/Http/Controllers/DiplomaController.php
 
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DiplomaStoreRequest;
 use App\Http\Requests\DiplomaUpdateRequest;
 use App\Models\Diploma;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,7 +13,7 @@ class DiplomaController extends Controller
 {
     public function index(Request $request)
     {
-        $q = Diploma::query();
+        $q = Diploma::with('branch');
 
         if ($request->filled('search')) {
             $s = $request->search;
@@ -32,21 +32,28 @@ class DiplomaController extends Controller
             $q->where('type', $request->type);
         }
 
+        if ($request->filled('branch_id')) {
+            $q->where('branch_id', $request->branch_id);
+        }
+
+        $branches = Branch::orderBy('name')->get();
+
         return view('diplomas.index', [
             'diplomas' => $q->latest()->paginate(15)->withQueryString(),
+            'branches' => $branches,
         ]);
     }
 
     public function create()
     {
-        return view('diplomas.create');
+        $branches = Branch::orderBy('name')->get();
+        return view('diplomas.create', compact('branches'));
     }
 
     public function store(DiplomaStoreRequest $request)
     {
         $data = $request->validated();
 
-        // ← رفع الـ PDF إن وُجد
         if ($request->hasFile('details_pdf')) {
             $data['details_pdf'] = $request->file('details_pdf')
                 ->store('diplomas/pdfs', 'public');
@@ -65,16 +72,15 @@ class DiplomaController extends Controller
 
     public function edit(Diploma $diploma)
     {
-        return view('diplomas.edit', compact('diploma'));
+        $branches = Branch::orderBy('name')->get();
+        return view('diplomas.edit', compact('diploma', 'branches'));
     }
 
     public function update(DiplomaUpdateRequest $request, Diploma $diploma)
     {
         $data = $request->validated();
 
-        // ← رفع PDF جديد واستبدال القديم
         if ($request->hasFile('details_pdf')) {
-            // احذف القديم إن وُجد
             if ($diploma->details_pdf) {
                 Storage::disk('public')->delete($diploma->details_pdf);
             }
@@ -82,7 +88,6 @@ class DiplomaController extends Controller
                 ->store('diplomas/pdfs', 'public');
         }
 
-        // ← حذف الـ PDF إذا طلب المستخدم ذلك
         if ($request->boolean('remove_pdf') && $diploma->details_pdf) {
             Storage::disk('public')->delete($diploma->details_pdf);
             $data['details_pdf'] = null;
@@ -100,7 +105,6 @@ class DiplomaController extends Controller
             return back()->with('error', 'لا يمكن حذف الدبلومة لأنها مرتبطة بطلاب.');
         }
 
-        // ← احذف الـ PDF من الـ storage
         if ($diploma->details_pdf) {
             Storage::disk('public')->delete($diploma->details_pdf);
         }
