@@ -75,19 +75,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
 
-    /*
-
-    public function isOnline()
-    {
-        $session = $this->todaySession;
-
-        if (!$session || !$session->last_activity) {
-            return false;
-        }
-
-        return now()->diffInMinutes($session->last_activity) <= 2;
-    }
-    */
 
     public function isOnline(): bool
     {
@@ -167,29 +154,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('work_date', now()->toDateString());
     }
 
-    /*
-    public function todaySession()
-    {
-        return $this->hasOne(UserSession::class)->whereDate('work_date', today());
-    }
-    */
-    /*
-    public function getTodaySecondsAttribute()
-    {
-        return $this->todaySession?->online_seconds ?? 0;
-    }
-
-    public function getTodayMinutesAttribute()
-    {
-        return round($this->today_seconds / 60, 2);
-    }
-
-    public function getTodayHoursAttribute()
-    {
-        return round($this->today_seconds / 3600, 2);
-    }
-
-    */
+  
 
 
 
@@ -200,24 +165,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->whereDate('work_date', today());
     }
 
-    /*
 
-    public function getTodayWorkedSecondsAttribute(): int
-    {
-        return $this->todaySessions
-            ->map(function ($session) {
-
-                if (!$session->login_at) {
-                    return 0;
-                }
-
-                $end = $session->logout_at ?? now();
-
-                return $session->login_at->diffInSeconds($end);
-            })
-            ->sum(); // ← هذا هو السطر الناقص
-    }
-    */
     public function getTodayWorkedSecondsAttribute(): int
     {
         $sessions = $this->todaySessions()->get(); // ← نجبرها تكون Collection

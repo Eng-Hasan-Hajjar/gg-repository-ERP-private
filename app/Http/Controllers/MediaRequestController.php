@@ -8,22 +8,14 @@ use Illuminate\Http\Request;
 
 class MediaRequestController extends Controller
 {
-    /**
-     * قائمة الطلبات — كل مستخدم يرى طلباته فقط
-     * ما عدا فريق الميديا يرون الكل
-     */
     public function index()
     {
+        $user  = auth()->user();
         $query = MediaRequest::with('diploma', 'user')->latest();
 
-        // فريق الميديا يرون كل الطلبات، الباقي يرون طلباتهم فقط
-        if (auth()->check()) {
-            $user = auth()->user();
-            $isMediaTeam = method_exists($user, 'hasRole') && $user->hasRole('media_team');
-
-            if (!$isMediaTeam) {
-                $query->where('user_id', $user->id);
-            }
+        // super_admin يرى الكل — الباقي يرون طلباتهم فقط
+       if (!$user->hasRole('super_admin')) {
+            $query->where('user_id', $user->id);
         }
 
         $requests = $query->paginate(15);
@@ -82,29 +74,22 @@ class MediaRequestController extends Controller
             ->with('success', 'تم إرسال الطلب بنجاح');
     }
 
-    /**
-     * تحديث حالة التنفيذ + رابط المحتوى
-     */
     public function update(Request $request, MediaRequest $media)
     {
         $data = [];
 
-        // رابط المحتوى
         if ($request->has('content_link')) {
             $data['content_link'] = $request->content_link;
         }
 
-        // موعد نهاية التعديل
         if ($request->has('editing_deadline')) {
             $data['editing_deadline'] = $request->editing_deadline;
         }
 
-        // ملاحظات — فقط إذا أُرسلت في الفورم
         if ($request->has('notes')) {
             $data['notes'] = $request->notes;
         }
 
-        // حالة التنفيذ — متاحة لجميع المستخدمين المسجلين
         if ($request->has('design_done') || $request->has('ad_done') || $request->has('invitation_done')
             || $request->has('content_done') || $request->has('podcast_done') || $request->has('reviews_done')) {
             $data['design_done']     = $request->has('design_done');
@@ -123,22 +108,10 @@ class MediaRequestController extends Controller
 
     public function show(MediaRequest $media)
     {
-        // كل شخص يرى طلبه فقط — أو فريق الميديا يرون الكل
-        $user = auth()->user();
-        $isMediaTeam = method_exists($user, 'hasRole') && $user->hasRole('media_team');
-
-        if (!$isMediaTeam && $media->user_id !== $user->id) {
-            abort(403);
-        }
-
         $media->load('publishEntries');
-
         return view('media.show', compact('media'));
     }
 
-    /**
-     * حذف المسودات والإدخالات التجريبية
-     */
     public function cleanupDrafts(Request $request)
     {
         $deleted = MediaRequest::whereNull('requester_name')
@@ -149,10 +122,6 @@ class MediaRequestController extends Controller
 
         return back()->with('success', "تم حذف {$deleted} مسودة/إدخال تجريبي");
     }
-
-    /* =============================================
-       الفورم العام (بدون تسجيل دخول)
-       ============================================= */
 
     public function publicForm()
     {
