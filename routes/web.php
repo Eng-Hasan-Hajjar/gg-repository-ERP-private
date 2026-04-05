@@ -499,63 +499,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-/*
-|--------------------------------------------------------------------------
-| Public Media Form (بدون تسجيل دخول)
-|--------------------------------------------------------------------------
-*/
-
-Route::get(
-    '/media-request/public',
-    [MediaRequestController::class, 'publicForm']
-)
-    ->name('media.public.form');
-
-Route::post(
-    '/media-request/public',
-    [MediaRequestController::class, 'publicStore']
-)
-    ->name('media.public.store');
-
-Route::get(
-    '/media-request/thanks',
-    [MediaRequestController::class, 'thanks']
-)
-    ->name('media.public.thanks');
-
-
-/*
-|--------------------------------------------------------------------------
-| Media Panel (تحتاج تسجيل دخول)
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware(['auth'])->group(function () {
-
-    Route::get(
-        '/media-requests',
-        [MediaRequestController::class, 'index']
-    )
-        ->name('media.index');
-
-    Route::get(
-        '/media-requests/{media}',
-        [MediaRequestController::class, 'show']
-    )
-        ->name('media.show');
-
-    Route::post(
-        '/media-requests/{media}',
-        [MediaRequestController::class, 'update']
-    )
-        ->name('media.update');
-});
-
-
-
-
-
-
 
 
 
@@ -699,6 +642,147 @@ Route::post('/payment-plan/store', [PaymentPlanController::class,'store'])
 Route::put('/payment-plan/{plan}',[PaymentPlanController::class,'update'])
 ->name('payment.plan.update');
 
+
+
+
+
+
+
+
+
+
+
+
+
+use App\Http\Controllers\MediaPublishController;
+ 
+/*
+|--------------------------------------------------------------------------
+| Public Media Form (بدون تسجيل دخول)
+|--------------------------------------------------------------------------
+*/
+ 
+Route::get(
+    '/media-request/public',
+    [MediaRequestController::class, 'publicForm']
+)->name('media.public.form');
+ 
+Route::post(
+    '/media-request/public',
+    [MediaRequestController::class, 'publicStore']
+)->name('media.public.store');
+ 
+Route::get(
+    '/media-request/thanks',
+    [MediaRequestController::class, 'thanks']
+)->name('media.public.thanks');
+ 
+ 
+/*
+|--------------------------------------------------------------------------
+| Media Panel (تحتاج تسجيل دخول)
+|--------------------------------------------------------------------------
+*/
+ 
+Route::middleware(['auth'])->group(function () {
+ 
+    // طلبات الميديا
+    Route::get('/media-requests', [MediaRequestController::class, 'index'])
+        ->name('media.index');
+ 
+    Route::get('/media-requests/create', [MediaRequestController::class, 'create'])
+        ->name('media.create');
+ 
+    Route::post('/media-requests', [MediaRequestController::class, 'store'])
+        ->name('media.store');
+ 
+    Route::get('/media-requests/{media}', [MediaRequestController::class, 'show'])
+        ->name('media.show');
+ 
+    Route::post('/media-requests/{media}', [MediaRequestController::class, 'update'])
+        ->name('media.update');
+ 
+    // حذف المسودات التجريبية
+    Route::delete('/media-requests/cleanup-drafts', [MediaRequestController::class, 'cleanupDrafts'])
+        ->name('media.cleanup');
+ 
+    // قائمة النشر
+    Route::get('/media-publish', [MediaPublishController::class, 'index'])
+        ->name('media.publish.index');
+ 
+    Route::get('/media-publish/create', [MediaPublishController::class, 'create'])
+        ->name('media.publish.create');
+ 
+    Route::post('/media-publish', [MediaPublishController::class, 'store'])
+        ->name('media.publish.store');
+ 
+    Route::get('/media-publish/{publish}/edit', [MediaPublishController::class, 'edit'])
+        ->name('media.publish.edit');
+ 
+    Route::put('/media-publish/{publish}', [MediaPublishController::class, 'update'])
+        ->name('media.publish.update');
+ 
+    Route::delete('/media-publish/{publish}', [MediaPublishController::class, 'destroy'])
+        ->name('media.publish.destroy');
+ 
+});
+
+
+
+/*
+
+
+
+
+
+Route::get(
+    '/media-request/public',
+    [MediaRequestController::class, 'publicForm']
+)
+    ->name('media.public.form');
+
+Route::post(
+    '/media-request/public',
+    [MediaRequestController::class, 'publicStore']
+)
+    ->name('media.public.store');
+
+Route::get(
+    '/media-request/thanks',
+    [MediaRequestController::class, 'thanks']
+)
+    ->name('media.public.thanks');
+
+
+
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get(
+        '/media-requests',
+        [MediaRequestController::class, 'index']
+    )
+        ->name('media.index');
+
+    Route::get(
+        '/media-requests/{media}',
+        [MediaRequestController::class, 'show']
+    )
+        ->name('media.show');
+
+    Route::post(
+        '/media-requests/{media}',
+        [MediaRequestController::class, 'update']
+    )
+        ->name('media.update');
+});
+
+
+
+
+
+
+*/
 
 
 require __DIR__ . '/auth.php';

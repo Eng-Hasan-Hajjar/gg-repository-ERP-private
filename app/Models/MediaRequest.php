@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -39,17 +40,27 @@ class MediaRequest extends Model
         'podcast_done',
         'reviews_done',
 
-        'notes'
+        'content_link',
+        'editing_deadline',
+
+        'notes',
     ];
 
     protected $casts = [
         'trainer_photography_available' => 'boolean',
-        'need_ad' => 'boolean',
-        'need_invitation' => 'boolean',
-        'need_review_video' => 'boolean',
-        'need_content' => 'boolean',
-        'need_podcast' => 'boolean',
-        'need_carousel' => 'boolean',
+        'need_ad'             => 'boolean',
+        'need_invitation'     => 'boolean',
+        'need_review_video'   => 'boolean',
+        'need_content'        => 'boolean',
+        'need_podcast'        => 'boolean',
+        'need_carousel'       => 'boolean',
+        'design_done'         => 'boolean',
+        'ad_done'             => 'boolean',
+        'invitation_done'     => 'boolean',
+        'content_done'        => 'boolean',
+        'podcast_done'        => 'boolean',
+        'reviews_done'        => 'boolean',
+        'editing_deadline'    => 'date',
     ];
 
     public function user()
@@ -65,5 +76,10 @@ class MediaRequest extends Model
     public function schedules()
     {
         return $this->hasMany(MediaSchedule::class);
+    }
+
+    public function publishEntries()
+    {
+        return $this->hasMany(MediaPublish::class);
     }
 }
