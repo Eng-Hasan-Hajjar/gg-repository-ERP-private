@@ -87,7 +87,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        $timeout = 1200;
+        $timeout = 1200000000000000000;
 
         return now()->diffInSeconds($session->last_activity) <= $timeout;
     }
