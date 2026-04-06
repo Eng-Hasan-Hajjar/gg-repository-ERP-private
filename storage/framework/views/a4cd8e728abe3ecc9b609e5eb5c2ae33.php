@@ -158,4 +158,4 @@ class AttendanceDetailSheet implements FromCollection, WithHeadings, WithStyles,
             ],
         ];
     }
-}
+} ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/attendance/report_pdf.blade.php ENDPATH**/ ?>

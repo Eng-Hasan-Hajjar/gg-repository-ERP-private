@@ -2,30 +2,22 @@
 
 namespace App\Exports;
 
-use App\Models\AttendanceRecord;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class AttendanceReportExport implements FromCollection
+class AttendanceReportExport implements WithMultipleSheets
 {
-    public function __construct(public string $from, public string $to, public ?int $branchId = null) {}
+    public function __construct(
+        private string $from,
+        private string $to,
+        private ?int $branchId,
+        private ?int $employeeId
+    ) {}
 
-    public function collection()
+    public function sheets(): array
     {
-        return AttendanceRecord::query()
-            ->select([
-                'employee_id',
-                DB::raw("SUM(worked_minutes) as worked_minutes"),
-                DB::raw("SUM(late_minutes) as late_minutes"),
-                DB::raw("SUM(CASE WHEN status='absent' THEN 1 ELSE 0 END) as absent_days"),
-                DB::raw("SUM(CASE WHEN status='leave' THEN 1 ELSE 0 END) as leave_days"),
-                DB::raw("SUM(CASE WHEN status='present' OR status='late' THEN 1 ELSE 0 END) as present_days"),
-            ])
-            ->whereBetween('work_date', [$this->from,$this->to])
-            ->when($this->branchId, function($q){
-                $q->whereHas('employee', fn($x)=>$x->where('branch_id',$this->branchId));
-            })
-            ->groupBy('employee_id')
-            ->get();
+        return [
+            new AttendanceSummarySheet($this->from, $this->to, $this->branchId, $this->employeeId),
+            new AttendanceDetailSheet($this->from, $this->to, $this->branchId, $this->employeeId),
+        ];
     }
 }
