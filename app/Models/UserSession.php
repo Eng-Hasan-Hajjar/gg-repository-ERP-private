@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserSession extends Model
 {
-      protected $fillable = [
+    protected $fillable = [
         'user_id',
         'login_at',
         'last_activity',
@@ -14,7 +14,12 @@ class UserSession extends Model
         'session_id',
         'ip',
         'user_agent',
+        'country',      // ← جديد
+        'city',         // ← جديد
+        'latitude',     // ← جديد
+        'longitude',    // ← جديد
         'work_date',
+         'address_detail',
     ];
 
     protected $casts = [
@@ -32,37 +37,37 @@ class UserSession extends Model
 
 
     public function getDurationInSecondsAttribute()
-{
-    if (!$this->login_at) {
-        return 0;
-    }
-
-    $end = $this->logout_at ?? now();
-
-    return $this->login_at->diffInSeconds($end);
-}
-
-public function getDurationFormattedAttribute()
-{
-    $seconds = $this->duration_in_seconds;
-
-    $hours = floor($seconds / 3600);
-    $minutes = floor(($seconds % 3600) / 60);
-
-    return "{$hours} ساعة {$minutes} دقيقة";
-}
-
-
-protected static function booted()
-{
-    static::creating(function ($session) {
-
-        if (!$session->work_date) {
-            $session->work_date = now()->toDateString();
+    {
+        if (!$this->login_at) {
+            return 0;
         }
 
-    });
-}
+        $end = $this->logout_at ?? now();
+
+        return $this->login_at->diffInSeconds($end);
+    }
+
+    public function getDurationFormattedAttribute()
+    {
+        $seconds = $this->duration_in_seconds;
+
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+
+        return "{$hours} ساعة {$minutes} دقيقة";
+    }
+
+
+    protected static function booted()
+    {
+        static::creating(function ($session) {
+
+            if (!$session->work_date) {
+                $session->work_date = now()->toDateString();
+            }
+
+        });
+    }
 
 
 }

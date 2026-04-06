@@ -4,11 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" href="{{ asset('images/namaa-logo.png') }}">
-  <title>@yield('title', 'Namaa ERP')</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/namaa-logo.png') }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/namaa-logo.png') }}">
-  <link rel="apple-touch-icon" href="{{ asset('images/namaa-logo.png') }}">
+  <link rel="icon" href="<?php echo e(asset('images/namaa-logo.png')); ?>">
+  <title><?php echo $__env->yieldContent('title', 'Namaa ERP'); ?></title>
+  <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('images/namaa-logo.png')); ?>">
+  <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('images/namaa-logo.png')); ?>">
+  <link rel="apple-touch-icon" href="<?php echo e(asset('images/namaa-logo.png')); ?>">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -16,7 +16,7 @@
   <style>
     @font-face {
       font-family: 'Hacen Tunisia';
-      src: url('{{ asset('fonts/hacen-tunisia/Hacen-Tunisia-Bd.ttf') }}') format('truetype');
+      src: url('<?php echo e(asset('fonts/hacen-tunisia/Hacen-Tunisia-Bd.ttf')); ?>') format('truetype');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
@@ -1056,18 +1056,18 @@ ERP Notifications Style
     }
   </style>
 
-  @stack('styles')
+  <?php echo $__env->yieldPushContent('styles'); ?>
 
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-@php
+<?php
   // هل الصفحة Dashboard؟
   $isDashboard = $isDashboard ?? false;
   // لتفعيل تمييز الأيقونة الحالية
   $activeModule = $activeModule ?? '';
-@endphp
+?>
 
 
 
@@ -1080,9 +1080,9 @@ ERP Notifications Style
 
 
 
-{{-- ===== Location Modal ===== --}}
-@auth
-  @if(!session('location_captured'))
+
+<?php if(auth()->guard()->check()): ?>
+  <?php if(!session('location_captured')): ?>
     <div id="location-modal" class="location-modal-overlay">
       <div class="location-modal-box">
         <div class="location-icon">📍</div>
@@ -1104,9 +1104,9 @@ ERP Notifications Style
         </div>
       </div>
     </div>
-  @endif
-@endauth
-{{-- ===== End Location Modal ===== --}}
+  <?php endif; ?>
+<?php endif; ?>
+
 
 
 
@@ -1125,19 +1125,20 @@ ERP Notifications Style
 
   <nav class="navbar navbar-expand-lg navbar-dark namaa-nav">
     <div class="container py-1">
-      {{-- رابط الداشبورد --}}
-      <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
+      
+      <a class="navbar-brand d-flex align-items-center gap-2" href="<?php echo e(route('dashboard')); ?>">
         <i class="bi bi-grid-fill"></i>
         Namaa ERP
       </a>
 
       <div class="ms-auto d-flex align-items-center gap-3">
         <span class="text-white-50 small fw-semibold d-none d-md-inline">
-          {{ auth()->user()->name ?? '' }}
+          <?php echo e(auth()->user()->name ?? ''); ?>
+
         </span>
 
-        @auth
-          @if(auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('manager_hr') || auth()->user()->hasRole('manager_student_affairs') || auth()->user()->hasRole('manager_finance'))
+        <?php if(auth()->guard()->check()): ?>
+          <?php if(auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('manager_hr') || auth()->user()->hasRole('manager_student_affairs') || auth()->user()->hasRole('manager_finance')): ?>
 
             <div class="dropdown">
 
@@ -1173,12 +1174,12 @@ ERP Notifications Style
               </div>
 
             </div>
-          @endif
+          <?php endif; ?>
 
-        @endauth
+        <?php endif; ?>
 
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
+        <form method="POST" action="<?php echo e(route('logout')); ?>">
+          <?php echo csrf_field(); ?>
           <button class="btn btn-sm btn-outline-light fw-bold rounded-pill px-3">تسجيل خروج</button>
         </form>
 
@@ -1190,61 +1191,61 @@ ERP Notifications Style
 
   <main class="container py-4">
 
-    {{-- ✅ Dashboard فقط: يعرض Hero + Cards --}}
-    @if($isDashboard)
+    
+    <?php if($isDashboard): ?>
 
-      @yield('dashboard')
+      <?php echo $__env->yieldContent('dashboard'); ?>
 
-    @else
+    <?php else: ?>
 
-      {{-- ✅ أي صفحة مودول: تظهر أيقونات يمين + محتوى يسار --}}
+      
       <div class="app-shell">
 
         <section class="content-surface">
-          @include('partials.flash')
-          @yield('content')
+          <?php echo $__env->make('partials.flash', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+          <?php echo $__env->yieldContent('content'); ?>
         </section>
 
 
-        @auth
-          @if(auth()->user()->hasRole('super_admin'))
+        <?php if(auth()->guard()->check()): ?>
+          <?php if(auth()->user()->hasRole('super_admin')): ?>
 
             <aside class="iconbar" aria-label="Module icons">
-              <a href="{{ route('dashboard') }}" class="grad-indigo {{ $activeModule === 'dashboard' ? 'active' : '' }}"
+              <a href="<?php echo e(route('dashboard')); ?>" class="grad-indigo <?php echo e($activeModule === 'dashboard' ? 'active' : ''); ?>"
                 data-title="لوحة التحكم">
                 <i class="bi bi-grid-fill fs-6"></i>
               </a>
 
-              @if(auth()->user()?->hasPermission('manage_roles'))
+              <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
 
-                <a href="{{ route('admin.audit.index') }}" class="grad-rose {{ $activeModule === 'audit' ? 'active' : '' }}"
+                <a href="<?php echo e(route('admin.audit.index')); ?>" class="grad-rose <?php echo e($activeModule === 'audit' ? 'active' : ''); ?>"
                   data-title="سجل التدقيق">
                   <i class="bi bi-journal-text fs-6"></i>
                 </a>
-              @endif
-              @if(auth()->user()?->hasPermission('manage_roles'))
+              <?php endif; ?>
+              <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
 
-                <a href="{{ route('admin.roles.index') }}"
-                  class="grad-slate hide-mobile show-desktop-only {{ $activeModule === 'users' ? 'active' : '' }}"
+                <a href="<?php echo e(route('admin.roles.index')); ?>"
+                  class="grad-slate hide-mobile show-desktop-only <?php echo e($activeModule === 'users' ? 'active' : ''); ?>"
                   data-title=" الصلاحيات">
                   <i class="bi bi-person-gear fs-6"></i>
                 </a>
-              @endif
+              <?php endif; ?>
 
-              @if(auth()->user()?->hasPermission('view_users'))
+              <?php if(auth()->user()?->hasPermission('view_users')): ?>
 
-                <a href="{{ route('admin.users.index') }}"
-                  class="grad-amber hide-mobile show-desktop-only {{ $activeModule === 'users' ? 'active' : '' }}"
+                <a href="<?php echo e(route('admin.users.index')); ?>"
+                  class="grad-amber hide-mobile show-desktop-only <?php echo e($activeModule === 'users' ? 'active' : ''); ?>"
                   data-title="المستخدمين ">
                   <i class="bi bi-people-fill fs-6"></i>
                 </a>
-              @endif
+              <?php endif; ?>
 
 
 
 
 
-              <a href="{{ route('reports.index') }}" class="grad-green  {{ $activeModule === 'reports' ? 'active' : '' }}"
+              <a href="<?php echo e(route('reports.index')); ?>" class="grad-green  <?php echo e($activeModule === 'reports' ? 'active' : ''); ?>"
                 data-title="التقارير والإحصائيات ">
                 <i class="bi bi-bar-chart fs-6"></i>
               </a>
@@ -1252,42 +1253,42 @@ ERP Notifications Style
 
 
 
-              <a href="{{ route('students.index') }}" class="grad-blue   {{ $activeModule === 'students' ? 'active' : '' }}"
+              <a href="<?php echo e(route('students.index')); ?>" class="grad-blue   <?php echo e($activeModule === 'students' ? 'active' : ''); ?>"
                 data-title="الطلاب">
                 <i class="bi bi-people-fill fs-6"></i>
               </a>
-              <a href="{{ route('leads.index') }}"
-                class="grad-rose  hide-mobile show-desktop-only {{ $activeModule === 'leads' ? 'active' : '' }}"
+              <a href="<?php echo e(route('leads.index')); ?>"
+                class="grad-rose  hide-mobile show-desktop-only <?php echo e($activeModule === 'leads' ? 'active' : ''); ?>"
                 data-title="CRM">
                 <i class="bi bi-headset fs-3"></i>
               </a>
 
-              <a href="{{ route('diplomas.index') }}"
-                class="grad-purple  hide-mobile show-desktop-only {{ $activeModule === 'diplomas' ? 'active' : '' }}"
+              <a href="<?php echo e(route('diplomas.index')); ?>"
+                class="grad-purple  hide-mobile show-desktop-only <?php echo e($activeModule === 'diplomas' ? 'active' : ''); ?>"
                 data-title="الدبلومات">
                 <i class="bi bi-mortarboard-fill fs-6"></i>
               </a>
 
-              <a href="{{ route('employees.index') }}"
-                class="grad-primary {{ $activeModule === 'employees' ? 'active' : '' }}" data-title="الموارد البشرية">
+              <a href="<?php echo e(route('employees.index')); ?>"
+                class="grad-primary <?php echo e($activeModule === 'employees' ? 'active' : ''); ?>" data-title="الموارد البشرية">
                 <i class="bi bi-person-badge-fill fs-6"></i>
               </a>
 
 
 
-              <a href="{{ route('branches.index') }}"
-                class="grad-green  hide-mobile show-desktop-only {{ $activeModule === 'branches' ? 'active' : '' }}"
+              <a href="<?php echo e(route('branches.index')); ?>"
+                class="grad-green  hide-mobile show-desktop-only <?php echo e($activeModule === 'branches' ? 'active' : ''); ?>"
                 data-title="الفروع">
                 <i class="bi bi-building fs-6"></i>
               </a>
 
-              <a href="{{ route('assets.index') }}"
-                class="grad-blue  hide-mobile show-desktop-only {{ $activeModule === 'assets' ? 'active' : '' }}"
+              <a href="<?php echo e(route('assets.index')); ?>"
+                class="grad-blue  hide-mobile show-desktop-only <?php echo e($activeModule === 'assets' ? 'active' : ''); ?>"
                 data-title="الأصول">
                 <i class="bi bi-box-seam fs-6"></i>
               </a>
-              <a href="{{ route('asset-categories.index') }}"
-                class="grad-purple  hide-mobile show-desktop-only {{ $activeModule === 'asset-categories' ? 'active' : '' }}"
+              <a href="<?php echo e(route('asset-categories.index')); ?>"
+                class="grad-purple  hide-mobile show-desktop-only <?php echo e($activeModule === 'asset-categories' ? 'active' : ''); ?>"
                 data-title="تصنيفات الأصول">
                 <i class="bi bi-tags fs-6"></i>
               </a>
@@ -1298,54 +1299,54 @@ ERP Notifications Style
 
 
 
-              <a href="{{ route('cashboxes.index') }}" class="grad-amber {{ $activeModule === 'finance' ? 'active' : '' }}"
+              <a href="<?php echo e(route('cashboxes.index')); ?>" class="grad-amber <?php echo e($activeModule === 'finance' ? 'active' : ''); ?>"
                 data-title="المالية ">
                 <i class="bi bi-cash-coin fs-6"></i>
               </a>
 
 
 
-              <a href="{{ route('attendance.index') }}" class="grad-rose {{ $activeModule === 'attendance' ? 'active' : '' }}"
+              <a href="<?php echo e(route('attendance.index')); ?>" class="grad-rose <?php echo e($activeModule === 'attendance' ? 'active' : ''); ?>"
                 data-title="الدوام">
                 <i class="bi bi-calendar2-week fs-6"></i>
               </a>
 
-              <a href="{{ route('tasks.index') }}" class="grad-slate {{ $activeModule === 'tasks' ? 'active' : '' }}"
+              <a href="<?php echo e(route('tasks.index')); ?>" class="grad-slate <?php echo e($activeModule === 'tasks' ? 'active' : ''); ?>"
                 data-title="المهام">
                 <i class="bi bi-check2-square fs-6"></i>
               </a>
 
 
 
-              <a href="{{ route('leaves.index') }}"
-                class="grad-amber  hide-mobile show-desktop-only {{ $activeModule === 'attendance' ? 'active' : '' }}"
+              <a href="<?php echo e(route('leaves.index')); ?>"
+                class="grad-amber  hide-mobile show-desktop-only <?php echo e($activeModule === 'attendance' ? 'active' : ''); ?>"
                 data-title="الإجازات">
                 <i class="bi bi-clipboard2-check fs-6"></i>
               </a>
 
 
-              <a href="{{ route('attendance.calendar') }}"
-                class="grad-green  hide-mobile show-desktop-only {{ $activeModule === 'attendance' ? 'active' : '' }}"
+              <a href="<?php echo e(route('attendance.calendar')); ?>"
+                class="grad-green  hide-mobile show-desktop-only <?php echo e($activeModule === 'attendance' ? 'active' : ''); ?>"
                 data-title="الدوام">
                 <i class="bi bi-calendar2-week fs-6"></i>
               </a>
 
-              <a href="{{ route('attendance.reports') }}"
-                class="grad-slate  hide-mobile show-desktop-only {{ $activeModule === 'attendance-reports' ? 'active' : '' }}"
+              <a href="<?php echo e(route('attendance.reports')); ?>"
+                class="grad-slate  hide-mobile show-desktop-only <?php echo e($activeModule === 'attendance-reports' ? 'active' : ''); ?>"
                 data-title="تقارير الدوام">
                 <i class="bi bi-clipboard-data fs-6"></i>
               </a>
 
 
 
-              <a href="{{ route('programs.management.index') }}"
-                class="grad-indigo {{ $activeModule === 'programs' ? 'active' : '' }}" data-title="إدارة البرامج">
+              <a href="<?php echo e(route('programs.management.index')); ?>"
+                class="grad-indigo <?php echo e($activeModule === 'programs' ? 'active' : ''); ?>" data-title="إدارة البرامج">
                 <i class="bi bi-kanban-fill fs-5"></i>
               </a>
 
 
 
-              <a href="{{ route('media.index') }}" class="grad-amber {{ $activeModule === 'media' ? 'active' : '' }}"
+              <a href="<?php echo e(route('media.index')); ?>" class="grad-amber <?php echo e($activeModule === 'media' ? 'active' : ''); ?>"
                 data-title="قسم الميديا">
                 <i class="bi bi-megaphone-fill fs-5"></i>
               </a>
@@ -1353,15 +1354,15 @@ ERP Notifications Style
 
             </aside>
 
-          @endif
-        @endauth
+          <?php endif; ?>
+        <?php endif; ?>
 
       </div>
 
-    @endif
+    <?php endif; ?>
 
     <div class="text-center mt-5 small text-secondary fw-semibold">
-      © {{ date('Y') }} نماء أكاديمي — جميع الحقوق محفوظة
+      © <?php echo e(date('Y')); ?> نماء أكاديمي — جميع الحقوق محفوظة
     </div>
     <div class="modal fade" id="alertsModal" tabindex="-1">
 
@@ -1400,7 +1401,7 @@ ERP Notifications Style
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-  @auth
+  <?php if(auth()->guard()->check()): ?>
 
     <script>
 
@@ -1413,12 +1414,12 @@ ERP Notifications Style
 
 
       // ===== Location Logic =====
-      @auth
-        @if(!session('location_captured'))
+      <?php if(auth()->guard()->check()): ?>
+        <?php if(!session('location_captured')): ?>
           (function () {
-            var STORE_URL = '{{ route("location.store") }}';
-            var SKIP_URL = '{{ route("location.skip") }}';
-            var CSRF = '{{ csrf_token() }}';
+            var STORE_URL = '<?php echo e(route("location.store")); ?>';
+            var SKIP_URL = '<?php echo e(route("location.skip")); ?>';
+            var CSRF = '<?php echo e(csrf_token()); ?>';
 
             var modal = document.getElementById('location-modal');
             var btnAllow = document.getElementById('btn-allow-loc');
@@ -1491,8 +1492,8 @@ ERP Notifications Style
             btnSkip.addEventListener('click', doSkip);
 
           })();
-        @endif
-      @endauth
+        <?php endif; ?>
+      <?php endif; ?>
    
 
 
@@ -1536,7 +1537,7 @@ ERP Notifications Style
       // تحميل الإشعارات
       function loadAlerts() {
 
-        fetch("{{ route('alerts.navbar') }}")
+        fetch("<?php echo e(route('alerts.navbar')); ?>")
 
           .then(res => res.json())
 
@@ -1626,7 +1627,7 @@ ERP Notifications Style
 
         e.preventDefault();
 
-        fetch("{{ route('alerts.navbar') }}?all=1")
+        fetch("<?php echo e(route('alerts.navbar')); ?>?all=1")
 
           .then(res => res.json())
 
@@ -1668,9 +1669,9 @@ ERP Notifications Style
 
     </script>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 
-  @endauth
+  <?php endif; ?>
 </body>
 
-</html>
+</html><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/layouts/app.blade.php ENDPATH**/ ?>

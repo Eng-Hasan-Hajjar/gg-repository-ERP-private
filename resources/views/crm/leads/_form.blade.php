@@ -12,8 +12,152 @@
   </div>
 @endif
 
+<style>
+  /* ───── Diploma Picker ───── */
+  .diploma-picker {
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+    background: #f8fafc;
+  }
+  .diploma-search-box {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .diploma-search-box input {
+    padding-right: 40px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+  }
+  .diploma-search-box .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+  }
+  .diploma-list {
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .diploma-list-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+    font-size: 14px;
+  }
+  .diploma-list-item:last-child { border-bottom: none; }
+  .diploma-list-item:hover { background: #eff6ff; }
+  .diploma-list-item.disabled {
+    opacity: .4;
+    pointer-events: none;
+    background: #f1f5f9;
+  }
+  .diploma-list-item .d-name { font-weight: 600; color: #1e293b; }
+  .diploma-list-item .d-meta {
+    font-size: 12px;
+    color: #94a3b8;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .diploma-list-empty {
+    padding: 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+  }
 
-
+  /* ───── Selected Diplomas ───── */
+  .selected-diplomas {
+    margin-top: 16px;
+  }
+  .selected-diploma-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    transition: box-shadow .15s;
+  }
+  .selected-diploma-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .sd-info {
+    flex: 1;
+    min-width: 150px;
+  }
+  .sd-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #1e293b;
+  }
+  .sd-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+  .sd-badge.online { background: #dbeafe; color: #2563eb; }
+  .sd-badge.onsite { background: #d1fae5; color: #059669; }
+  .sd-selects {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .sd-selects select {
+    min-width: 140px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    padding: 6px 10px;
+  }
+  .sd-selects label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 2px;
+    display: block;
+  }
+  .sd-remove {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background .15s;
+    flex-shrink: 0;
+  }
+  .sd-remove:hover {
+    background: #fee2e2;
+  }
+  .no-diplomas-msg {
+    text-align: center;
+    padding: 16px;
+    color: #94a3b8;
+    font-size: 13px;
+  }
+</style>
 
 
 {{-- ===== Strict Mode Checkbox ===== --}}
@@ -44,327 +188,487 @@
         <label class="form-label fw-bold">الاسم الكامل *</label>
         <input name="full_name" value="{{ old('full_name', $lead->full_name ?? '') }}"
           class="form-control @error('full_name') is-invalid @enderror">
-
-        @error('full_name')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('full_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- الهاتف --}}
       <div class="col-md-4">
         <label class="form-label fw-bold">الهاتف *</label>
-
         <input name="phone" value="{{ old('phone', $lead->phone ?? '') }}"
           class="form-control @error('phone') is-invalid @enderror">
-
-        @error('phone')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- تاريخ التواصل --}}
       <div class="col-md-4">
         <label class="form-label fw-bold">تاريخ أول تواصل *</label>
-
         <input type="date" name="first_contact_date"
           value="{{ old('first_contact_date', $lead->first_contact_date ?? '') }}"
           class="form-control @error('first_contact_date') is-invalid @enderror">
-
-        @error('first_contact_date')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('first_contact_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- العمر --}}
       <div class="col-md-3">
         <label class="form-label fw-bold">العمر *</label>
-
         <input type="number" name="age" value="{{ old('age', $lead->age ?? '') }}"
           class="form-control @error('age') is-invalid @enderror">
-
-        @error('age')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('age') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- العمل --}}
       <div class="col-md-5">
         <label class="form-label fw-bold">العمل *</label>
-
         <input name="job" value="{{ old('job', $lead->job ?? '') }}"
           class="form-control @error('job') is-invalid @enderror">
-
-        @error('job')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('job') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- الفرع --}}
       <div class="col-md-4">
         <label class="form-label fw-bold">الفرع *</label>
-
         <select name="branch_id" id="branch" class="form-select @error('branch_id') is-invalid @enderror">
-
           <option value="">اختر الفرع</option>
-
           @foreach($branches as $b)
             <option value="{{ $b->id }}" data-name="{{ $b->name }}" @selected(old('branch_id', $lead->branch_id ?? '') == $b->id)>
               {{ $b->name }}
             </option>
           @endforeach
-
         </select>
-
-        <div class="form-text text-muted">
-          عند اختيار فرع <b>أونلاين</b> سيتم إخفاء حقل مكان السكن تلقائياً.
-        </div>
-
-        @error('branch_id')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        <div class="form-text text-muted">عند اختيار فرع <b>أونلاين</b> سيتم إخفاء حقل مكان السكن تلقائياً.</div>
+        @error('branch_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- البلد --}}
       <div class="col-md-4">
         <label class="form-label fw-bold">البلد *</label>
-
         <select name="country" id="country" class="form-select @error('country') is-invalid @enderror">
-
           <option value="">اختر البلد</option>
-
           @php
-            $countries = [
-              'تركيا',
-              'العراق',
-              'ليبيا',
-              'سوريا',
-              'الأردن',
-              'لبنان',
-              'فلسطين',
-              'الإمارات',
-              'قطر',
-              'الكويت',
-              'سلطنة عمان',
-              'ألمانيا',
-              'السويد',
-              'الولايات المتحدة',
-              'المملكة المتحدة'
-            ];
+            $countries = ['تركيا','العراق','ليبيا','سوريا','الأردن','لبنان','فلسطين','الإمارات','قطر','الكويت','سلطنة عمان','ألمانيا','السويد','الولايات المتحدة','المملكة المتحدة'];
           @endphp
-
           @foreach($countries as $c)
-            <option value="{{ $c }}" @selected(old('country', $lead->country ?? '') == $c)>
-              {{ $c }}
-            </option>
+            <option value="{{ $c }}" @selected(old('country', $lead->country ?? '') == $c)>{{ $c }}</option>
           @endforeach
-
         </select>
-
-        @error('country')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('country') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- المحافظة --}}
       <div class="col-md-4" id="province_container">
-
         <label class="form-label fw-bold">المحافظة *</label>
-
         <input name="province" id="province_input" value="{{ old('province', $lead->province ?? '') }}"
           class="form-control @error('province') is-invalid @enderror">
-
         <select id="province_select" class="form-select" style="display:none;">
           <option value="">اختر المدينة</option>
         </select>
-
-        <div class="form-text text-muted">
-          إذا اخترت تركيا ستظهر قائمة المدن التركية.
-        </div>
-
-        @error('province')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-
+        <div class="form-text text-muted">إذا اخترت تركيا ستظهر قائمة المدن التركية.</div>
+        @error('province') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- الدراسة --}}
       <div class="col-md-4">
         <label class="form-label fw-bold">الدراسة *</label>
-
         <input name="study" value="{{ old('study', $lead->study ?? '') }}"
           class="form-control @error('study') is-invalid @enderror">
-
-        @error('study')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('study') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- السكن --}}
       <div class="col-md-6" id="residence_field">
-
         <label class="form-label fw-bold">مكان السكن *</label>
-
         <input name="residence" value="{{ old('residence', $lead->residence ?? '') }}"
           class="form-control @error('residence') is-invalid @enderror">
-
-        <div class="form-text text-muted">
-          هذا الحقل يظهر فقط للفروع الحضورية.
-        </div>
-
-        @error('residence')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-
+        <div class="form-text text-muted">هذا الحقل يظهر فقط للفروع الحضورية.</div>
+        @error('residence') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- المصدر --}}
       <div class="col-md-3">
         <label class="form-label fw-bold">المصدر *</label>
-
         <select name="source" class="form-select @error('source') is-invalid @enderror">
-
           <option value="">اختر المصدر</option>
-
           <option value="ad">إعلان</option>
           <option value="referral">إحالة</option>
           <option value="social">سوشيال</option>
           <option value="website">موقع</option>
           <option value="expo">فعالية</option>
           <option value="other">أخرى</option>
-
         </select>
-
-        @error('source')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+        @error('source') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- المرحلة --}}
       <div class="col-md-3">
         <label class="form-label fw-bold">المرحلة *</label>
-
         <select name="stage" class="form-select @error('stage') is-invalid @enderror">
-
           <option value="">اختر المرحلة</option>
-
           <option value="new">جديد</option>
           <option value="follow_up">متابعة</option>
           <option value="interested">مهتم</option>
           <option value="registered">مسجل</option>
           <option value="rejected">لم يسجل</option>
           <option value="postponed">مؤجل</option>
-
         </select>
-
-        <div class="form-text text-muted">
-          عند اختيار "مسجل" سيظهر حقل البريد الإلكتروني.
-        </div>
-
-        @error('stage')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-
+        <div class="form-text text-muted">عند اختيار "مسجل" سيظهر حقل البريد الإلكتروني.</div>
+        @error('stage') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       {{-- الإيميل --}}
       <div class="col-md-6" id="email_field" style="display:none">
-
         <label class="form-label fw-bold">البريد الإلكتروني</label>
-
         <input name="email" value="{{ old('email', $lead->email ?? '') }}"
           class="form-control @error('email') is-invalid @enderror">
-
-        @error('email')
-          <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-
+        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
-
 
       <hr class="my-4">
 
+      {{-- ═══════════════════════════════════════════════════ --}}
+      {{-- نظام اختيار الدبلومات المحسّن                       --}}
+      {{-- ═══════════════════════════════════════════════════ --}}
+      <div class="col-12">
+        <label class="form-label fw-bold fs-6">
+          <i class="bi bi-mortarboard text-primary"></i> الدبلومات المطلوبة *
+        </label>
 
-      {{-- الدبلومات --}}
-      <div class="col-md-6">
+        <div class="diploma-picker">
 
-        <label class="form-label fw-bold">الدبلومات المطلوبة *</label>
+          {{-- شريط البحث --}}
+          <div class="diploma-search-box">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="diplomaSearch" class="form-control" placeholder="ابحث عن دبلومة بالاسم...">
+          </div>
 
-        <select name="diploma_ids[]" multiple size="6" class="form-select" id="diplomas">
+          {{-- قائمة الدبلومات --}}
+          <div class="diploma-list" id="diplomaList">
+            <div class="diploma-list-empty" id="diplomaEmpty" style="display:none">
+              <i class="bi bi-search"></i> لا توجد نتائج
+            </div>
+          </div>
 
-          @foreach($diplomas as $d)
-            <option value="{{ $d->id }}">
-              {{ $d->name }}
-            </option>
-          @endforeach
+          {{-- الدبلومات المختارة --}}
+          <div class="selected-diplomas" id="selectedDiplomas">
+            <div class="no-diplomas-msg" id="noDiplomasMsg">
+              <i class="bi bi-info-circle"></i> لم يتم اختيار أي دبلومة بعد — اختر من القائمة أعلاه
+            </div>
+          </div>
 
-        </select>
-
-        <div class="form-text text-muted">
-          اختر الدبلومة المطلوبة ثم اختر المجموعة الخاصة بها.
         </div>
 
+        {{-- Hidden inputs container --}}
+        <div id="diplomaHiddenInputs"></div>
       </div>
-
-
-      {{-- المجموعة --}}
-      <div class="col-md-6">
-
-        <label class="form-label fw-bold">المجموعة (الكود)</label>
-
-        <select name="group_id" id="group_id" class="form-select">
-
-          <option value="">اختر المجموعة</option>
-
-        </select>
-
-        <div class="form-text text-muted">
-          كل دبلومة قد تحتوي على عدة مجموعات حسب الكود.
-        </div>
-
-      </div>
-
 
       {{-- ملاحظات --}}
       <div class="col-12">
-
-        <label class="form-label fw-bold">ملاحظات *</label>
-
+        <label class="form-label fw-bold">ملاحظات </label>
         <textarea name="notes" class="form-control" rows="4">{{ old('notes', $lead->notes ?? '') }}</textarea>
-
       </div>
-
 
     </div>
 
-
     <div class="text-end mt-4">
-      <button class="btn btn-primary px-5">
-        حفظ
-      </button>
+      <button class="btn btn-primary px-5">حفظ</button>
     </div>
 
   </div>
 </div>
 
 
-
-
-
+@php
+    $diplomasJson = $diplomas->map(function($d) {
+        return [
+            'id'          => $d->id,
+            'name'        => $d->name,
+            'code'        => $d->code,
+            'type'        => $d->type,
+            'branch_id'   => $d->branch_id,
+            'branch_name' => $d->branch->name ?? '—',
+        ];
+    })->values();
+@endphp
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    const allDiplomas = @json($diplomasJson);
+
+
+    // تجميع الدبلومات بنفس الاسم (لعرض الأكواد والفروع المتعددة)
+    const diplomasByName = {};
+    allDiplomas.forEach(d => {
+        if (!diplomasByName[d.name]) {
+            diplomasByName[d.name] = {
+                name: d.name,
+                type: d.type,
+                variants: []
+            };
+        }
+        diplomasByName[d.name].variants.push({
+            id: d.id,
+            code: d.code,
+            branch_id: d.branch_id,
+            branch_name: d.branch_name,
+        });
+    });
+
+    const diplomaNames = Object.values(diplomasByName);
+    const selectedDiplomas = new Map(); // name -> { variantId, code, branch_id }
+
+    // الدبلومات المختارة مسبقاً (عند التعديل)
+    @if(isset($lead) && $lead->diplomas->count())
+    @foreach($lead->diplomas as $ld)
+        const existingName_{{ $ld->id }} = @json($ld->name);
+        const existingVariant_{{ $ld->id }} = {
+            variantId: {{ $ld->id }},
+            code: @json($ld->code),
+            branch_id: {{ $ld->branch_id ?? 'null' }},
+        };
+        selectedDiplomas.set(existingName_{{ $ld->id }}, existingVariant_{{ $ld->id }});
+    @endforeach
+    @endif
+
+    const diplomaList      = document.getElementById('diplomaList');
+    const diplomaSearch    = document.getElementById('diplomaSearch');
+    const diplomaEmpty     = document.getElementById('diplomaEmpty');
+    const selectedContainer = document.getElementById('selectedDiplomas');
+    const noDiplomasMsg    = document.getElementById('noDiplomasMsg');
+    const hiddenInputs     = document.getElementById('diplomaHiddenInputs');
+    const branchSelect     = document.getElementById('branch');
+
+    // ============================================================
+    // عرض قائمة الدبلومات
+    // ============================================================
+    function renderDiplomaList(filter = '') {
+        // مسح القائمة
+        diplomaList.querySelectorAll('.diploma-list-item').forEach(el => el.remove());
+
+        const selectedBranchId = branchSelect.value;
+        let visibleCount = 0;
+
+        diplomaNames.forEach(group => {
+            const nameMatch = filter === '' || group.name.includes(filter);
+
+            // فلترة حسب فرع العميل المختار
+            const hasMatchingBranch = !selectedBranchId ||
+                group.variants.some(v => v.branch_id == selectedBranchId);
+
+            if (!nameMatch || !hasMatchingBranch) return;
+
+            const isSelected = selectedDiplomas.has(group.name);
+            const branches = group.variants.map(v => v.branch_name).filter((v,i,a) => a.indexOf(v) === i).join('، ');
+            const codes = group.variants.map(v => v.code).filter((v,i,a) => a.indexOf(v) === i).join('، ');
+
+            const item = document.createElement('div');
+            item.className = 'diploma-list-item' + (isSelected ? ' disabled' : '');
+            item.innerHTML = `
+                <div>
+                    <span class="d-name">${group.name}</span>
+                    <div class="d-meta">
+                        <span><i class="bi bi-tag"></i> ${codes}</span>
+                        <span><i class="bi bi-building"></i> ${branches}</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="badge ${group.type === 'online' ? 'bg-primary' : 'bg-success'}" style="font-size:11px">
+                        ${group.type === 'online' ? 'أونلاين' : 'حضوري'}
+                    </span>
+                    ${isSelected ? '<i class="bi bi-check-circle-fill text-success ms-2"></i>' : '<i class="bi bi-plus-circle text-primary ms-2"></i>'}
+                </div>
+            `;
+
+            if (!isSelected) {
+                item.addEventListener('click', () => addDiploma(group));
+            }
+
+            diplomaList.appendChild(item);
+            visibleCount++;
+        });
+
+        diplomaEmpty.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    // ============================================================
+    // إضافة دبلومة
+    // ============================================================
+    function addDiploma(group) {
+        const selectedBranchId = branchSelect.value;
+
+        // فلتر الفروع المتاحة حسب فرع العميل
+        let availableVariants = group.variants;
+        if (selectedBranchId) {
+            availableVariants = group.variants.filter(v => v.branch_id == selectedBranchId);
+        }
+
+        if (availableVariants.length === 0) return;
+
+        // الاختيار الافتراضي = أول variant متاح
+        const defaultVariant = availableVariants[0];
+        selectedDiplomas.set(group.name, {
+            variantId: defaultVariant.id,
+            code: defaultVariant.code,
+            branch_id: defaultVariant.branch_id,
+        });
+
+        renderSelectedDiplomas();
+        renderDiplomaList(diplomaSearch.value);
+        updateHiddenInputs();
+    }
+
+    // ============================================================
+    // حذف دبلومة
+    // ============================================================
+    function removeDiploma(name) {
+        selectedDiplomas.delete(name);
+        renderSelectedDiplomas();
+        renderDiplomaList(diplomaSearch.value);
+        updateHiddenInputs();
+    }
+
+    // ============================================================
+    // عرض الدبلومات المختارة
+    // ============================================================
+    function renderSelectedDiplomas() {
+        // مسح الكاردات
+        selectedContainer.querySelectorAll('.selected-diploma-card').forEach(el => el.remove());
+
+        if (selectedDiplomas.size === 0) {
+            noDiplomasMsg.style.display = 'block';
+            return;
+        }
+        noDiplomasMsg.style.display = 'none';
+
+        const selectedBranchId = branchSelect.value;
+
+        selectedDiplomas.forEach((selection, name) => {
+            const group = diplomasByName[name];
+            if (!group) return;
+
+            // الفروع المتاحة
+            let availableVariants = group.variants;
+            if (selectedBranchId) {
+                availableVariants = group.variants.filter(v => v.branch_id == selectedBranchId);
+            }
+
+            // الأكواد الفريدة
+            const uniqueCodes = [...new Map(availableVariants.map(v => [v.code, v])).values()];
+            // الفروع الفريدة
+            const uniqueBranches = [...new Map(availableVariants.map(v => [v.branch_id, v])).values()];
+
+            const card = document.createElement('div');
+            card.className = 'selected-diploma-card';
+
+            // بناء select الأكواد
+            let codeOptions = uniqueCodes.map(v =>
+                `<option value="${v.id}" ${v.id == selection.variantId ? 'selected' : ''}>${v.code}</option>`
+            ).join('');
+
+            // بناء select الفروع
+            let branchOptions = uniqueBranches.map(v =>
+                `<option value="${v.branch_id}" ${v.branch_id == selection.branch_id ? 'selected' : ''}>${v.branch_name}</option>`
+            ).join('');
+
+            card.innerHTML = `
+                <div class="sd-info">
+                    <div class="sd-name">${name}</div>
+                    <span class="sd-badge ${group.type === 'online' ? 'online' : 'onsite'}">
+                        ${group.type === 'online' ? '<i class="bi bi-wifi"></i> أونلاين' : '<i class="bi bi-geo-alt"></i> حضوري'}
+                    </span>
+                </div>
+                <div class="sd-selects">
+                    <div>
+                        <label><i class="bi bi-tag"></i> الرمز</label>
+                        <select class="diploma-code-select" data-name="${name}">
+                            ${codeOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label><i class="bi bi-building"></i> الفرع</label>
+                        <select class="diploma-branch-select" data-name="${name}">
+                            ${branchOptions}
+                        </select>
+                    </div>
+                </div>
+                <div class="sd-remove" data-name="${name}" title="إزالة">
+                    <i class="bi bi-x-lg"></i>
+                </div>
+            `;
+
+            selectedContainer.appendChild(card);
+
+            // أحداث التغيير
+            card.querySelector('.diploma-code-select').addEventListener('change', function() {
+                const variant = availableVariants.find(v => v.id == this.value);
+                if (variant) {
+                    selection.variantId = variant.id;
+                    selection.code = variant.code;
+                    selection.branch_id = variant.branch_id;
+
+                    // تحديث الفرع تلقائياً
+                    const branchSel = card.querySelector('.diploma-branch-select');
+                    if (branchSel) branchSel.value = variant.branch_id;
+
+                    updateHiddenInputs();
+                }
+            });
+
+            card.querySelector('.diploma-branch-select').addEventListener('change', function() {
+                const branchId = this.value;
+                // إيجاد variant يطابق هذا الفرع
+                const variant = availableVariants.find(v => v.branch_id == branchId);
+                if (variant) {
+                    selection.variantId = variant.id;
+                    selection.code = variant.code;
+                    selection.branch_id = variant.branch_id;
+
+                    // تحديث الكود تلقائياً
+                    const codeSel = card.querySelector('.diploma-code-select');
+                    if (codeSel) codeSel.value = variant.id;
+
+                    updateHiddenInputs();
+                }
+            });
+
+            card.querySelector('.sd-remove').addEventListener('click', function() {
+                removeDiploma(this.dataset.name);
+            });
+        });
+    }
+
+    // ============================================================
+    // تحديث الـ hidden inputs
+    // ============================================================
+    function updateHiddenInputs() {
+        hiddenInputs.innerHTML = '';
+        selectedDiplomas.forEach((selection, name) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'diploma_ids[]';
+            input.value = selection.variantId;
+            hiddenInputs.appendChild(input);
+        });
+    }
+
+    // ============================================================
+    // أحداث البحث
+    // ============================================================
+    diplomaSearch.addEventListener('input', function() {
+        renderDiplomaList(this.value.trim());
+    });
+
+    // عند تغيير فرع العميل — إعادة فلترة
+    branchSelect.addEventListener('change', function() {
+        renderDiplomaList(diplomaSearch.value.trim());
+        renderSelectedDiplomas();
+        updateHiddenInputs();
+    });
+
+    // التهيئة الأولى
+    renderDiplomaList();
+    renderSelectedDiplomas();
+    updateHiddenInputs();
+
 
     // ============================================================
     // ١. إظهار الإيميل عند اختيار "مسجل"
@@ -379,7 +683,6 @@ document.addEventListener('DOMContentLoaded', function () {
             emailField.style.display = 'none';
         }
     }
-
     stage.addEventListener('change', toggleEmail);
     toggleEmail();
 
@@ -387,15 +690,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // ٢. إخفاء السكن عند اختيار فرع أونلاين
     // ============================================================
-    const branch        = document.getElementById('branch');
     const residenceField = document.getElementById('residence_field');
 
     function toggleResidence() {
-        const text = branch.options[branch.selectedIndex]?.text ?? '';
+        const text = branchSelect.options[branchSelect.selectedIndex]?.text ?? '';
         residenceField.style.display = text.includes('أونلاين') ? 'none' : 'block';
     }
-
-    branch.addEventListener('change', toggleResidence);
+    branchSelect.addEventListener('change', toggleResidence);
     toggleResidence();
 
 
@@ -403,11 +704,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // ٣. مدن تركيا
     // ============================================================
     const turkeyCities = [
-        'اسطنبول', 'مرسين', 'غازي عنتاب', 'بورصا', 'كيليس', 'ازمير',
-        'قونيا', 'اضنة', 'اورفا', 'اسكي شهير', 'سكاريا', 'يالوفا',
-        'انطاليا', 'الانيا', 'بوردور', 'موغلا', 'ماردين'
+        'اسطنبول','مرسين','غازي عنتاب','بورصا','كيليس','ازمير',
+        'قونيا','اضنة','اورفا','اسكي شهير','سكاريا','يالوفا',
+        'انطاليا','الانيا','بوردور','موغلا','ماردين'
     ];
-
     const country        = document.getElementById('country');
     const provinceInput  = document.getElementById('province_input');
     const provinceSelect = document.getElementById('province_select');
@@ -421,62 +721,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 const opt = document.createElement('option');
                 opt.value = city;
                 opt.textContent = city;
+                if ('{{ old('province', $lead->province ?? '') }}' === city) opt.selected = true;
                 provinceSelect.appendChild(opt);
             });
+            provinceSelect.setAttribute('name', 'province');
+            provinceInput.removeAttribute('name');
         } else {
             provinceInput.style.display  = 'block';
             provinceSelect.style.display = 'none';
+            provinceInput.setAttribute('name', 'province');
+            provinceSelect.removeAttribute('name');
         }
     }
-
     country.addEventListener('change', handleProvince);
     handleProvince();
 
 
     // ============================================================
-    // ٤. حذف الدبلومات المكررة
-    // ============================================================
-    const diplomas = document.getElementById('diplomas');
-    const seen = new Set();
-
-    for (let i = diplomas.options.length - 1; i >= 0; i--) {
-        const text = diplomas.options[i].text.trim();
-        if (seen.has(text)) {
-            diplomas.remove(i);
-        } else {
-            seen.add(text);
-        }
-    }
-
-
-    // ============================================================
-    // ٥. تحميل المجموعات عند اختيار دبلومة
-    // ============================================================
-    diplomas.addEventListener('change', function () {
-        const id = this.value;
-        if (!id) return;
-
-        fetch(`/diplomas/${id}/groups`)
-            .then(res => res.json())
-            .then(data => {
-                const group = document.getElementById('group_id');
-                group.innerHTML = '<option value="">اختر المجموعة</option>';
-                data.forEach(g => {
-                    const opt = document.createElement('option');
-                    opt.value = g.id;
-                    opt.textContent = g.code;
-                    group.appendChild(opt);
-                });
-            });
-    });
-
-
-    // ============================================================
-    // ٦. Strict Mode — الـ Checkbox الرئيسي
+    // ٤. Strict Mode
     // ============================================================
     const strictCheckbox = document.getElementById('strict_mode');
-
-    // الحقول التي تصبح required عند تفعيل strict mode
     const strictFields = [
         { selector: '[name="whatsapp"]',    container: null },
         { selector: '[name="email"]',       container: 'email_field' },
@@ -487,68 +751,33 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
 
     function applyStrictMode(isStrict) {
-
         strictFields.forEach(({ selector, container }) => {
-
             const input = document.querySelector(selector);
             if (!input) return;
-
             if (isStrict) {
-
                 input.setAttribute('required', 'required');
                 input.classList.add('border-danger');
-
-                // إظهار الحاويات المخفية
                 if (container) {
                     const el = document.getElementById(container);
                     if (el) el.style.display = 'block';
                 }
-
             } else {
-
                 input.removeAttribute('required');
                 input.classList.remove('border-danger');
-
-                // إعادة الحالة الأصلية للحاويات
-                if (container === 'email_field') {
-                    toggleEmail(); // يعيد منطق الإيميل الأصلي
-                }
-                if (container === 'residence_field') {
-                    toggleResidence(); // يعيد منطق السكن الأصلي
-                }
-
+                if (container === 'email_field') toggleEmail();
+                if (container === 'residence_field') toggleResidence();
             }
-
         });
 
-        // تغيير مظهر تنبيه الـ checkbox
         const alert = document.getElementById('strict_mode_alert');
-        if (isStrict) {
-            alert.classList.remove('alert-warning');
-            alert.classList.add('alert-danger');
-        } else {
-            alert.classList.remove('alert-danger');
-            alert.classList.add('alert-warning');
-        }
-
+        alert.classList.toggle('alert-danger', isStrict);
+        alert.classList.toggle('alert-warning', !isStrict);
     }
 
     strictCheckbox.addEventListener('change', function () {
         applyStrictMode(this.checked);
     });
-
-    // تطبيق الحالة الأولية عند تحميل الصفحة
     applyStrictMode(strictCheckbox.checked);
 
 });
-
-
-const provSelect = document.getElementById('province_select');
-if (provSelect) {
-    isStrict
-        ? provSelect.setAttribute('required', 'required')
-        : provSelect.removeAttribute('required');
-}
-
-
 </script>

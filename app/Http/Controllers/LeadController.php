@@ -107,7 +107,10 @@ class LeadController extends Controller
 
     return view('crm.leads.create', [
       'branches' => $branches,
-      'diplomas' => Diploma::orderBy('name')->get(),
+      'diplomas' => Diploma::with('branch')
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get(),
     ]);
   }
 
@@ -208,7 +211,10 @@ class LeadController extends Controller
     return view('crm.leads.edit', [
       'lead' => $lead,
       'branches' => Branch::orderBy('name')->get(),
-      'diplomas' => Diploma::orderBy('name')->get(),
+      'diplomas' => Diploma::with('branch')
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get(),
     ]);
   }
 
@@ -407,16 +413,16 @@ class LeadController extends Controller
 
 
   // API
-public function getDiplomaGroups($id)
-{
+  public function getDiplomaGroups($id)
+  {
     $diploma = Diploma::findOrFail($id);
 
     $groups = Diploma::where('name', $diploma->name)
-        ->select('id','code')
-        ->get();
+      ->select('id', 'code')
+      ->get();
 
     return response()->json($groups);
-}
+  }
 
 
 

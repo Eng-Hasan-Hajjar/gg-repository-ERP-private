@@ -30,7 +30,7 @@ use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\AttendanceReportController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TaskController;
-
+use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -209,7 +209,7 @@ Route::post('tasks/{task}/quick-status', [TaskController::class, 'quickStatus'])
 
 
 Route::resource('leaves', LeaveRequestController::class)
-    ->only(['index', 'create', 'store', 'show','destroy'])
+    ->only(['index', 'create', 'store', 'show', 'destroy'])
     ->parameters(['leaves' => 'leave']);
 Route::post('leaves/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leaves.approve');
 Route::post('leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');
@@ -261,14 +261,6 @@ Route::put('exams/{exam}/results', [ExamResultController::class, 'update'])->nam
 
 
 
-
-
-
-
-
-
-
-
 Route::resource('leads', LeadController::class);
 
 Route::post('leads/{lead}/convert', [LeadController::class, 'convertToStudent'])
@@ -302,7 +294,7 @@ Route::middleware(['auth'])->group(function () {
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\PermissionController;
 
-Route::middleware(['auth', 'permission:manage_roles'])
+Route::middleware(['auth'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -316,7 +308,7 @@ Route::middleware(['auth', 'permission:manage_roles'])
 
 use App\Http\Controllers\Admin\UserController;
 
-Route::middleware(['auth', 'permission:manage_roles'])
+Route::middleware(['auth'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -328,11 +320,13 @@ Route::middleware(['auth', 'permission:manage_roles'])
 use App\Http\Controllers\Admin\AuditController;
 
 Route::get('/admin/audit-logs', [AuditController::class, 'index'])
-    ->middleware(['auth', 'permission:manage_roles'])
+    ->middleware(['auth'])
+    ->name('admin.audit.index2');
+
+
+
+Route::get('/audit-center', [AuditController::class, 'index'])
     ->name('admin.audit.index');
-
-
-
 
 
 
@@ -343,8 +337,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('roles', RoleController::class);
 
     // إضافات جديدة:
-    Route::get('roles/{role}/show', [RoleController::class, 'show'])
-        ->name('roles.show');
+ //   Route::get('roles/{role}/show', [RoleController::class, 'show'])
+  //      ->name('roles.show');
 
     Route::post('roles/{role}/clone', [RoleController::class, 'clone'])
         ->name('roles.clone');
@@ -370,8 +364,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
-Route::get('/audit-center', [AuditController::class, 'index'])
-    ->name('admin.audit.index');
 
 
 
@@ -629,18 +621,20 @@ Route::get('/diplomas/{id}/groups', [LeadController::class, 'getDiplomaGroups'])
 
 use App\Http\Controllers\PaymentPlanController;
 
-Route::post('/payment-plan/store', [PaymentPlanController::class,'store'])
+Route::post('/payment-plan/store', [PaymentPlanController::class, 'store'])
     ->name('payment.plan.store');
 
 
-    Route::get('/payment-plan/{plan}/edit',
-[PaymentPlanController::class,'edit'])
-->name('payment.plan.edit');
+Route::get(
+    '/payment-plan/{plan}/edit',
+    [PaymentPlanController::class, 'edit']
+)
+    ->name('payment.plan.edit');
 
 
 
-Route::put('/payment-plan/{plan}',[PaymentPlanController::class,'update'])
-->name('payment.plan.update');
+Route::put('/payment-plan/{plan}', [PaymentPlanController::class, 'update'])
+    ->name('payment.plan.update');
 
 
 
@@ -655,134 +649,101 @@ Route::put('/payment-plan/{plan}',[PaymentPlanController::class,'update'])
 
 
 use App\Http\Controllers\MediaPublishController;
- 
+
 /*
 |--------------------------------------------------------------------------
 | Public Media Form (بدون تسجيل دخول)
 |--------------------------------------------------------------------------
 */
- 
+
 Route::get(
     '/media-request/public',
     [MediaRequestController::class, 'publicForm']
 )->name('media.public.form');
- 
+
 Route::post(
     '/media-request/public',
     [MediaRequestController::class, 'publicStore']
 )->name('media.public.store');
- 
+
 Route::get(
     '/media-request/thanks',
     [MediaRequestController::class, 'thanks']
 )->name('media.public.thanks');
- 
- 
+
+
 /*
 |--------------------------------------------------------------------------
 | Media Panel (تحتاج تسجيل دخول)
 |--------------------------------------------------------------------------
 */
- 
+
 Route::middleware(['auth'])->group(function () {
- 
+
     // طلبات الميديا
     Route::get('/media-requests', [MediaRequestController::class, 'index'])
         ->name('media.index');
- 
+
     Route::get('/media-requests/create', [MediaRequestController::class, 'create'])
         ->name('media.create');
- 
+
     Route::post('/media-requests', [MediaRequestController::class, 'store'])
         ->name('media.store');
- 
+
     Route::get('/media-requests/{media}', [MediaRequestController::class, 'show'])
         ->name('media.show');
- 
+
     Route::post('/media-requests/{media}', [MediaRequestController::class, 'update'])
         ->name('media.update');
- 
+
     // حذف المسودات التجريبية
     Route::delete('/media-requests/cleanup-drafts', [MediaRequestController::class, 'cleanupDrafts'])
         ->name('media.cleanup');
- 
+
     // قائمة النشر
     Route::get('/media-publish', [MediaPublishController::class, 'index'])
         ->name('media.publish.index');
- 
+
     Route::get('/media-publish/create', [MediaPublishController::class, 'create'])
         ->name('media.publish.create');
- 
+
     Route::post('/media-publish', [MediaPublishController::class, 'store'])
         ->name('media.publish.store');
- 
+
     Route::get('/media-publish/{publish}/edit', [MediaPublishController::class, 'edit'])
         ->name('media.publish.edit');
- 
+
     Route::put('/media-publish/{publish}', [MediaPublishController::class, 'update'])
         ->name('media.publish.update');
- 
+
     Route::delete('/media-publish/{publish}', [MediaPublishController::class, 'destroy'])
         ->name('media.publish.destroy');
+
+});
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
+    Route::post('/location/skip',  [LocationController::class, 'skip'])->name('location.skip');
+});
+
+
+
+
+// ═══════════════════════════════════════════════════════
+// أضف هذين السطرين في ملف routes/web.php
+// داخل مجموعة routes الخاصة بالحضور (attendance)
+// ═══════════════════════════════════════════════════════
  
-});
+// استراحة
+Route::post('/attendance/{record}/break-start', [App\Http\Controllers\AttendanceController::class, 'breakStart'])
+    ->name('attendance.break.start');
+ 
+Route::post('/attendance/{record}/break-end', [App\Http\Controllers\AttendanceController::class, 'breakEnd'])
+    ->name('attendance.break.end');
+ 
 
-
-
-/*
-
-
-
-
-
-Route::get(
-    '/media-request/public',
-    [MediaRequestController::class, 'publicForm']
-)
-    ->name('media.public.form');
-
-Route::post(
-    '/media-request/public',
-    [MediaRequestController::class, 'publicStore']
-)
-    ->name('media.public.store');
-
-Route::get(
-    '/media-request/thanks',
-    [MediaRequestController::class, 'thanks']
-)
-    ->name('media.public.thanks');
-
-
-
-
-Route::middleware(['auth'])->group(function () {
-
-    Route::get(
-        '/media-requests',
-        [MediaRequestController::class, 'index']
-    )
-        ->name('media.index');
-
-    Route::get(
-        '/media-requests/{media}',
-        [MediaRequestController::class, 'show']
-    )
-        ->name('media.show');
-
-    Route::post(
-        '/media-requests/{media}',
-        [MediaRequestController::class, 'update']
-    )
-        ->name('media.update');
-});
-
-
-
-
-
-
-*/
 
 
 require __DIR__ . '/auth.php';

@@ -12,6 +12,7 @@ class Diploma extends Model
 
     protected $fillable = ['name', 'field', 'code', 'type', 'is_active', 'details_pdf', 'branch_id'];
 
+    
     protected $casts = [
         'is_active' => 'boolean',
     ];
