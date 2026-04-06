@@ -61,12 +61,13 @@ class AttendanceRecord extends Model
      * هل يمكن بدء استراحة؟
      * الشروط: سجّل دخول + لم يسجل خروج + ليس في استراحة حالياً
      */
-    public function getCanStartBreakAttribute(): bool
-    {
-        return $this->check_in_at
-            && !$this->check_out_at
-            && !$this->is_on_break;
-    }
+  public function getCanStartBreakAttribute(): bool
+{
+    return $this->check_in_at
+        && !$this->check_out_at
+        && !$this->is_on_break
+        && !$this->break_start_at; 
+}
 
     /**
      * هل يمكن إنهاء الاستراحة؟
@@ -132,6 +133,7 @@ class AttendanceRecord extends Model
     }
 
     // ───── Global Scope ─────
+
 
     protected static function booted()
     {

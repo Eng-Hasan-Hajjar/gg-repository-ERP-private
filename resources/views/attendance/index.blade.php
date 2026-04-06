@@ -10,143 +10,157 @@
     </div>
   </div>
 
-<style>
-  .break-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .break-badge.on-break {
-    background: #fef3c7;
-    color: #92400e;
-    animation: pulse-break 1.5s infinite;
-  }
-  .break-badge.break-done {
-    background: #f1f5f9;
-    color: #64748b;
-  }
-  @keyframes pulse-break {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .6; }
-  }
-  .btn-break-start {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fcd34d;
-    font-weight: 600;
-  }
-  .btn-break-start:hover {
-    background: #fde68a;
-    color: #78350f;
-  }
-  .btn-break-end {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #93c5fd;
-    font-weight: 600;
-  }
-  .btn-break-end:hover {
-    background: #bfdbfe;
-    color: #1e3a8a;
-  }
-</style>
+  <style>
+    .break-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
 
-@if(auth()->user()?->hasRole('super_admin'))
-  <form method="POST" action="{{ route('attendance.generateWeek') }}" class="card border-0 shadow-sm mb-3">
-    @csrf
-    <div class="card-body py-2">
-      <div class="row align-items-end g-2">
-        <div class="col-md-3">
-          <label class="fw-bold small mb-1">بداية الأسبوع</label>
-          <input type="date" name="week_start" class="form-control" required
-            value="{{ now()->startOfWeek()->format('Y-m-d') }}">
-        </div>
-        <div class="col-md-auto">
-          <button class="btn btn-namaa fw-bold mt-3">
-            <i class="bi bi-magic"></i> توليد سجلات الأسبوع
-          </button>
+    .break-badge.on-break {
+      background: #fef3c7;
+      color: #92400e;
+      animation: pulse-break 1.5s infinite;
+    }
+
+    .break-badge.break-done {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    @keyframes pulse-break {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .6;
+      }
+    }
+
+    .btn-break-start {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+      font-weight: 600;
+    }
+
+    .btn-break-start:hover {
+      background: #fde68a;
+      color: #78350f;
+    }
+
+    .btn-break-end {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+      font-weight: 600;
+    }
+
+    .btn-break-end:hover {
+      background: #bfdbfe;
+      color: #1e3a8a;
+    }
+  </style>
+
+  @if(auth()->user()?->hasRole('super_admin'))
+    <form method="POST" action="{{ route('attendance.generateWeek') }}" class="card border-0 shadow-sm mb-3">
+      @csrf
+      <div class="card-body py-2">
+        <div class="row align-items-end g-2">
+          <div class="col-md-3">
+            <label class="fw-bold small mb-1">بداية الأسبوع</label>
+            <input type="date" name="week_start" class="form-control" required
+              value="{{ now()->startOfWeek()->format('Y-m-d') }}">
+          </div>
+          <div class="col-md-auto">
+            <button class="btn btn-namaa fw-bold mt-3">
+              <i class="bi bi-magic"></i> توليد سجلات الأسبوع
+            </button>
+          </div>
         </div>
       </div>
+    </form>
+
+    <div class="mb-2 text-muted small">
+      عدد السجلات: {{ $records->total() }}
     </div>
-  </form>
 
-  <div class="mb-2 text-muted small">
-    عدد السجلات: {{ $records->total() }}
-  </div>
+    <div class="d-flex flex-wrap gap-2 mt-2 mb-3">
+      <a href="{{ route('attendance.index', [
+        'from' => now()->startOfWeek()->toDateString(),
+        'to' => now()->endOfWeek()->toDateString()
+      ]) }}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-calendar-week"></i> هذا الأسبوع
+      </a>
+      <a href="{{ route('attendance.index', [
+        'from' => now()->startOfMonth()->toDateString(),
+        'to' => now()->endOfMonth()->toDateString()
+      ]) }}" class="btn btn-sm btn-outline-success">
+        <i class="bi bi-calendar-month"></i> هذا الشهر
+      </a>
+      <a href="{{ route('attendance.index', [
+        'from' => now()->subMonths(3)->startOfMonth()->toDateString(),
+        'to' => now()->endOfMonth()->toDateString()
+      ]) }}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-calendar-range"></i> آخر 3 أشهر
+      </a>
+    </div>
 
-  <div class="d-flex flex-wrap gap-2 mt-2 mb-3">
-    <a href="{{ route('attendance.index', [
-      'from' => now()->startOfWeek()->toDateString(),
-      'to' => now()->endOfWeek()->toDateString()
-    ]) }}" class="btn btn-sm btn-outline-primary">
-      <i class="bi bi-calendar-week"></i> هذا الأسبوع
-    </a>
-    <a href="{{ route('attendance.index', [
-      'from' => now()->startOfMonth()->toDateString(),
-      'to' => now()->endOfMonth()->toDateString()
-    ]) }}" class="btn btn-sm btn-outline-success">
-      <i class="bi bi-calendar-month"></i> هذا الشهر
-    </a>
-    <a href="{{ route('attendance.index', [
-      'from' => now()->subMonths(3)->startOfMonth()->toDateString(),
-      'to' => now()->endOfMonth()->toDateString()
-    ]) }}" class="btn btn-sm btn-outline-dark">
-      <i class="bi bi-calendar-range"></i> آخر 3 أشهر
-    </a>
-  </div>
-
-  <form class="card border-0 shadow-sm mb-3">
-    <div class="card-body">
-      <div class="row g-2">
-        <div class="col-6 col-md-2">
-          <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: اسم/كود">
-        </div>
-        <div class="col-6 col-md-2">
-          <select name="branch_id" class="form-select">
-            <option value="">الفرع (الكل)</option>
-            @foreach($branches as $b)
-              <option value="{{ $b->id }}" @selected(request('branch_id') == $b->id)>{{ $b->name }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-6 col-md-2">
-          <select name="employee_id" class="form-select">
-            <option value="">الموظف (الكل)</option>
-            @foreach($employees as $e)
-              <option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>{{ $e->full_name }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-6 col-md-2">
-          <select name="status" class="form-select">
-            <option value="">الحالة (الكل)</option>
-            @foreach(['scheduled', 'present', 'late', 'absent', 'off', 'leave'] as $s)
-              <option value="{{ $s }}" @selected(request('status') == $s)>{{ $s }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-6 col-md-2">
-          <input type="date" name="from" value="{{ request('from') }}" class="form-control">
-        </div>
-        <div class="col-6 col-md-2">
-          <input type="date" name="to" value="{{ request('to') }}" class="form-control">
-        </div>
-        <div class="col-6 col-md-6 d-grid">
-          <button class="btn btn-namaa fw-bold"><i class="bi bi-funnel"></i> تطبيق الفلتر</button>
-        </div>
-        <div class="col-6 col-md-6 d-grid">
-          <a href="{{ route('attendance.index') }}" class="btn btn-outline-secondary fw-bold">
-            <i class="bi bi-x-circle"></i> تنظيف
-          </a>
+    <form class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6 col-md-2">
+            <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: اسم/كود">
+          </div>
+          <div class="col-6 col-md-2">
+            <select name="branch_id" class="form-select">
+              <option value="">الفرع (الكل)</option>
+              @foreach($branches as $b)
+                <option value="{{ $b->id }}" @selected(request('branch_id') == $b->id)>{{ $b->name }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select name="employee_id" class="form-select">
+              <option value="">الموظف (الكل)</option>
+              @foreach($employees as $e)
+                <option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>{{ $e->full_name }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select name="status" class="form-select">
+              <option value="">الحالة (الكل)</option>
+              @foreach(['scheduled', 'present', 'late', 'absent', 'off', 'leave'] as $s)
+                <option value="{{ $s }}" @selected(request('status') == $s)>{{ $s }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <input type="date" name="from" value="{{ request('from') }}" class="form-control">
+          </div>
+          <div class="col-6 col-md-2">
+            <input type="date" name="to" value="{{ request('to') }}" class="form-control">
+          </div>
+          <div class="col-6 col-md-6 d-grid">
+            <button class="btn btn-namaa fw-bold"><i class="bi bi-funnel"></i> تطبيق الفلتر</button>
+          </div>
+          <div class="col-6 col-md-6 d-grid">
+            <a href="{{ route('attendance.index') }}" class="btn btn-outline-secondary fw-bold">
+              <i class="bi bi-x-circle"></i> تنظيف
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </form>
-@endif
+    </form>
+  @endif
 
   <div class="card border-0 shadow-sm">
     <div class="table-responsive">
@@ -179,7 +193,7 @@
                 if ($empSession) {
                   $empLocation = $empSession->address_detail
                     ?? collect([$empSession->city ?? null, $empSession->country ?? null])
-                       ->filter()->implode('، ');
+                      ->filter()->implode('، ');
                 }
               }
             @endphp
@@ -197,16 +211,11 @@
                     <i class="bi bi-cup-hot"></i>
                     في استراحة منذ {{ $r->break_start_at->format('H:i') }}
                   </span>
-                @elseif($r->break_minutes > 0)
+                @elseif($r->break_start_at)
                   <span class="break-badge break-done">
                     <i class="bi bi-cup"></i>
-                    {{ $r->break_formatted }}
+                    {{ $r->break_start_at->format('H:i') }} — {{ $r->break_end_at?->format('H:i') ?? '...' }}
                   </span>
-                  @if($r->break_start_at && $r->break_end_at)
-                    <div class="text-muted" style="font-size:11px">
-                      {{ $r->break_start_at->format('H:i') }} — {{ $r->break_end_at->format('H:i') }}
-                    </div>
-                  @endif
                 @else
                   <span class="text-muted">—</span>
                 @endif
