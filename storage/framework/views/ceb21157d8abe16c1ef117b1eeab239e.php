@@ -1438,7 +1438,7 @@ ERP Notifications Style
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': CSRF }
               }).catch(function () { });
-              closeModal();
+              location.reload();
             }
 
             function doStore(lat, lng) {
@@ -1455,11 +1455,13 @@ ERP Notifications Style
                 })
                 .then(function (data) {
                   console.log('Location saved:', data);
-                  closeModal();
+                  location.reload(); // ← بدل closeModal()
+                 
                 })
                 .catch(function (err) {
                   console.warn('Location store failed:', err);
-                  closeModal();
+                  location.reload(); // ← بدل closeModal()
+                  
                 });
             }
 
