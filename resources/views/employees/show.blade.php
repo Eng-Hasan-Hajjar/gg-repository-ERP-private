@@ -9,6 +9,14 @@
       كود: <code>{{ $employee->code }}</code>
       — النوع: <b>{{ $employee->type == 'trainer' ? 'مدرب' : 'موظف' }}</b>
       — الفرع: <b>{{ $employee->branch->name ?? '-' }}</b>
+
+
+      @if($employee->secondaryBranch)
+        <span class="badge bg-info">+ {{ $employee->secondaryBranch->name }}</span>
+      @endif
+
+
+
     </div>
   </div>
 

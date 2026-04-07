@@ -113,6 +113,7 @@ public function create(Request $request)
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'branch_id' => ['nullable', 'exists:branches,id'],
+            'secondary_branch_id' => ['nullable', 'exists:branches,id'],
             'job_title' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:active,inactive'],
             'notes' => ['nullable', 'string', 'max:3000'],
@@ -264,6 +265,8 @@ public function create(Request $request)
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'branch_id' => ['nullable', 'exists:branches,id'],
+            'secondary_branch_id' => ['nullable', 'exists:branches,id'],
+            
             'job_title' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:active,inactive'],
             'notes' => ['nullable', 'string', 'max:3000'],

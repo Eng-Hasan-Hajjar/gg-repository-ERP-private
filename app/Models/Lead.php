@@ -102,7 +102,7 @@ class Lead extends Model
       if (!$user->hasRole('super_admin')) {
 
         $branchId = $user->employee?->branch_id;
-
+       // $branchId2 = $user->employee?->branch_id;
         if ($branchId) {
           $query->where('branch_id', $branchId);
         }
@@ -110,6 +110,32 @@ class Lead extends Model
       }
 
     });
+
+
+
+
+     static::addGlobalScope('branch', function ($query) {
+        if (!auth()->check()) return;
+
+        $user = auth()->user();
+        if ($user->hasRole('super_admin')) return;
+
+        $employee = \App\Models\Employee::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($employee) {
+            $branchIds = collect([$employee->branch_id, $employee->secondary_branch_id])
+                ->filter()->unique()->all();
+
+            if (count($branchIds)) {
+                $query->whereIn('branch_id', $branchIds);
+            }
+        }
+    });
+
+
+    
   }
 
 
