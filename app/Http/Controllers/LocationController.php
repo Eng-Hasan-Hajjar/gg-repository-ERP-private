@@ -25,8 +25,6 @@ class LocationController extends Controller
             $city = null;
             $country = null;
 
-            // Reverse Geocoding — في try منفصل حتى لا يوقف العملية
-            // استبدل هذا الجزء فقط
             try {
                 $geo = Http::withHeaders([
                     'User-Agent' => 'NamaaERP/1.0 (contact@namaa.com)',
@@ -73,6 +71,36 @@ class LocationController extends Controller
                 ->whereNull('logout_at')
                 ->latest('login_at')
                 ->first();
+
+
+
+
+            if (!$session) {
+                // fallback: إنشاء جلسة جديدة إذا لم يكن هناك جلسة نشطة
+                $session = $user->sessions()->create([
+                    'login_at' => now(),
+                    'last_activity' => now(),
+                    'session_id' => session()->getId(),
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'work_date' => now()->toDateString(),
+                ]);
+            }
+
+            if ($session) {
+                $session->update([
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'city' => $city,
+                    'country' => $country,
+                    'address_detail' => $addressParts ?? null,
+                    'last_activity' => now(),
+                ]);
+            }
+
+
+
+
 
             if ($session) {
                 $session->latitude = $request->latitude;

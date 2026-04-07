@@ -92,7 +92,7 @@ class Employee extends Model
         if (!auth()->check()) return;
 
         $user = auth()->user();
-        if ($user->hasRole('super_admin')) return;
+        if ($user->hasRole('super_admin') && $user->hasRole('manager_attendance') ) return;
 
         $employee = \App\Models\Employee::withoutGlobalScopes()
             ->where('user_id', $user->id)

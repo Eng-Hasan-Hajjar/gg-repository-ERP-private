@@ -25,7 +25,8 @@ class AuthorizeByRoute
             'password.email',
             'password.reset',
             'verification.notice',
-
+            'location.store',
+            'location.skip',
             // فورم طلب الميديا العام
             'media.public.form',
             'media.public.store',
@@ -58,7 +59,8 @@ class AuthorizeByRoute
 
     private function mapRouteToPermission($routeName)
     {
-        if (!$routeName) return null;
+        if (!$routeName)
+            return null;
 
         /*
         |------------------------------------------------------------------
@@ -68,26 +70,26 @@ class AuthorizeByRoute
         */
         $customMap = [
             // طلبات الميديا
-            'media.index'          => 'view_media_requests',
-            'media.create'         => 'view_media_requests',
-            'media.store'          => 'view_media_requests',
-            'media.show'           => 'view_media_requests',
-            'media.update'         => 'view_media_requests',
-            'media.cleanup'        => 'view_media_requests',
+            'media.index' => 'view_media_requests',
+            'media.create' => 'view_media_requests',
+            'media.store' => 'view_media_requests',
+            'media.show' => 'view_media_requests',
+            'media.update' => 'view_media_requests',
+            'media.cleanup' => 'view_media_requests',
 
             // قائمة النشر
-            'media.publish.index'   => 'view_media_requests',
-            'media.publish.create'  => 'view_media_requests',
-            'media.publish.store'   => 'view_media_requests',
-            'media.publish.edit'    => 'view_media_requests',
-            'media.publish.update'  => 'view_media_requests',
+            'media.publish.index' => 'view_media_requests',
+            'media.publish.create' => 'view_media_requests',
+            'media.publish.store' => 'view_media_requests',
+            'media.publish.edit' => 'view_media_requests',
+            'media.publish.update' => 'view_media_requests',
             'media.publish.destroy' => 'view_media_requests',
 
             // إدارة البرامج
             'programs.management.index' => 'view_program_management',
-            'programs.management.edit'  => 'view_program_management',
-            'programs.management.update'=> 'view_program_management',
-            'programs.management.show'  => 'view_program_management',
+            'programs.management.edit' => 'view_program_management',
+            'programs.management.update' => 'view_program_management',
+            'programs.management.show' => 'view_program_management',
         ];
 
         if (isset($customMap[$routeName])) {
@@ -101,18 +103,19 @@ class AuthorizeByRoute
         */
         $parts = explode('.', $routeName);
 
-        if (count($parts) < 2) return null;
+        if (count($parts) < 2)
+            return null;
 
         $module = $parts[0];
         $action = $parts[1];
 
         $map = [
-            'index'   => 'view_' . $module,
-            'show'    => 'view_' . $module,
-            'create'  => 'create_' . $module,
-            'store'   => 'create_' . $module,
-            'edit'    => 'edit_' . $module,
-            'update'  => 'edit_' . $module,
+            'index' => 'view_' . $module,
+            'show' => 'view_' . $module,
+            'create' => 'create_' . $module,
+            'store' => 'create_' . $module,
+            'edit' => 'edit_' . $module,
+            'update' => 'edit_' . $module,
             'destroy' => 'delete_' . $module,
         ];
 

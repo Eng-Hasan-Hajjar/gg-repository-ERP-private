@@ -465,7 +465,10 @@
       <div class="module-actions grid-2">
         <a href="<?php echo e(route('attendance.calendar')); ?>" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
         <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
+
+        <?php if(auth()->user()?->hasPermission('export_attendance_reports')): ?>
         <a href="<?php echo e(route('attendance.reports')); ?>" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
+         <?php endif; ?>
         <?php if(auth()->user()?->hasPermission('view_leaves')): ?>
           <a href="<?php echo e(route('leaves.index')); ?>" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
         <?php endif; ?>

@@ -19,7 +19,7 @@ class AttendanceController extends Controller
 
         $user = auth()->user();
 
-        if (!$user->hasRole('super_admin')) {
+        if (!$user->hasRole('super_admin') && !$user->hasRole('manager_attendance')) {
             $employee = Employee::withoutGlobalScopes()
                 ->where('user_id', $user->id)
                 ->first();

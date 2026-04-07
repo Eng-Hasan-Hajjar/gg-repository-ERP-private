@@ -464,7 +464,10 @@
       <div class="module-actions grid-2">
         <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
         <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
+
+        @if(auth()->user()?->hasPermission('export_attendance_reports'))
         <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
+         @endif
         @if(auth()->user()?->hasPermission('view_leaves'))
           <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
         @endif

@@ -144,7 +144,7 @@ class AttendanceRecord extends Model
 
             $user = auth()->user();
 
-            if ($user->hasRole('super_admin')) {
+            if ($user->hasRole('super_admin') && $user->hasRole('manager_attendance') ) {
                 return;
             }
 

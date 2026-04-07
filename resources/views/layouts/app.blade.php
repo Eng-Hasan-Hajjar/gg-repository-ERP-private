@@ -1080,33 +1080,7 @@ ERP Notifications Style
 
 
 
-{{-- ===== Location Modal ===== --}}
-@auth
-  @if(!session('location_captured'))
-    <div id="location-modal" class="location-modal-overlay">
-      <div class="location-modal-box">
-        <div class="location-icon">📍</div>
-        <h5 class="fw-bold mb-2">تحديد موقعك</h5>
-        <p class="text-muted small mb-0">
-          يستخدم النظام موقعك الجغرافي لأغراض أمنية فقط،
-          لتتبع جلسات العمل عن بُعد. لن يُشارَك موقعك مع أي طرف خارجي.
-        </p>
-        <div id="loc-status" class="small mt-2" style="display:none;color:#0ea5e9">
-          <i class="bi bi-hourglass-split"></i> جاري تحديد موقعك...
-        </div>
-        <div class="d-flex gap-2 justify-content-center mt-3">
-          <button class="btn btn-primary btn-sm fw-bold px-3" id="btn-allow-loc">
-            <i class="bi bi-geo-alt-fill"></i> السماح
-          </button>
-          <button class="btn btn-outline-secondary btn-sm px-3" id="btn-skip-loc">
-            تخطي
-          </button>
-        </div>
-      </div>
-    </div>
-  @endif
-@endauth
-{{-- ===== End Location Modal ===== --}}
+
 
 
 
@@ -1189,6 +1163,46 @@ ERP Notifications Style
   </nav>
 
   <main class="container py-4">
+
+
+
+
+
+    {{-- ===== Location Modal ===== --}}
+
+    @if(!session('location_captured'))
+      <div id="location-modal" class="location-modal-overlay">
+        <div class="location-modal-box">
+          <div class="location-icon">📍</div>
+          <h5 class="fw-bold mb-2">تحديد موقعك</h5>
+          <p class="text-muted small mb-0">
+            يستخدم النظام موقعك الجغرافي لأغراض أمنية فقط،
+            لتتبع جلسات العمل عن بُعد. لن يُشارَك موقعك مع أي طرف خارجي.
+          </p>
+          <div id="loc-status" class="small mt-2" style="display:none;color:#0ea5e9">
+            <i class="bi bi-hourglass-split"></i> جاري تحديد موقعك...
+          </div>
+          <div class="d-flex gap-2 justify-content-center mt-3">
+            <button class="btn btn-primary btn-sm fw-bold px-3" id="btn-allow-loc">
+              <i class="bi bi-geo-alt-fill"></i> السماح
+            </button>
+            <button class="btn btn-outline-secondary btn-sm px-3" id="btn-skip-loc">
+              تخطي
+            </button>
+          </div>
+        </div>
+      </div>
+    @endif
+
+    {{-- ===== End Location Modal ===== --}}
+
+
+
+
+
+
+
+
 
     {{-- ✅ Dashboard فقط: يعرض Hero + Cards --}}
     @if($isDashboard)
@@ -1455,12 +1469,12 @@ ERP Notifications Style
                 .then(function (data) {
                   console.log('Location saved:', data);
                   location.reload(); // ← بدل closeModal()
-                 
+
                 })
                 .catch(function (err) {
                   console.warn('Location store failed:', err);
                   location.reload(); // ← بدل closeModal()
-                  
+
                 });
             }
 
@@ -1495,7 +1509,6 @@ ERP Notifications Style
           })();
         @endif
       @endauth
-   
 
 
 
@@ -1511,28 +1524,29 @@ ERP Notifications Style
 
 
 
-      function formatTime(time) {
 
-        if (!time) return 'الآن';
+        function formatTime(time) {
 
-        const date = new Date(time);
-        const now = new Date();
+          if (!time) return 'الآن';
 
-        let diff = Math.floor((now - date) / 60000) - 180;
+          const date = new Date(time);
+          const now = new Date();
 
-        if (diff <= 0) return "الآن";
+          let diff = Math.floor((now - date) / 60000) - 180;
 
-        if (diff < 60) return diff + " دقيقة";
+          if (diff <= 0) return "الآن";
 
-        const hours = Math.floor(diff / 60);
+          if (diff < 60) return diff + " دقيقة";
 
-        if (hours < 24) return hours + " ساعة";
+          const hours = Math.floor(diff / 60);
 
-        const days = Math.floor(hours / 24);
+          if (hours < 24) return hours + " ساعة";
 
-        return days + " يوم";
+          const days = Math.floor(hours / 24);
 
-      }
+          return days + " يوم";
+
+        }
 
 
       // تحميل الإشعارات
@@ -1559,10 +1573,10 @@ ERP Notifications Style
             if (!data.alerts || data.alerts.length === 0) {
 
               container.innerHTML = `
-              <div class="text-success text-center p-3">
-              لا توجد تنبيهات 🎉
-              </div>
-              `;
+                    <div class="text-success text-center p-3">
+                    لا توجد تنبيهات 🎉
+                    </div>
+                    `;
 
               return;
             }
@@ -1572,19 +1586,19 @@ ERP Notifications Style
             data.alerts.forEach(a => {
 
               html += `
-              <a href="${a.url}" class="alert-item">
+                    <a href="${a.url}" class="alert-item">
 
-              <div class="alert-icon ${a.type}">
-              <i class="bi ${a.icon}"></i>
-              </div>
+                    <div class="alert-icon ${a.type}">
+                    <i class="bi ${a.icon}"></i>
+                    </div>
 
-              <div class="alert-content">
-              <div class="alert-title">${a.message}</div>
-              <div class="alert-time">${formatTime(a.time)}</div>
-              </div>
+                    <div class="alert-content">
+                    <div class="alert-title">${a.message}</div>
+                    <div class="alert-time">${formatTime(a.time)}</div>
+                    </div>
 
-              </a>
-              `;
+                    </a>
+                    `;
 
             });
 
@@ -1598,10 +1612,10 @@ ERP Notifications Style
 
             if (container) {
               container.innerHTML = `
-              <div class="text-danger text-center p-3">
-              خطأ في تحميل الإشعارات
-              </div>
-              `;
+                    <div class="text-danger text-center p-3">
+                    خطأ في تحميل الإشعارات
+                    </div>
+                    `;
             }
 
             console.error(err);
@@ -1623,6 +1637,59 @@ ERP Notifications Style
 
 
 
+
+
+
+
+const showAllAlertsBtn = document.getElementById('showAllAlerts');
+
+if (showAllAlertsBtn) {
+
+  showAllAlertsBtn.addEventListener('click', function (e) {
+
+    e.preventDefault();
+
+    fetch("{{ route('alerts.navbar') }}?all=1")
+
+      .then(res => res.json())
+
+      .then(data => {
+
+        const container = document.getElementById('allAlertsContainer');
+
+        let html = '';
+
+        data.alerts.forEach(a => {
+
+          html += `
+          <a href="${a.url}" class="alert-item">
+          <div class="alert-icon ${a.type}">
+          <i class="bi ${a.icon}"></i>
+          </div>
+          <div class="alert-content">
+          <div class="alert-title">${a.message}</div>
+          <div class="alert-time">${formatTime(a.time)}</div>
+          </div>
+          </a>
+          `;
+
+        });
+
+        container.innerHTML = html;
+
+        new bootstrap.Modal(document.getElementById('alertsModal')).show();
+
+      });
+
+  });
+
+}
+
+
+
+
+
+/*
       // مودال عرض كل الإشعارات
       document.getElementById('showAllAlerts').addEventListener('click', function (e) {
 
@@ -1641,22 +1708,22 @@ ERP Notifications Style
             data.alerts.forEach(a => {
 
               html += `
-              <a href="${a.url}" class="alert-item">
+                    <a href="${a.url}" class="alert-item">
 
-              <div class="alert-icon ${a.type}">
-              <i class="bi ${a.icon}"></i>
-              </div>
+                    <div class="alert-icon ${a.type}">
+                    <i class="bi ${a.icon}"></i>
+                    </div>
 
-              <div class="alert-content">
+                    <div class="alert-content">
 
-              <div class="alert-title">${a.message}</div>
+                    <div class="alert-title">${a.message}</div>
 
-              <div class="alert-time">${formatTime(a.time)}</div>
+                    <div class="alert-time">${formatTime(a.time)}</div>
 
-              </div>
+                    </div>
 
-              </a>
-              `;
+                    </a>
+                    `;
 
             });
 
@@ -1667,6 +1734,11 @@ ERP Notifications Style
           });
 
       });
+
+
+
+*/
+
 
     </script>
 

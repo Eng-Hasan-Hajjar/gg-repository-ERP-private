@@ -337,8 +337,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('roles', RoleController::class);
 
     // إضافات جديدة:
- //   Route::get('roles/{role}/show', [RoleController::class, 'show'])
-  //      ->name('roles.show');
+    //   Route::get('roles/{role}/show', [RoleController::class, 'show'])
+    //      ->name('roles.show');
 
     Route::post('roles/{role}/clone', [RoleController::class, 'clone'])
         ->name('roles.clone');
@@ -722,12 +722,17 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-
+/*
 Route::middleware('auth')->group(function () {
     Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
     Route::post('/location/skip',  [LocationController::class, 'skip'])->name('location.skip');
 });
 
+*/
+
+
+Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
+Route::post('/location/skip', [LocationController::class, 'skip'])->name('location.skip');
 
 
 
@@ -735,14 +740,14 @@ Route::middleware('auth')->group(function () {
 // أضف هذين السطرين في ملف routes/web.php
 // داخل مجموعة routes الخاصة بالحضور (attendance)
 // ═══════════════════════════════════════════════════════
- 
+
 // استراحة
 Route::post('/attendance/{record}/break-start', [App\Http\Controllers\AttendanceController::class, 'breakStart'])
     ->name('attendance.break.start');
- 
+
 Route::post('/attendance/{record}/break-end', [App\Http\Controllers\AttendanceController::class, 'breakEnd'])
     ->name('attendance.break.end');
- 
+
 
 
 
