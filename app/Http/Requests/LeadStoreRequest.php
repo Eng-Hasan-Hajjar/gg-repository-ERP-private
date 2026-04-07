@@ -33,7 +33,7 @@ class LeadStoreRequest extends FormRequest
             // ===== حقول تصبح required فقط عند strict_mode =====
             'whatsapp' => $strict ? 'required|string|max:120' : 'nullable|string|max:120',
             'email' => $strict ? 'required|email|max:190' : 'nullable|required_if:stage,registered|email|max:190',
-            'residence' => $strict ? 'required|string|max:190' : 'required|string|max:190',
+            'residence' => $strict ? 'nullable|string|max:190' : 'nullable|string|max:190',
             'organization' => $strict ? 'required|string|max:190' : 'nullable|string|max:190',
             'province' => $strict ? 'required|string|max:100' : 'nullable|string|max:100',
             'need' => $strict ? 'nullable|string' : 'nullable|string',
