@@ -134,7 +134,7 @@ class AttendanceRecord extends Model
 
     // ───── Global Scope ─────
 
-/*
+
     protected static function booted()
     {
         static::addGlobalScope('branch', function ($query) {
@@ -159,11 +159,11 @@ class AttendanceRecord extends Model
             }
         });
     }
-*/
 
 
 
 
+/*
 protected static function booted()
 {
     static::addGlobalScope('branch', function ($query) {
@@ -201,7 +201,7 @@ protected static function booted()
         }
 
     });
-}
+}*/
     // ───── Accessors ─────
 
     public function getStatusLabelAttribute()

@@ -86,23 +86,24 @@ class LeadController extends Controller
     ]);
   }
 
-  /*
-    public function create()
-    {
-      return view('crm.leads.create', [
-        'branches' => Branch::orderBy('name')->get(),
-        'diplomas' => Diploma::orderBy('name')->get(),
-      ]);
-    }
-  */
   public function create()
   {
     $user = auth()->user();
 
     if ($user->hasRole('super_admin')) {
+
       $branches = Branch::orderBy('name')->get();
+
     } else {
-      $branches = Branch::where('id', $user->employee?->branch_id)->get();
+
+      $employee = $user->employee;
+
+      $branchIds = collect([
+        $employee?->branch_id,
+        $employee?->secondary_branch_id
+      ])->filter()->unique();
+
+      $branches = Branch::whereIn('id', $branchIds)->orderBy('name')->get();
     }
 
     return view('crm.leads.create', [
@@ -114,6 +115,26 @@ class LeadController extends Controller
     ]);
   }
 
+  /*
+public function create()
+{
+  $user = auth()->user();
+
+  if ($user->hasRole('super_admin')) {
+    $branches = Branch::orderBy('name')->get();
+  } else {
+    $branches = Branch::where('id', $user->employee?->branch_id)->get();
+  }
+
+  return view('crm.leads.create', [
+    'branches' => $branches,
+    'diplomas' => Diploma::with('branch')
+      ->where('is_active', true)
+      ->orderBy('name')
+      ->get(),
+  ]);
+}
+*/
 
   public function store(LeadStoreRequest $request)
   {
@@ -123,7 +144,17 @@ class LeadController extends Controller
     $user = auth()->user();
 
     if (!$user->hasRole('super_admin')) {
-      $data['branch_id'] = $user->employee?->branch_id;
+
+      $employee = $user->employee;
+
+      $allowedBranches = collect([
+        $employee?->branch_id,
+        $employee?->secondary_branch_id
+      ])->filter()->unique()->all();
+
+      if (!in_array($data['branch_id'], $allowedBranches)) {
+        abort(403);
+      }
     }
 
     $lead = DB::transaction(function () use ($data, $request) {
@@ -205,6 +236,38 @@ class LeadController extends Controller
 
     $user = auth()->user();
 
+
+    if ($user->hasRole('super_admin')) {
+
+      $branches = Branch::orderBy('name')->get();
+
+    } else {
+
+      $employee = $user->employee;
+
+      $branchIds = collect([
+        $employee?->branch_id,
+        $employee?->secondary_branch_id
+      ])->filter()->unique();
+
+      $branches = Branch::whereIn('id', $branchIds)->orderBy('name')->get();
+    }
+
+
+
+    return view('crm.leads.edit', [
+      'lead' => $lead,
+      'branches' => $branches,
+      'diplomas' => Diploma::with('branch')
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get(),
+    ]);
+
+
+
+
+
     if (!$user->hasRole('super_admin')) {
       abort_if($lead->branch_id !== $user->employee?->branch_id, 403);
     }
@@ -221,6 +284,29 @@ class LeadController extends Controller
   public function update(LeadUpdateRequest $request, Lead $lead)
   {
     $data = $request->validated();
+
+
+
+
+
+    $user = auth()->user();
+
+    if (!$user->hasRole('super_admin')) {
+
+      $employee = $user->employee;
+
+      $allowedBranches = collect([
+        $employee?->branch_id,
+        $employee?->secondary_branch_id
+      ])->filter()->unique()->all();
+
+      if (!in_array($data['branch_id'], $allowedBranches)) {
+        abort(403);
+      }
+    }
+
+
+
 
     DB::transaction(function () use ($data, $request, $lead) {
       $lead->update($data);
