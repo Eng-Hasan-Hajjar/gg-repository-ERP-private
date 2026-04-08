@@ -86,6 +86,10 @@ class Employee extends Model
     }
 
 
+
+    /*
+
+
     protected static function booted()
 {
     static::addGlobalScope('branch', function ($query) {
@@ -108,37 +112,46 @@ class Employee extends Model
         }
     });
 }
-
-/*
-    protected static function booted()
-    {
-        static::addGlobalScope('branch', function ($query) {
-
-            if (!auth()->check()) {
-                return;
-            }
-
-            $user = auth()->user();
-
-            if ($user->hasRole('super_admin')) {
-                return;
-            }
-
-            // جلب الموظف بدون استخدام العلاقة
-            $employee = \App\Models\Employee::withoutGlobalScopes()
-                ->where('user_id', $user->id)
-                ->first();
-
-            if ($employee && $employee->branch_id) {
-                $query->where('branch_id', $employee->branch_id);
-            }
-
-        });
-    }
-
-
 */
+protected static function booted()
+{
+    static::addGlobalScope('branch', function ($query) {
 
+        if (!auth()->check()) {
+            return;
+        }
+
+        $user = auth()->user();
+
+        // السوبر أدمن يرى كل شيء
+        if ($user->hasRole('super_admin')) {
+            return;
+        }
+
+        // جلب الموظف المرتبط بالمستخدم
+        $employee = Employee::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$employee) {
+            return;
+        }
+
+        $branchIds = collect([
+            $employee->branch_id,
+            $employee->secondary_branch_id
+        ])
+        ->filter()
+        ->unique()
+        ->values()
+        ->all();
+
+        if (!empty($branchIds)) {
+            $query->whereIn('branch_id', $branchIds);
+        }
+
+    });
+}
 
 
     public function secondaryBranch(): BelongsTo
