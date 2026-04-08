@@ -14,6 +14,75 @@ use App\Http\Requests\LeadUpdateRequest;
 
 class LeadController extends Controller
 {
+public function index(Request $request)
+{
+    $q = Lead::query()->with(['branch', 'diplomas', 'followups']);
+
+    $user = auth()->user();
+
+    // 🔒 تحديد الفروع المسموحة
+    if (!$user->hasRole('super_admin')) {
+
+        $employee = $user->employee;
+
+        $branchIds = collect([
+            $employee?->branch_id,
+            $employee?->secondary_branch_id
+        ])->filter()->unique()->values()->all();
+
+        if (!empty($branchIds)) {
+            $q->whereIn('branch_id', $branchIds);
+        }
+    }
+
+    // 🔎 فلاتر
+    if ($request->filled('branch_id')) {
+        $q->where('branch_id', $request->branch_id);
+    }
+
+    if ($request->filled('stage')) {
+        $q->where('stage', $request->stage);
+    }
+
+    if ($request->filled('registration_status')) {
+        $q->where('registration_status', $request->registration_status);
+    }
+
+    if ($request->filled('diploma_id')) {
+        $did = $request->diploma_id;
+        $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $did));
+    }
+
+    if ($request->filled('search')) {
+        $s = trim($request->search);
+        $q->where(function ($x) use ($s) {
+            $x->where('full_name', 'like', "%$s%")
+              ->orWhere('phone', 'like', "%$s%")
+              ->orWhere('whatsapp', 'like', "%$s%");
+        });
+    }
+
+    $leads = $q->latest()->paginate(15)->withQueryString();
+
+    // 🧠 تعريب
+    $labels = $this->leadArabicLabels();
+
+    $leads->getCollection()->transform(function ($l) use ($labels) {
+        $l->stage_ar = $labels['stage'][$l->stage] ?? '-';
+        $l->registration_ar = $labels['registration_status'][$l->registration_status] ?? '-';
+        return $l;
+    });
+
+    return view('crm.leads.index', [
+        'leads' => $leads,
+        'branches' => Branch::orderBy('name')->get(),
+        'diplomas' => Diploma::orderBy('name')->get(),
+
+        'stageOptions' => $labels['stage'],
+        'registrationOptions' => $labels['registration_status'],
+    ]);
+}
+/*
   public function index(Request $request)
   {
     $q = Lead::query()->with(['branch', 'diplomas', 'followups']);
@@ -21,17 +90,29 @@ class LeadController extends Controller
 
     $user = auth()->user();
 
-    if (!$user->hasRole('super_admin')) {
-
-      $branchId = $user->employee?->branch_id;
-
-      if ($branchId) {
-        $q->where('branch_id', $branchId);
-      }
-
-    }
 
 
+        if (!$user->hasRole('super_admin')) {
+
+            $branchId = $user->employee?->branch_id;
+
+            if ($branchId) {
+                $q->where('branch_id', $branchId);
+            }
+
+
+            $employee = $user->employee;
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique()->all();
+
+            if (!$user->hasRole('super_admin') && !empty($branchIds)) {
+                $q->whereIn('branch_id', $branchIds);
+            }
+
+        }
 
     if ($request->filled('branch_id'))
       $q->where('branch_id', $request->branch_id);
@@ -85,7 +166,7 @@ class LeadController extends Controller
       'registrationOptions' => $registrationOptions,
     ]);
   }
-
+*/
   public function create()
   {
     $user = auth()->user();
