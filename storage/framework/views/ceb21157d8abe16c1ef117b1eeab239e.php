@@ -1505,7 +1505,25 @@ ERP Notifications Style
               );
             });
 
-            btnSkip.addEventListener('click', doSkip);
+            btnSkip.addEventListener('click', function () {
+              Swal.fire({
+                icon: 'warning',
+                title: 'تنبيه',
+                text: 'يجب تحديد الموقع الجغرافي للدخول إلى النظام.',
+                confirmButtonText: 'تسجيل خروج',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                zIndex: 99999,
+                didOpen: function () {
+                  // إخفاء موديل الموقع خلف SweetAlert
+                  document.getElementById('location-modal').style.zIndex = '1';
+                }
+              }).then(function () {
+                document.querySelector('form[action="<?php echo e(route('logout')); ?>"]').submit();
+              });
+            });
+
+            
 
           })();
         <?php endif; ?>
@@ -1574,10 +1592,10 @@ ERP Notifications Style
             if (!data.alerts || data.alerts.length === 0) {
 
               container.innerHTML = `
-                    <div class="text-success text-center p-3">
-                    لا توجد تنبيهات 🎉
-                    </div>
-                    `;
+                          <div class="text-success text-center p-3">
+                          لا توجد تنبيهات 🎉
+                          </div>
+                          `;
 
               return;
             }
@@ -1587,19 +1605,19 @@ ERP Notifications Style
             data.alerts.forEach(a => {
 
               html += `
-                    <a href="${a.url}" class="alert-item">
+                          <a href="${a.url}" class="alert-item">
 
-                    <div class="alert-icon ${a.type}">
-                    <i class="bi ${a.icon}"></i>
-                    </div>
+                          <div class="alert-icon ${a.type}">
+                          <i class="bi ${a.icon}"></i>
+                          </div>
 
-                    <div class="alert-content">
-                    <div class="alert-title">${a.message}</div>
-                    <div class="alert-time">${formatTime(a.time)}</div>
-                    </div>
+                          <div class="alert-content">
+                          <div class="alert-title">${a.message}</div>
+                          <div class="alert-time">${formatTime(a.time)}</div>
+                          </div>
 
-                    </a>
-                    `;
+                          </a>
+                          `;
 
             });
 
@@ -1613,10 +1631,10 @@ ERP Notifications Style
 
             if (container) {
               container.innerHTML = `
-                    <div class="text-danger text-center p-3">
-                    خطأ في تحميل الإشعارات
-                    </div>
-                    `;
+                          <div class="text-danger text-center p-3">
+                          خطأ في تحميل الإشعارات
+                          </div>
+                          `;
             }
 
             console.error(err);
@@ -1642,103 +1660,103 @@ ERP Notifications Style
 
 
 
-const showAllAlertsBtn = document.getElementById('showAllAlerts');
+      const showAllAlertsBtn = document.getElementById('showAllAlerts');
 
-if (showAllAlertsBtn) {
+      if (showAllAlertsBtn) {
 
-  showAllAlertsBtn.addEventListener('click', function (e) {
+        showAllAlertsBtn.addEventListener('click', function (e) {
 
-    e.preventDefault();
+          e.preventDefault();
 
-    fetch("<?php echo e(route('alerts.navbar')); ?>?all=1")
+          fetch("<?php echo e(route('alerts.navbar')); ?>?all=1")
 
-      .then(res => res.json())
+            .then(res => res.json())
 
-      .then(data => {
+            .then(data => {
 
-        const container = document.getElementById('allAlertsContainer');
+              const container = document.getElementById('allAlertsContainer');
 
-        let html = '';
+              let html = '';
 
-        data.alerts.forEach(a => {
+              data.alerts.forEach(a => {
 
-          html += `
-          <a href="${a.url}" class="alert-item">
-          <div class="alert-icon ${a.type}">
-          <i class="bi ${a.icon}"></i>
-          </div>
-          <div class="alert-content">
-          <div class="alert-title">${a.message}</div>
-          <div class="alert-time">${formatTime(a.time)}</div>
-          </div>
-          </a>
-          `;
+                html += `
+                <a href="${a.url}" class="alert-item">
+                <div class="alert-icon ${a.type}">
+                <i class="bi ${a.icon}"></i>
+                </div>
+                <div class="alert-content">
+                <div class="alert-title">${a.message}</div>
+                <div class="alert-time">${formatTime(a.time)}</div>
+                </div>
+                </a>
+                `;
 
-        });
+              });
 
-        container.innerHTML = html;
+              container.innerHTML = html;
 
-        new bootstrap.Modal(document.getElementById('alertsModal')).show();
-
-      });
-
-  });
-
-}
-
-
-
-
-
-/*
-      // مودال عرض كل الإشعارات
-      document.getElementById('showAllAlerts').addEventListener('click', function (e) {
-
-        e.preventDefault();
-
-        fetch("<?php echo e(route('alerts.navbar')); ?>?all=1")
-
-          .then(res => res.json())
-
-          .then(data => {
-
-            const container = document.getElementById('allAlertsContainer');
-
-            let html = '';
-
-            data.alerts.forEach(a => {
-
-              html += `
-                    <a href="${a.url}" class="alert-item">
-
-                    <div class="alert-icon ${a.type}">
-                    <i class="bi ${a.icon}"></i>
-                    </div>
-
-                    <div class="alert-content">
-
-                    <div class="alert-title">${a.message}</div>
-
-                    <div class="alert-time">${formatTime(a.time)}</div>
-
-                    </div>
-
-                    </a>
-                    `;
+              new bootstrap.Modal(document.getElementById('alertsModal')).show();
 
             });
 
-            container.innerHTML = html;
+        });
 
-            new bootstrap.Modal(document.getElementById('alertsModal')).show();
+      }
+
+
+
+
+
+      /*
+            // مودال عرض كل الإشعارات
+            document.getElementById('showAllAlerts').addEventListener('click', function (e) {
+
+              e.preventDefault();
+
+              fetch("<?php echo e(route('alerts.navbar')); ?>?all = 1")
+
+        .then(res => res.json())
+
+        .then(data => {
+
+          const container = document.getElementById('allAlertsContainer');
+
+          let html = '';
+
+          data.alerts.forEach(a => {
+
+            html += `
+                          <a href="${a.url}" class="alert-item">
+
+                          <div class="alert-icon ${a.type}">
+                          <i class="bi ${a.icon}"></i>
+                          </div>
+
+                          <div class="alert-content">
+
+                          <div class="alert-title">${a.message}</div>
+
+                          <div class="alert-time">${formatTime(a.time)}</div>
+
+                          </div>
+
+                          </a>
+                          `;
 
           });
 
-      });
+          container.innerHTML = html;
+
+          new bootstrap.Modal(document.getElementById('alertsModal')).show();
+
+        });
+
+            });
 
 
 
-*/
+      */
 
 
     </script>

@@ -10,9 +10,7 @@
 
             <!-- Logo -->
             <div class="flex justify-center mb-6">
-                <img src="{{ asset('images/namaa-logo.png') }}"
-                     alt="شعار نماء أكاديمي"
-                     class="h-16 sm:h-18 w-auto">
+                <img src="{{ asset('images/namaa-logo.png') }}" alt="شعار نماء أكاديمي" class="h-16 sm:h-18 w-auto">
             </div>
 
             <h1 class="text-center font-extrabold text-[22px] sm:text-[26px] text-[#0b1220] mb-6">
@@ -22,17 +20,17 @@
             <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
+
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+
+
                 <!-- Email -->
                 <div>
                     <x-input-label for="email" :value="__('البريد الإلكتروني')" class="text-right" />
                     <x-text-input id="email"
-                                  class="block mt-2 w-full rounded-xl border-gray-200 focus:border-emerald-400 focus:ring-emerald-200"
-                                  type="email"
-                                  name="email"
-                                  :value="old('email')"
-                                  required
-                                  autofocus
-                                  autocomplete="username" />
+                        class="block mt-2 w-full rounded-xl border-gray-200 focus:border-emerald-400 focus:ring-emerald-200"
+                        type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
@@ -40,11 +38,8 @@
                 <div>
                     <x-input-label for="password" :value="__('كلمة المرور')" class="text-right" />
                     <x-text-input id="password"
-                                  class="block mt-2 w-full rounded-xl border-gray-200 focus:border-emerald-400 focus:ring-emerald-200"
-                                  type="password"
-                                  name="password"
-                                  required
-                                  autocomplete="current-password" />
+                        class="block mt-2 w-full rounded-xl border-gray-200 focus:border-emerald-400 focus:ring-emerald-200"
+                        type="password" name="password" required autocomplete="current-password" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
@@ -65,37 +60,52 @@
                         </a>
                     @ endif
                 </div>
--->
+                    -->
                 <!-- Submit -->
                 <div class="pt-2">
-                    <button type="submit"
-                            class="w-full sm:w-auto min-w-[220px] mx-auto flex items-center justify-center
-                                   px-10 py-3 rounded-xl text-white font-bold transition-all"
-                            style="
+
+
+
+
+   
+
+                    <button type="submit" class="w-full sm:w-auto min-w-[220px] mx-auto flex items-center justify-center
+                                   px-10 py-3 rounded-xl text-white font-bold transition-all" style="
                                 background: linear-gradient(90deg, #0ea5e9 0%, #10b981 100%);
                                 box-shadow: 0 14px 35px rgba(16,185,129,.22), 0 12px 25px rgba(14,165,233,.18);
-                            "
-                            onmouseover="this.style.filter='brightness(0.95)'"
-                            onmouseout="this.style.filter='none'">
+                            " onmouseover="this.style.filter='brightness(0.95)'" onmouseout="this.style.filter='none'">
                         تسجيل الدخول
                     </button>
-
-@if(auth()->user()?->hasPermission('manage_roles'))
-                    <div class="text-center mt-4">
-                        <a href="{{ route('register') }}"
-                           class="text-sm font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4">
-                            ليس لديك حساب؟ إنشاء حساب جديد
-                        </a>
-                    </div>
-@endif
+            
+                    @if(auth()->user()?->hasPermission('manage_roles'))
+                        <div class="text-center mt-4">
+                            <a href="{{ route('register') }}"
+                                class="text-sm font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4">
+                                ليس لديك حساب؟ إنشاء حساب جديد
+                            </a>
+                        </div>
+                    @endif
 
 
                 </div>
             </form>
         </div>
 
+
+
+
+
+
+
+
         <p class="text-center mt-6 text-xs text-slate-500 font-semibold">
             © {{ date('Y') }} نماء أكاديمي — جميع الحقوق محفوظة
         </p>
     </div>
+
+
+
+
+
+
 </x-guest-layout>

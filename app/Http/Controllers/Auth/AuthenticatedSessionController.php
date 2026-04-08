@@ -31,6 +31,11 @@ class AuthenticatedSessionController extends Controller
     // تحقق من صحة البيانات بدون تسجيل الدخول
     $request->authenticate();
 
+
+
+
+
+
     $user = \App\Models\User::where('email', $request->email)->first();
 
     if (!$user) {

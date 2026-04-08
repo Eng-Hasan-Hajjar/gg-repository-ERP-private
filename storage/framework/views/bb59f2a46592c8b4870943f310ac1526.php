@@ -38,9 +38,7 @@
 
             <!-- Logo -->
             <div class="flex justify-center mb-6">
-                <img src="<?php echo e(asset('images/namaa-logo.png')); ?>"
-                     alt="شعار نماء أكاديمي"
-                     class="h-16 sm:h-18 w-auto">
+                <img src="<?php echo e(asset('images/namaa-logo.png')); ?>" alt="شعار نماء أكاديمي" class="h-16 sm:h-18 w-auto">
             </div>
 
             <h1 class="text-center font-extrabold text-[22px] sm:text-[26px] text-[#0b1220] mb-6">
@@ -49,6 +47,11 @@
 
             <form method="POST" action="<?php echo e(route('login')); ?>" class="space-y-5">
                 <?php echo csrf_field(); ?>
+
+
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+
 
                 <!-- Email -->
                 <div>
@@ -195,39 +198,54 @@
                         </a>
                     @ endif
                 </div>
--->
+                    -->
                 <!-- Submit -->
                 <div class="pt-2">
-                    <button type="submit"
-                            class="w-full sm:w-auto min-w-[220px] mx-auto flex items-center justify-center
-                                   px-10 py-3 rounded-xl text-white font-bold transition-all"
-                            style="
+
+
+
+
+   
+
+                    <button type="submit" class="w-full sm:w-auto min-w-[220px] mx-auto flex items-center justify-center
+                                   px-10 py-3 rounded-xl text-white font-bold transition-all" style="
                                 background: linear-gradient(90deg, #0ea5e9 0%, #10b981 100%);
                                 box-shadow: 0 14px 35px rgba(16,185,129,.22), 0 12px 25px rgba(14,165,233,.18);
-                            "
-                            onmouseover="this.style.filter='brightness(0.95)'"
-                            onmouseout="this.style.filter='none'">
+                            " onmouseover="this.style.filter='brightness(0.95)'" onmouseout="this.style.filter='none'">
                         تسجيل الدخول
                     </button>
-
-<?php if(auth()->user()?->hasPermission('manage_roles')): ?>
-                    <div class="text-center mt-4">
-                        <a href="<?php echo e(route('register')); ?>"
-                           class="text-sm font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4">
-                            ليس لديك حساب؟ إنشاء حساب جديد
-                        </a>
-                    </div>
-<?php endif; ?>
+            
+                    <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
+                        <div class="text-center mt-4">
+                            <a href="<?php echo e(route('register')); ?>"
+                                class="text-sm font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4">
+                                ليس لديك حساب؟ إنشاء حساب جديد
+                            </a>
+                        </div>
+                    <?php endif; ?>
 
 
                 </div>
             </form>
         </div>
 
+
+
+
+
+
+
+
         <p class="text-center mt-6 text-xs text-slate-500 font-semibold">
             © <?php echo e(date('Y')); ?> نماء أكاديمي — جميع الحقوق محفوظة
         </p>
     </div>
+
+
+
+
+
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal69dc84650370d1d4dc1b42d016d7226b)): ?>
@@ -237,5 +255,4 @@
 <?php if (isset($__componentOriginal69dc84650370d1d4dc1b42d016d7226b)): ?>
 <?php $component = $__componentOriginal69dc84650370d1d4dc1b42d016d7226b; ?>
 <?php unset($__componentOriginal69dc84650370d1d4dc1b42d016d7226b); ?>
-<?php endif; ?>
-<?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/auth/login.blade.php ENDPATH**/ ?>
+<?php endif; ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/auth/login.blade.php ENDPATH**/ ?>
