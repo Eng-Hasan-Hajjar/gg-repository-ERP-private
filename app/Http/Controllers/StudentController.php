@@ -28,6 +28,18 @@ class StudentController extends Controller
                 $q->where('branch_id', $branchId);
             }
 
+
+            $employee = $user->employee;
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique()->all();
+
+            if (!$user->hasRole('super_admin') && !empty($branchIds)) {
+                $q->whereIn('branch_id', $branchIds);
+            }
+
         }
         if ($request->filled('branch_id')) {
             $q->where('branch_id', $request->branch_id);
@@ -94,10 +106,28 @@ class StudentController extends Controller
     public function create()
     {
         $labels = $this->studentArabicLabels();
+        $user = auth()->user();
 
+        if ($user->hasRole('super_admin')) {
+
+            $branches = Branch::orderBy('name')->get();
+
+        } else {
+
+            $employee = $user->employee;
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique();
+
+            $branches = Branch::whereIn('id', $branchIds)
+                ->orderBy('name')
+                ->get();
+        }
         return view('students.create', [
             'student' => new Student(),   // ✅ مهم جدًا
-            'branches' => Branch::orderBy('name')->get(),
+            'branches' => $branches,
             'diplomas' => Diploma::orderBy('name')->get(),
 
             'statusOptions' => $labels['student_status'],
@@ -110,7 +140,21 @@ class StudentController extends Controller
     public function store(StudentStoreRequest $request)
     {
         $data = $request->validated();
+        $user = auth()->user();
 
+        if (!$user->hasRole('super_admin')) {
+
+            $employee = $user->employee;
+
+            $allowedBranches = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique()->all();
+
+            if (!in_array($data['branch_id'], $allowedBranches)) {
+                abort(403);
+            }
+        }
         // شؤون الطلاب: مثبت افتراضياً
         $data['registration_status'] = 'confirmed';
         $data['is_confirmed'] = true;
@@ -277,7 +321,7 @@ class StudentController extends Controller
             ->get();
 
 
-$plansByDiploma = $paymentPlans->keyBy('diploma_id');
+        $plansByDiploma = $paymentPlans->keyBy('diploma_id');
 
 
         $paidAmounts = [];
@@ -297,11 +341,11 @@ $plansByDiploma = $paymentPlans->keyBy('diploma_id');
 
             $plan->paid = $paid;
 
-            $remaining = max($plan->total_amount - $paid,0);
-           $plan->remaining = $plan->total_amount - $paid;
+            $remaining = max($plan->total_amount - $paid, 0);
+            $plan->remaining = $plan->total_amount - $paid;
         }
 
-       
+
 
         return view('students.show', compact(
             'student',
@@ -318,8 +362,8 @@ $plansByDiploma = $paymentPlans->keyBy('diploma_id');
             'financial',
             'balancesByCurrency',
             'paymentPlans',
-            
-    'plansByDiploma'
+
+            'plansByDiploma'
         ));
     }
 
@@ -406,13 +450,31 @@ $plansByDiploma = $paymentPlans->keyBy('diploma_id');
     public function edit(Student $student)
     {
         $student->load(['diplomas', 'profile', 'crmInfo']);
+        $user = auth()->user();
 
+        if ($user->hasRole('super_admin')) {
+
+            $branches = Branch::orderBy('name')->get();
+
+        } else {
+
+            $employee = $user->employee;
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique();
+
+            $branches = Branch::whereIn('id', $branchIds)
+                ->orderBy('name')
+                ->get();
+        }
         // === مهم جدًا === جلب خرائط التعريب
         $labels = $this->studentArabicLabels();
 
         return view('students.edit', [
             'student' => $student,
-            'branches' => Branch::orderBy('name')->get(),
+            'branches' => $branches,
             'diplomas' => Diploma::orderBy('name')->get(),
 
             // 🔹 هذه هي التي كانت مفقودة لديك:
@@ -425,6 +487,27 @@ $plansByDiploma = $paymentPlans->keyBy('diploma_id');
     public function update(StudentUpdateRequest $request, Student $student)
     {
         $data = $request->validated();
+
+
+
+        $user = auth()->user();
+
+        if (!$user->hasRole('super_admin')) {
+
+            $employee = $user->employee;
+
+            $allowedBranches = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique()->all();
+
+            if (!in_array($data['branch_id'], $allowedBranches)) {
+                abort(403);
+            }
+        }
+
+
+
         unset($data['registration_status']);
 
         DB::transaction(function () use ($request, $student, $data) {
@@ -544,17 +627,17 @@ $plansByDiploma = $paymentPlans->keyBy('diploma_id');
 
 
     public function bulkDelete(Request $request)
-{
-    $ids = $request->ids;
+    {
+        $ids = $request->ids;
 
-    if(!$ids){
-        return back()->with('error','لم يتم تحديد أي طالب');
+        if (!$ids) {
+            return back()->with('error', 'لم يتم تحديد أي طالب');
+        }
+
+        Student::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'تم حذف الطلاب المحددين');
     }
-
-    Student::whereIn('id',$ids)->delete();
-
-    return back()->with('success','تم حذف الطلاب المحددين');
-}
 
 
 
