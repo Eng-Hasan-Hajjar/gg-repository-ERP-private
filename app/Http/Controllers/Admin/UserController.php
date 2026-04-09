@@ -10,62 +10,63 @@ use Illuminate\Support\Facades\Hash;
 use App\Services\AuditService;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
- public function index(Request $request)
-{
-    $query = User::with(['roles', 'sessions']);
+    public function index(Request $request)
+    {
+        $query = User::with(['roles', 'sessions']);
 
-    // فلتر الأونلاين
-    if ($request->filled('online')) {
-        $query->whereHas('sessions', function ($q) {
-            $q->whereNull('logout_at')
-                ->where('last_activity', '>=', now()->subSeconds(1200));
-        });
+        // فلتر الأونلاين
+        if ($request->filled('online')) {
+            $query->whereHas('sessions', function ($q) {
+                $q->whereNull('logout_at')
+                    ->where('last_activity', '>=', now()->subSeconds(1200));
+            });
+        }
+
+        // البحث
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('name', 'like', "%$s%")
+                    ->orWhere('email', 'like', "%$s%");
+            });
+        }
+
+        // فلتر الدور
+        if ($request->filled('role_id')) {
+            $query->whereHas('roles', function ($q) use ($request) {
+                $q->where('roles.id', $request->role_id);
+            });
+        }
+
+        // الترتيب
+        if ($request->sort === 'name') {
+            $query->orderBy('name');
+        } elseif ($request->sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+
+        $users = $query->paginate(12)->withQueryString();
+        $roles = Role::all();
+
+        $totalUsers = User::count();
+
+        $onlineCount = User::whereHas(
+            'sessions',
+            fn($q) =>
+            $q->whereNull('logout_at')->where('last_activity', '>=', now()->subSeconds(1200))
+        )->count();
+
+
+
+        $offlineCount = $totalUsers - $onlineCount;
+        return view('admin.users.index', compact('users', 'roles', 'onlineCount', 'totalUsers', 'offlineCount'));
     }
-
-    // البحث
-    if ($request->filled('search')) {
-        $s = $request->search;
-        $query->where(function ($q) use ($s) {
-            $q->where('name', 'like', "%$s%")
-                ->orWhere('email', 'like', "%$s%");
-        });
-    }
-
-    // فلتر الدور
-    if ($request->filled('role_id')) {
-        $query->whereHas('roles', function ($q) use ($request) {
-            $q->where('roles.id', $request->role_id);
-        });
-    }
-
-    // الترتيب
-    if ($request->sort === 'name') {
-        $query->orderBy('name');
-    } elseif ($request->sort === 'oldest') {
-        $query->oldest();
-    } else {
-        $query->latest();
-    }
-
-    $users = $query->paginate(12)->withQueryString();
-    $roles = Role::all();
-
-    $totalUsers = User::count();
-
-    $onlineCount = User::whereHas(
-        'sessions',
-        fn($q) =>
-        $q->whereNull('logout_at')->where('last_activity', '>=', now()->subSeconds(1200))
-    )->count();
-
-
-
-    $offlineCount = $totalUsers - $onlineCount;
-    return view('admin.users.index', compact('users', 'roles', 'onlineCount', 'totalUsers', 'offlineCount'));
-}
 
     public function create()
     {
@@ -201,6 +202,34 @@ class UserController extends Controller
             ->with('success', 'تم حذف المستخدم');
     }
 
+
+
+
+
+    public function forceLogout(User $user)
+    {
+        // تحديث جدول user_sessions
+        \App\Models\UserSession::where('user_id', $user->id)
+            ->whereNull('logout_at')
+            ->update([
+                'logout_at' => now(),
+                'last_activity' => now()
+            ]);
+
+        // حذف جلسة Laravel
+        \DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->delete();
+
+        return back()->with('success', 'تم إخراج المستخدم');
+    }
+
+    public function logoutAll()
+    {
+        DB::table('sessions')->truncate();
+
+        return back()->with('success', 'تم إخراج جميع المستخدمين');
+    }
 
 
 

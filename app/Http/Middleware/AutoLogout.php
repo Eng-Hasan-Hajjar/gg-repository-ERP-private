@@ -5,17 +5,66 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserSession;
 use Carbon\Carbon;
 
 class AutoLogout
 {
     public function handle(Request $request, Closure $next)
     {
-        // المدة المسموحة بدون نشاط (بالثواني)
-        $timeout = 120000000000000000; 
-        $userId = Auth::id();
+
+        $timeout = 120000000000000000;
 
         if (Auth::check()) {
+
+            $currentSessionId = session()->getId();
+
+            $session = UserSession::where('session_id', $currentSessionId)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if (!$session || $session->logout_at) {
+
+                Auth::logout();
+
+                session()->invalidate();
+
+                session()->regenerateToken();
+
+                return redirect('/login');
+            }
+
+
+            $userId = Auth::id();
+            $currentSessionId = session()->getId();
+
+            /*
+            ======================================
+            ① التحقق هل الجلسة مازالت موجودة
+            (للـ Force Logout من الأدمن)
+            ======================================
+            */
+
+            $validSession = \App\Models\UserSession::where('user_id', $userId)
+                ->where('session_id', $currentSessionId)
+                ->whereNull('logout_at')
+                ->exists();
+
+            if (!$validSession) {
+
+                Auth::logout();
+
+                session()->invalidate();
+                session()->regenerateToken();
+
+                return redirect('/login');
+            }
+
+            /*
+            ======================================
+            ② التحقق من الخمول
+            ======================================
+            */
 
             $lastActivity = session('last_activity');
 
@@ -25,59 +74,43 @@ class AutoLogout
 
                 if ($inactiveTime > $timeout) {
 
-                    // تسجيل logout حقيقي في جدول الجلسات
                     \App\Models\UserSession::where('user_id', $userId)
+                        ->where('session_id', $currentSessionId)
                         ->whereNull('logout_at')
-                        ->latest('login_at')
-                        ->first()?->update([
-                                'logout_at' => now(),
-                                'last_activity' => now(), // ← مهم جداً
-                            ]);
+                        ->update([
+                            'logout_at' => now(),
+                            'last_activity' => now(),
+                        ]);
 
                     Auth::logout();
 
                     session()->invalidate();
                     session()->regenerateToken();
 
-
-
-                    // ✅ تحديث النشاط في SESSION
-                    session(['last_activity' => now()->timestamp]);
-
-                    // ✅ تحديث النشاط في DATABASE (هذا كان ناقص!)
-                    \App\Models\UserSession::where('user_id', $userId)
-                        ->whereNull('logout_at')
-                        ->latest('login_at')
-                        ->first()?->update([
-                                'last_activity' => now()
-                            ]);
-
-
-                    $currentSessionId = session()->getId();
-
-                    $valid = \App\Models\UserSession::where('user_id', $userId)
-                        ->where('session_id', $currentSessionId)
-                        ->whereNull('logout_at')
-                        ->exists();
-
-                    if (!$valid) {
-                        Auth::logout();
-                        session()->invalidate();
-                        return redirect('/login');
-                    }
-
-
-
-
                     return redirect('/login')
                         ->with('message', 'تم تسجيل الخروج بسبب عدم النشاط');
                 }
             }
 
-            // تحديث آخر نشاط
+            /*
+            ======================================
+            ③ تحديث النشاط
+            ======================================
+            */
+
             session(['last_activity' => now()->timestamp]);
+
+            \App\Models\UserSession::where('user_id', $userId)
+                ->where('session_id', $currentSessionId)
+                ->whereNull('logout_at')
+                ->update([
+                    'last_activity' => now()
+                ]);
         }
 
         return $next($request);
     }
+
+
+
 }

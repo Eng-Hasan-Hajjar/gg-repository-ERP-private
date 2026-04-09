@@ -751,4 +751,34 @@ Route::post('/attendance/{record}/break-end', [App\Http\Controllers\AttendanceCo
 
 
 
+
+Route::post('users/{user}/force-logout', [UserController::class, 'forceLogout'])
+    ->name('admin.users.forceLogout');
+
+Route::post('users/logout-all', [UserController::class, 'logoutAll'])
+    ->name('admin.users.logoutAll');
+
+
+
+
+Route::get('/session/check', function () {
+
+    if (!auth()->check()) {
+        return response()->json(['logout' => true]);
+    }
+
+    $session = \App\Models\UserSession::where('user_id', auth()->id())
+        ->where('session_id', session()->getId())
+        ->whereNull('logout_at')
+        ->exists();
+
+    return response()->json([
+        'logout' => !$session
+    ]);
+
+})->middleware('auth');
+
+
+
+
 require __DIR__ . '/auth.php';

@@ -1523,7 +1523,7 @@ ERP Notifications Style
               });
             });
 
-            
+
 
           })();
         <?php endif; ?>
@@ -1592,10 +1592,10 @@ ERP Notifications Style
             if (!data.alerts || data.alerts.length === 0) {
 
               container.innerHTML = `
-                          <div class="text-success text-center p-3">
-                          لا توجد تنبيهات 🎉
-                          </div>
-                          `;
+                                  <div class="text-success text-center p-3">
+                                  لا توجد تنبيهات 🎉
+                                  </div>
+                                  `;
 
               return;
             }
@@ -1605,19 +1605,19 @@ ERP Notifications Style
             data.alerts.forEach(a => {
 
               html += `
-                          <a href="${a.url}" class="alert-item">
+                                  <a href="${a.url}" class="alert-item">
 
-                          <div class="alert-icon ${a.type}">
-                          <i class="bi ${a.icon}"></i>
-                          </div>
+                                  <div class="alert-icon ${a.type}">
+                                  <i class="bi ${a.icon}"></i>
+                                  </div>
 
-                          <div class="alert-content">
-                          <div class="alert-title">${a.message}</div>
-                          <div class="alert-time">${formatTime(a.time)}</div>
-                          </div>
+                                  <div class="alert-content">
+                                  <div class="alert-title">${a.message}</div>
+                                  <div class="alert-time">${formatTime(a.time)}</div>
+                                  </div>
 
-                          </a>
-                          `;
+                                  </a>
+                                  `;
 
             });
 
@@ -1631,10 +1631,10 @@ ERP Notifications Style
 
             if (container) {
               container.innerHTML = `
-                          <div class="text-danger text-center p-3">
-                          خطأ في تحميل الإشعارات
-                          </div>
-                          `;
+                                  <div class="text-danger text-center p-3">
+                                  خطأ في تحميل الإشعارات
+                                  </div>
+                                  `;
             }
 
             console.error(err);
@@ -1681,16 +1681,16 @@ ERP Notifications Style
               data.alerts.forEach(a => {
 
                 html += `
-                <a href="${a.url}" class="alert-item">
-                <div class="alert-icon ${a.type}">
-                <i class="bi ${a.icon}"></i>
-                </div>
-                <div class="alert-content">
-                <div class="alert-title">${a.message}</div>
-                <div class="alert-time">${formatTime(a.time)}</div>
-                </div>
-                </a>
-                `;
+                        <a href="${a.url}" class="alert-item">
+                        <div class="alert-icon ${a.type}">
+                        <i class="bi ${a.icon}"></i>
+                        </div>
+                        <div class="alert-content">
+                        <div class="alert-title">${a.message}</div>
+                        <div class="alert-time">${formatTime(a.time)}</div>
+                        </div>
+                        </a>
+                        `;
 
               });
 
@@ -1708,55 +1708,34 @@ ERP Notifications Style
 
 
 
-      /*
-            // مودال عرض كل الإشعارات
-            document.getElementById('showAllAlerts').addEventListener('click', function (e) {
 
-              e.preventDefault();
 
-              fetch("<?php echo e(route('alerts.navbar')); ?>?all = 1")
+      function checkSession() {
 
-        .then(res => res.json())
+        // لا تفحص الجلسة في صفحة تسجيل الدخول
+        if (window.location.pathname === '/login') {
+          return;
+        }
 
-        .then(data => {
+        fetch('/session/check')
 
-          const container = document.getElementById('allAlertsContainer');
+          .then(res => res.json())
 
-          let html = '';
+          .then(data => {
 
-          data.alerts.forEach(a => {
-
-            html += `
-                          <a href="${a.url}" class="alert-item">
-
-                          <div class="alert-icon ${a.type}">
-                          <i class="bi ${a.icon}"></i>
-                          </div>
-
-                          <div class="alert-content">
-
-                          <div class="alert-title">${a.message}</div>
-
-                          <div class="alert-time">${formatTime(a.time)}</div>
-
-                          </div>
-
-                          </a>
-                          `;
+            if (data.logout) {
+              window.location.href = "/login";
+            }
 
           });
 
-          container.innerHTML = html;
+      }
 
-          new bootstrap.Modal(document.getElementById('alertsModal')).show();
-
-        });
-
-            });
+      // الفحص كل 5 ثواني
+      setInterval(checkSession, 5000);
 
 
 
-      */
 
 
     </script>
