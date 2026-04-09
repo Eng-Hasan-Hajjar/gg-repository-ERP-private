@@ -8,7 +8,7 @@
       <div class="text-muted small">العملاء المحتملون + المتابعات + التحويل إلى طلاب</div>
     </div>
     <a class="btn btn-primary rounded-pill px-4 fw-bold" href="<?php echo e(route('leads.create')); ?>">
-      <i class="bi bi-person-plus"></i> عميل محتمل جديد
+      <i class="bi bi-person-plus"></i> عميل جديد
     </a>
   </div>
 

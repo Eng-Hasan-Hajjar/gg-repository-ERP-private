@@ -11,133 +11,188 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
-        $q = Task::query()->with(['assignee.branch','branch','creator']);
+        $q = Task::query()->with(['assignee.branch', 'branch', 'creator']);
 
-        if ($request->filled('branch_id')) $q->where('branch_id',$request->branch_id);
-        if ($request->filled('assigned_to')) $q->where('assigned_to',$request->assigned_to);
-        if ($request->filled('status')) $q->where('status',$request->status);
-        if ($request->filled('priority')) $q->where('priority',$request->priority);
-        if ($request->filled('due')) $q->whereDate('due_date',$request->due);
+        if ($request->filled('branch_id'))
+            $q->where('branch_id', $request->branch_id);
+        if ($request->filled('assigned_to'))
+            $q->where('assigned_to', $request->assigned_to);
+        if ($request->filled('status'))
+            $q->where('status', $request->status);
+        if ($request->filled('priority'))
+            $q->where('priority', $request->priority);
+        if ($request->filled('due'))
+            $q->whereDate('due_date', $request->due);
 
         if ($request->filled('search')) {
             $s = trim($request->search);
-            $q->where('title','like',"%$s%")->orWhere('description','like',"%$s%");
+            $q->where(function ($query) use ($s) {
+                $query->where('title', 'like', "%$s%")
+                    ->orWhere('description', 'like', "%$s%");
+            });
         }
-        
+
         if ($request->filled('late')) {
             $q->whereDate('due_date', '<', now())
-            ->where('status', '!=', 'done');
+                ->where('status', '!=', 'done');
+        }
+
+
+        $user = auth()->user();
+
+        if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_tasks')) {
+            $employeeId = $user->employee?->id;
+            $q->where('assigned_to', $employeeId);
+        }
+        if ($user->hasRole('super_admin') || $user->hasPermission('manage_tasks')) {
+            $employees = Employee::orderBy('full_name')->get();
+        } else {
+            $employees = Employee::where('id', $user->employee?->id)->get();
         }
 
         return view('tasks.index', [
             'tasks' => $q->latest()->paginate(20)->withQueryString(),
             'branches' => Branch::orderBy('name')->get(),
-            'employees' => Employee::orderBy('full_name')->get(),
+            'employees' => $employees,
         ]);
     }
-/*
+    /*
+        public function create()
+        {
+            return view('tasks.create', [
+                'branches' => Branch::orderBy('name')->get(),
+                'employees'=> Employee::orderBy('full_name')->get(),
+            ]);
+        }
+    */
+
     public function create()
     {
+        $user = auth()->user();
+
+
+
+        if ($user->hasRole('super_admin') || $user->hasPermission('manage_tasks')) {
+
+            $employees = Employee::orderBy('full_name')->get();
+
+        } else {
+
+            $employees = Employee::where('id', $user->employee?->id)->get();
+
+        }
+
+        if ($user->hasRole('super_admin')) {
+            $branches = Branch::orderBy('name')->get();
+        } else {
+            $branches = Branch::where('id', $user->employee?->branch_id)->get();
+        }
+
         return view('tasks.create', [
-            'branches' => Branch::orderBy('name')->get(),
-            'employees'=> Employee::orderBy('full_name')->get(),
+            'branches' => $branches,
+            'employees' => $employees,
         ]);
     }
-*/
-
-public function create()
-{
-    $user = auth()->user();
-
-    if ($user->hasRole('super_admin')) {
-        $branches = Branch::orderBy('name')->get();
-    } else {
-        $branches = Branch::where('id',$user->employee?->branch_id)->get();
-    }
-
-    return view('tasks.create', [
-        'branches' => $branches,
-        'employees'=> Employee::orderBy('full_name')->get(),
-    ]);
-}
 
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title' => ['required','string','max:255'],
-            'description' => ['nullable','string','max:5000'],
-            'assigned_to' => ['nullable','exists:employees,id'],
-            'branch_id' => ['nullable','exists:branches,id'],
-            'priority' => ['required','in:low,medium,high,urgent'],
-            'status' => ['required','in:todo,in_progress,done,blocked,archived'],
-            'due_date' => ['nullable','date'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'assigned_to' => ['nullable', 'exists:employees,id'],
+            'branch_id' => ['nullable', 'exists:branches,id'],
+            'priority' => ['required', 'in:low,medium,high,urgent'],
+            'status' => ['required', 'in:todo,in_progress,done,blocked,archived'],
+            'due_date' => ['nullable', 'date'],
         ]);
 
-        
-$data['created_by'] = auth()->id();
 
-$user = auth()->user();
+        $data['created_by'] = auth()->id();
 
-if (!$user->hasRole('super_admin')) {
-    $data['branch_id'] = $user->employee?->branch_id;
-}
-        if ($data['status'] === 'done') $data['completed_at'] = now();
+        $user = auth()->user();
+
+        if (!$user->hasRole('super_admin')) {
+            $data['branch_id'] = $user->employee?->branch_id;
+        }
+        if ($data['status'] === 'done')
+            $data['completed_at'] = now();
+
+
+
+        if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_tasks')) {
+            $data['assigned_to'] = $user->employee?->id;
+        }
+
 
         $task = Task::create($data);
-        return redirect()->route('tasks.show',$task)->with('success','تم إنشاء المهمة.');
+        return redirect()->route('tasks.show', $task)->with('success', 'تم إنشاء المهمة.');
     }
 
     public function show(Task $task)
     {
-        return view('tasks.show', ['task'=>$task->load(['assignee','branch','creator','comments.user'])]);
+        return view('tasks.show', ['task' => $task->load(['assignee', 'branch', 'creator', 'comments.user'])]);
     }
 
     public function edit(Task $task)
     {
+
+        $user = auth()->user();
+        if ($user->hasRole('super_admin') || $user->hasPermission('manage_tasks')) {
+
+            $employees = Employee::orderBy('full_name')->get();
+
+        } else {
+
+            $employees = Employee::where('id', $user->employee?->id)->get();
+
+        }
+
+
+
         return view('tasks.edit', [
-            'task'=>$task,
-            'branches'=> Branch::orderBy('name')->get(),
-            'employees'=> Employee::orderBy('full_name')->get(),
+            'task' => $task,
+            'branches' => Branch::orderBy('name')->get(),
+            'employees' => $employees,
         ]);
     }
 
     public function update(Request $request, Task $task)
     {
         $data = $request->validate([
-            'title' => ['required','string','max:255'],
-            'description' => ['nullable','string','max:5000'],
-            'assigned_to' => ['nullable','exists:employees,id'],
-            'branch_id' => ['nullable','exists:branches,id'],
-            'priority' => ['required','in:low,medium,high,urgent'],
-            'status' => ['required','in:todo,in_progress,done,blocked,archived'],
-            'due_date' => ['nullable','date'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'assigned_to' => ['nullable', 'exists:employees,id'],
+            'branch_id' => ['nullable', 'exists:branches,id'],
+            'priority' => ['required', 'in:low,medium,high,urgent'],
+            'status' => ['required', 'in:todo,in_progress,done,blocked,archived'],
+            'due_date' => ['nullable', 'date'],
         ]);
 
-        $data['completed_at'] = ($data['status']==='done') ? now() : null;
+        $data['completed_at'] = ($data['status'] === 'done') ? now() : null;
 
         $task->update($data);
-        return redirect()->route('tasks.show',$task)->with('success','تم تحديث المهمة.');
+        return redirect()->route('tasks.show', $task)->with('success', 'تم تحديث المهمة.');
     }
 
     public function destroy(Task $task)
     {
         $task->delete();
-        return redirect()->route('tasks.index')->with('success','تم حذف المهمة.');
+        return redirect()->route('tasks.index')->with('success', 'تم حذف المهمة.');
     }
 
     // زر سريع لتغيير الحالة
     public function quickStatus(Request $request, Task $task)
     {
         $data = $request->validate([
-            'status' => ['required','in:todo,in_progress,done,blocked,archived'],
+            'status' => ['required', 'in:todo,in_progress,done,blocked,archived'],
         ]);
 
         $task->update([
             'status' => $data['status'],
-            'completed_at' => $data['status']==='done' ? now() : null,
+            'completed_at' => $data['status'] === 'done' ? now() : null,
         ]);
 
-        return back()->with('success','تم تحديث حالة المهمة.');
+        return back()->with('success', 'تم تحديث حالة المهمة.');
     }
 }

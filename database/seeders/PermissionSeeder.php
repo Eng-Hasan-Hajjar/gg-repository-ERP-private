@@ -94,12 +94,13 @@ class PermissionSeeder extends Seeder
             | المهام
             |--------------------------------------------------------------------------
             */
+            ['name' => 'manage_tasks', 'label' => 'إدارة المهام', 'module' => 'tasks'],
             ['name' => 'view_tasks', 'label' => 'عرض المهام', 'module' => 'tasks'],
             ['name' => 'create_tasks', 'label' => 'إضافة مهمة', 'module' => 'tasks'],
             ['name' => 'edit_tasks', 'label' => 'تعديل مهمة', 'module' => 'tasks'],
             ['name' => 'delete_tasks', 'label' => 'حذف مهمة', 'module' => 'tasks'],
             ['name' => 'complete_tasks', 'label' => 'إنهاء مهمة', 'module' => 'tasks'],
-
+            ['name' => 'manage_tasks_reports', 'label' => 'إدارة تقارير المهام', 'module' => 'tasks'],
 
 
 
@@ -121,7 +122,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'delete_employees', 'label' => 'حذف موظف', 'module' => 'hr'],
             ['name' => 'manage_salaries', 'label' => 'إدارة المستحقات', 'module' => 'hr'],
 
-  
+
 
 
 

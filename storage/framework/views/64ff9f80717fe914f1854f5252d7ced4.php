@@ -1,56 +1,56 @@
-@extends('layouts.app')
-@section('title','طلب ميديا جديد')
 
-@section('content')
+<?php $__env->startSection('title','طلب ميديا جديد'); ?>
+
+<?php $__env->startSection('content'); ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0">إرسال طلب لقسم الميديا</h4>
-    <a href="{{ route('media.index') }}" class="btn btn-soft">
+    <a href="<?php echo e(route('media.index')); ?>" class="btn btn-soft">
         <i class="bi bi-arrow-right"></i> رجوع
     </a>
 </div>
 
 <div class="card shadow-sm p-4">
 
-    <form method="POST" action="{{ route('media.store') }}" enctype="multipart/form-data">
-        @csrf
+    <form method="POST" action="<?php echo e(route('media.store')); ?>" enctype="multipart/form-data">
+        <?php echo csrf_field(); ?>
 
         <div class="row g-3">
 
             <div class="col-md-6">
                 <label class="form-label">اسم مقدم الطلب <span class="text-danger">*</span></label>
                 <input type="text" name="requester_name" class="form-control"
-                       value="{{ old('requester_name') }}" required>
+                       value="<?php echo e(old('requester_name')); ?>" required>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">رقم الهاتف</label>
                 <input type="text" name="requester_phone" class="form-control"
-                       value="{{ old('requester_phone') }}">
+                       value="<?php echo e(old('requester_phone')); ?>">
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">اسم الدبلومة</label>
                 <input type="text" name="diploma_name" class="form-control"
-                       value="{{ old('diploma_name') }}">
+                       value="<?php echo e(old('diploma_name')); ?>">
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">ترميز الدبلومة</label>
                 <input type="text" name="diploma_code" class="form-control"
-                       value="{{ old('diploma_code') }}">
+                       value="<?php echo e(old('diploma_code')); ?>">
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">اسم المدرب</label>
                 <input type="text" name="trainer_name" class="form-control"
-                       value="{{ old('trainer_name') }}">
+                       value="<?php echo e(old('trainer_name')); ?>">
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">مكان تواجد المدرب</label>
                 <input type="text" name="trainer_location" class="form-control"
-                       value="{{ old('trainer_location') }}">
+                       value="<?php echo e(old('trainer_location')); ?>">
             </div>
 
             <div class="col-12">
@@ -64,19 +64,19 @@
             <div class="col-md-6">
                 <label class="form-label">اعتمادية الشهادة</label>
                 <input type="text" name="certificate_accreditation" class="form-control"
-                       value="{{ old('certificate_accreditation') }}">
+                       value="<?php echo e(old('certificate_accreditation')); ?>">
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">مسؤول خدمة العملاء</label>
                 <input type="text" name="customer_service_responsible" class="form-control"
-                       value="{{ old('customer_service_responsible') }}">
+                       value="<?php echo e(old('customer_service_responsible')); ?>">
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">مكان تنفيذ الدبلومة</label>
                 <input type="text" name="diploma_location" class="form-control"
-                       value="{{ old('diploma_location') }}">
+                       value="<?php echo e(old('diploma_location')); ?>">
             </div>
 
             <div class="col-md-6">
@@ -92,7 +92,7 @@
             <div class="col-md-6" hidden>
                 <label class="form-label">موعد نهاية التعديل</label>
                 <input type="date" name="editing_deadline" class="form-control"
-                       value="{{ old('editing_deadline') }}">
+                       value="<?php echo e(old('editing_deadline')); ?>">
             </div>
 
             <div class="col-12"><hr></div>
@@ -141,14 +141,14 @@
                     </div>
                     <div class="col-md-6 mt-2">
                         <input type="text" name="need_other" class="form-control"
-                               placeholder="أخرى" value="{{ old('need_other') }}">
+                               placeholder="أخرى" value="<?php echo e(old('need_other')); ?>">
                     </div>
                 </div>
             </div>
 
             <div class="col-12">
                 <label class="form-label">ملاحظات إضافية</label>
-                <textarea name="notes" class="form-control" rows="3">{{ old('notes') }}</textarea>
+                <textarea name="notes" class="form-control" rows="3"><?php echo e(old('notes')); ?></textarea>
             </div>
 
             <div class="col-12">
@@ -161,4 +161,5 @@
     </form>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/media/create.blade.php ENDPATH**/ ?>

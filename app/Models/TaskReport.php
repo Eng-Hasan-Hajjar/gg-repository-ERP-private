@@ -30,4 +30,49 @@ class TaskReport extends Model
     {
         return $this->belongsTo(Task::class);
     }
+
+
+    
+
+
+    protected static function booted()
+    {
+        static::addGlobalScope('branch', function ($query) {
+
+            if (!auth()->check()) {
+                return;
+            }
+
+            $user = auth()->user();
+
+            // السوبر أدمن يرى كل العملاء
+            if ($user->hasRole('super_admin')) {
+                return;
+            }
+
+            $employee = \App\Models\Employee::withoutGlobalScopes()
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$employee) {
+                return;
+            }
+
+            $branchIds = collect([
+                $employee->branch_id,
+                $employee->secondary_branch_id
+            ])
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            if (!empty($branchIds)) {
+                $query->whereIn('branch_id', $branchIds);
+            }
+
+        });
+    }
+
+
 }
