@@ -79,6 +79,11 @@ class PermissionSeeder extends Seeder
             ['name' => 'view_attendance', 'label' => 'عرض الدوام', 'module' => 'attendance'],
             ['name' => 'mark_attendance', 'label' => 'تسجيل حضور وانصراف', 'module' => 'attendance'],
             ['name' => 'edit_attendance', 'label' => 'تعديل الدوام', 'module' => 'attendance'],
+
+            ['name' => 'manage_leaves', 'label' => 'إدارة الإجازات', 'module' => 'attendance'],
+
+            
+
             ['name' => 'view_leaves', 'label' => 'عرض الإجازات', 'module' => 'attendance'],
             ['name' => 'create_leaves', 'label' => 'طلب إجازة', 'module' => 'attendance'],
             ['name' => 'delete_leaves', 'label' => 'حذف إجازة', 'module' => 'attendance'],

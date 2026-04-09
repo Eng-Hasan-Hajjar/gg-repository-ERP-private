@@ -17,62 +17,77 @@ class LeaveRequestController extends Controller
 
         $user = auth()->user();
 
+        // جلب الموظف المرتبط بالمستخدم
+        $employee = Employee::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->first();
+
+        // ================================
+        // 🔐 التحكم بالصلاحيات
+        // ================================
         if (!$user->hasRole('super_admin')) {
 
-            $employee = Employee::withoutGlobalScopes()
-                ->where('user_id', $user->id)
-                ->first();
+            // موظف عادي → يرى طلباته فقط
+            if (!$user->hasPermission('manage_leaves')) {
 
-            if ($employee) {
-                $q->whereHas('employee', function ($x) use ($employee) {
-                    $x->where('branch_id', $employee->branch_id);
-                });
+                if ($employee) {
+                    $q->where('employee_id', $employee->id);
+                }
+
+            } else {
+
+                // مدير → يرى طلبات الفرع
+                if ($employee) {
+                    $q->whereHas('employee', function ($x) use ($employee) {
+                        $x->where('branch_id', $employee->branch_id);
+                    });
+                }
+
             }
         }
 
-        if ($request->filled('status'))
+        // ================================
+        // 🔍 الفلاتر
+        // ================================
+        if ($request->filled('status')) {
             $q->where('status', $request->status);
-        if ($request->filled('type'))
+        }
+
+        if ($request->filled('type')) {
             $q->where('type', $request->type);
-        if ($request->filled('employee_id'))
+        }
+
+        if ($request->filled('employee_id')) {
             $q->where('employee_id', $request->employee_id);
+        }
 
-        if ($request->filled('from'))
+        if ($request->filled('from')) {
             $q->whereDate('start_date', '>=', $request->from);
-        if ($request->filled('to'))
+        }
+
+        if ($request->filled('to')) {
             $q->whereDate('start_date', '<=', $request->to);
+        }
+
+        // ================================
+        // 👥 قائمة الموظفين (للفلتر)
+        // ================================
+        if ($user->hasRole('super_admin') || $user->hasPermission('manage_leaves')) {
+
+            // المدير يرى الكل
+            $employees = Employee::orderBy('full_name')->get();
+
+        } else {
+
+            // الموظف يرى نفسه فقط
+            $employees = $employee ? collect([$employee]) : collect();
+        }
 
         return view('leaves.index', [
             'leaves' => $q->latest()->paginate(20)->withQueryString(),
-            'employees' => Employee::orderBy('full_name')->get(),
+            'employees' => $employees,
         ]);
     }
-
-    /*
-    public function index(Request $request)
-    {
-        $q = LeaveRequest::query()->with(['employee.branch','approver']);
-
-        if ($request->filled('status')) $q->where('status',$request->status);
-        if ($request->filled('type')) $q->where('type',$request->type);
-        if ($request->filled('employee_id')) $q->where('employee_id',$request->employee_id);
-
-        if ($request->filled('from')) $q->whereDate('start_date','>=',$request->from);
-        if ($request->filled('to'))   $q->whereDate('start_date','<=',$request->to);
-
-        return view('leaves.index', [
-            'leaves' => $q->latest()->paginate(20)->withQueryString(),
-            'employees' => Employee::orderBy('full_name')->get(),
-        ]);
-    }
-
-    public function create()
-    {
-        return view('leaves.create', [
-            'employees' => Employee::orderBy('full_name')->get(),
-        ]);
-    }
-*/
 
     public function create()
     {
@@ -135,13 +150,13 @@ class LeaveRequestController extends Controller
 
 
     public function destroy(LeaveRequest $leave)
-{
-    $leave->delete();
+    {
+        $leave->delete();
 
-    return redirect()
-        ->route('leaves.index')
-        ->with('success','تم حذف طلب الإجازة.');
-}
+        return redirect()
+            ->route('leaves.index')
+            ->with('success', 'تم حذف طلب الإجازة.');
+    }
 
 
 
