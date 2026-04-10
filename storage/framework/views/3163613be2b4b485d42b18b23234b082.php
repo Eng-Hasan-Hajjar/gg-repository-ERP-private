@@ -457,6 +457,8 @@
 
   <script>
 
+    let currentRecordId = null;
+
     document.querySelectorAll('.view-details')
       .forEach(btn => {
 
@@ -481,6 +483,33 @@
 
           document.getElementById('notesField').value = notes
 
+
+          // -------- TIMELINE --------
+
+          let timeline = []
+
+          if (this.dataset.checkin) {
+            timeline.push(`🟢 تسجيل الدخول ${this.dataset.checkin}`)
+          }
+
+          if (this.dataset.break) {
+            timeline.push(`☕ استراحة ${this.dataset.break}`)
+          }
+
+          if (this.dataset.checkout) {
+            timeline.push(`🔴 تسجيل الخروج ${this.dataset.checkout}`)
+          }
+
+          let html = ""
+
+          timeline.forEach(item => {
+            html += `<li>${item}</li>`
+          })
+
+          document.getElementById('attendanceTimeline').innerHTML = html
+
+          // --------------------------
+
           new bootstrap.Modal(
             document.getElementById('attendanceModal')
           ).show()
@@ -490,33 +519,56 @@
       })
 
 
+    // SAVE NOTES
 
+    document.getElementById('saveNotesBtn')
+      .addEventListener('click', function () {
 
+        let notes = document.getElementById('notesField').value
 
-    let timeline = []
+        fetch(`/attendance/${currentRecordId}/notes`, {
 
-    if (this.dataset.checkin) {
-      timeline.push(`🟢 تسجيل الدخول ${this.dataset.checkin}`)
-    }
+          method: 'POST',
 
-    if (this.dataset.break) {
-      timeline.push(`☕ استراحة ${this.dataset.break}`)
-    }
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+            'Accept': 'application/json'
+          },
 
-    if (this.dataset.checkout) {
-      timeline.push(`🔴 تسجيل الخروج ${this.dataset.checkout}`)
-    }
+          body: JSON.stringify({
+            notes: notes
+          })
 
-    let html = ""
+        })
+          .then(res => res.json())
+          .then(data => {
 
-    timeline.forEach(item => {
-      html += `<li>${item}</li>`
-    })
+            if (data.success) {
 
-    document.getElementById('attendanceTimeline').innerHTML = html
+              let btn = document.querySelector(
+                `.view-details[data-id="${currentRecordId}"]`
+              )
 
+              btn.dataset.notes = notes
 
+              Swal.fire({
+                icon: 'success',
+                title: 'تم الحفظ بنجاح',
+                text: 'تم تحديث الملاحظات في سجل الحضور',
+                confirmButtonText: 'ممتاز',
+                confirmButtonColor: '#3085d6'
+              })
 
+            }
+
+          })
+          .catch(error => {
+            console.error(error)
+            alert('حدث خطأ أثناء الحفظ')
+          })
+
+      })
 
   </script>
 
