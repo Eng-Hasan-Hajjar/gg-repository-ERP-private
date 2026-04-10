@@ -111,21 +111,7 @@ class TaskReportController extends Controller
         ]);
 
     }
-    /*
-        public function index()
-        {
-
-            $reports = TaskReport::with(['employee','task'])
-
-            ->where('employee_id',auth()->user()->employee->id)
-
-            ->latest()
-
-            ->paginate(20);
-
-        return view('task_reports.index',compact('reports'));
-        }
-    */
+ 
     public function create()
     {
 
@@ -144,11 +130,11 @@ class TaskReportController extends Controller
 
             'report_date' => ['required', 'date'],
 
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
 
             'notes' => ['nullable', 'string'],
 
-            'file' => ['required', 'file', 'mimes:pdf,doc,docx,xlsx,xls', 'max:5120']
+            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,xlsx,xls', 'max:5120']
         ]);
         $employee = auth()->user()->employee;
 

@@ -39,10 +39,10 @@
                 <input type="date" name="report_date" class="form-control" required>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4" hidden>
                 <label class="form-label">المهمة</label>
 
-                <select name="task_id" class="form-select" required>
+                <select name="task_id" class="form-select" >
 
                     <option value="">بدون مهمة</option>
 
@@ -69,7 +69,7 @@
 
             <div class="col-md-6">
                 <label class="form-label">ملف التقرير</label>
-                <input type="file" name="file" class="form-control" required>
+                <input type="file" name="file" class="form-control" >
             </div>
 
         </div>
