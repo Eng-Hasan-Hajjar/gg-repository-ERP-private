@@ -1,8 +1,8 @@
-@extends('layouts.app')
-@php($activeModule = 'audit')
-@section('title', 'مركز التدقيق')
 
-@section('content')
+<?php ($activeModule = 'audit'); ?>
+<?php $__env->startSection('title', 'مركز التدقيق'); ?>
+
+<?php $__env->startSection('content'); ?>
 
 <style>
   .audit-stat {
@@ -92,7 +92,7 @@
   }
 </style>
 
-{{-- ═══ Header ═══ --}}
+
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
   <div>
     <h4 style="font-weight:900; margin:0;">مركز التدقيق</h4>
@@ -100,14 +100,14 @@
   </div>
 </div>
 
-{{-- ═══ Stats ═══ --}}
+
 <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;">
   <div class="audit-stat">
     <div class="audit-stat-icon" style="background:rgba(14,165,233,.1); color:#0369a1;">
       <i class="bi bi-journal-text"></i>
     </div>
     <div>
-      <div class="audit-stat-val text-primary">{{ number_format($stats['total']) }}</div>
+      <div class="audit-stat-val text-primary"><?php echo e(number_format($stats['total'])); ?></div>
       <div class="audit-stat-lbl">إجمالي السجلات</div>
     </div>
   </div>
@@ -116,7 +116,7 @@
       <i class="bi bi-calendar-day"></i>
     </div>
     <div>
-      <div class="audit-stat-val" style="color:#4338ca;">{{ $stats['today'] }}</div>
+      <div class="audit-stat-val" style="color:#4338ca;"><?php echo e($stats['today']); ?></div>
       <div class="audit-stat-lbl">عمليات اليوم</div>
     </div>
   </div>
@@ -125,7 +125,7 @@
       <i class="bi bi-plus-circle-fill"></i>
     </div>
     <div>
-      <div class="audit-stat-val text-success">{{ $stats['created'] }}</div>
+      <div class="audit-stat-val text-success"><?php echo e($stats['created']); ?></div>
       <div class="audit-stat-lbl">إنشاء اليوم</div>
     </div>
   </div>
@@ -134,13 +134,13 @@
       <i class="bi bi-trash-fill"></i>
     </div>
     <div>
-      <div class="audit-stat-val text-danger">{{ $stats['deleted'] }}</div>
+      <div class="audit-stat-val text-danger"><?php echo e($stats['deleted']); ?></div>
       <div class="audit-stat-lbl">حذف اليوم</div>
     </div>
   </div>
 </div>
 
-{{-- ═══ Filters ═══ --}}
+
 
 <div class="filter-card">
   <form method="GET">
@@ -149,53 +149,54 @@
       <div class="col-12 col-md-3">
         <input type="text" name="search" class="form-control form-control-sm"
                placeholder="بحث: اسم المستخدم / الوصف / IP"
-               value="{{ request('search') }}">
+               value="<?php echo e(request('search')); ?>">
       </div>
 
       <div class="col-6 col-md-2">
         <select name="user_id" class="form-select form-select-sm">
           <option value="">كل المستخدمين</option>
-          @foreach($users as $u)
-            <option value="{{ $u->id }}" @selected(request('user_id') == $u->id)>{{ $u->name }}</option>
-          @endforeach
+          <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($u->id); ?>" <?php if(request('user_id') == $u->id): echo 'selected'; endif; ?>><?php echo e($u->name); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
       </div>
 
       <div class="col-6 col-md-2">
         <select name="action" class="form-select form-select-sm">
           <option value="">كل الإجراءات</option>
-          <option value="created" @selected(request('action')=='created')>إنشاء</option>
-          <option value="updated" @selected(request('action')=='updated')>تعديل</option>
-          <option value="deleted" @selected(request('action')=='deleted')>حذف</option>
-          <option value="login"   @selected(request('action')=='login')>تسجيل دخول</option>
-          <option value="logout"  @selected(request('action')=='logout')>تسجيل خروج</option>
+          <option value="created" <?php if(request('action')=='created'): echo 'selected'; endif; ?>>إنشاء</option>
+          <option value="updated" <?php if(request('action')=='updated'): echo 'selected'; endif; ?>>تعديل</option>
+          <option value="deleted" <?php if(request('action')=='deleted'): echo 'selected'; endif; ?>>حذف</option>
+          <option value="login"   <?php if(request('action')=='login'): echo 'selected'; endif; ?>>تسجيل دخول</option>
+          <option value="logout"  <?php if(request('action')=='logout'): echo 'selected'; endif; ?>>تسجيل خروج</option>
         </select>
       </div>
 
       <div class="col-6 col-md-2">
         <select name="model" class="form-select form-select-sm">
           <option value="">كل النماذج</option>
-          @foreach($models as $m)
-            <option value="{{ $m }}" @selected(request('model') == $m)>
-              {{ (new \App\Models\AuditLog(['model'=>$m]))->model_label }}
+          <?php $__currentLoopData = $models; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($m); ?>" <?php if(request('model') == $m): echo 'selected'; endif; ?>>
+              <?php echo e((new \App\Models\AuditLog(['model'=>$m]))->model_label); ?>
+
             </option>
-          @endforeach
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
       </div>
 
       <div class="col-6 col-md-1">
         <input type="text" name="ip" class="form-control form-control-sm"
-               placeholder="IP" value="{{ request('ip') }}">
+               placeholder="IP" value="<?php echo e(request('ip')); ?>">
       </div>
 
       <div class="col-6 col-md-1">
         <input type="date" name="date_from" class="form-control form-control-sm"
-               value="{{ request('date_from') }}">
+               value="<?php echo e(request('date_from')); ?>">
       </div>
 
       <div class="col-6 col-md-1">
         <input type="date" name="date_to" class="form-control form-control-sm"
-               value="{{ request('date_to') }}">
+               value="<?php echo e(request('date_to')); ?>">
       </div>
 
     </div>
@@ -204,20 +205,20 @@
       <button class="btn btn-namaa btn-sm px-4 fw-bold">
         <i class="bi bi-search"></i> بحث
       </button>
-      @if($hasFilter)
-        <a href="{{ route('admin.audit.index') }}"
+      <?php if($hasFilter): ?>
+        <a href="<?php echo e(route('admin.audit.index')); ?>"
            style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:800;background:rgba(239,68,68,.08);color:#b91c1c;border:1px solid rgba(239,68,68,.2);text-decoration:none;">
           <i class="bi bi-x-circle" style="font-size:13px"></i> مسح الفلترة
         </a>
-      @endif
+      <?php endif; ?>
       <span style="font-size:12px; color:#94a3b8; margin-right:auto;">
-        {{ $logs->total() }} سجل
+        <?php echo e($logs->total()); ?> سجل
       </span>
     </div>
   </form>
 </div>
 
-{{-- ═══ Table ═══ --}}
+
 <div style="background:#fff; border:1px solid rgba(226,232,240,.9); border-radius:16px; overflow:hidden;">
   <div class="table-responsive">
     <table class="audit-table">
@@ -233,85 +234,96 @@
         </tr>
       </thead>
       <tbody>
-        @forelse($logs as $log)
+        <?php $__empty_1 = true; $__currentLoopData = $logs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
           <tr>
             <td style="white-space:nowrap; color:#64748b; font-size:12px;">
               <div style="font-weight:700; color:#1e293b;">
-                {{ $log->created_at->format('H:i') }}
+                <?php echo e($log->created_at->format('H:i')); ?>
+
               </div>
-              <div>{{ $log->created_at->format('Y/m/d') }}</div>
+              <div><?php echo e($log->created_at->format('Y/m/d')); ?></div>
               <div style="font-size:11px; color:#94a3b8;">
-                {{ $log->created_at->diffForHumans() }}
+                <?php echo e($log->created_at->diffForHumans()); ?>
+
               </div>
             </td>
 
             <td>
               <div class="user-cell">
                 <div class="user-av">
-                  {{ mb_substr($log->user->name ?? '؟', 0, 1, 'UTF-8') }}
+                  <?php echo e(mb_substr($log->user->name ?? '؟', 0, 1, 'UTF-8')); ?>
+
                 </div>
                 <div>
                   <div style="font-weight:700; font-size:13px; color:#1e293b;">
-                    {{ $log->user->name ?? 'النظام' }}
+                    <?php echo e($log->user->name ?? 'النظام'); ?>
+
                   </div>
                   <div style="font-size:11px; color:#94a3b8;">
-                    {{ $log->user->email ?? '' }}
+                    <?php echo e($log->user->email ?? ''); ?>
+
                   </div>
                 </div>
               </div>
             </td>
 
             <td>
-              <span class="action-badge ab-{{ $log->action_color }}">
-                <i class="bi {{ $log->action_icon }}" style="font-size:10px"></i>
-                {{ $log->action_label }}
+              <span class="action-badge ab-<?php echo e($log->action_color); ?>">
+                <i class="bi <?php echo e($log->action_icon); ?>" style="font-size:10px"></i>
+                <?php echo e($log->action_label); ?>
+
               </span>
             </td>
 
             <td class="hide-mobile">
-              @if($log->model)
-                <span class="model-pill">{{ $log->model_label }}</span>
-                @if($log->model_id)
-                  <span style="font-size:11px; color:#94a3b8; margin-right:4px;">#{{ $log->model_id }}</span>
-                @endif
-              @else
+              <?php if($log->model): ?>
+                <span class="model-pill"><?php echo e($log->model_label); ?></span>
+                <?php if($log->model_id): ?>
+                  <span style="font-size:11px; color:#94a3b8; margin-right:4px;">#<?php echo e($log->model_id); ?></span>
+                <?php endif; ?>
+              <?php else: ?>
                 <span style="color:#94a3b8;">—</span>
-              @endif
+              <?php endif; ?>
             </td>
 
             <td style="max-width:260px; color:#374151; font-size:13px;">
-              {{ $log->description ?? '—' }}
+              <?php echo e($log->description ?? '—'); ?>
+
             </td>
 
             <td class="hide-mobile">
               <div class="device-badge">
-                <i class="bi {{ $log->device_icon }}" style="font-size:13px"></i>
-                {{ $log->device_type }}
+                <i class="bi <?php echo e($log->device_icon); ?>" style="font-size:13px"></i>
+                <?php echo e($log->device_type); ?>
+
               </div>
               <div style="font-size:11px; color:#94a3b8; margin-top:2px;">
-                {{ $log->browser }}
+                <?php echo e($log->browser); ?>
+
               </div>
             </td>
 
             <td class="hide-mobile">
-              <span class="ip-badge">{{ $log->ip ?? '—' }}</span>
+              <span class="ip-badge"><?php echo e($log->ip ?? '—'); ?></span>
             </td>
           </tr>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
           <tr>
             <td colspan="7" style="text-align:center; padding:40px; color:#94a3b8;">
               <i class="bi bi-journal-x" style="font-size:28px; display:block; margin-bottom:8px;"></i>
               لا توجد سجلات مطابقة
             </td>
           </tr>
-        @endforelse
+        <?php endif; ?>
       </tbody>
     </table>
   </div>
 </div>
 
 <div class="mt-3">
-  {{ $logs->withQueryString()->links() }}
+  <?php echo e($logs->withQueryString()->links()); ?>
+
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/admin/audit/index.blade.php ENDPATH**/ ?>

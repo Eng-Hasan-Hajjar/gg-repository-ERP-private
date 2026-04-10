@@ -33,7 +33,7 @@ class TaskReport extends Model
 
 
     
-
+/*
 
     protected static function booted()
     {
@@ -73,6 +73,6 @@ class TaskReport extends Model
 
         });
     }
-
+*/
 
 }

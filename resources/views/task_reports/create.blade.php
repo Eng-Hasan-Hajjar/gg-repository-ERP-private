@@ -4,9 +4,19 @@
 
 @section('content')
 
+
+
     <h4 class="fw-bold mb-3">رفع تقرير جديد</h4>
 
-
+    @if ($errors->any())
+        <div class="alert alert-danger mb-3">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     @if(!auth()->user()->employee)
 
@@ -42,7 +52,7 @@
             <div class="col-md-4" hidden>
                 <label class="form-label">المهمة</label>
 
-                <select name="task_id" class="form-select" >
+                <select name="task_id" class="form-select">
 
                     <option value="">بدون مهمة</option>
 
@@ -69,7 +79,7 @@
 
             <div class="col-md-6">
                 <label class="form-label">ملف التقرير</label>
-                <input type="file" name="file" class="form-control" >
+                <input type="file" name="file" class="form-control">
             </div>
 
         </div>

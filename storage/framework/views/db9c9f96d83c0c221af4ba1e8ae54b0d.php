@@ -4,9 +4,19 @@
 
 <?php $__env->startSection('content'); ?>
 
+
+
     <h4 class="fw-bold mb-3">رفع تقرير جديد</h4>
 
-
+    <?php if($errors->any()): ?>
+        <div class="alert alert-danger mb-3">
+            <ul class="mb-0">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 
     <?php if(!auth()->user()->employee): ?>
 
@@ -42,7 +52,7 @@
             <div class="col-md-4" hidden>
                 <label class="form-label">المهمة</label>
 
-                <select name="task_id" class="form-select" >
+                <select name="task_id" class="form-select">
 
                     <option value="">بدون مهمة</option>
 
@@ -70,7 +80,7 @@
 
             <div class="col-md-6">
                 <label class="form-label">ملف التقرير</label>
-                <input type="file" name="file" class="form-control" >
+                <input type="file" name="file" class="form-control">
             </div>
 
         </div>

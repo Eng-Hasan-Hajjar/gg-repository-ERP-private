@@ -93,28 +93,50 @@ class Task extends Model
         });
     }
 
-    /*
-        protected static function booted()
-        {
-            static::addGlobalScope('branch', function ($query) {
 
-                if (!auth()->check()) {
-                    return;
-                }
+    public function getPriorityLabelAttribute(): string
+    {
+        return match ($this->priority) {
+            'low' => 'منخفضة',
+            'medium' => 'متوسطة',
+            'high' => 'عالية',
+            'urgent' => 'عاجلة',
+            default => $this->priority,
+        };
+    }
 
-                $user = auth()->user();
+    public function getPriorityColorAttribute(): string
+    {
+        return match ($this->priority) {
+            'low' => 'secondary',
+            'medium' => 'info',
+            'high' => 'warning',
+            'urgent' => 'danger',
+            default => 'secondary',
+        };
+    }
 
-                if ($user->hasRole('super_admin')) {
-                    return;
-                }
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'todo' => 'قيد الانتظار',
+            'in_progress' => 'قيد التنفيذ',
+            'done' => 'منجز',
+            'blocked' => 'موقوف',
+            'archived' => 'مؤرشف',
+            default => $this->status,
+        };
+    }
 
-                $branchId = $user->employee?->branch_id ?? null;
-
-                if ($branchId) {
-                    $query->where('branch_id', $branchId);
-                }
-
-            });
-        }
-    */
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->status) {
+            'todo' => 'warning',
+            'in_progress' => 'info',
+            'done' => 'success',
+            'blocked' => 'danger',
+            'archived' => 'secondary',
+            default => 'secondary',
+        };
+    }
 }

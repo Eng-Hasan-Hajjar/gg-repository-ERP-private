@@ -86,11 +86,7 @@ class TaskReportController extends Controller
             $employeeId = $user->employee?->id;
             $query->where('employee_id', $employeeId);
         }
-        /*
-                if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_tasks_reports')) {
-                    $employeeId = $user->employee?->id;
-                    $query->where('assigned_to', $employeeId);
-                }*/
+
         if ($user->hasRole('super_admin') || $user->hasPermission('manage_tasks_reports')) {
             $employees = Employee::orderBy('full_name')->get();
         } else {
@@ -111,7 +107,7 @@ class TaskReportController extends Controller
         ]);
 
     }
- 
+
     public function create()
     {
 
@@ -124,7 +120,7 @@ class TaskReportController extends Controller
 
         $data = $request->validate([
 
-            'task_id' => ['required', 'exists:tasks,id'],
+            'task_id' => ['nullable', 'exists:tasks,id'],
 
             'report_type' => ['required', 'in:daily,weekly,monthly'],
 
@@ -155,6 +151,31 @@ class TaskReportController extends Controller
 
             $data['file_path'] = $path;
         }
+
+
+        // تحقق من عدم وجود تقرير مكرر
+        $exists = TaskReport::where('employee_id', $employee->id)
+            ->where('report_type', $request->report_type)
+            ->whereDate('report_date', $request->report_date)
+            ->exists();
+
+        if ($exists) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'report_type' => 'لقد قمت برفع تقرير ' . match ($request->report_type) {
+                        'daily' => 'يومي',
+                        'weekly' => 'أسبوعي',
+                        'monthly' => 'شهري',
+                        default => ''
+                    } . ' لهذا التاريخ مسبقاً.'
+                ]);
+        }
+
+
+
+
+
 
         TaskReport::create($data);
 

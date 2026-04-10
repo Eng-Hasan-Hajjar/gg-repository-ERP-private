@@ -56,15 +56,8 @@ class TaskController extends Controller
             'employees' => $employees,
         ]);
     }
-    /*
-        public function create()
-        {
-            return view('tasks.create', [
-                'branches' => Branch::orderBy('name')->get(),
-                'employees'=> Employee::orderBy('full_name')->get(),
-            ]);
-        }
-    */
+  
+    
 
     public function create()
     {

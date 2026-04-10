@@ -333,8 +333,29 @@
             </div>
           </div>
           <div class="module-body">
-            <p class="section-note">عرض إحصائيات سريعة، تقارير Excel/PDF، وتصفية متقدمة حسب الفرع والفترة.</p>
+            <p class="section-note">عرض إحصائيات سريعة، تقارير ، وتصفية متقدمة حسب الفرع والفترة.</p>
           </div>
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ $dashboardStats['total_students'] }}</div>
+              <div class="sm-label"><i class="bi bi-mortarboard"></i> إجمالي الطلاب</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ number_format($dashboardStats['revenue_today'], 0) }}</div>
+              <div class="sm-label"><i class="bi bi-cash-coin"></i> إيرادات اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info">{{ $dashboardStats['active_employees'] }}</div>
+              <div class="sm-label"><i class="bi bi-person-check"></i> موظف نشط</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger">{{ $dashboardStats['overdue_tasks'] }}</div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> مهام متأخرة</div>
+            </div>
+          </div>
+
+
           <div class="module-actions">
             <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
             @if(auth()->user()?->hasPermission('view_executive_dashboard'))
@@ -522,6 +543,28 @@
           <div class="module-body">
             <p class="section-note">تقويم شهري، سجلات حضور يومية، تقارير ساعات/تأخير/غياب.</p>
           </div>
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $attendanceStats['present_today'] }}</div>
+              <div class="sm-label"><i class="bi bi-check-circle"></i> حاضر اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger">{{ $attendanceStats['absent_today'] }}</div>
+              <div class="sm-label"><i class="bi bi-x-circle"></i> غائب اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ $attendanceStats['pending_leaves'] }}</div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> إجازات معلقة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info">{{ $attendanceStats['approved_leaves'] }}</div>
+              <div class="sm-label"><i class="bi bi-calendar-check"></i> إجازات قادمة</div>
+            </div>
+          </div>
+
+
           <div class="module-actions grid-2">
             <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
             <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
@@ -561,6 +604,32 @@
           <div class="module-body">
             <p class="section-note">إنشاء مهام حسب الفرع، متابعة حالة التنفيذ، وتقارير يومية.</p>
           </div>
+
+
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ $taskStats['total'] }}</div>
+              <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ $taskStats['todo'] }}</div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد التنفيذ</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $taskStats['done'] }}</div>
+              <div class="sm-label"><i class="bi bi-check2-all"></i> منجز</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger">{{ $taskStats['overdue'] }}</div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخر</div>
+            </div>
+          </div>
+
+
+
+
           <div class="module-actions grid-2">
             <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
             @if(auth()->user()?->hasPermission('create_tasks'))
@@ -814,6 +883,30 @@
           <div class="module-body">
             <p class="section-note">متابعة قسم البرامج، الميديا، التسويق، الامتحانات وشؤون الطلاب.</p>
           </div>
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ $programStats['total'] }}</div>
+              <div class="sm-label"><i class="bi bi-diagram-3"></i> مُدارة</div>
+            </div>
+
+            <div class="sm-item">
+              <div class="sm-val text-info">{{ $programStats['online'] }}</div>
+              <div class="sm-label"><i class="bi bi-wifi"></i> أونلاين</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $programStats['onsite'] }}</div>
+              <div class="sm-label"><i class="bi bi-building"></i> حضوري</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-secondary">{{ $programStats['inactive'] }}</div>
+              <div class="sm-label"><i class="bi bi-pause-circle"></i> غير نشط</div>
+            </div>
+          </div>
+
+
+
           <div class="module-actions grid-2">
             <a href="{{ route('programs.management.index') }}" class="btn btn-namaa w-100 w-sm-auto">كل البرامج</a>
             <a href="{{ route('programs.management.index', ['type' => 'online']) }}" class="btn btn-soft w-100 w-sm-auto"><i
@@ -839,6 +932,31 @@
           <div class="module-body">
             <p class="section-note">إدارة طلبات التصميم والمحتوى الرقمي وجدولة النشر عبر المنصات.</p>
           </div>
+
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ $mediaStats['total'] }}</div>
+              <div class="sm-label"><i class="bi bi-megaphone"></i> إجمالي</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ $mediaStats['pending'] }}</div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد التنفيذ</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $mediaStats['done'] }}</div>
+              <div class="sm-label"><i class="bi bi-check2-circle"></i> منجز</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info">{{ $mediaStats['this_month'] }}</div>
+              <div class="sm-label"><i class="bi bi-calendar-month"></i> هذا الشهر</div>
+            </div>
+          </div>
+
+
+
+
           <div class="module-actions">
             <a href="{{ route('media.index') }}" class="btn btn-namaa w-100">فتح قسم الميديا</a>
           </div>

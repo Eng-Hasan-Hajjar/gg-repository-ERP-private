@@ -123,6 +123,74 @@ class DashboardController extends Controller
             'onsite' => \App\Models\Diploma::where('type', 'onsite')->count(),
         ];
 
+
+
+
+        // إحصائيات المهام
+        $taskStats = [
+            'total' => \App\Models\Task::count(),
+            'todo' => \App\Models\Task::where('status', 'todo')->count(),
+            'done' => \App\Models\Task::where('status', 'done')->count(),
+            'overdue' => \App\Models\Task::where('status', '!=', 'done')
+                ->whereDate('due_date', '<', today())->count(),
+        ];
+
+        // إحصائيات التقارير
+        $taskReportStats = [
+            'total' => \App\Models\TaskReport::count(),
+            'today' => \App\Models\TaskReport::whereDate('report_date', today())->count(),
+            'weekly' => \App\Models\TaskReport::where('report_type', 'weekly')->count(),
+            'monthly' => \App\Models\TaskReport::where('report_type', 'monthly')->count(),
+        ];
+
+        // إحصائيات الميديا
+        $mediaStats = [
+            'total' => \App\Models\MediaRequest::count(),
+            'pending' => \App\Models\MediaRequest::where('design_done', false)->count(),
+            'done' => \App\Models\MediaRequest::where('design_done', true)->count(),
+            'this_month' => \App\Models\MediaRequest::whereMonth('created_at', now()->month)->count(),
+        ];
+
+
+
+
+        // إحصائيات الدوام والإجازات
+        $attendanceStats = [
+            'present_today' => \App\Models\AttendanceRecord::whereDate('work_date', today())
+                ->whereIn('status', ['present', 'late'])->count(),
+            'absent_today' => \App\Models\AttendanceRecord::whereDate('work_date', today())
+                ->where('status', 'absent')->count(),
+            'pending_leaves' => \App\Models\LeaveRequest::where('status', 'pending')->count(),
+            'approved_leaves' => \App\Models\LeaveRequest::where('status', 'approved')
+                ->whereDate('start_date', '>=', today())->count(),
+        ];
+
+        // إحصائيات إدارة البرامج — من جدول ProgramManagement
+        $programStats = [
+            'total' => \App\Models\ProgramManagement::count(),
+            'online' => \App\Models\ProgramManagement::whereHas('diploma', fn($q) =>
+                $q->where('type', 'online'))->count(),
+            'onsite' => \App\Models\ProgramManagement::whereHas('diploma', fn($q) =>
+                $q->where('type', 'onsite'))->count(),
+            'inactive' => \App\Models\Diploma::where('is_active', false)->count(),
+        ];
+
+
+
+        // إحصائيات اللوحة الرئيسية
+        $dashboardStats = [
+            'total_students' => \App\Models\Student::count(),
+            'revenue_today' => \App\Models\CashboxTransaction::whereDate('trx_date', today())
+                ->where('status', 'posted')
+                ->where('type', 'in')
+                ->sum('amount'),
+            'active_employees' => \App\Models\Employee::where('status', 'active')->count(),
+            'overdue_tasks' => \App\Models\Task::where('status', '!=', 'done')
+                ->whereDate('due_date', '<', today())->count(),
+        ];
+
+
+
         return view('dashboard', [
             'highlights' => $highlights,
             'todayStats' => $todayStats,
@@ -138,6 +206,15 @@ class DashboardController extends Controller
             'assetStats' => $assetStats,
             'branchStats' => $branchStats,
             'diplomaStats' => $diplomaStats,
+            'taskStats' => $taskStats,
+            'taskReportStats' => $taskReportStats,
+            'mediaStats' => $mediaStats,
+            'attendanceStats' => $attendanceStats,
+            'programStats' => $programStats,
+            'dashboardStats' => $dashboardStats,
+
+
+
         ]);
     }
 }

@@ -37,5 +37,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
 
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // ✅ معالجة خطأ 419 - CSRF Token انتهت صلاحيته
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            return redirect()->route('login')
+                ->withErrors(['session' => 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً.']);
+        });
     })->create();

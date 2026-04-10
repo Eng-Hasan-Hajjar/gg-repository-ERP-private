@@ -1,4 +1,13 @@
 <x-guest-layout>
+
+    @if($errors->has('session'))
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            {{ $errors->first('session') }}
+        </div>
+    @endif
+
+
     <div dir="rtl" class="w-full">
         <!-- Session Status -->
         <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -67,7 +76,7 @@
 
 
 
-   
+
 
                     <button type="submit" class="w-full sm:w-auto min-w-[220px] mx-auto flex items-center justify-center
                                    px-10 py-3 rounded-xl text-white font-bold transition-all" style="
@@ -76,7 +85,7 @@
                             " onmouseover="this.style.filter='brightness(0.95)'" onmouseout="this.style.filter='none'">
                         تسجيل الدخول
                     </button>
-            
+
                     @if(auth()->user()?->hasPermission('manage_roles'))
                         <div class="text-center mt-4">
                             <a href="{{ route('register') }}"
@@ -101,7 +110,41 @@
         <p class="text-center mt-6 text-xs text-slate-500 font-semibold">
             © {{ date('Y') }} نماء أكاديمي — جميع الحقوق محفوظة
         </p>
+
+
+
+
+        <script>
+            // إعادة تحميل الصفحة تلقائياً إذا ظهر خطأ 419
+            // يحدث عند انتهاء صلاحية الـ CSRF token
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.querySelector('form');
+                if (!form) return;
+
+                form.addEventListener('submit', function (e) {
+                    const token = document.querySelector('input[name="_token"]');
+                    if (!token || !token.value) {
+                        e.preventDefault();
+                        window.location.reload();
+                    }
+                });
+            });
+
+            // إعادة تحميل تلقائية كل 30 دقيقة لتجديد الـ token
+            setTimeout(function () {
+                window.location.reload();
+            }, 30 * 60 * 1000);
+        </script>
+
+
+
+
+
+
     </div>
+
+
+
 
 
 

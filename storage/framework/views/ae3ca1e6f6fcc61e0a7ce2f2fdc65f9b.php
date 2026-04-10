@@ -336,8 +336,29 @@
             </div>
           </div>
           <div class="module-body">
-            <p class="section-note">عرض إحصائيات سريعة، تقارير Excel/PDF، وتصفية متقدمة حسب الفرع والفترة.</p>
+            <p class="section-note">عرض إحصائيات سريعة، تقارير ، وتصفية متقدمة حسب الفرع والفترة.</p>
           </div>
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary"><?php echo e($dashboardStats['total_students']); ?></div>
+              <div class="sm-label"><i class="bi bi-mortarboard"></i> إجمالي الطلاب</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success"><?php echo e(number_format($dashboardStats['revenue_today'], 0)); ?></div>
+              <div class="sm-label"><i class="bi bi-cash-coin"></i> إيرادات اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info"><?php echo e($dashboardStats['active_employees']); ?></div>
+              <div class="sm-label"><i class="bi bi-person-check"></i> موظف نشط</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger"><?php echo e($dashboardStats['overdue_tasks']); ?></div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> مهام متأخرة</div>
+            </div>
+          </div>
+
+
           <div class="module-actions">
             <a href="<?php echo e(route('reports.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
             <?php if(auth()->user()?->hasPermission('view_executive_dashboard')): ?>
@@ -525,6 +546,28 @@
           <div class="module-body">
             <p class="section-note">تقويم شهري، سجلات حضور يومية، تقارير ساعات/تأخير/غياب.</p>
           </div>
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-success"><?php echo e($attendanceStats['present_today']); ?></div>
+              <div class="sm-label"><i class="bi bi-check-circle"></i> حاضر اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger"><?php echo e($attendanceStats['absent_today']); ?></div>
+              <div class="sm-label"><i class="bi bi-x-circle"></i> غائب اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning"><?php echo e($attendanceStats['pending_leaves']); ?></div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> إجازات معلقة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info"><?php echo e($attendanceStats['approved_leaves']); ?></div>
+              <div class="sm-label"><i class="bi bi-calendar-check"></i> إجازات قادمة</div>
+            </div>
+          </div>
+
+
           <div class="module-actions grid-2">
             <a href="<?php echo e(route('attendance.calendar')); ?>" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
             <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
@@ -564,6 +607,32 @@
           <div class="module-body">
             <p class="section-note">إنشاء مهام حسب الفرع، متابعة حالة التنفيذ، وتقارير يومية.</p>
           </div>
+
+
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary"><?php echo e($taskStats['total']); ?></div>
+              <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning"><?php echo e($taskStats['todo']); ?></div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد التنفيذ</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success"><?php echo e($taskStats['done']); ?></div>
+              <div class="sm-label"><i class="bi bi-check2-all"></i> منجز</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger"><?php echo e($taskStats['overdue']); ?></div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخر</div>
+            </div>
+          </div>
+
+
+
+
           <div class="module-actions grid-2">
             <a href="<?php echo e(route('tasks.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
             <?php if(auth()->user()?->hasPermission('create_tasks')): ?>
@@ -817,6 +886,30 @@
           <div class="module-body">
             <p class="section-note">متابعة قسم البرامج، الميديا، التسويق، الامتحانات وشؤون الطلاب.</p>
           </div>
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary"><?php echo e($programStats['total']); ?></div>
+              <div class="sm-label"><i class="bi bi-diagram-3"></i> مُدارة</div>
+            </div>
+
+            <div class="sm-item">
+              <div class="sm-val text-info"><?php echo e($programStats['online']); ?></div>
+              <div class="sm-label"><i class="bi bi-wifi"></i> أونلاين</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success"><?php echo e($programStats['onsite']); ?></div>
+              <div class="sm-label"><i class="bi bi-building"></i> حضوري</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-secondary"><?php echo e($programStats['inactive']); ?></div>
+              <div class="sm-label"><i class="bi bi-pause-circle"></i> غير نشط</div>
+            </div>
+          </div>
+
+
+
           <div class="module-actions grid-2">
             <a href="<?php echo e(route('programs.management.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">كل البرامج</a>
             <a href="<?php echo e(route('programs.management.index', ['type' => 'online'])); ?>" class="btn btn-soft w-100 w-sm-auto"><i
@@ -842,6 +935,31 @@
           <div class="module-body">
             <p class="section-note">إدارة طلبات التصميم والمحتوى الرقمي وجدولة النشر عبر المنصات.</p>
           </div>
+
+
+
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary"><?php echo e($mediaStats['total']); ?></div>
+              <div class="sm-label"><i class="bi bi-megaphone"></i> إجمالي</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning"><?php echo e($mediaStats['pending']); ?></div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد التنفيذ</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success"><?php echo e($mediaStats['done']); ?></div>
+              <div class="sm-label"><i class="bi bi-check2-circle"></i> منجز</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info"><?php echo e($mediaStats['this_month']); ?></div>
+              <div class="sm-label"><i class="bi bi-calendar-month"></i> هذا الشهر</div>
+            </div>
+          </div>
+
+
+
+
           <div class="module-actions">
             <a href="<?php echo e(route('media.index')); ?>" class="btn btn-namaa w-100">فتح قسم الميديا</a>
           </div>

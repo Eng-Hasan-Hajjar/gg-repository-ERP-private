@@ -8,6 +8,16 @@
 <?php $attributes = $attributes->except(\App\View\Components\GuestLayout::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
+
+    <?php if($errors->has('session')): ?>
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <?php echo e($errors->first('session')); ?>
+
+        </div>
+    <?php endif; ?>
+
+
     <div dir="rtl" class="w-full">
         <!-- Session Status -->
         <?php if (isset($component)) { $__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5 = $component; } ?>
@@ -205,7 +215,7 @@
 
 
 
-   
+
 
                     <button type="submit" class="w-full sm:w-auto min-w-[220px] mx-auto flex items-center justify-center
                                    px-10 py-3 rounded-xl text-white font-bold transition-all" style="
@@ -214,7 +224,7 @@
                             " onmouseover="this.style.filter='brightness(0.95)'" onmouseout="this.style.filter='none'">
                         تسجيل الدخول
                     </button>
-            
+
                     <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
                         <div class="text-center mt-4">
                             <a href="<?php echo e(route('register')); ?>"
@@ -239,7 +249,41 @@
         <p class="text-center mt-6 text-xs text-slate-500 font-semibold">
             © <?php echo e(date('Y')); ?> نماء أكاديمي — جميع الحقوق محفوظة
         </p>
+
+
+
+
+        <script>
+            // إعادة تحميل الصفحة تلقائياً إذا ظهر خطأ 419
+            // يحدث عند انتهاء صلاحية الـ CSRF token
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.querySelector('form');
+                if (!form) return;
+
+                form.addEventListener('submit', function (e) {
+                    const token = document.querySelector('input[name="_token"]');
+                    if (!token || !token.value) {
+                        e.preventDefault();
+                        window.location.reload();
+                    }
+                });
+            });
+
+            // إعادة تحميل تلقائية كل 30 دقيقة لتجديد الـ token
+            setTimeout(function () {
+                window.location.reload();
+            }, 30 * 60 * 1000);
+        </script>
+
+
+
+
+
+
     </div>
+
+
+
 
 
 
