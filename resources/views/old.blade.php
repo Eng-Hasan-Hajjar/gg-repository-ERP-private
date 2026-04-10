@@ -1,16 +1,18 @@
+@extends('layouts.app')
+@php($isDashboard = true)
 
-<?php ($isDashboard = true); ?>
-<?php $__env->startSection('title', 'لوحة التحكم'); ?>
+@section('title', 'لوحة التحكم')
 
-<?php $__env->startSection('dashboard'); ?>
+@section('dashboard')
 
   <style>
+    /* ───── Hero Section ───── */
     .dash-hero {
       background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
       border-radius: 18px;
       padding: 28px 32px;
       color: #fff;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       position: relative;
       overflow: hidden;
     }
@@ -22,7 +24,7 @@
       left: -10%;
       width: 300px;
       height: 300px;
-      background: radial-gradient(circle, rgba(99, 102, 241, .15), transparent 70%);
+      background: radial-gradient(circle, rgba(99, 102, 241, .15) 0%, transparent 70%);
       border-radius: 50%;
     }
 
@@ -33,7 +35,7 @@
       right: -5%;
       width: 200px;
       height: 200px;
-      background: radial-gradient(circle, rgba(16, 185, 129, .1), transparent 70%);
+      background: radial-gradient(circle, rgba(16, 185, 129, .1) 0%, transparent 70%);
       border-radius: 50%;
     }
 
@@ -42,6 +44,29 @@
       font-weight: 800;
       margin-bottom: 4px;
       position: relative;
+    }
+
+    .dash-hero .sub {
+      font-size: 14px;
+      opacity: .7;
+      position: relative;
+    }
+
+    .dash-hero .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .dash-hero .chip-item {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .8);
+      backdrop-filter: blur(4px);
     }
 
     .dash-date {
@@ -60,134 +85,42 @@
       position: relative;
     }
 
-    .dash-hero .chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      position: relative;
-    }
-
-    .chip-item {
-      background: rgba(255, 255, 255, .1);
-      border: 1px solid rgba(255, 255, 255, .15);
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, .8);
-    }
-
-    /* ── Live Bar ── */
-    .live-bar {
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .12);
-      border-radius: 12px;
-      padding: 10px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
-      margin-top: 16px;
-      position: relative;
-    }
-
-    .live-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      font-weight: 800;
-      color: rgba(255, 255, 255, .85);
-    }
-
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, .3);
-      flex-shrink: 0;
-    }
-
-    .live-badge {
-      background: rgba(255, 255, 255, .15);
-      border-radius: 8px;
-      padding: 2px 10px;
-      font-size: 13px;
-      font-weight: 900;
-      color: #fff;
-    }
-
-    /* ── Quick Stats ── */
+    /* ───── Quick Stats Row ───── */
     .quick-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 14px;
+      margin-bottom: 24px;
     }
 
-    @media(max-width:991px) {
+    @media (max-width: 991px) {
       .quick-stats {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media(max-width:767px) {
-      .live-bar {
-        gap: 10px;
-        padding: 10px 12px;
-      }
-
-      .live-item {
-        font-size: 11px;
-      }
-
-      .live-badge {
-        font-size: 11px;
-        padding: 2px 7px;
-      }
-
-      .dash-hero {
-        padding: 18px 16px;
-      }
-
-      .dash-hero h1 {
-        font-size: 16px;
-      }
-    }
-
-    @media(max-width:400px) {
+    @media (max-width: 575px) {
       .quick-stats {
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-
-      .qs-card {
-        padding: 10px 8px;
-      }
-
-      .qs-val {
-        font-size: 15px;
+        gap: 10px;
       }
     }
 
     .qs-card {
       background: #fff;
       border-radius: 14px;
-      padding: 16px 18px;
+      padding: 18px 20px;
       box-shadow: 0 1px 8px rgba(0, 0, 0, .04);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       transition: transform .15s, box-shadow .15s;
       border-right: 4px solid transparent;
-      text-decoration: none;
-      color: inherit;
     }
 
     .qs-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
-      color: inherit;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
     }
 
     .qs-card.qs-warn {
@@ -206,30 +139,14 @@
       border-right-color: #8b5cf6;
     }
 
-    .qs-card.qs-red {
-      border-right-color: #ef4444;
-    }
-
-    .qs-card.qs-teal {
-      border-right-color: #0d9488;
-    }
-
-    .qs-card.qs-amber {
-      border-right-color: #d97706;
-    }
-
-    .qs-card.qs-sky {
-      border-right-color: #0284c7;
-    }
-
     .qs-icon {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 17px;
+      font-size: 18px;
       flex-shrink: 0;
     }
 
@@ -253,91 +170,19 @@
       color: #7c3aed;
     }
 
-    .qs-icon.red {
-      background: #fee2e2;
-      color: #dc2626;
-    }
-
-    .qs-icon.teal {
-      background: #ccfbf1;
-      color: #0f766e;
-    }
-
-    .qs-icon.amber {
-      background: #fef3c7;
-      color: #b45309;
-    }
-
-    .qs-icon.sky {
-      background: #e0f2fe;
-      color: #0369a1;
-    }
-
-    .qs-val {
-      font-size: 20px;
-      font-weight: 900;
+    .qs-text .qs-val {
+      font-size: 14px;
+      font-weight: 700;
       color: #1e293b;
-      line-height: 1.1;
+      line-height: 1.2;
     }
 
-    .qs-label {
-      font-size: 11px;
-      color: #94a3b8;
-      margin-top: 2px;
-    }
-
-    /* CRM alert card */
-    .crm-alert-card {
-      background: linear-gradient(135deg, rgba(239, 68, 68, .08), rgba(245, 158, 11, .06));
-      border: 1px solid rgba(239, 68, 68, .2);
-      border-right: 4px solid #ef4444;
-      border-radius: 14px;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-      text-decoration: none;
-      transition: transform .15s;
-    }
-
-    .crm-alert-card:hover {
-      transform: translateY(-1px);
-    }
-
-    .crm-alert-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: rgba(239, 68, 68, .12);
-      color: #dc2626;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .crm-alert-num {
-      font-size: 24px;
-      font-weight: 900;
-      color: #dc2626;
-      line-height: 1;
-    }
-
-    .crm-alert-lbl {
-      font-size: 13px;
-      font-weight: 800;
-      color: #7f1d1d;
-    }
-
-    .crm-alert-sub {
+    .qs-text .qs-label {
       font-size: 12px;
       color: #94a3b8;
-      margin-top: 2px;
     }
 
-    /* Module cards */
+    /* ───── Module Cards Enhancement ───── */
     .module-card {
       border-radius: 16px !important;
       transition: transform .2s, box-shadow .2s;
@@ -348,7 +193,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
     }
 
-    /* Stats mini */
+    /* ───── Stats Mini Grid inside cards ───── */
     .stats-mini {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -359,17 +204,17 @@
       margin: 8px 16px 12px;
     }
 
-    .sm-item {
+    .stats-mini .sm-item {
       text-align: center;
     }
 
-    .sm-val {
+    .stats-mini .sm-val {
       font-size: 20px;
       font-weight: 800;
       line-height: 1.2;
     }
 
-    .sm-label {
+    .stats-mini .sm-label {
       font-size: 11px;
       color: #94a3b8;
       display: flex;
@@ -379,39 +224,12 @@
       margin-top: 2px;
     }
 
-    /* Progress bar */
-    .prog-wrap {
-      padding: 0 16px 12px;
-    }
-
-    .prog-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      margin-bottom: 5px;
-    }
-
-    .prog-bar {
-      height: 6px;
-      border-radius: 10px;
-      background: #e2e8f0;
-      overflow: hidden;
-    }
-
-    .prog-fill {
-      height: 100%;
-      border-radius: 10px;
-      transition: width .6s ease;
-    }
-
-    /* Section divider */
+    /* ───── Section Divider ───── */
     .section-divider {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 24px 0 14px;
+      margin: 28px 0 16px;
     }
 
     .section-divider .sd-line {
@@ -421,23 +239,24 @@
     }
 
     .section-divider .sd-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       color: #64748b;
       white-space: nowrap;
     }
   </style>
 
-  
+  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- HERO --}}
+  {{-- ═══════════════════════════════════════════════════════ --}}
   <div class="dash-hero">
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
       <div>
         <h1>لوحة التحكم — نظام نماء أكاديمي</h1>
-        <div class="dash-date"><?php echo e(now()->locale('ar')->translatedFormat('l d F Y')); ?></div>
+        <div class="dash-date">اليوم: {{ now()->locale('ar')->translatedFormat('l d F Y') }}</div>
         <div class="dash-role">
           <i class="bi bi-shield-check"></i>
-          <?php echo e(auth()->user()->hasRole('super_admin') ? 'صلاحيات الإدارة العليا' : 'صلاحيات مصرّح بها'); ?>
-
+          {{ auth()->user()->hasRole('super_admin') ? 'صلاحيات الإدارة العليا' : 'صلاحيات مصرّح بها' }}
         </div>
       </div>
       <div class="chips">
@@ -446,124 +265,55 @@
         <span class="chip-item"><i class="bi bi-building"></i> فروع متعددة</span>
       </div>
     </div>
-
-    
-    <div class="live-bar">
-      <div class="live-item">
-        <span class="live-dot"></span>
-        <span>النظام يعمل</span>
-      </div>
-      <div class="live-item">
-        <i class="bi bi-people-fill" style="color:rgba(255,255,255,.6); font-size:14px"></i>
-        <span class="live-badge"><?php echo e($onlineUsers); ?></span>
-        <span>متصل الآن</span>
-      </div>
-      <div class="live-item">
-        <i class="bi bi-activity" style="color:rgba(255,255,255,.6); font-size:14px"></i>
-        <span>آخر نشاط:</span>
-        <span class="live-badge"><?php echo e($lastActivityAr); ?></span>
-      </div>
-      <div class="live-item">
-        <i class="bi bi-box-arrow-in-right" style="color:rgba(255,255,255,.6); font-size:14px"></i>
-        <span class="live-badge"><?php echo e($todayLogins); ?></span>
-        <span>دخول اليوم</span>
-      </div>
-      <div class="live-item" style="margin-right:auto; font-size:11px; opacity:.55;">
-        <i class="bi bi-clock"></i>
-        <?php echo e(now()->locale('ar')->format('H:i')); ?>
-
-      </div>
-    </div>
   </div>
 
-  
-  <?php if(auth()->user()?->hasPermission('view_leads') && $urgentLeads > 0): ?>
-    <a href="<?php echo e(route('leads.index')); ?>" class="crm-alert-card">
-      <div class="crm-alert-icon">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-      </div>
-      <div>
-        <div class="crm-alert-num"><?php echo e($urgentLeads); ?></div>
-        <div class="crm-alert-lbl">عميل محتمل بدون متابعة منذ أكثر من 48 ساعة</div>
-        <div class="crm-alert-sub">اضغط للانتقال إلى CRM ومتابعة العملاء</div>
-      </div>
-      <i class="bi bi-arrow-left-circle-fill ms-auto" style="font-size:22px; color:#ef4444; opacity:.6;"></i>
-    </a>
-  <?php endif; ?>
-
-  
-  <?php if(auth()->user()?->hasPermission('view_dashboard')): ?>
-    <div class="quick-stats" >
-
-      <div class="qs-card qs-blue">
-        <div class="qs-icon blue"><i class="bi bi-mortarboard-fill"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e($studentStats['total']); ?></div>
-          <div class="qs-label">إجمالي الطلاب</div>
+  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- QUICK STATS --}}
+  {{-- ═══════════════════════════════════════════════════════ --}}
+  @if(auth()->user()?->hasPermission('view_dashboard'))
+    <div class="quick-stats">
+      <div class="qs-card qs-warn">
+        <div class="qs-icon warn"><i class="bi bi-bell"></i></div>
+        <div class="qs-text">
+          <div class="qs-val">{{ $highlights['alerts']['pending_leaves'] }} إجازة •
+            {{ $highlights['alerts']['today_tasks'] }} مهمة
+          </div>
+          <div class="qs-label">تنبيهات اليوم</div>
         </div>
       </div>
-
       <div class="qs-card qs-green">
         <div class="qs-icon green"><i class="bi bi-cash-coin"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e(number_format($todayStats['financial_amount'], 0)); ?></div>
-          <div class="qs-label">إيرادات اليوم</div>
+        <div class="qs-text">
+          <div class="qs-val">{{ $todayStats['financial_transactions'] }} حركة •
+            {{ number_format($todayStats['financial_amount'], 0) }}
+          </div>
+          <div class="qs-label">المالية اليوم</div>
         </div>
       </div>
-
-      <div class="qs-card qs-warn">
-        <div class="qs-icon warn"><i class="bi bi-hourglass-split"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e($highlights['alerts']['pending_leaves']); ?></div>
-          <div class="qs-label">إجازات معلقة</div>
+      <div class="qs-card qs-blue">
+        <div class="qs-icon blue"><i class="bi bi-mortarboard"></i></div>
+        <div class="qs-text">
+          <div class="qs-val">{{ $todayStats['new_students'] }} جدد • {{ $todayStats['confirmed_students'] }} تثبيت</div>
+          <div class="qs-label">نشاط الطلاب</div>
         </div>
       </div>
-
       <div class="qs-card qs-purple">
-        <div class="qs-icon purple"><i class="bi bi-check2-square"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e($highlights['alerts']['today_tasks']); ?></div>
-          <div class="qs-label">مهام اليوم</div>
+        <div class="qs-icon purple"><i class="bi bi-activity"></i></div>
+        <div class="qs-text">
+          <div class="qs-val">{{ $highlights['activity']['count'] }} تعديل •
+            {{ $highlights['activity']['last'] ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans() : '—' }}
+          </div>
+          <div class="qs-label">نشاط النظام</div>
         </div>
       </div>
-
-      <div class="qs-card qs-teal">
-        <div class="qs-icon teal"><i class="bi bi-person-check-fill"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e($attendanceStats['present_today']); ?></div>
-          <div class="qs-label">حاضر اليوم</div>
-        </div>
-      </div>
-
-      <div class="qs-card qs-red">
-        <div class="qs-icon red"><i class="bi bi-person-x-fill"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e($attendanceStats['absent_today']); ?></div>
-          <div class="qs-label">غائب اليوم</div>
-        </div>
-      </div>
-
-      <div class="qs-card qs-sky">
-        <div class="qs-icon sky"><i class="bi bi-person-plus-fill"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e($todayStats['new_students']); ?></div>
-          <div class="qs-label">طلاب جدد اليوم</div>
-        </div>
-      </div>
-
-      <div class="qs-card qs-amber">
-        <div class="qs-icon amber"><i class="bi bi-exclamation-circle-fill"></i></div>
-        <div>
-          <div class="qs-val"><?php echo e($taskStats['overdue']); ?></div>
-          <div class="qs-label">مهام متأخرة</div>
-        </div>
-      </div>
-
     </div>
-  <?php endif; ?>
+  @endif
 
-  
+  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- MAIN MODULES --}}
+  {{-- ═══════════════════════════════════════════════════════ --}}
 
+  {{-- ── القسم الأول: العمليات الأساسية ── --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-grid-3x3-gap me-1"></i> العمليات الأساسية</span>
     <div class="sd-line"></div>
@@ -571,8 +321,8 @@
 
   <div class="row g-3 g-lg-4 mb-2">
 
-    
-    <?php if(auth()->user()?->hasPermission('view_dashboard')): ?>
+    {{-- التقارير --}}
+    @if(auth()->user()?->hasPermission('view_dashboard'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -583,38 +333,41 @@
             </div>
           </div>
           <div class="module-body">
-            <p class="section-note">عرض إحصائيات سريعة وتصفية متقدمة حسب الفرع والفترة.</p>
+            <p class="section-note">عرض إحصائيات سريعة، تقارير ، وتصفية متقدمة حسب الفرع والفترة.</p>
           </div>
+
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($dashboardStats['total_students']); ?></div>
-              <div class="sm-label"><i class="bi bi-mortarboard"></i> الطلاب</div>
+              <div class="sm-val text-primary">{{ $dashboardStats['total_students'] }}</div>
+              <div class="sm-label"><i class="bi bi-mortarboard"></i> إجمالي الطلاب</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e(number_format($dashboardStats['revenue_today'], 0)); ?></div>
+              <div class="sm-val text-success">{{ number_format($dashboardStats['revenue_today'], 0) }}</div>
               <div class="sm-label"><i class="bi bi-cash-coin"></i> إيرادات اليوم</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($dashboardStats['active_employees']); ?></div>
+              <div class="sm-val text-info">{{ $dashboardStats['active_employees'] }}</div>
               <div class="sm-label"><i class="bi bi-person-check"></i> موظف نشط</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-danger"><?php echo e($dashboardStats['overdue_tasks']); ?></div>
-              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخرة</div>
+              <div class="sm-val text-danger">{{ $dashboardStats['overdue_tasks'] }}</div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> مهام متأخرة</div>
             </div>
           </div>
+
+
           <div class="module-actions">
-            <a href="<?php echo e(route('reports.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
-            <?php if(auth()->user()?->hasPermission('view_executive_dashboard')): ?>
-              <a href="<?php echo e(route('reports.executive')); ?>" class="btn btn-soft w-100 w-sm-auto">لوحة القيادة التنفيذية</a>
-            <?php endif; ?>
+            <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
+            @if(auth()->user()?->hasPermission('view_executive_dashboard'))
+              <a href="{{ route('reports.executive') }}" class="btn btn-soft w-100 w-sm-auto">لوحة القيادة التنفيذية</a>
+            @endif
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_leads')): ?>
+    {{-- CRM --}}
+    @if(auth()->user()?->hasPermission('view_leads'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -629,44 +382,34 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-danger"><?php echo e($leadStats['total']); ?></div>
+              <div class="sm-val text-danger">{{ $leadStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-people"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($leadStats['new']); ?></div>
+              <div class="sm-val text-warning">{{ $leadStats['new'] }}</div>
               <div class="sm-label"><i class="bi bi-star"></i> جديد</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($leadStats['followup']); ?></div>
+              <div class="sm-val text-info">{{ $leadStats['followup'] }}</div>
               <div class="sm-label"><i class="bi bi-arrow-repeat"></i> متابعة</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($leadStats['converted']); ?></div>
+              <div class="sm-val text-success">{{ $leadStats['converted'] }}</div>
               <div class="sm-label"><i class="bi bi-check2-circle"></i> تحويل</div>
             </div>
           </div>
-          
-          <div class="prog-wrap">
-            <div class="prog-label">
-              <span>نسبة التحويل</span>
-              <span><?php echo e($convRate); ?>%</span>
-            </div>
-            <div class="prog-bar">
-              <div class="prog-fill" style="width:<?php echo e($convRate); ?>%; background:#10b981;"></div>
-            </div>
-          </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('leads.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح CRM</a>
-            <?php if(auth()->user()?->hasPermission('view_reports') || auth()->user()?->hasPermission('view_crm_reports')): ?>
-              <a href="<?php echo e(route('crm.reports.index')); ?>" class="btn btn-soft w-100 w-sm-auto">تقارير المبيعات</a>
-            <?php endif; ?>
+            <a href="{{ route('leads.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح CRM</a>
+            @if(auth()->user()?->hasPermission('view_reports') || auth()->user()?->hasPermission('view_crm_reports'))
+              <a href="{{ route('crm.reports.index') }}" class="btn btn-soft w-100 w-sm-auto">تقارير المبيعات</a>
+            @endif
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_students')): ?>
+    {{-- الطلاب --}}
+    @if(auth()->user()?->hasPermission('view_students'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -681,42 +424,32 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($studentStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $studentStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-mortarboard"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($studentStats['confirmed']); ?></div>
+              <div class="sm-val text-success">{{ $studentStats['confirmed'] }}</div>
               <div class="sm-label"><i class="bi bi-check-circle"></i> مثبّت</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($studentStats['pending']); ?></div>
+              <div class="sm-val text-warning">{{ $studentStats['pending'] }}</div>
               <div class="sm-label"><i class="bi bi-hourglass-split"></i> معلّق</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($studentStats['today_new']); ?></div>
+              <div class="sm-val text-info">{{ $studentStats['today_new'] }}</div>
               <div class="sm-label"><i class="bi bi-plus-circle"></i> جدد اليوم</div>
             </div>
           </div>
-          
-          <div class="prog-wrap">
-            <div class="prog-label">
-              <span>نسبة التثبيت</span>
-              <span><?php echo e($confRate); ?>%</span>
-            </div>
-            <div class="prog-bar">
-              <div class="prog-fill" style="width:<?php echo e($confRate); ?>%; background:#3b82f6;"></div>
-            </div>
-          </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('students.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">إدارة الطلاب</a>
-            <a href="<?php echo e(route('students.create')); ?>" class="btn btn-soft w-100 w-sm-auto">إضافة طالب</a>
+            <a href="{{ route('students.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الطلاب</a>
+            <a href="{{ route('students.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة طالب</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_exams')): ?>
+    {{-- الامتحانات --}}
+    @if(auth()->user()?->hasPermission('view_exams'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -731,32 +464,32 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($examStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $examStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-journal"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($examStats['upcoming']); ?></div>
+              <div class="sm-val text-warning">{{ $examStats['upcoming'] }}</div>
               <div class="sm-label"><i class="bi bi-calendar-event"></i> قادم</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($examStats['done']); ?></div>
+              <div class="sm-val text-success">{{ $examStats['done'] }}</div>
               <div class="sm-label"><i class="bi bi-check2-all"></i> منتهي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($examStats['this_month']); ?></div>
+              <div class="sm-val text-info">{{ $examStats['this_month'] }}</div>
               <div class="sm-label"><i class="bi bi-calendar-month"></i> هذا الشهر</div>
             </div>
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('exams.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">إدارة الامتحانات</a>
-            <a href="<?php echo e(route('exams.create')); ?>" class="btn btn-soft w-100 w-sm-auto">إضافة امتحان</a>
+            <a href="{{ route('exams.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الامتحانات</a>
+            <a href="{{ route('exams.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة امتحان</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_cashboxes')): ?>
+    {{-- الصناديق المالية --}}
+    @if(auth()->user()?->hasPermission('view_cashboxes'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -771,33 +504,33 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($cashboxStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $cashboxStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-safe"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($cashboxStats['active']); ?></div>
+              <div class="sm-val text-success">{{ $cashboxStats['active'] }}</div>
               <div class="sm-label"><i class="bi bi-check-circle"></i> نشط</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($cashboxStats['today_trx']); ?></div>
+              <div class="sm-val text-info">{{ $cashboxStats['today_trx'] }}</div>
               <div class="sm-label"><i class="bi bi-arrow-left-right"></i> حركات</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e(number_format($cashboxStats['today_amount'], 0)); ?></div>
+              <div class="sm-val text-warning">{{ number_format($cashboxStats['today_amount'], 0) }}</div>
               <div class="sm-label"><i class="bi bi-currency-dollar"></i> مبلغ اليوم</div>
             </div>
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('cashboxes.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح النظام المالي</a>
-            <a href="<?php echo e(route('cashboxes.index', ['status' => 'active'])); ?>" class="btn btn-soft w-100 w-sm-auto">الصناديق
+            <a href="{{ route('cashboxes.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح النظام المالي</a>
+            <a href="{{ route('cashboxes.index', ['status' => 'active']) }}" class="btn btn-soft w-100 w-sm-auto">الصناديق
               النشطة</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_attendance')): ?>
+    {{-- الدوام والإجازات --}}
+    @if(auth()->user()?->hasPermission('view_attendance'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -810,41 +543,46 @@
           <div class="module-body">
             <p class="section-note">تقويم شهري، سجلات حضور يومية، تقارير ساعات/تأخير/غياب.</p>
           </div>
+
+
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($attendanceStats['present_today']); ?></div>
+              <div class="sm-val text-success">{{ $attendanceStats['present_today'] }}</div>
               <div class="sm-label"><i class="bi bi-check-circle"></i> حاضر اليوم</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-danger"><?php echo e($attendanceStats['absent_today']); ?></div>
+              <div class="sm-val text-danger">{{ $attendanceStats['absent_today'] }}</div>
               <div class="sm-label"><i class="bi bi-x-circle"></i> غائب اليوم</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($attendanceStats['pending_leaves']); ?></div>
+              <div class="sm-val text-warning">{{ $attendanceStats['pending_leaves'] }}</div>
               <div class="sm-label"><i class="bi bi-hourglass-split"></i> إجازات معلقة</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($attendanceStats['approved_leaves']); ?></div>
+              <div class="sm-val text-info">{{ $attendanceStats['approved_leaves'] }}</div>
               <div class="sm-label"><i class="bi bi-calendar-check"></i> إجازات قادمة</div>
             </div>
           </div>
+
+
           <div class="module-actions grid-2">
-            <a href="<?php echo e(route('attendance.calendar')); ?>" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
-            <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
-            <?php if(auth()->user()?->hasPermission('export_attendance_reports')): ?>
-              <a href="<?php echo e(route('attendance.reports')); ?>" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
-            <?php endif; ?>
-            <?php if(auth()->user()?->hasPermission('view_leaves')): ?>
-              <a href="<?php echo e(route('leaves.index')); ?>" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
-            <?php endif; ?>
+            <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
+            <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
+
+            @if(auth()->user()?->hasPermission('export_attendance_reports'))
+              <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
+            @endif
+            @if(auth()->user()?->hasPermission('view_leaves'))
+              <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+            @endif
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
   </div>
 
-  
+  {{-- ── القسم الثاني: الموارد البشرية والإدارة ── --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-person-gear me-1"></i> الموارد البشرية والإدارة</span>
     <div class="sd-line"></div>
@@ -852,8 +590,8 @@
 
   <div class="row g-3 g-lg-4 mb-2">
 
-    
-    <?php if(auth()->user()?->hasPermission('view_tasks')): ?>
+    {{-- المهام --}}
+    @if(auth()->user()?->hasPermission('view_tasks'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -866,50 +604,47 @@
           <div class="module-body">
             <p class="section-note">إنشاء مهام حسب الفرع، متابعة حالة التنفيذ، وتقارير يومية.</p>
           </div>
+
+
+
+
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($taskStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $taskStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($taskStats['todo']); ?></div>
+              <div class="sm-val text-warning">{{ $taskStats['todo'] }}</div>
               <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد التنفيذ</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($taskStats['done']); ?></div>
+              <div class="sm-val text-success">{{ $taskStats['done'] }}</div>
               <div class="sm-label"><i class="bi bi-check2-all"></i> منجز</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-danger"><?php echo e($taskStats['overdue']); ?></div>
+              <div class="sm-val text-danger">{{ $taskStats['overdue'] }}</div>
               <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخر</div>
             </div>
           </div>
-          
-          <div class="prog-wrap">
-            <div class="prog-label">
-              <span>نسبة الإنجاز</span>
-              <span><?php echo e($doneRate); ?>%</span>
-            </div>
-            <div class="prog-bar">
-              <div class="prog-fill" style="width:<?php echo e($doneRate); ?>%; background:#10b981;"></div>
-            </div>
-          </div>
+
+
+
+
           <div class="module-actions grid-2">
-            <a href="<?php echo e(route('tasks.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
-            <?php if(auth()->user()?->hasPermission('create_tasks')): ?>
-              <a href="<?php echo e(route('tasks.create')); ?>" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
-            <?php endif; ?>
-            <a href="<?php echo e(route('tasks.index', ['status' => 'todo'])); ?>" class="btn btn-soft w-100 w-sm-auto">مهام اليوم</a>
-            <a href="<?php echo e(route('reports.task.index')); ?>" class="btn btn-soft w-100 w-sm-auto">
-              <i class="bi bi-file-earmark-text"></i> تقارير المهام
-            </a>
+            <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
+            @if(auth()->user()?->hasPermission('create_tasks'))
+              <a href="{{ route('tasks.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
+            @endif
+            <a href="{{ route('tasks.index', ['status' => 'todo']) }}" class="btn btn-soft w-100 w-sm-auto">مهام اليوم</a>
+            <a href="{{ route('reports.task.index') }}" class="btn btn-soft w-100 w-sm-auto"><i
+                class="bi bi-file-earmark-text"></i> تقارير المهام</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_employees')): ?>
+    {{-- المدربين والموظفين --}}
+    @if(auth()->user()?->hasPermission('view_employees'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -924,41 +659,41 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($hrStats['trainers']); ?></div>
+              <div class="sm-val text-primary">{{ $hrStats['trainers'] }}</div>
               <div class="sm-label"><i class="bi bi-mortarboard"></i> مدرب</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-secondary"><?php echo e($hrStats['employees']); ?></div>
+              <div class="sm-val text-secondary">{{ $hrStats['employees'] }}</div>
               <div class="sm-label"><i class="bi bi-person-badge"></i> موظف</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($hrStats['active_trainers']); ?></div>
+              <div class="sm-val text-success">{{ $hrStats['active_trainers'] }}</div>
               <div class="sm-label"><i class="bi bi-check-circle"></i> مدرب نشط</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($hrStats['active_employees']); ?></div>
+              <div class="sm-val text-success">{{ $hrStats['active_employees'] }}</div>
               <div class="sm-label"><i class="bi bi-check-circle"></i> موظف نشط</div>
             </div>
           </div>
           <div class="module-actions grid-2">
-            <?php if(auth()->user()?->hasPermission('manage_trainer')): ?>
-              <a href="<?php echo e(route('employees.index', ['type' => 'trainer'])); ?>" class="btn btn-namaa w-100 w-sm-auto">إدارة
+            @if(auth()->user()?->hasPermission('manage_trainer'))
+              <a href="{{ route('employees.index', ['type' => 'trainer']) }}" class="btn btn-namaa w-100 w-sm-auto">إدارة
                 المدربين</a>
-            <?php endif; ?>
-            <?php if(auth()->user()?->hasPermission('manage_employees')): ?>
-              <a href="<?php echo e(route('employees.index', ['type' => 'employee'])); ?>" class="btn btn-namaa w-100 w-sm-auto">إدارة
+            @endif
+            @if(auth()->user()?->hasPermission('manage_employees'))
+              <a href="{{ route('employees.index', ['type' => 'employee']) }}" class="btn btn-namaa w-100 w-sm-auto">إدارة
                 الموظفين</a>
-            <?php endif; ?>
+            @endif
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('employees.index')); ?>" class="btn btn-soft w-100 w-sm-auto">فتح الموارد البشرية</a>
+            <a href="{{ route('employees.index') }}" class="btn btn-soft w-100 w-sm-auto">فتح الموارد البشرية</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
+    {{-- الأمان والمستخدمون --}}
+    @if(auth()->user()?->hasPermission('manage_roles'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -973,36 +708,36 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($onlineUsers); ?></div>
+              <div class="sm-val text-success">{{ $onlineUsers }}</div>
               <div class="sm-label"><i class="bi bi-circle-fill text-success" style="font-size:6px"></i> متصلون</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($totalUsers); ?></div>
+              <div class="sm-val text-primary">{{ $totalUsers }}</div>
               <div class="sm-label"><i class="bi bi-people-fill"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($todayLogins); ?></div>
+              <div class="sm-val text-info">{{ $todayLogins }}</div>
               <div class="sm-label"><i class="bi bi-box-arrow-in-right"></i> دخول اليوم</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-secondary"><?php echo e($totalUsers - $onlineUsers); ?></div>
+              <div class="sm-val text-secondary">{{ $totalUsers - $onlineUsers }}</div>
               <div class="sm-label"><i class="bi bi-circle"></i> غير متصل</div>
             </div>
           </div>
           <div class="module-actions grid-2">
-            <a href="<?php echo e(route('admin.users.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">إدارة المستخدمين</a>
-            <a href="<?php echo e(route('admin.roles.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">الأدوار والصلاحيات</a>
+            <a href="{{ route('admin.users.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة المستخدمين</a>
+            <a href="{{ route('admin.roles.index') }}" class="btn btn-namaa w-100 w-sm-auto">الأدوار والصلاحيات</a>
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('admin.audit.index')); ?>" class="btn btn-soft w-100 w-sm-auto">مركز التدقيق</a>
+            <a href="{{ route('admin.audit.index') }}" class="btn btn-soft w-100 w-sm-auto">مركز التدقيق</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
   </div>
 
-  
+  {{-- ── القسم الثالث: البنية التحتية والبرامج ── --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-buildings me-1"></i> البنية التحتية والبرامج</span>
     <div class="sd-line"></div>
@@ -1010,8 +745,8 @@
 
   <div class="row g-3 g-lg-4 mb-4">
 
-    
-    <?php if(auth()->user()?->hasPermission('view_assets')): ?>
+    {{-- الأصول --}}
+    @if(auth()->user()?->hasPermission('view_assets'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -1026,32 +761,32 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($assetStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $assetStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-box-seam"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($assetStats['good']); ?></div>
+              <div class="sm-val text-success">{{ $assetStats['good'] }}</div>
               <div class="sm-label"><i class="bi bi-check-circle"></i> جيد</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($assetStats['maintenance']); ?></div>
+              <div class="sm-val text-warning">{{ $assetStats['maintenance'] }}</div>
               <div class="sm-label"><i class="bi bi-wrench"></i> صيانة</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-danger"><?php echo e($assetStats['retired']); ?></div>
+              <div class="sm-val text-danger">{{ $assetStats['retired'] }}</div>
               <div class="sm-label"><i class="bi bi-x-circle"></i> خارج</div>
             </div>
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('assets.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح الأصول</a>
-            <a href="<?php echo e(route('asset-categories.index')); ?>" class="btn btn-soft w-100 w-sm-auto">تصنيفات الأصول</a>
+            <a href="{{ route('assets.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الأصول</a>
+            <a href="{{ route('asset-categories.index') }}" class="btn btn-soft w-100 w-sm-auto">تصنيفات الأصول</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_branches')): ?>
+    {{-- الفروع --}}
+    @if(auth()->user()?->hasPermission('view_branches'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -1066,34 +801,34 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-danger"><?php echo e($branchStats['total']); ?></div>
+              <div class="sm-val text-danger">{{ $branchStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-building"></i> فرع</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($branchStats['students']); ?></div>
+              <div class="sm-val text-primary">{{ $branchStats['students'] }}</div>
               <div class="sm-label"><i class="bi bi-mortarboard"></i> طالب</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-secondary"><?php echo e($branchStats['employees']); ?></div>
+              <div class="sm-val text-secondary">{{ $branchStats['employees'] }}</div>
               <div class="sm-label"><i class="bi bi-person-badge"></i> موظف</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($branchStats['assets']); ?></div>
+              <div class="sm-val text-warning">{{ $branchStats['assets'] }}</div>
               <div class="sm-label"><i class="bi bi-box-seam"></i> أصل</div>
             </div>
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('branches.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">إدارة الفروع</a>
-            <?php if(auth()->user()?->hasPermission('create_branches')): ?>
-              <a href="<?php echo e(route('branches.create')); ?>" class="btn btn-soft w-100 w-sm-auto">إضافة فرع</a>
-            <?php endif; ?>
+            <a href="{{ route('branches.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الفروع</a>
+            @if(auth()->user()?->hasPermission('create_branches'))
+              <a href="{{ route('branches.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة فرع</a>
+            @endif
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_diplomas')): ?>
+    {{-- الدبلومات --}}
+    @if(auth()->user()?->hasPermission('view_diplomas'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -1108,34 +843,34 @@
           </div>
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($diplomaStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $diplomaStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-mortarboard"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($diplomaStats['active']); ?></div>
+              <div class="sm-val text-success">{{ $diplomaStats['active'] }}</div>
               <div class="sm-label"><i class="bi bi-check-circle"></i> نشط</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($diplomaStats['online']); ?></div>
+              <div class="sm-val text-info">{{ $diplomaStats['online'] }}</div>
               <div class="sm-label"><i class="bi bi-wifi"></i> أونلاين</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-secondary"><?php echo e($diplomaStats['onsite']); ?></div>
+              <div class="sm-val text-secondary">{{ $diplomaStats['onsite'] }}</div>
               <div class="sm-label"><i class="bi bi-geo-alt"></i> حضوري</div>
             </div>
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('diplomas.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">إدارة الدبلومات</a>
-            <?php if(auth()->user()?->hasPermission('create_diplomas')): ?>
-              <a href="<?php echo e(route('diplomas.create')); ?>" class="btn btn-soft w-100 w-sm-auto">إضافة دبلومة</a>
-            <?php endif; ?>
+            <a href="{{ route('diplomas.index') }}" class="btn btn-namaa w-100 w-sm-auto">إدارة الدبلومات</a>
+            @if(auth()->user()?->hasPermission('create_diplomas'))
+              <a href="{{ route('diplomas.create') }}" class="btn btn-soft w-100 w-sm-auto">إضافة دبلومة</a>
+            @endif
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_program_management')): ?>
+    {{-- إدارة البرامج --}}
+    @if(auth()->user()?->hasPermission('view_program_management'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -1148,39 +883,43 @@
           <div class="module-body">
             <p class="section-note">متابعة قسم البرامج، الميديا، التسويق، الامتحانات وشؤون الطلاب.</p>
           </div>
+
+
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($programStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $programStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-diagram-3"></i> مُدارة</div>
             </div>
+
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($programStats['online']); ?></div>
+              <div class="sm-val text-info">{{ $programStats['online'] }}</div>
               <div class="sm-label"><i class="bi bi-wifi"></i> أونلاين</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($programStats['onsite']); ?></div>
+              <div class="sm-val text-success">{{ $programStats['onsite'] }}</div>
               <div class="sm-label"><i class="bi bi-building"></i> حضوري</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-secondary"><?php echo e($programStats['inactive']); ?></div>
+              <div class="sm-val text-secondary">{{ $programStats['inactive'] }}</div>
               <div class="sm-label"><i class="bi bi-pause-circle"></i> غير نشط</div>
             </div>
           </div>
+
+
+
           <div class="module-actions grid-2">
-            <a href="<?php echo e(route('programs.management.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">كل البرامج</a>
-            <a href="<?php echo e(route('programs.management.index', ['type' => 'online'])); ?>" class="btn btn-soft w-100 w-sm-auto">
-              <i class="bi bi-wifi"></i> أونلاين
-            </a>
-            <a href="<?php echo e(route('programs.management.index', ['type' => 'onsite'])); ?>" class="btn btn-soft w-100 w-sm-auto">
-              <i class="bi bi-building"></i> حضوري
-            </a>
+            <a href="{{ route('programs.management.index') }}" class="btn btn-namaa w-100 w-sm-auto">كل البرامج</a>
+            <a href="{{ route('programs.management.index', ['type' => 'online']) }}" class="btn btn-soft w-100 w-sm-auto"><i
+                class="bi bi-wifi"></i> أونلاين</a>
+            <a href="{{ route('programs.management.index', ['type' => 'onsite']) }}" class="btn btn-soft w-100 w-sm-auto"><i
+                class="bi bi-building"></i> حضوري</a>
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    @endif
 
-    
-    <?php if(auth()->user()?->hasPermission('view_media_requests')): ?>
+    {{-- طلبات الميديا --}}
+    @if(auth()->user()?->hasPermission('view_media_requests'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
@@ -1193,37 +932,71 @@
           <div class="module-body">
             <p class="section-note">إدارة طلبات التصميم والمحتوى الرقمي وجدولة النشر عبر المنصات.</p>
           </div>
+
+
+
           <div class="stats-mini">
             <div class="sm-item">
-              <div class="sm-val text-primary"><?php echo e($mediaStats['total']); ?></div>
+              <div class="sm-val text-primary">{{ $mediaStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-megaphone"></i> إجمالي</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-warning"><?php echo e($mediaStats['pending']); ?></div>
+              <div class="sm-val text-warning">{{ $mediaStats['pending'] }}</div>
               <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد التنفيذ</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-success"><?php echo e($mediaStats['done']); ?></div>
+              <div class="sm-val text-success">{{ $mediaStats['done'] }}</div>
               <div class="sm-label"><i class="bi bi-check2-circle"></i> منجز</div>
             </div>
             <div class="sm-item">
-              <div class="sm-val text-info"><?php echo e($mediaStats['this_month']); ?></div>
+              <div class="sm-val text-info">{{ $mediaStats['this_month'] }}</div>
               <div class="sm-label"><i class="bi bi-calendar-month"></i> هذا الشهر</div>
             </div>
           </div>
+
+
+
+
           <div class="module-actions">
-            <a href="<?php echo e(route('media.index')); ?>" class="btn btn-namaa w-100">فتح قسم الميديا</a>
+            <a href="{{ route('media.index') }}" class="btn btn-namaa w-100">فتح قسم الميديا</a>
           </div>
           <div class="module-actions">
-            <a href="<?php echo e(route('media.publish.create')); ?>" class="btn btn-namaa w-100">
+
+            <a href="{{ route('media.publish.create') }}" class="btn btn-namaa w-100">
               <i class="bi bi-plus-lg"></i> إضافة سجل نشر
             </a>
           </div>
+
+
+
+
         </div>
       </div>
-    <?php endif; ?>
+    @endif
+
+    {{-- إعدادات النظام --}}
+    @if(auth()->user()?->hasRole('super_admin'))
+      <div class="col-12 col-md-6 col-xl-4" hidden>
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-slate"><i class="bi bi-gear-fill fs-3"></i></div>
+            <div>
+              <p class="module-title">إعدادات النظام</p>
+              <p class="module-sub">النسخ الاحتياطية — حالة النظام — صيانة</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">إدارة النسخ الاحتياطية ومراقبة حالة السيرفر وقاعدة البيانات.</p>
+          </div>
+          <div class="module-actions grid-2">
+            <a href="{{ route('system.backup.index') }}" class="btn btn-namaa w-100"><i class="bi bi-database"></i> النسخ
+              الاحتياطية</a>
+            <a href="{{ route('system.health') }}" class="btn btn-soft w-100"><i class="bi bi-activity"></i> حالة النظام</a>
+          </div>
+        </div>
+      </div>
+    @endif
 
   </div>
 
-<?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/dashboard.blade.php ENDPATH**/ ?>
+@endsection

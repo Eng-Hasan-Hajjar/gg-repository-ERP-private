@@ -1,18 +1,16 @@
 @extends('layouts.app')
 @php($isDashboard = true)
-
 @section('title', 'لوحة التحكم')
 
 @section('dashboard')
 
   <style>
-    /* ───── Hero Section ───── */
     .dash-hero {
       background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
       border-radius: 18px;
       padding: 28px 32px;
       color: #fff;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       position: relative;
       overflow: hidden;
     }
@@ -24,7 +22,7 @@
       left: -10%;
       width: 300px;
       height: 300px;
-      background: radial-gradient(circle, rgba(99, 102, 241, .15) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(99, 102, 241, .15), transparent 70%);
       border-radius: 50%;
     }
 
@@ -35,7 +33,7 @@
       right: -5%;
       width: 200px;
       height: 200px;
-      background: radial-gradient(circle, rgba(16, 185, 129, .1) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(16, 185, 129, .1), transparent 70%);
       border-radius: 50%;
     }
 
@@ -44,29 +42,6 @@
       font-weight: 800;
       margin-bottom: 4px;
       position: relative;
-    }
-
-    .dash-hero .sub {
-      font-size: 14px;
-      opacity: .7;
-      position: relative;
-    }
-
-    .dash-hero .chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      position: relative;
-    }
-
-    .dash-hero .chip-item {
-      background: rgba(255, 255, 255, .1);
-      border: 1px solid rgba(255, 255, 255, .15);
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, .8);
-      backdrop-filter: blur(4px);
     }
 
     .dash-date {
@@ -85,42 +60,134 @@
       position: relative;
     }
 
-    /* ───── Quick Stats Row ───── */
+    .dash-hero .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .chip-item {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .8);
+    }
+
+    /* ── Live Bar ── */
+    .live-bar {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      margin-top: 16px;
+      position: relative;
+    }
+
+    .live-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, .85);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .3);
+      flex-shrink: 0;
+    }
+
+    .live-badge {
+      background: rgba(255, 255, 255, .15);
+      border-radius: 8px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    /* ── Quick Stats ── */
     .quick-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
-    @media (max-width: 991px) {
+    @media(max-width:991px) {
       .quick-stats {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 575px) {
+    @media(max-width:767px) {
+      .live-bar {
+        gap: 10px;
+        padding: 10px 12px;
+      }
+
+      .live-item {
+        font-size: 11px;
+      }
+
+      .live-badge {
+        font-size: 11px;
+        padding: 2px 7px;
+      }
+
+      .dash-hero {
+        padding: 18px 16px;
+      }
+
+      .dash-hero h1 {
+        font-size: 16px;
+      }
+    }
+
+    @media(max-width:400px) {
       .quick-stats {
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 8px;
+      }
+
+      .qs-card {
+        padding: 10px 8px;
+      }
+
+      .qs-val {
+        font-size: 15px;
       }
     }
 
     .qs-card {
       background: #fff;
       border-radius: 14px;
-      padding: 18px 20px;
+      padding: 16px 18px;
       box-shadow: 0 1px 8px rgba(0, 0, 0, .04);
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       transition: transform .15s, box-shadow .15s;
       border-right: 4px solid transparent;
+      text-decoration: none;
+      color: inherit;
     }
 
     .qs-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+      color: inherit;
     }
 
     .qs-card.qs-warn {
@@ -139,14 +206,30 @@
       border-right-color: #8b5cf6;
     }
 
+    .qs-card.qs-red {
+      border-right-color: #ef4444;
+    }
+
+    .qs-card.qs-teal {
+      border-right-color: #0d9488;
+    }
+
+    .qs-card.qs-amber {
+      border-right-color: #d97706;
+    }
+
+    .qs-card.qs-sky {
+      border-right-color: #0284c7;
+    }
+
     .qs-icon {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 17px;
       flex-shrink: 0;
     }
 
@@ -170,19 +253,91 @@
       color: #7c3aed;
     }
 
-    .qs-text .qs-val {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1e293b;
-      line-height: 1.2;
+    .qs-icon.red {
+      background: #fee2e2;
+      color: #dc2626;
     }
 
-    .qs-text .qs-label {
+    .qs-icon.teal {
+      background: #ccfbf1;
+      color: #0f766e;
+    }
+
+    .qs-icon.amber {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .qs-icon.sky {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .qs-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: #1e293b;
+      line-height: 1.1;
+    }
+
+    .qs-label {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* CRM alert card */
+    .crm-alert-card {
+      background: linear-gradient(135deg, rgba(239, 68, 68, .08), rgba(245, 158, 11, .06));
+      border: 1px solid rgba(239, 68, 68, .2);
+      border-right: 4px solid #ef4444;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      text-decoration: none;
+      transition: transform .15s;
+    }
+
+    .crm-alert-card:hover {
+      transform: translateY(-1px);
+    }
+
+    .crm-alert-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(239, 68, 68, .12);
+      color: #dc2626;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .crm-alert-num {
+      font-size: 24px;
+      font-weight: 900;
+      color: #dc2626;
+      line-height: 1;
+    }
+
+    .crm-alert-lbl {
+      font-size: 13px;
+      font-weight: 800;
+      color: #7f1d1d;
+    }
+
+    .crm-alert-sub {
       font-size: 12px;
       color: #94a3b8;
+      margin-top: 2px;
     }
 
-    /* ───── Module Cards Enhancement ───── */
+    /* Module cards */
     .module-card {
       border-radius: 16px !important;
       transition: transform .2s, box-shadow .2s;
@@ -193,7 +348,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
     }
 
-    /* ───── Stats Mini Grid inside cards ───── */
+    /* Stats mini */
     .stats-mini {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -204,17 +359,17 @@
       margin: 8px 16px 12px;
     }
 
-    .stats-mini .sm-item {
+    .sm-item {
       text-align: center;
     }
 
-    .stats-mini .sm-val {
+    .sm-val {
       font-size: 20px;
       font-weight: 800;
       line-height: 1.2;
     }
 
-    .stats-mini .sm-label {
+    .sm-label {
       font-size: 11px;
       color: #94a3b8;
       display: flex;
@@ -224,12 +379,39 @@
       margin-top: 2px;
     }
 
-    /* ───── Section Divider ───── */
+    /* Progress bar */
+    .prog-wrap {
+      padding: 0 16px 12px;
+    }
+
+    .prog-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+
+    .prog-bar {
+      height: 6px;
+      border-radius: 10px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width .6s ease;
+    }
+
+    /* Section divider */
     .section-divider {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 28px 0 16px;
+      margin: 24px 0 14px;
     }
 
     .section-divider .sd-line {
@@ -239,21 +421,19 @@
     }
 
     .section-divider .sd-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: #64748b;
       white-space: nowrap;
     }
   </style>
 
-  {{-- ═══════════════════════════════════════════════════════ --}}
-  {{-- HERO --}}
-  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- ══════════ HERO ══════════ --}}
   <div class="dash-hero">
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
       <div>
         <h1>لوحة التحكم — نظام نماء أكاديمي</h1>
-        <div class="dash-date">اليوم: {{ now()->locale('ar')->translatedFormat('l d F Y') }}</div>
+        <div class="dash-date">{{ now()->locale('ar')->translatedFormat('l d F Y') }}</div>
         <div class="dash-role">
           <i class="bi bi-shield-check"></i>
           {{ auth()->user()->hasRole('super_admin') ? 'صلاحيات الإدارة العليا' : 'صلاحيات مصرّح بها' }}
@@ -265,55 +445,123 @@
         <span class="chip-item"><i class="bi bi-building"></i> فروع متعددة</span>
       </div>
     </div>
+
+    {{-- Live Bar --}}
+    <div class="live-bar">
+      <div class="live-item">
+        <span class="live-dot"></span>
+        <span>النظام يعمل</span>
+      </div>
+      <div class="live-item">
+        <i class="bi bi-people-fill" style="color:rgba(255,255,255,.6); font-size:14px"></i>
+        <span class="live-badge">{{ $onlineUsers }}</span>
+        <span>متصل الآن</span>
+      </div>
+      <div class="live-item">
+        <i class="bi bi-activity" style="color:rgba(255,255,255,.6); font-size:14px"></i>
+        <span>آخر نشاط:</span>
+        <span class="live-badge">{{ $lastActivityAr }}</span>
+      </div>
+      <div class="live-item">
+        <i class="bi bi-box-arrow-in-right" style="color:rgba(255,255,255,.6); font-size:14px"></i>
+        <span class="live-badge">{{ $todayLogins }}</span>
+        <span>دخول اليوم</span>
+      </div>
+      <div class="live-item" style="margin-right:auto; font-size:11px; opacity:.55;">
+        <i class="bi bi-clock"></i>
+        {{ now()->locale('ar')->format('H:i') }}
+      </div>
+    </div>
   </div>
 
-  {{-- ═══════════════════════════════════════════════════════ --}}
-  {{-- QUICK STATS --}}
-  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- ══════════ CRM URGENT ALERT ══════════ --}}
+  @if(auth()->user()?->hasPermission('view_leads') && $urgentLeads > 0)
+    <a href="{{ route('leads.index') }}" class="crm-alert-card">
+      <div class="crm-alert-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div>
+        <div class="crm-alert-num">{{ $urgentLeads }}</div>
+        <div class="crm-alert-lbl">عميل محتمل بدون متابعة منذ أكثر من 48 ساعة</div>
+        <div class="crm-alert-sub">اضغط للانتقال إلى CRM ومتابعة العملاء</div>
+      </div>
+      <i class="bi bi-arrow-left-circle-fill ms-auto" style="font-size:22px; color:#ef4444; opacity:.6;"></i>
+    </a>
+  @endif
+
+  {{-- ══════════ QUICK STATS (8 كاردات منفصلة) ══════════ --}}
   @if(auth()->user()?->hasPermission('view_dashboard'))
-    <div class="quick-stats">
-      <div class="qs-card qs-warn">
-        <div class="qs-icon warn"><i class="bi bi-bell"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $highlights['alerts']['pending_leaves'] }} إجازة •
-            {{ $highlights['alerts']['today_tasks'] }} مهمة
-          </div>
-          <div class="qs-label">تنبيهات اليوم</div>
+    <div class="quick-stats" >
+
+      <div class="qs-card qs-blue">
+        <div class="qs-icon blue"><i class="bi bi-mortarboard-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $studentStats['total'] }}</div>
+          <div class="qs-label">إجمالي الطلاب</div>
         </div>
       </div>
+
       <div class="qs-card qs-green">
         <div class="qs-icon green"><i class="bi bi-cash-coin"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $todayStats['financial_transactions'] }} حركة •
-            {{ number_format($todayStats['financial_amount'], 0) }}
-          </div>
-          <div class="qs-label">المالية اليوم</div>
+        <div>
+          <div class="qs-val">{{ number_format($todayStats['financial_amount'], 0) }}</div>
+          <div class="qs-label">إيرادات اليوم</div>
         </div>
       </div>
-      <div class="qs-card qs-blue">
-        <div class="qs-icon blue"><i class="bi bi-mortarboard"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $todayStats['new_students'] }} جدد • {{ $todayStats['confirmed_students'] }} تثبيت</div>
-          <div class="qs-label">نشاط الطلاب</div>
+
+      <div class="qs-card qs-warn">
+        <div class="qs-icon warn"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div class="qs-val">{{ $highlights['alerts']['pending_leaves'] }}</div>
+          <div class="qs-label">إجازات معلقة</div>
         </div>
       </div>
+
       <div class="qs-card qs-purple">
-        <div class="qs-icon purple"><i class="bi bi-activity"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $highlights['activity']['count'] }} تعديل •
-            {{ $highlights['activity']['last'] ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans() : '—' }}
-          </div>
-          <div class="qs-label">نشاط النظام</div>
+        <div class="qs-icon purple"><i class="bi bi-check2-square"></i></div>
+        <div>
+          <div class="qs-val">{{ $highlights['alerts']['today_tasks'] }}</div>
+          <div class="qs-label">مهام اليوم</div>
         </div>
       </div>
+
+      <div class="qs-card qs-teal">
+        <div class="qs-icon teal"><i class="bi bi-person-check-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $attendanceStats['present_today'] }}</div>
+          <div class="qs-label">حاضر اليوم</div>
+        </div>
+      </div>
+
+      <div class="qs-card qs-red">
+        <div class="qs-icon red"><i class="bi bi-person-x-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $attendanceStats['absent_today'] }}</div>
+          <div class="qs-label">غائب اليوم</div>
+        </div>
+      </div>
+
+      <div class="qs-card qs-sky">
+        <div class="qs-icon sky"><i class="bi bi-person-plus-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $todayStats['new_students'] }}</div>
+          <div class="qs-label">طلاب جدد اليوم</div>
+        </div>
+      </div>
+
+      <div class="qs-card qs-amber">
+        <div class="qs-icon amber"><i class="bi bi-exclamation-circle-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $taskStats['overdue'] }}</div>
+          <div class="qs-label">مهام متأخرة</div>
+        </div>
+      </div>
+
     </div>
   @endif
 
-  {{-- ═══════════════════════════════════════════════════════ --}}
-  {{-- MAIN MODULES --}}
-  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- ══════════ MODULES ══════════ --}}
 
-  {{-- ── القسم الأول: العمليات الأساسية ── --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-grid-3x3-gap me-1"></i> العمليات الأساسية</span>
     <div class="sd-line"></div>
@@ -333,13 +581,12 @@
             </div>
           </div>
           <div class="module-body">
-            <p class="section-note">عرض إحصائيات سريعة، تقارير ، وتصفية متقدمة حسب الفرع والفترة.</p>
+            <p class="section-note">عرض إحصائيات سريعة وتصفية متقدمة حسب الفرع والفترة.</p>
           </div>
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $dashboardStats['total_students'] }}</div>
-              <div class="sm-label"><i class="bi bi-mortarboard"></i> إجمالي الطلاب</div>
+              <div class="sm-label"><i class="bi bi-mortarboard"></i> الطلاب</div>
             </div>
             <div class="sm-item">
               <div class="sm-val text-success">{{ number_format($dashboardStats['revenue_today'], 0) }}</div>
@@ -351,11 +598,9 @@
             </div>
             <div class="sm-item">
               <div class="sm-val text-danger">{{ $dashboardStats['overdue_tasks'] }}</div>
-              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> مهام متأخرة</div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخرة</div>
             </div>
           </div>
-
-
           <div class="module-actions">
             <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
             @if(auth()->user()?->hasPermission('view_executive_dashboard'))
@@ -398,6 +643,16 @@
               <div class="sm-label"><i class="bi bi-check2-circle"></i> تحويل</div>
             </div>
           </div>
+          {{-- Progress: نسبة التحويل --}}
+          <div class="prog-wrap">
+            <div class="prog-label">
+              <span>نسبة التحويل</span>
+              <span>{{ $convRate }}%</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill" style="width:{{ $convRate }}%; background:#10b981;"></div>
+            </div>
+          </div>
           <div class="module-actions">
             <a href="{{ route('leads.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح CRM</a>
             @if(auth()->user()?->hasPermission('view_reports') || auth()->user()?->hasPermission('view_crm_reports'))
@@ -438,6 +693,16 @@
             <div class="sm-item">
               <div class="sm-val text-info">{{ $studentStats['today_new'] }}</div>
               <div class="sm-label"><i class="bi bi-plus-circle"></i> جدد اليوم</div>
+            </div>
+          </div>
+          {{-- Progress: نسبة التثبيت --}}
+          <div class="prog-wrap">
+            <div class="prog-label">
+              <span>نسبة التثبيت</span>
+              <span>{{ $confRate }}%</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill" style="width:{{ $confRate }}%; background:#3b82f6;"></div>
             </div>
           </div>
           <div class="module-actions">
@@ -543,8 +808,6 @@
           <div class="module-body">
             <p class="section-note">تقويم شهري، سجلات حضور يومية، تقارير ساعات/تأخير/غياب.</p>
           </div>
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-success">{{ $attendanceStats['present_today'] }}</div>
@@ -563,12 +826,9 @@
               <div class="sm-label"><i class="bi bi-calendar-check"></i> إجازات قادمة</div>
             </div>
           </div>
-
-
           <div class="module-actions grid-2">
             <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
             <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
-
             @if(auth()->user()?->hasPermission('export_attendance_reports'))
               <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
             @endif
@@ -582,7 +842,7 @@
 
   </div>
 
-  {{-- ── القسم الثاني: الموارد البشرية والإدارة ── --}}
+  {{-- ══════════ القسم الثاني ══════════ --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-person-gear me-1"></i> الموارد البشرية والإدارة</span>
     <div class="sd-line"></div>
@@ -604,10 +864,6 @@
           <div class="module-body">
             <p class="section-note">إنشاء مهام حسب الفرع، متابعة حالة التنفيذ، وتقارير يومية.</p>
           </div>
-
-
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $taskStats['total'] }}</div>
@@ -626,18 +882,25 @@
               <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخر</div>
             </div>
           </div>
-
-
-
-
+          {{-- Progress: نسبة الإنجاز --}}
+          <div class="prog-wrap">
+            <div class="prog-label">
+              <span>نسبة الإنجاز</span>
+              <span>{{ $doneRate }}%</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill" style="width:{{ $doneRate }}%; background:#10b981;"></div>
+            </div>
+          </div>
           <div class="module-actions grid-2">
             <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
             @if(auth()->user()?->hasPermission('create_tasks'))
               <a href="{{ route('tasks.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
             @endif
             <a href="{{ route('tasks.index', ['status' => 'todo']) }}" class="btn btn-soft w-100 w-sm-auto">مهام اليوم</a>
-            <a href="{{ route('reports.task.index') }}" class="btn btn-soft w-100 w-sm-auto"><i
-                class="bi bi-file-earmark-text"></i> تقارير المهام</a>
+            <a href="{{ route('reports.task.index') }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-file-earmark-text"></i> تقارير المهام
+            </a>
           </div>
         </div>
       </div>
@@ -692,7 +955,7 @@
       </div>
     @endif
 
-    {{-- الأمان والمستخدمون --}}
+    {{-- الأمان --}}
     @if(auth()->user()?->hasPermission('manage_roles'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
@@ -737,7 +1000,7 @@
 
   </div>
 
-  {{-- ── القسم الثالث: البنية التحتية والبرامج ── --}}
+  {{-- ══════════ القسم الثالث ══════════ --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-buildings me-1"></i> البنية التحتية والبرامج</span>
     <div class="sd-line"></div>
@@ -883,14 +1146,11 @@
           <div class="module-body">
             <p class="section-note">متابعة قسم البرامج، الميديا، التسويق، الامتحانات وشؤون الطلاب.</p>
           </div>
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $programStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-diagram-3"></i> مُدارة</div>
             </div>
-
             <div class="sm-item">
               <div class="sm-val text-info">{{ $programStats['online'] }}</div>
               <div class="sm-label"><i class="bi bi-wifi"></i> أونلاين</div>
@@ -904,15 +1164,14 @@
               <div class="sm-label"><i class="bi bi-pause-circle"></i> غير نشط</div>
             </div>
           </div>
-
-
-
           <div class="module-actions grid-2">
             <a href="{{ route('programs.management.index') }}" class="btn btn-namaa w-100 w-sm-auto">كل البرامج</a>
-            <a href="{{ route('programs.management.index', ['type' => 'online']) }}" class="btn btn-soft w-100 w-sm-auto"><i
-                class="bi bi-wifi"></i> أونلاين</a>
-            <a href="{{ route('programs.management.index', ['type' => 'onsite']) }}" class="btn btn-soft w-100 w-sm-auto"><i
-                class="bi bi-building"></i> حضوري</a>
+            <a href="{{ route('programs.management.index', ['type' => 'online']) }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-wifi"></i> أونلاين
+            </a>
+            <a href="{{ route('programs.management.index', ['type' => 'onsite']) }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-building"></i> حضوري
+            </a>
           </div>
         </div>
       </div>
@@ -932,9 +1191,6 @@
           <div class="module-body">
             <p class="section-note">إدارة طلبات التصميم والمحتوى الرقمي وجدولة النشر عبر المنصات.</p>
           </div>
-
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $mediaStats['total'] }}</div>
@@ -953,45 +1209,13 @@
               <div class="sm-label"><i class="bi bi-calendar-month"></i> هذا الشهر</div>
             </div>
           </div>
-
-
-
-
           <div class="module-actions">
             <a href="{{ route('media.index') }}" class="btn btn-namaa w-100">فتح قسم الميديا</a>
           </div>
           <div class="module-actions">
-
             <a href="{{ route('media.publish.create') }}" class="btn btn-namaa w-100">
               <i class="bi bi-plus-lg"></i> إضافة سجل نشر
             </a>
-          </div>
-
-
-
-
-        </div>
-      </div>
-    @endif
-
-    {{-- إعدادات النظام --}}
-    @if(auth()->user()?->hasRole('super_admin'))
-      <div class="col-12 col-md-6 col-xl-4" hidden>
-        <div class="module-card">
-          <div class="module-head">
-            <div class="module-icon grad-slate"><i class="bi bi-gear-fill fs-3"></i></div>
-            <div>
-              <p class="module-title">إعدادات النظام</p>
-              <p class="module-sub">النسخ الاحتياطية — حالة النظام — صيانة</p>
-            </div>
-          </div>
-          <div class="module-body">
-            <p class="section-note">إدارة النسخ الاحتياطية ومراقبة حالة السيرفر وقاعدة البيانات.</p>
-          </div>
-          <div class="module-actions grid-2">
-            <a href="{{ route('system.backup.index') }}" class="btn btn-namaa w-100"><i class="bi bi-database"></i> النسخ
-              الاحتياطية</a>
-            <a href="{{ route('system.health') }}" class="btn btn-soft w-100"><i class="bi bi-activity"></i> حالة النظام</a>
           </div>
         </div>
       </div>

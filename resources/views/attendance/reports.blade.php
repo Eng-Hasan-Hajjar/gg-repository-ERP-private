@@ -42,7 +42,7 @@
     </a>
   </div>
 
-  {{-- ── فورم الفلتر (يحتوي على كل الحقول) ── --}}
+  {{-- ── فورم الفلتر ── --}}
   <form class="card border-0 shadow-sm mb-3" method="GET" action="{{ route('attendance.reports') }}">
     <div class="card-body">
       <div class="row g-2">
@@ -93,33 +93,33 @@
       <table class="table align-middle mb-0">
         <thead class="table-light">
           <tr>
-            <th>الموظف</th>
-            <th>الفرع</th>
-            <th>أيام حضور</th>
-            <th>أيام غياب</th>
-            <th>أيام إجازة</th>
-            <th>تأخير (د)</th>
-            <th>استراحة (د)</th>
-            <th>ساعات عمل</th>
-            <th>صافي ساعات</th>
-           
+            <th>الموظف</th>                              {{-- ✅ يظهر دائماً --}}
+            <th class="hide-mobile">الفرع</th>           {{-- ❌ مخفي موبايل --}}
+            <th>أيام حضور</th>                           {{-- ✅ يظهر دائماً --}}
+            <th>أيام غياب</th>                           {{-- ✅ يظهر دائماً --}}
+            <th class="hide-mobile">أيام إجازة</th>      {{-- ❌ مخفي موبايل --}}
+            <th class="hide-mobile">تأخير (د)</th>       {{-- ❌ مخفي موبايل --}}
+            <th class="hide-mobile">استراحة (د)</th>     {{-- ❌ مخفي موبايل --}}
+            <th class="hide-mobile">ساعات عمل</th>       {{-- ❌ مخفي موبايل --}}
+            <th>صافي ساعات</th>                          {{-- ✅ يظهر دائماً --}}
           </tr>
         </thead>
         <tbody>
           @forelse($rows as $r)
             <tr>
               <td class="fw-bold">{{ $r->employee->full_name ?? '-' }}</td>
-              <td>{{ $r->employee->branch->name ?? '-' }}</td>
+              <td class="hide-mobile">{{ $r->employee->branch->name ?? '-' }}</td>
               <td><span class="badge bg-success">{{ (int) $r->present_days }}</span></td>
               <td><span class="badge bg-dark">{{ (int) $r->absent_days }}</span></td>
-              <td><span class="badge bg-warning text-dark">{{ (int) $r->leave_days }}</span></td>
-              <td><span class="badge bg-danger">{{ (int) $r->late_minutes }}</span></td>
-              <td><span class="badge bg-secondary">{{ (int) $r->break_minutes }}</span></td>
-              <td class="fw-bold">{{ round($r->worked_minutes / 60, 2) }}</td>
-              <td><span
-                  class="badge bg-info text-dark">{{ round(max(0, $r->worked_minutes - $r->break_minutes) / 60, 2) }}</span>
+              <td class="hide-mobile"><span class="badge bg-warning text-dark">{{ (int) $r->leave_days }}</span></td>
+              <td class="hide-mobile"><span class="badge bg-danger">{{ (int) $r->late_minutes }}</span></td>
+              <td class="hide-mobile"><span class="badge bg-secondary">{{ (int) $r->break_minutes }}</span></td>
+              <td class="hide-mobile fw-bold">{{ round($r->worked_minutes / 60, 2) }}</td>
+              <td>
+                <span class="badge bg-info text-dark">
+                  {{ round(max(0, $r->worked_minutes - $r->break_minutes) / 60, 2) }}
+                </span>
               </td>
-              
             </tr>
           @empty
             <tr>
@@ -130,7 +130,5 @@
       </table>
     </div>
   </div>
-
-
 
 @endsection

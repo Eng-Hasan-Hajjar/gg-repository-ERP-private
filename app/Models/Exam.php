@@ -53,6 +53,29 @@ class Exam extends Model
 
 
 
+    public function getTypeLabelAttribute(): string
+{
+    return match($this->type) {
+        'midterm'   => 'نصف فصل',
+        'final'     => 'نهائي',
+        'practical' => 'عملي',
+        'quiz'      => 'اختبار قصير',
+        default     => $this->type ?? '—',
+    };
+}
+
+public function getTypeColorAttribute(): string
+{
+    return match($this->type) {
+        'midterm'   => 'type-midterm',
+        'final'     => 'type-final',
+        'practical' => 'type-practical',
+        'quiz'      => 'type-quiz',
+        default     => 'type-default',
+    };
+}
+
+
 
 
     protected static function booted()

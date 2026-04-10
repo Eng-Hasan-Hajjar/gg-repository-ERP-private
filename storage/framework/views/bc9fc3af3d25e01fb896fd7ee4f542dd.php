@@ -1,8 +1,8 @@
-@extends('layouts.app')
-@php($activeModule = 'attendance')
-@section('title', 'تقويم الدوام')
 
-@push('styles')
+<?php ($activeModule = 'attendance'); ?>
+<?php $__env->startSection('title', 'تقويم الدوام'); ?>
+
+<?php $__env->startPush('styles'); ?>
   <style>
     .calendar-wrap {
       border-radius: 18px;
@@ -211,18 +211,18 @@
       }
     }
   </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-  {{-- Header --}}
+  
   <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-3">
     <div>
       <h4 class="fw-bold mb-1">تقويم الدوام الشهري</h4>
       <div class="text-muted small">عرض حالات الدوام حسب اليوم</div>
     </div>
     <div class="d-flex flex-wrap gap-2 w-100 w-lg-auto justify-content-start justify-content-lg-end">
-      <a href="{{ route('attendance.index') }}" class="btn btn-outline-secondary">
+      <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-return-right"></i> رجوع
       </a>
       <div class="dropdown d-sm-none w-100">
@@ -231,43 +231,43 @@
         </button>
         <ul class="dropdown-menu w-100">
           <li>
-            <a class="dropdown-item" href="{{ route('attendance.calendar.exportExcel', request()->query()) }}">
+            <a class="dropdown-item" href="<?php echo e(route('attendance.calendar.exportExcel', request()->query())); ?>">
               <i class="bi bi-file-earmark-excel text-success"></i> تصدير Excel
             </a>
           </li>
           <li>
-            <a class="dropdown-item" href="{{ route('attendance.calendar.exportPdf', request()->query()) }}">
+            <a class="dropdown-item" href="<?php echo e(route('attendance.calendar.exportPdf', request()->query())); ?>">
               <i class="bi bi-file-earmark-pdf text-danger"></i> تصدير PDF
             </a>
           </li>
         </ul>
       </div>
       <a class="btn btn-success d-none d-sm-inline-flex"
-        href="{{ route('attendance.calendar.exportExcel', request()->query()) }}">
+        href="<?php echo e(route('attendance.calendar.exportExcel', request()->query())); ?>">
         <i class="bi bi-file-earmark-excel"></i> Excel
       </a>
       <a class="btn btn-danger d-none d-sm-inline-flex"
-        href="{{ route('attendance.calendar.exportPdf', request()->query()) }}">
+        href="<?php echo e(route('attendance.calendar.exportPdf', request()->query())); ?>">
         <i class="bi bi-file-earmark-pdf"></i> PDF
       </a>
     </div>
   </div>
 
-  {{-- Filters --}}
-  <form class="card mb-3" method="GET" action="{{ route('attendance.calendar') }}">
+  
+  <form class="card mb-3" method="GET" action="<?php echo e(route('attendance.calendar')); ?>">
     <div class="card-body">
       <div class="row g-2 align-items-end">
         <div class="col-12 col-md-4 col-lg-3">
           <label class="form-label fw-bold mb-1">الشهر</label>
-          <input type="month" name="month" value="{{ $month }}" class="form-control">
+          <input type="month" name="month" value="<?php echo e($month); ?>" class="form-control">
         </div>
         <div class="col-12 col-md-4 col-lg-3">
           <label class="form-label fw-bold mb-1">الفرع</label>
           <select name="branch_id" class="form-select">
             <option value="">كل الفروع</option>
-            @foreach($branches as $b)
-              <option value="{{ $b->id }}" @selected(($filters['branch_id'] ?? '') == $b->id)>{{ $b->name }}</option>
-            @endforeach
+            <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <option value="<?php echo e($b->id); ?>" <?php if(($filters['branch_id'] ?? '') == $b->id): echo 'selected'; endif; ?>><?php echo e($b->name); ?></option>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </select>
         </div>
         <div class="col-12 col-md-4 col-lg-3">
@@ -279,7 +279,7 @@
     </div>
   </form>
 
-  {{-- ═══ DESKTOP: Table ═══ --}}
+  
   <div class="desktop-calendar">
     <div class="calendar-wrap border">
       <div class="table-responsive" style="max-height:68vh;">
@@ -287,108 +287,112 @@
           <thead class="table-light">
             <tr>
               <th class="emp-col">الموظف</th>
-              @foreach($days as $date)
+              <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $date): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <th class="text-center" style="min-width:40px;">
-                  {{ \Carbon\Carbon::parse($date)->day }}
+                  <?php echo e(\Carbon\Carbon::parse($date)->day); ?>
+
                 </th>
-              @endforeach
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tr>
           </thead>
           <tbody>
-            @forelse($employees as $emp)
+            <?php $__empty_1 = true; $__currentLoopData = $employees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
               <tr>
                 <td class="emp-col">
-                  <div class="fw-bold" style="font-size:14px;">{{ $emp->full_name }}</div>
-                  <div class="small text-muted">{{ $emp->branch->name ?? '-' }}</div>
+                  <div class="fw-bold" style="font-size:14px;"><?php echo e($emp->full_name); ?></div>
+                  <div class="small text-muted"><?php echo e($emp->branch->name ?? '-'); ?></div>
                 </td>
-                @foreach($days as $date)
+                <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $date): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                   <td class="text-center">
-                    <span class="cell {{ $statusCssMap[$recordsMap[$emp->id][$date] ?? null] ?? '' }}"
+                    <span class="cell <?php echo e($statusCssMap[$recordsMap[$emp->id][$date] ?? null] ?? ''); ?>"
                       data-bs-toggle="tooltip" data-bs-placement="top"
-                      title="{{ $recordsMap[$emp->id][$date] ?? 'لا يوجد سجل' }}">
-                      {{ $letterMap[$recordsMap[$emp->id][$date] ?? null] ?? '-' }}
+                      title="<?php echo e($recordsMap[$emp->id][$date] ?? 'لا يوجد سجل'); ?>">
+                      <?php echo e($letterMap[$recordsMap[$emp->id][$date] ?? null] ?? '-'); ?>
+
                     </span>
                   </td>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               </tr>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
               <tr>
-                <td colspan="{{ 1 + count($days) }}" class="text-center text-muted py-4">
+                <td colspan="<?php echo e(1 + count($days)); ?>" class="text-center text-muted py-4">
                   لا يوجد موظفون مطابقون.
                 </td>
               </tr>
-            @endforelse
+            <?php endif; ?>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  {{-- ═══ MOBILE: Cards ═══ --}}
+  
   <div class="mobile-calendar">
-    @forelse($employees as $emp)
+    <?php $__empty_1 = true; $__currentLoopData = $employees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
       <div class="mob-emp-card">
 
         <div class="mob-emp-header">
           <div>
-            <div class="mob-emp-name">{{ $emp->full_name }}</div>
-            <div class="mob-emp-branch">{{ $emp->branch->name ?? '—' }}</div>
+            <div class="mob-emp-name"><?php echo e($emp->full_name); ?></div>
+            <div class="mob-emp-branch"><?php echo e($emp->branch->name ?? '—'); ?></div>
           </div>
           <div style="font-size:12px; color:#94a3b8; font-weight:700;">
-            {{ \Carbon\Carbon::parse($month)->format('m/Y') }}
+            <?php echo e(\Carbon\Carbon::parse($month)->format('m/Y')); ?>
+
           </div>
         </div>
 
-        {{-- ملخص الشهر --}}
+        
         <div class="mob-summary">
           <div class="mob-stat st-present" style="border-color:rgba(16,185,129,.25);">
-            <div class="mob-stat-val" style="color:#065f46;">{{ $employeeSummary[$emp->id]['present'] }}</div>
+            <div class="mob-stat-val" style="color:#065f46;"><?php echo e($employeeSummary[$emp->id]['present']); ?></div>
             <div class="mob-stat-lbl" style="color:#065f46;">حضور</div>
           </div>
           <div class="mob-stat st-absent" style="border-color:rgba(239,68,68,.25);">
-            <div class="mob-stat-val" style="color:#7f1d1d;">{{ $employeeSummary[$emp->id]['absent'] }}</div>
+            <div class="mob-stat-val" style="color:#7f1d1d;"><?php echo e($employeeSummary[$emp->id]['absent']); ?></div>
             <div class="mob-stat-lbl" style="color:#7f1d1d;">غياب</div>
           </div>
           <div class="mob-stat st-late" style="border-color:rgba(245,158,11,.28);">
-            <div class="mob-stat-val" style="color:#7c2d12;">{{ $employeeSummary[$emp->id]['late'] }}</div>
+            <div class="mob-stat-val" style="color:#7c2d12;"><?php echo e($employeeSummary[$emp->id]['late']); ?></div>
             <div class="mob-stat-lbl" style="color:#7c2d12;">تأخير</div>
           </div>
           <div class="mob-stat st-leave" style="border-color:rgba(59,130,246,.25);">
-            <div class="mob-stat-val" style="color:#1e3a8a;">{{ $employeeSummary[$emp->id]['leave'] }}</div>
+            <div class="mob-stat-val" style="color:#1e3a8a;"><?php echo e($employeeSummary[$emp->id]['leave']); ?></div>
             <div class="mob-stat-lbl" style="color:#1e3a8a;">إجازة</div>
           </div>
           <div class="mob-stat st-off" style="border-color:rgba(148,163,184,.28);">
-            <div class="mob-stat-val" style="color:#0f172a;">{{ $employeeSummary[$emp->id]['off'] }}</div>
+            <div class="mob-stat-val" style="color:#0f172a;"><?php echo e($employeeSummary[$emp->id]['off']); ?></div>
             <div class="mob-stat-lbl" style="color:#0f172a;">عطلة</div>
           </div>
           <div class="mob-stat" style="background:rgba(248,250,252,.9); border-color:rgba(226,232,240,.9);">
-            <div class="mob-stat-val" style="color:#1e293b;">{{ count($days) }}</div>
+            <div class="mob-stat-val" style="color:#1e293b;"><?php echo e(count($days)); ?></div>
             <div class="mob-stat-lbl" style="color:#64748b;">يوم</div>
           </div>
         </div>
 
-        {{-- أيام الشهر --}}
+        
         <div class="mob-days">
-          @foreach($days as $date)
+          <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $date): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="mob-day">
-              <div class="mob-day-num">{{ \Carbon\Carbon::parse($date)->day }}</div>
-              <div class="mob-day-cell {{ $statusCssMap[$recordsMap[$emp->id][$date] ?? null] ?? '' }}">
-                {{ $letterMap[$recordsMap[$emp->id][$date] ?? null] ?? '·' }}
+              <div class="mob-day-num"><?php echo e(\Carbon\Carbon::parse($date)->day); ?></div>
+              <div class="mob-day-cell <?php echo e($statusCssMap[$recordsMap[$emp->id][$date] ?? null] ?? ''); ?>">
+                <?php echo e($letterMap[$recordsMap[$emp->id][$date] ?? null] ?? '·'); ?>
+
               </div>
             </div>
-          @endforeach
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
 
       </div>
-    @empty
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
       <div style="text-align:center; padding:40px 20px; color:#94a3b8;">
         <i class="bi bi-calendar-x" style="font-size:28px; display:block; margin-bottom:8px;"></i>
         لا يوجد موظفون مطابقون.
       </div>
-    @endforelse
+    <?php endif; ?>
   </div>
 
-  {{-- Legend --}}
+  
   <div class="d-flex flex-wrap gap-2 mt-3">
     <span class="legend-chip"><span class="dot" style="background:#10b981"></span> P = حضور</span>
     <span class="legend-chip"><span class="dot" style="background:#f59e0b"></span> L = تأخير</span>
@@ -398,12 +402,13 @@
     <span class="legend-chip"><span class="dot" style="background:#6366f1"></span> S = مجدول</span>
   </div>
 
-  @push('scripts')
+  <?php $__env->startPush('scripts'); ?>
     <script>
       document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
         new bootstrap.Tooltip(el);
       });
     </script>
-  @endpush
+  <?php $__env->stopPush(); ?>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/attendance/calendar.blade.php ENDPATH**/ ?>

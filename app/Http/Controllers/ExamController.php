@@ -38,11 +38,25 @@ class ExamController extends Controller
             });
         }
 
+
+        $examStats = [
+            'total' => Exam::count(),
+            'upcoming' => Exam::where('exam_date', '>=', today())->count(),
+            'done' => Exam::where('exam_date', '<', today())->count(),
+            'this_month' => Exam::whereMonth('exam_date', now()->month)
+                ->whereYear('exam_date', now()->year)->count(),
+        ];
+
+$hasFilter = collect($request->only(['search','branch_id','diploma_id','trainer_id','from','to']))
+                ->filter()->isNotEmpty();
+
         return view('exams.index', [
             'exams' => $q->latest('exam_date')->latest()->paginate(15)->withQueryString(),
             'branches' => Branch::orderBy('name')->get(),
             'diplomas' => Diploma::orderBy('name')->get(),
             'trainers' => Employee::orderBy('full_name')->get(),
+            'examStats' => $examStats,
+               'hasFilter'  => $hasFilter,
         ]);
     }
 
@@ -155,82 +169,82 @@ class ExamController extends Controller
     */
 
 
-public function update(ExamUpdateRequest $request, Exam $exam)
-{
-    $data = $request->validated();
-
-    $user = auth()->user();
-
-    if (!$user->hasRole('super_admin')) {
-        $data['branch_id'] = $user->employee?->branch_id;
-    }
-
-    $exam->update($data);
-
-    return redirect()
-        ->route('exams.show', $exam)
-        ->with('success', 'تم تعديل الامتحان بنجاح');
-}
-
-
-/*
-    public function update(Request $request, Exam $exam)
+    public function update(ExamUpdateRequest $request, Exam $exam)
     {
-        foreach ($request->statuses ?? [] as $studentId => $status) {
+        $data = $request->validated();
 
-            $score = $request->scores[$studentId] ?? null;
+        $user = auth()->user();
 
-            // إذا لم يتم اختيار أي حالة → تجاهل
-            if (!$status) {
-                continue;
-            }
-
-            // لو الحالة absent أو excused → لا يوجد درجة
-            if (in_array($status, ['absent', 'excused'])) {
-                $score = null;
-            }
-
-            // لو الحالة passed/failed ولم يدخل درجة → تجاهل
-            if (in_array($status, ['passed', 'failed']) && $score === null) {
-                continue;
-            }
-
-            ExamResult::updateOrCreate(
-                [
-                    'exam_id' => $exam->id,
-                    'student_id' => $studentId,
-                ],
-                [
-                    'score' => $score,
-                    'status' => $status,
-                    'entered_by' => auth()->id(),
-                ]
-            );
+        if (!$user->hasRole('super_admin')) {
+            $data['branch_id'] = $user->employee?->branch_id;
         }
 
+        $exam->update($data);
+
         return redirect()
-            ->route('exams.results.edit', $exam)
-            ->with('success', 'تم حفظ النتائج بنجاح');
+            ->route('exams.show', $exam)
+            ->with('success', 'تم تعديل الامتحان بنجاح');
     }
 
 
-    */  
+    /*
+        public function update(Request $request, Exam $exam)
+        {
+            foreach ($request->statuses ?? [] as $studentId => $status) {
+
+                $score = $request->scores[$studentId] ?? null;
+
+                // إذا لم يتم اختيار أي حالة → تجاهل
+                if (!$status) {
+                    continue;
+                }
+
+                // لو الحالة absent أو excused → لا يوجد درجة
+                if (in_array($status, ['absent', 'excused'])) {
+                    $score = null;
+                }
+
+                // لو الحالة passed/failed ولم يدخل درجة → تجاهل
+                if (in_array($status, ['passed', 'failed']) && $score === null) {
+                    continue;
+                }
+
+                ExamResult::updateOrCreate(
+                    [
+                        'exam_id' => $exam->id,
+                        'student_id' => $studentId,
+                    ],
+                    [
+                        'score' => $score,
+                        'status' => $status,
+                        'entered_by' => auth()->id(),
+                    ]
+                );
+            }
+
+            return redirect()
+                ->route('exams.results.edit', $exam)
+                ->with('success', 'تم حفظ النتائج بنجاح');
+        }
 
 
-    
-public function destroy(Exam $exam)
-{
-    // تحقق إذا يوجد نتائج (طلاب)
-    if ($exam->results()->exists()) {
+        */
+
+
+
+    public function destroy(Exam $exam)
+    {
+        // تحقق إذا يوجد نتائج (طلاب)
+        if ($exam->results()->exists()) {
+            return redirect()
+                ->route('exams.index')
+                ->with('error', 'لا يمكن حذف الامتحان لأنه يحتوي على طلاب');
+        }
+
+        $exam->delete();
+
         return redirect()
             ->route('exams.index')
-            ->with('error', 'لا يمكن حذف الامتحان لأنه يحتوي على طلاب');
+            ->with('success', 'تم حذف الامتحان بنجاح');
     }
-
-    $exam->delete();
-
-    return redirect()
-        ->route('exams.index')
-        ->with('success', 'تم حذف الامتحان بنجاح');
-}
 }

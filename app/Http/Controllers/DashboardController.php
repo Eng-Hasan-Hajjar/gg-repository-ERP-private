@@ -191,6 +191,30 @@ class DashboardController extends Controller
 
 
 
+
+        // عملاء معلقون أكثر من 48 ساعة
+        $urgentLeads = \App\Models\Lead::where('registration_status', 'pending')
+            ->whereNotIn('stage', ['rejected', 'registered', 'postponed'])
+            ->where('created_at', '<=', now()->subHours(48))
+            ->count();
+
+        // آخر نشاط بالعربي
+        $lastActivityAr = $lastActivity
+            ? \Carbon\Carbon::parse($lastActivity->created_at)->locale('ar')->diffForHumans()
+            : '—';
+
+
+        // نسب الـ Progress Bars
+        $convRate = $leadStats['total'] > 0
+            ? round(($leadStats['converted'] / $leadStats['total']) * 100) : 0;
+
+        $confRate = $studentStats['total'] > 0
+            ? round(($studentStats['confirmed'] / $studentStats['total']) * 100) : 0;
+
+        $doneRate = $taskStats['total'] > 0
+            ? round(($taskStats['done'] / $taskStats['total']) * 100) : 0;
+
+
         return view('dashboard', [
             'highlights' => $highlights,
             'todayStats' => $todayStats,
@@ -212,7 +236,11 @@ class DashboardController extends Controller
             'attendanceStats' => $attendanceStats,
             'programStats' => $programStats,
             'dashboardStats' => $dashboardStats,
-
+            'urgentLeads' => $urgentLeads,
+            'lastActivityAr' => $lastActivityAr,
+            'convRate' => $convRate,
+            'confRate' => $confRate,
+            'doneRate' => $doneRate,
 
 
         ]);
