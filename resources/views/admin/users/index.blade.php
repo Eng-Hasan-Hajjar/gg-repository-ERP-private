@@ -409,7 +409,7 @@
             <th>الاسم</th>
             <th class="hide-mobile">ماذا يعمل الآن</th>
             <th class="hide-mobile">ساعات اليوم</th>
-            <th class="hide-mobile">البريد</th>
+           
             <th class="hide-mobile">الأدوار</th>
             <th class="text-end">إجراءات</th>
           </tr>
@@ -495,7 +495,7 @@
               <div class="worked-minutes"><?= e($u->today_worked_minutes) ?></div>
             </td>
 
-            <td class="hide-mobile"><code><?= e($u->email) ?></code></td>
+          
 
             <td class="roles-cell hide-mobile">
               <?php    foreach ($u->roles as $role): ?>

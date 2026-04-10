@@ -472,6 +472,106 @@ class ReportsRepository
 
         $alerts = [];
 
+
+        // =============================
+// ⏰ عملاء معلّقون — 48 ساعة بدون متابعة
+// =============================
+        if ($this->has('leads')) {
+
+            $now = now();
+            $cutoff48 = $now->copy()->subHours(48)->toDateTimeString();
+            $cutoff24 = $now->copy()->subHours(24)->toDateTimeString();
+
+            // عملاء تجاوزوا 48 ساعة (urgent)
+            $urgentLeads = DB::table('leads')
+                ->leftJoin('lead_followups', 'lead_followups.lead_id', '=', 'leads.id')
+                ->select(
+                    'leads.id',
+                    'leads.full_name',
+                    'leads.first_contact_date',
+                    'leads.created_at as lead_created',
+                    DB::raw('MAX(lead_followups.created_at) as last_followup_at')
+                )
+                ->where('leads.registration_status', 'pending')
+                ->whereNotIn('leads.stage', ['rejected', 'registered', 'postponed'])
+                ->groupBy('leads.id', 'leads.full_name', 'leads.first_contact_date', 'leads.created_at')
+                ->havingRaw('
+                            (last_followup_at IS NULL AND COALESCE(leads.first_contact_date, leads.created_at) <= ?)
+                            OR
+                            (last_followup_at IS NOT NULL AND last_followup_at <= ?)
+                        ', [$cutoff48, $cutoff48])
+                ->orderBy('leads.created_at')
+                ->get();
+
+            foreach ($urgentLeads as $lead) {
+                // الجديد — يأخذ first_contact_date أولاً
+                $sinceDate = $lead->last_followup_at
+                    ? \Carbon\Carbon::parse($lead->last_followup_at)
+                    : \Carbon\Carbon::parse($lead->first_contact_date ?? $lead->lead_created);
+
+                $daysDiff = (int) $sinceDate->diffInDays($now);
+                $hoursDiff = (int) $sinceDate->diffInHours($now);
+
+                $timeLabel = $daysDiff >= 1
+                    ? "منذ {$daysDiff} " . ($daysDiff == 1 ? 'يوم' : 'أيام')
+                    : "منذ {$hoursDiff} ساعة";
+
+                $alerts[] = [
+                    'type' => 'danger',
+                    'icon' => 'bi-exclamation-triangle-fill',
+                    'message' => "{$lead->full_name} — لم تتم المتابعة ({$timeLabel})",
+                    'time' => $lead->last_followup_at ?? $lead->lead_created,
+                    'url' => route('leads.show', $lead->id),
+                    'roles' => ['super_admin', 'manager_crm_sales', 'staff_crm'],
+                ];
+            }
+
+            // عملاء بين 24 و48 ساعة (warning)
+            $warningLeads = DB::table('leads')
+                ->leftJoin('lead_followups', 'lead_followups.lead_id', '=', 'leads.id')
+                ->select(
+                    'leads.id',
+                    'leads.full_name',
+                    'leads.first_contact_date',
+                    'leads.created_at as lead_created',
+                    DB::raw('MAX(lead_followups.created_at) as last_followup_at')
+                )
+                ->where('leads.registration_status', 'pending')
+                ->whereNotIn('leads.stage', ['rejected', 'registered', 'postponed'])
+                ->groupBy('leads.id', 'leads.full_name', 'leads.first_contact_date', 'leads.created_at')
+                ->havingRaw('
+    (last_followup_at IS NULL AND COALESCE(leads.first_contact_date, leads.created_at) BETWEEN ? AND ?)
+    OR
+    (last_followup_at IS NOT NULL AND last_followup_at BETWEEN ? AND ?)
+', [$cutoff48, $cutoff24, $cutoff48, $cutoff24])
+                ->orderBy('leads.created_at')
+                ->get();
+
+            foreach ($warningLeads as $lead) {
+                // الجديد — يأخذ first_contact_date أولاً
+                $sinceDate = $lead->last_followup_at
+                    ? \Carbon\Carbon::parse($lead->last_followup_at)
+                    : \Carbon\Carbon::parse($lead->first_contact_date ?? $lead->lead_created);
+
+                $hoursDiff = (int) $sinceDate->diffInHours($now);
+
+                $alerts[] = [
+                    'type' => 'warning',
+                    'icon' => 'bi-clock-history',
+                    'message' => "{$lead->full_name} — يحتاج متابعة قريباً ({$hoursDiff} ساعة)",
+                    'time' => $lead->last_followup_at ?? $lead->lead_created,
+                    'url' => route('leads.show', $lead->id),
+                    'roles' => ['super_admin', 'manager_crm_sales', 'staff_crm'],
+                ];
+            }
+        }
+
+
+
+
+
+
+
         // =============================
         // مهام متأخرة
         // =============================
@@ -662,53 +762,53 @@ class ReportsRepository
 
 
 
-      // ترتيب الإشعارات حسب الوقت
-usort($alerts, function ($a, $b) {
+        // ترتيب الإشعارات حسب الوقت
+        usort($alerts, function ($a, $b) {
 
-    return strtotime($b['time'] ?? now()) - strtotime($a['time'] ?? now());
+            return strtotime($b['time'] ?? now()) - strtotime($a['time'] ?? now());
 
-});
+        });
 
-// إعادة ترتيب المفاتيح
-$alerts = array_values($alerts);
+        // إعادة ترتيب المفاتيح
+        $alerts = array_values($alerts);
 
-// تطبيق limit إن وجد
-if ($limit) {
-    $alerts = array_slice($alerts, 0, $limit);
-}
-
-return $alerts;
-
-
-
-    }
-
-/*
-    public function navbarAlerts(): array
-    {
-        $user = auth()->user();
-
-        if (
-            !$user->hasAnyRole([
-                'super_admin',
-                'finance_manager',
-                'system_admin'
-            ])
-        ) {
-            return [
-                'alerts' => [],
-                'count' => 0
-            ];
+        // تطبيق limit إن وجد
+        if ($limit) {
+            $alerts = array_slice($alerts, 0, $limit);
         }
 
-        $alerts = $this->repo->systemAlerts();
+        return $alerts;
 
-        return [
-            'alerts' => $alerts,
-            'count' => count($alerts)
-        ];
+
+
     }
-*/
+
+    /*
+        public function navbarAlerts(): array
+        {
+            $user = auth()->user();
+
+            if (
+                !$user->hasAnyRole([
+                    'super_admin',
+                    'finance_manager',
+                    'system_admin'
+                ])
+            ) {
+                return [
+                    'alerts' => [],
+                    'count' => 0
+                ];
+            }
+
+            $alerts = $this->repo->systemAlerts();
+
+            return [
+                'alerts' => $alerts,
+                'count' => count($alerts)
+            ];
+        }
+    */
 
     public function todayAlertsSummary(): array
     {
@@ -735,43 +835,43 @@ return $alerts;
         return $result;
     }
 
-public function todaySystemStats(): array
-{
+    public function todaySystemStats(): array
+    {
 
-    $stats = [
-        'financial_transactions' => 0,
-        'financial_amount' => 0,
-        'new_students' => 0,
-        'confirmed_students' => 0,
-    ];
+        $stats = [
+            'financial_transactions' => 0,
+            'financial_amount' => 0,
+            'new_students' => 0,
+            'confirmed_students' => 0,
+        ];
 
-    if ($this->has('cashbox_transactions')) {
+        if ($this->has('cashbox_transactions')) {
 
-        $stats['financial_transactions'] = DB::table('cashbox_transactions')
-            ->whereDate('created_at', now())
-            ->count();
-
-        $stats['financial_amount'] = DB::table('cashbox_transactions')
-            ->whereDate('created_at', now())
-            ->sum('amount');
-    }
-
-    if ($this->has('students')) {
-
-        $stats['new_students'] = DB::table('students')
-            ->whereDate('created_at', now())
-            ->count();
-
-        if (Schema::hasColumn('students','confirmed_at')) {
-
-            $stats['confirmed_students'] = DB::table('students')
-                ->whereDate('confirmed_at', now())
+            $stats['financial_transactions'] = DB::table('cashbox_transactions')
+                ->whereDate('created_at', now())
                 ->count();
-        }
-    }
 
-    return $stats;
-}
+            $stats['financial_amount'] = DB::table('cashbox_transactions')
+                ->whereDate('created_at', now())
+                ->sum('amount');
+        }
+
+        if ($this->has('students')) {
+
+            $stats['new_students'] = DB::table('students')
+                ->whereDate('created_at', now())
+                ->count();
+
+            if (Schema::hasColumn('students', 'confirmed_at')) {
+
+                $stats['confirmed_students'] = DB::table('students')
+                    ->whereDate('confirmed_at', now())
+                    ->count();
+            }
+        }
+
+        return $stats;
+    }
 
     public function highPriorityTasks(): array
     {

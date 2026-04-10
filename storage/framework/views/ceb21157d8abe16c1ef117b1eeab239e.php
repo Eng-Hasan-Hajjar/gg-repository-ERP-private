@@ -1054,6 +1054,48 @@ ERP Notifications Style
       font-size: 2.5rem;
       margin-bottom: 0.5rem;
     }
+
+
+
+
+    /* ===== Alert Types Enhanced ===== */
+    .alert-icon.danger {
+      background: rgba(239, 68, 68, .15);
+      color: #b91c1c;
+    }
+
+    .alert-icon.info {
+      background: rgba(14, 165, 233, .15);
+      color: #0369a1;
+    }
+
+    /* بادج العدد على الجرس */
+    #alertCount {
+      font-size: 10px;
+      min-width: 18px;
+      height: 18px;
+      line-height: 18px;
+      padding: 0 4px;
+    }
+
+    /* تمييز الإشعارات العاجلة */
+    .alert-item.alert-danger-item {
+      border-right: 3px solid #ef4444;
+      background: rgba(239, 68, 68, .04);
+    }
+
+    .alert-item.alert-warning-item {
+      border-right: 3px solid #f59e0b;
+      background: rgba(245, 158, 11, .04);
+    }
+
+    .alert-item.alert-danger-item:hover {
+      background: rgba(239, 68, 68, .09);
+    }
+
+    .alert-item.alert-warning-item:hover {
+      background: rgba(245, 158, 11, .09);
+    }
   </style>
 
   <?php echo $__env->yieldPushContent('styles'); ?>
@@ -1572,9 +1614,7 @@ ERP Notifications Style
       function loadAlerts() {
 
         fetch("<?php echo e(route('alerts.navbar')); ?>")
-
           .then(res => res.json())
-
           .then(data => {
 
             const count = document.getElementById('alertCount');
@@ -1590,59 +1630,53 @@ ERP Notifications Style
             }
 
             if (!data.alerts || data.alerts.length === 0) {
-
               container.innerHTML = `
-                                  <div class="text-success text-center p-3">
-                                  لا توجد تنبيهات 🎉
-                                  </div>
-                                  `;
-
+                      <div class="text-success text-center p-3">
+                          لا توجد تنبيهات
+                      </div>`;
               return;
             }
 
-            let html = '';
+            // ترتيب: danger أولاً ثم warning ثم بقية
+            const sorted = [...data.alerts].sort((a, b) => {
+              const order = { danger: 0, warning: 1, success: 2, info: 3 };
+              return (order[a.type] ?? 9) - (order[b.type] ?? 9);
+            });
 
-            data.alerts.forEach(a => {
+            // أول 8 فقط في الـ dropdown
+            const preview = sorted.slice(0, 8);
+
+            let html = '';
+            preview.forEach(a => {
+              const extraClass = a.type === 'danger' ? 'alert-danger-item'
+                : a.type === 'warning' ? 'alert-warning-item'
+                  : '';
 
               html += `
-                                  <a href="${a.url}" class="alert-item">
-
-                                  <div class="alert-icon ${a.type}">
-                                  <i class="bi ${a.icon}"></i>
-                                  </div>
-
-                                  <div class="alert-content">
-                                  <div class="alert-title">${a.message}</div>
-                                  <div class="alert-time">${formatTime(a.time)}</div>
-                                  </div>
-
-                                  </a>
-                                  `;
-
+                      <a href="${a.url}" class="alert-item ${extraClass}">
+                          <div class="alert-icon ${a.type}">
+                              <i class="bi ${a.icon}"></i>
+                          </div>
+                          <div class="alert-content">
+                              <div class="alert-title">${a.message}</div>
+                              <div class="alert-time">${formatTime(a.time)}</div>
+                          </div>
+                      </a>`;
             });
 
             container.innerHTML = html;
-
           })
-
           .catch(err => {
-
             const container = document.getElementById('alertsContainer');
-
             if (container) {
               container.innerHTML = `
-                                  <div class="text-danger text-center p-3">
-                                  خطأ في تحميل الإشعارات
-                                  </div>
-                                  `;
+                      <div class="text-danger text-center p-3">
+                          خطأ في تحميل الإشعارات
+                      </div>`;
             }
-
             console.error(err);
-
           });
-
       }
-
 
       // عند تحميل الصفحة
       document.addEventListener('DOMContentLoaded', function () {
@@ -1681,16 +1715,16 @@ ERP Notifications Style
               data.alerts.forEach(a => {
 
                 html += `
-                        <a href="${a.url}" class="alert-item">
-                        <div class="alert-icon ${a.type}">
-                        <i class="bi ${a.icon}"></i>
-                        </div>
-                        <div class="alert-content">
-                        <div class="alert-title">${a.message}</div>
-                        <div class="alert-time">${formatTime(a.time)}</div>
-                        </div>
-                        </a>
-                        `;
+                            <a href="${a.url}" class="alert-item">
+                            <div class="alert-icon ${a.type}">
+                            <i class="bi ${a.icon}"></i>
+                            </div>
+                            <div class="alert-content">
+                            <div class="alert-title">${a.message}</div>
+                            <div class="alert-time">${formatTime(a.time)}</div>
+                            </div>
+                            </a>
+                            `;
 
               });
 
