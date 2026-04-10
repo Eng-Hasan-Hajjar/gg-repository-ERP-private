@@ -67,6 +67,28 @@
       background: #bfdbfe;
       color: #1e3a8a;
     }
+
+
+
+
+    .timeline li {
+      padding: 6px 0;
+      border-left: 3px solid #e5e7eb;
+      padding-left: 12px;
+      margin-left: 5px;
+      position: relative;
+    }
+
+    .timeline li::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: #3b82f6;
+      border-radius: 50%;
+      position: absolute;
+      left: -6px;
+      top: 10px;
+    }
   </style>
 
   @if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('manager_attendance'))
@@ -179,6 +201,7 @@
             <th class="hide-mobile">الموقع</th>
             <th>حالة</th>
             <th class="text-end">إجراءات</th>
+            <th>تفاصيل</th>
           </tr>
         </thead>
         <tbody>
@@ -301,6 +324,21 @@
 
                 </div>
               </td>
+
+              <td>
+
+                <button class="btn btn-sm btn-outline-dark view-details" data-id="{{ $r->id }}"
+                  data-employee="{{ $r->employee->full_name }}" data-date="{{ $r->work_date }}"
+                  data-checkin="{{ $r->check_in_at?->format('H:i') }}"
+                  data-checkout="{{ $r->check_out_at?->format('H:i') }}" data-break="{{ $r->break_formatted }}"
+                  data-late="{{ $r->late_minutes }}" data-worked="{{ $r->net_worked_formatted }}"
+                  data-status="{{ $r->status_label }}" data-notes='@json($r->notes)'>
+                  <i class="bi bi-eye"></i>
+                </button>
+
+              </td>
+
+
             </tr>
           @empty
             <tr>
@@ -315,4 +353,169 @@
   <div class="mt-3">
     {{ $records->links() }}
   </div>
+
+
+
+
+
+
+  <div class="modal fade" id="attendanceModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">تفاصيل الدوام</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="row g-3 mb-3">
+
+            <div class="col-md-6">
+              <label class="fw-bold">الموظف</label>
+              <div id="m_employee"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="fw-bold">التاريخ</label>
+              <div id="m_date"></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-bold">الدخول</label>
+              <div id="m_checkin"></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-bold">الخروج</label>
+              <div id="m_checkout"></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-bold">الاستراحة</label>
+              <div id="m_break"></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-bold">التأخير</label>
+              <div id="m_late"></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-bold">صافي الساعات</label>
+              <div id="m_worked"></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-bold">الحالة</label>
+              <div id="m_status"></div>
+            </div>
+
+          </div>
+
+          <hr>
+
+          <label class="fw-bold">الملاحظات</label>
+
+          <textarea id="notesField" class="form-control" rows="4" placeholder="اكتب ملاحظة إن وجدت..."></textarea>
+
+
+
+          <hr>
+
+          <h6 class="fw-bold mb-3">سجل الحضور</h6>
+
+          <ul class="timeline list-unstyled" id="attendanceTimeline"></ul>
+
+
+
+
+        </div>
+
+        <div class="modal-footer">
+
+          <button class="btn btn-secondary" data-bs-dismiss="modal">
+            إغلاق
+          </button>
+
+          <button class="btn btn-namaa" id="saveNotesBtn">
+            حفظ الملاحظات
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+    document.querySelectorAll('.view-details')
+      .forEach(btn => {
+
+        btn.addEventListener('click', function () {
+
+          currentRecordId = this.dataset.id
+
+          document.getElementById('m_employee').innerText = this.dataset.employee
+          document.getElementById('m_date').innerText = this.dataset.date
+          document.getElementById('m_checkin').innerText = this.dataset.checkin
+          document.getElementById('m_checkout').innerText = this.dataset.checkout
+          document.getElementById('m_break').innerText = this.dataset.break
+          document.getElementById('m_late').innerText = this.dataset.late
+          document.getElementById('m_worked').innerText = this.dataset.worked
+          document.getElementById('m_status').innerText = this.dataset.status
+
+          let notes = this.dataset.notes
+
+          if (notes === "null") {
+            notes = ""
+          }
+
+          document.getElementById('notesField').value = notes
+
+          new bootstrap.Modal(
+            document.getElementById('attendanceModal')
+          ).show()
+
+        })
+
+      })
+
+
+
+
+
+    let timeline = []
+
+    if (this.dataset.checkin) {
+      timeline.push(`🟢 تسجيل الدخول ${this.dataset.checkin}`)
+    }
+
+    if (this.dataset.break) {
+      timeline.push(`☕ استراحة ${this.dataset.break}`)
+    }
+
+    if (this.dataset.checkout) {
+      timeline.push(`🔴 تسجيل الخروج ${this.dataset.checkout}`)
+    }
+
+    let html = ""
+
+    timeline.forEach(item => {
+      html += `<li>${item}</li>`
+    })
+
+    document.getElementById('attendanceTimeline').innerHTML = html
+
+
+
+
+  </script>
+
+
+
+
 @endsection

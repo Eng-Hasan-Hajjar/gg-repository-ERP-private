@@ -49,14 +49,14 @@ class AttendanceController extends Controller
             $s = trim($request->search);
             $q->whereHas('employee', function ($x) use ($s) {
                 $x->where('full_name', 'like', "%$s%")
-                   ->orWhere('code', 'like', "%$s%");
+                    ->orWhere('code', 'like', "%$s%");
             });
         }
 
         $activeModule = 'attendance';
         return view('attendance.index', [
-            'records'   => $q->latest('work_date')->paginate(20)->withQueryString(),
-            'branches'  => Branch::orderBy('name')->get(),
+            'records' => $q->latest('work_date')->paginate(20)->withQueryString(),
+            'branches' => Branch::orderBy('name')->get(),
             'employees' => Employee::orderBy('full_name')->get(),
             'activeModule',
         ]);
@@ -79,11 +79,11 @@ class AttendanceController extends Controller
         AttendanceRecord::firstOrCreate(
             ['employee_id' => $employee->id, 'work_date' => $date],
             [
-                'work_shift_id'  => $shiftId,
-                'status'         => $shiftId ? 'scheduled' : 'off',
-                'late_minutes'   => 0,
+                'work_shift_id' => $shiftId,
+                'status' => $shiftId ? 'scheduled' : 'off',
+                'late_minutes' => 0,
                 'worked_minutes' => 0,
-                'break_minutes'  => 0,
+                'break_minutes' => 0,
             ]
         );
 
@@ -115,9 +115,9 @@ class AttendanceController extends Controller
         }
 
         $record->update([
-            'check_in_at'  => $now,
+            'check_in_at' => $now,
             'late_minutes' => $late,
-            'status'       => $record->status === 'off' ? 'off' : $status,
+            'status' => $record->status === 'off' ? 'off' : $status,
         ]);
 
         return back()->with('success', 'تم تسجيل الدخول.');
@@ -146,10 +146,10 @@ class AttendanceController extends Controller
         $totalWorked = $record->check_in_at->diffInMinutes($now);
 
         $record->update([
-            'check_out_at'   => $now,
+            'check_out_at' => $now,
             'worked_minutes' => $totalWorked,
-            'break_end_at'   => $record->break_end_at,
-            'break_minutes'  => $record->break_minutes,
+            'break_end_at' => $record->break_end_at,
+            'break_minutes' => $record->break_minutes,
         ]);
 
         return back()->with('success', 'تم تسجيل الخروج.');
@@ -172,7 +172,7 @@ class AttendanceController extends Controller
 
         $record->update([
             'break_start_at' => now(),
-            'break_end_at'   => null,
+            'break_end_at' => null,
         ]);
 
         return back()->with('success', 'تم بدء الاستراحة.');
@@ -194,7 +194,7 @@ class AttendanceController extends Controller
         $totalBreak = $record->break_minutes + $breakMinutes;
 
         $record->update([
-            'break_end_at'  => $now,
+            'break_end_at' => $now,
             'break_minutes' => $totalBreak,
         ]);
 
@@ -216,11 +216,11 @@ class AttendanceController extends Controller
     {
         $data = $request->validate([
             'work_shift_id' => ['nullable', 'exists:work_shifts,id'],
-            'check_in_at'   => ['nullable', 'date'],
-            'check_out_at'  => ['nullable', 'date', 'after_or_equal:check_in_at'],
+            'check_in_at' => ['nullable', 'date'],
+            'check_out_at' => ['nullable', 'date', 'after_or_equal:check_in_at'],
             'break_minutes' => ['nullable', 'integer', 'min:0'],
-            'status'        => ['required', 'in:scheduled,present,late,absent,off,leave'],
-            'notes'         => ['nullable', 'string', 'max:5000'],
+            'status' => ['required', 'in:scheduled,present,late,absent,off,leave'],
+            'notes' => ['nullable', 'string', 'max:5000'],
         ]);
 
         // إعادة حساب worked_minutes
@@ -237,4 +237,27 @@ class AttendanceController extends Controller
         return redirect()->route('attendance.index')
             ->with('success', 'تم تحديث سجل الدوام.');
     }
+
+
+
+
+    public function updateNotes(Request $request, AttendanceRecord $record)
+    {
+        $data = $request->validate([
+            'notes' => ['nullable', 'string', 'max:5000']
+        ]);
+
+        $record->update([
+            'notes' => $data['notes']
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'notes' => $record->notes
+        ]);
+    }
+
+
+
+
 }

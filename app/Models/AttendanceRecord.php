@@ -28,11 +28,11 @@ class AttendanceRecord extends Model
     ];
 
     protected $casts = [
-        'work_date'      => 'date',
-        'check_in_at'    => 'datetime',
-        'check_out_at'   => 'datetime',
+        'work_date' => 'date',
+        'check_in_at' => 'datetime',
+        'check_out_at' => 'datetime',
         'break_start_at' => 'datetime',
-        'break_end_at'   => 'datetime',
+        'break_end_at' => 'datetime',
     ];
 
     // ───── Relations ─────
@@ -61,13 +61,13 @@ class AttendanceRecord extends Model
      * هل يمكن بدء استراحة؟
      * الشروط: سجّل دخول + لم يسجل خروج + ليس في استراحة حالياً
      */
-  public function getCanStartBreakAttribute(): bool
-{
-    return $this->check_in_at
-        && !$this->check_out_at
-        && !$this->is_on_break
-        && !$this->break_start_at; 
-}
+    public function getCanStartBreakAttribute(): bool
+    {
+        return $this->check_in_at
+            && !$this->check_out_at
+            && !$this->is_on_break
+            && !$this->break_start_at;
+    }
 
     /**
      * هل يمكن إنهاء الاستراحة؟
@@ -144,7 +144,7 @@ class AttendanceRecord extends Model
 
             $user = auth()->user();
 
-            if ($user->hasRole('super_admin') && $user->hasRole('manager_attendance') ) {
+            if ($user->hasRole('super_admin') && $user->hasRole('manager_attendance')) {
                 return;
             }
 
@@ -163,67 +163,79 @@ class AttendanceRecord extends Model
 
 
 
-/*
-protected static function booted()
-{
-    static::addGlobalScope('branch', function ($query) {
+    /*
+    protected static function booted()
+    {
+        static::addGlobalScope('branch', function ($query) {
 
-        if (!auth()->check()) {
-            return;
-        }
+            if (!auth()->check()) {
+                return;
+            }
 
-        $user = auth()->user();
+            $user = auth()->user();
 
-        // السوبر أدمن يرى كل العملاء
-        if ($user->hasRole('super_admin')) {
-            return;
-        }
+            // السوبر أدمن يرى كل العملاء
+            if ($user->hasRole('super_admin')) {
+                return;
+            }
 
-        $employee = \App\Models\Employee::withoutGlobalScopes()
-            ->where('user_id', $user->id)
-            ->first();
+            $employee = \App\Models\Employee::withoutGlobalScopes()
+                ->where('user_id', $user->id)
+                ->first();
 
-        if (!$employee) {
-            return;
-        }
+            if (!$employee) {
+                return;
+            }
 
-        $branchIds = collect([
-            $employee->branch_id,
-            $employee->secondary_branch_id
-        ])
-        ->filter()
-        ->unique()
-        ->values()
-        ->all();
+            $branchIds = collect([
+                $employee->branch_id,
+                $employee->secondary_branch_id
+            ])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
-        if (!empty($branchIds)) {
-            $query->whereIn('branch_id', $branchIds);
-        }
+            if (!empty($branchIds)) {
+                $query->whereIn('branch_id', $branchIds);
+            }
 
-    });
-}*/
+        });
+    }*/
     // ───── Accessors ─────
+
+
+
+
+    public function getNotesShortAttribute()
+    {
+        return $this->notes
+            ? \Illuminate\Support\Str::limit($this->notes, 40)
+            : null;
+    }
+
+
 
     public function getStatusLabelAttribute()
     {
         return [
             'scheduled' => 'مجدول',
-            'present'   => 'حاضر',
-            'late'      => 'متأخر',
-            'absent'    => 'غائب',
-            'off'       => 'عطلة',
-            'leave'     => 'إجازة',
+            'present' => 'حاضر',
+            'late' => 'متأخر',
+            'absent' => 'غائب',
+            'off' => 'عطلة',
+            'leave' => 'إجازة',
         ][$this->status] ?? $this->status;
     }
 
     public function getStatusColorAttribute()
     {
         return [
-            'present'   => 'success',
-            'late'      => 'danger',
-            'absent'    => 'dark',
-            'off'       => 'secondary',
-            'leave'     => 'info',
+            'present' => 'success',
+            'late' => 'danger',
+            'absent' => 'dark',
+            'off' => 'secondary',
+            'leave' => 'info',
             'scheduled' => 'warning',
         ][$this->status] ?? 'secondary';
     }
