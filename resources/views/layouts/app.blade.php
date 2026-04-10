@@ -1546,23 +1546,35 @@ ERP Notifications Style
               );
             });
 
-            btnSkip.addEventListener('click', function () {
-              Swal.fire({
-                icon: 'warning',
-                title: 'تنبيه',
-                text: 'يجب تحديد الموقع الجغرافي للدخول إلى النظام.',
-                confirmButtonText: 'تسجيل خروج',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                zIndex: 99999,
-                didOpen: function () {
-                  // إخفاء موديل الموقع خلف SweetAlert
-                  document.getElementById('location-modal').style.zIndex = '1';
-                }
-              }).then(function () {
-                document.querySelector('form[action="{{ route('logout') }}"]').submit();
-              });
-            });
+         btnSkip.addEventListener('click', function () {
+
+  @if(auth()->user()?->hasPermission('skip_location'))
+    // ← يملك السماحية: تخطي مباشر بدون logout
+    fetch('{{ route("location.skip") }}', {
+      method: 'POST',
+      headers: { 'X-CSRF-TOKEN': CSRF }
+    }).catch(function () {});
+    location.reload();
+
+  @else
+    // ← لا يملك السماحية: إجباره على الخروج
+    Swal.fire({
+      icon: 'warning',
+      title: 'تنبيه',
+      text: 'يجب تحديد الموقع الجغرافي للدخول إلى النظام.',
+      confirmButtonText: 'تسجيل خروج',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      zIndex: 99999,
+      didOpen: function () {
+        document.getElementById('location-modal').style.zIndex = '1';
+      }
+    }).then(function () {
+      document.querySelector('form[action="{{ route('logout') }}"]').submit();
+    });
+  @endif
+
+});
 
 
 

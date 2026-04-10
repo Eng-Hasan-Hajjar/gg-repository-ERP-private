@@ -82,7 +82,7 @@ class PermissionSeeder extends Seeder
 
             ['name' => 'manage_leaves', 'label' => 'إدارة الإجازات', 'module' => 'attendance'],
 
-            
+
 
             ['name' => 'view_leaves', 'label' => 'عرض الإجازات', 'module' => 'attendance'],
             ['name' => 'create_leaves', 'label' => 'طلب إجازة', 'module' => 'attendance'],
@@ -147,7 +147,7 @@ class PermissionSeeder extends Seeder
 
             ['name' => 'view_audit_logs', 'label' => 'عرض سجل التعديلات', 'module' => 'users'],
 
-
+            ['name' => 'skip_location', 'label' => 'تخطي تحديد الموقع الجغرافي', 'module' => 'users'],
             /*
             |--------------------------------------------------------------------------
             | الأصول واللوجستيات
