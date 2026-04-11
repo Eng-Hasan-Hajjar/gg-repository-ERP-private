@@ -782,9 +782,20 @@ Route::get('/session/check', function () {
 
 
 
-Route::post('/attendance/{record}/notes', 
-[AttendanceController::class,'updateNotes'])
-->name('attendance.notes.update');
+Route::post(
+    '/attendance/{record}/notes',
+    [AttendanceController::class, 'updateNotes']
+)
+    ->name('attendance.notes.update');
+
+
+
+
+
+Route::put('/reports/task/{report}/notes', [TaskReportController::class, 'updateNotes'])
+    ->name('reports.task.updateNotes');
+
+
 
 
 

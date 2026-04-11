@@ -201,4 +201,17 @@ class TaskReportController extends Controller
 
         return back()->with('success', 'تم حذف التقرير');
     }
+
+
+    public function updateNotes(Request $request, TaskReport $report)
+    {
+        $report->update([
+            'notes' => $request->notes
+        ]);
+
+        return back()->with('success', 'تم تعديل الملاحظات بنجاح');
+    }
+
+
+
 }
