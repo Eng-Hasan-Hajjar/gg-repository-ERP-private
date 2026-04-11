@@ -209,6 +209,93 @@
         display: block;
       }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .report-modal .modal-content {
+      border-radius: 18px;
+      border: none;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
+      overflow: hidden;
+    }
+
+    .report-modal .modal-header {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: white;
+      border: none;
+      padding: 18px 24px;
+    }
+
+    .report-modal .modal-title {
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .report-modal .info-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .report-modal .info-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .report-modal .info-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .report-modal textarea {
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+    }
+
+    .report-modal textarea:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, .15);
+    }
+
+    .report-modal .save-btn {
+      background: #0ea5e9;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .report-modal .save-btn:hover {
+      background: #0284c7;
+    }
+
+    .employee-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+    }
   </style>
 
   
@@ -408,67 +495,105 @@
 
 
             <!-- Modal -->
-            <div class="modal fade" id="reportModal<?php echo e($r->id); ?>" tabindex="-1">
+            <div class="modal fade report-modal" id="reportModal<?php echo e($r->id); ?>" tabindex="-1">
               <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
 
+                  <!-- Header -->
                   <div class="modal-header">
-                    <h5 class="modal-title">
-                      تفاصيل التقرير
-                    </h5>
+                    <div style="display:flex;align-items:center;gap:12px">
 
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      <div class="employee-avatar">
+                        <?php echo e(mb_substr($r->employee->full_name ?? '؟', 0, 1, 'UTF-8')); ?>
+
+                      </div>
+
+                      <div>
+                        <div style="font-size:13px;opacity:.8">تفاصيل التقرير</div>
+                        <div style="font-weight:800">
+                          <?php echo e($r->employee->full_name ?? '—'); ?>
+
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                   </div>
 
-                  <div class="modal-body">
 
-                    <div class="mb-3">
-                      <label class="fw-bold">الموظف</label>
-                      <div><?php echo e($r->employee->full_name ?? '—'); ?></div>
+                  <!-- Body -->
+                  <div class="modal-body p-4">
+
+                    <!-- Info Grid -->
+                    <div class="row g-3 mb-3">
+
+                      <div class="col-md-4">
+                        <div class="info-box">
+                          <div class="info-label">نوع التقرير</div>
+                          <div class="info-value"><?php echo e($typeLabel); ?></div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="info-box">
+                          <div class="info-label">التاريخ</div>
+                          <div class="info-value">
+                            <?php echo e($r->report_date?->format('Y/m/d')); ?>
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="info-box">
+                          <div class="info-label">العنوان</div>
+                          <div class="info-value">
+                            <?php echo e($r->title ?? '—'); ?>
+
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
 
-                    <div class="mb-3">
-                      <label class="fw-bold">نوع التقرير</label>
-                      <div><?php echo e($typeLabel); ?></div>
-                    </div>
 
+                    <!-- Notes -->
                     <div class="mb-3">
-                      <label class="fw-bold">التاريخ</label>
-                      <div><?php echo e($r->report_date?->format('Y/m/d')); ?></div>
-                    </div>
 
-                    <div class="mb-3">
-                      <label class="fw-bold">العنوان</label>
-                      <div><?php echo e($r->title); ?></div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label class="fw-bold">الملاحظات</label>
+                      <div class="info-label mb-2">
+                        <i class="bi bi-journal-text"></i>
+                        الملاحظات
+                      </div>
 
                       <form method="POST" action="<?php echo e(route('reports.task.updateNotes', $r->id)); ?>">
                         <?php echo csrf_field(); ?>
                         <?php echo method_field('PUT'); ?>
 
-                        <textarea name="notes" class="form-control" rows="5"><?php echo e($r->notes); ?></textarea>
+                        <textarea name="notes" rows="5" class="form-control">
+                <?php echo e($r->notes); ?>
 
-                        <button class="btn btn-namaa mt-2">
-                          حفظ التعديل
-                        </button>
+                </textarea>
+
+                        <div class="mt-3 d-flex justify-content-between align-items-center">
+
+                          <?php if($r->file_path): ?>
+                            <a href="<?php echo e(asset('storage/' . $r->file_path)); ?>" target="_blank" class="file-btn">
+                              <i class="bi bi-file-earmark-pdf"></i>
+                              فتح الملف
+                            </a>
+                          <?php endif; ?>
+
+                          <button class="btn save-btn text-white">
+                            <i class="bi bi-check-lg"></i>
+                            حفظ التعديل
+                          </button>
+
+                        </div>
 
                       </form>
 
                     </div>
-
-                    <?php if($r->file_path): ?>
-                      <div class="mb-3">
-                        <label class="fw-bold">الملف</label>
-                        <div>
-                          <a href="<?php echo e(asset('storage/' . $r->file_path)); ?>" target="_blank" class="file-btn">
-                            فتح الملف
-                          </a>
-                        </div>
-                      </div>
-                    <?php endif; ?>
 
                   </div>
 
