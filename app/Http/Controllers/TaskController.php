@@ -39,15 +39,54 @@ class TaskController extends Controller
 
 
         $user = auth()->user();
+        $employee = $user->employee;
+
+        if ($user->hasRole('super_admin')) {
+
+            // يرى كل المهام
+        } elseif ($user->hasPermission('manage_tasks')) {
+
+            // يرى موظفين الفرع الرئيسي والثانوي
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique()->values();
+
+            $q->whereIn('branch_id', $branchIds);
+
+        } else {
+
+            // موظف عادي يرى مهامه فقط
+
+            $q->where('assigned_to', $employee?->id);
+        }
+
+
 
         if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_tasks')) {
             $employeeId = $user->employee?->id;
             $q->where('assigned_to', $employeeId);
         }
-        if ($user->hasRole('super_admin') || $user->hasPermission('manage_tasks')) {
+        if ($user->hasRole('super_admin')) {
+
             $employees = Employee::orderBy('full_name')->get();
+
+        } elseif ($user->hasPermission('manage_tasks')) {
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id
+            ])->filter()->unique();
+
+            $employees = Employee::whereIn('branch_id', $branchIds)
+                ->orderBy('full_name')
+                ->get();
+
         } else {
-            $employees = Employee::where('id', $user->employee?->id)->get();
+
+            $employees = Employee::where('id', $employee?->id)->get();
+
         }
 
         return view('tasks.index', [
@@ -56,8 +95,8 @@ class TaskController extends Controller
             'employees' => $employees,
         ]);
     }
-  
-    
+
+
 
     public function create()
     {
