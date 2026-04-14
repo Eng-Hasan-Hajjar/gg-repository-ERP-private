@@ -10,11 +10,11 @@ class MediaRequestController extends Controller
 {
     public function index()
     {
-        $user  = auth()->user();
+        $user = auth()->user();
         $query = MediaRequest::with('diploma', 'user')->latest();
 
         // super_admin يرى الكل — الباقي يرون طلباتهم فقط
-       if (!$user->hasRole('super_admin')) {
+        if (!$user->hasRole('super_admin')) {
             $query->where('user_id', $user->id);
         }
 
@@ -32,31 +32,31 @@ class MediaRequestController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'requester_name'              => 'required|string|max:255',
-            'requester_phone'             => 'nullable|string|max:50',
-            'diploma_name'                => 'nullable|string|max:255',
-            'diploma_code'                => 'nullable|string|max:100',
-            'trainer_name'                => 'nullable|string|max:255',
-            'trainer_location'            => 'nullable|string|max:255',
-            'certificate_accreditation'   => 'nullable|string|max:255',
+            'requester_name' => 'required|string|max:255',
+            'requester_phone' => 'nullable|string|max:50',
+            'diploma_name' => 'required|string|max:255',
+            'diploma_code' => 'required|string|max:100',
+            'trainer_name' => 'required|string|max:255',
+            'trainer_location' => 'required|string|max:255',
+            'certificate_accreditation' => 'nullable|string|max:255',
             'customer_service_responsible' => 'nullable|string|max:255',
-            'diploma_location'            => 'nullable|string|max:255',
-            'details_file'                => 'nullable|file|max:20480',
-            'trainer_image'               => 'nullable|image|max:10240',
-            'need_other'                  => 'nullable|string|max:255',
-            'editing_deadline'            => 'nullable|date',
-            'notes'                       => 'nullable|string',
+            'diploma_location' => 'required|string|max:255',
+            'details_file' => 'required|file|max:20480',
+            'trainer_image' => 'nullable|image|max:10240',
+            'need_other' => 'nullable|string|max:255',
+            'editing_deadline' => 'nullable|date',
+            'notes' => 'nullable|string',
         ]);
 
         $data['user_id'] = auth()->id();
 
         $data['trainer_photography_available'] = $request->has('trainer_photography_available');
-        $data['need_ad']           = $request->has('need_ad');
-        $data['need_invitation']   = $request->has('need_invitation');
+        $data['need_ad'] = $request->has('need_ad');
+        $data['need_invitation'] = $request->has('need_invitation');
         $data['need_review_video'] = $request->has('need_review_video');
-        $data['need_content']      = $request->has('need_content');
-        $data['need_podcast']      = $request->has('need_podcast');
-        $data['need_carousel']     = $request->has('need_carousel');
+        $data['need_content'] = $request->has('need_content');
+        $data['need_podcast'] = $request->has('need_podcast');
+        $data['need_carousel'] = $request->has('need_carousel');
 
         if ($request->hasFile('details_file')) {
             $data['details_file'] = $request->file('details_file')
@@ -90,15 +90,31 @@ class MediaRequestController extends Controller
             $data['notes'] = $request->notes;
         }
 
-        if ($request->has('design_done') || $request->has('ad_done') || $request->has('invitation_done')
-            || $request->has('content_done') || $request->has('podcast_done') || $request->has('reviews_done')) {
-            $data['design_done']     = $request->has('design_done');
-            $data['ad_done']         = $request->has('ad_done');
+        if (
+            $request->has('design_done') || $request->has('ad_done') || $request->has('invitation_done')
+            || $request->has('content_done') || $request->has('podcast_done') || $request->has('reviews_done')
+        ) {
+            $data['design_done'] = $request->has('design_done');
+            $data['ad_done'] = $request->has('ad_done');
             $data['invitation_done'] = $request->has('invitation_done');
-            $data['content_done']    = $request->has('content_done');
-            $data['podcast_done']    = $request->has('podcast_done');
-            $data['reviews_done']    = $request->has('reviews_done');
+            $data['content_done'] = $request->has('content_done');
+            $data['podcast_done'] = $request->has('podcast_done');
+            $data['reviews_done'] = $request->has('reviews_done');
         }
+
+        // حقول الروابط
+        $linkFields = [
+            'admin_session_1_link',
+            'admin_session_2_link',
+            'admin_session_3_link',
+            'evaluations_done_link',
+        ];
+
+        foreach ($linkFields as $field) {
+            $data[$field] = $request->input($field) ?: null;
+        }
+
+
 
         $media->update($data);
 
@@ -131,30 +147,30 @@ class MediaRequestController extends Controller
     public function publicStore(Request $request)
     {
         $data = $request->validate([
-            'requester_name'              => 'required|string|max:255',
-            'requester_phone'             => 'nullable|string|max:50',
-            'diploma_name'                => 'nullable|string|max:255',
-            'diploma_code'                => 'nullable|string|max:255',
-            'trainer_name'                => 'nullable|string|max:255',
-            'trainer_location'            => 'nullable|string|max:255',
-            'certificate_accreditation'   => 'nullable|string|max:255',
+            'requester_name' => 'required|string|max:255',
+            'requester_phone' => 'nullable|string|max:50',
+            'diploma_name' => 'nullable|string|max:255',
+            'diploma_code' => 'nullable|string|max:255',
+            'trainer_name' => 'nullable|string|max:255',
+            'trainer_location' => 'nullable|string|max:255',
+            'certificate_accreditation' => 'nullable|string|max:255',
             'customer_service_responsible' => 'nullable|string|max:255',
-            'diploma_location'            => 'nullable|string|max:255',
-            'details_file'                => 'nullable|file|max:20480',
-            'trainer_image'               => 'nullable|image|max:10240',
-            'need_other'                  => 'nullable|string|max:255',
-            'notes'                       => 'nullable|string',
+            'diploma_location' => 'nullable|string|max:255',
+            'details_file' => 'nullable|file|max:20480',
+            'trainer_image' => 'nullable|image|max:10240',
+            'need_other' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
         ]);
 
         $data['user_id'] = null;
 
         $data['trainer_photography_available'] = $request->has('trainer_photography_available');
-        $data['need_ad']           = $request->has('need_ad');
-        $data['need_invitation']   = $request->has('need_invitation');
+        $data['need_ad'] = $request->has('need_ad');
+        $data['need_invitation'] = $request->has('need_invitation');
         $data['need_review_video'] = $request->has('need_review_video');
-        $data['need_content']      = $request->has('need_content');
-        $data['need_podcast']      = $request->has('need_podcast');
-        $data['need_carousel']     = $request->has('need_carousel');
+        $data['need_content'] = $request->has('need_content');
+        $data['need_podcast'] = $request->has('need_podcast');
+        $data['need_carousel'] = $request->has('need_carousel');
 
         if ($request->hasFile('details_file')) {
             $data['details_file'] = $request->file('details_file')

@@ -180,7 +180,7 @@
                             <a href="<?php echo e(asset('storage/' . $record->details_file)); ?>" target="_blank"
                                 class="btn btn-sm btn-outline-success">
 
-                             تحميل  ملف التفاصيل
+                                تحميل ملف التفاصيل
 
                             </a>
 
@@ -332,40 +332,62 @@
         
         <div class="col-12">
             <div class="card shadow-sm border-0">
-
-                <div class="card-header bg-light fw-bold">
-                    شؤون الطلاب
-                </div>
-
+                <div class="card-header bg-light fw-bold">شؤون الطلاب</div>
                 <div class="card-body small">
 
-                    <div class="row g-3">
-
+                    <div class="row g-3 mb-3">
                         <div class="col-md-3">
-                            الحضور :
-                            <strong><?php echo e($record->attendance_certificate ? 'تم' : 'لا'); ?></strong>
+                            الحضور: <strong><?php echo e($record->attendance_certificate ? 'تم' : 'لا'); ?></strong>
                         </div>
-
                         <div class="col-md-3">
-                            شهادة الجامعة :
-                            <strong><?php echo e($record->university_certificate ? 'تم' : 'لا'); ?></strong>
+                            شهادة الجامعة: <strong><?php echo e($record->university_certificate ? 'تم' : 'لا'); ?></strong>
                         </div>
-
                         <div class="col-md-3">
-                            البطاقات :
-                            <strong><?php echo e($record->cards_ready ? 'جاهزة' : 'لا'); ?></strong>
+                            البطاقات: <strong><?php echo e($record->cards_ready ? 'جاهزة' : 'لا'); ?></strong>
                         </div>
-
-                        <div class="col-md-3">
-                            التقييمات :
-                            <strong><?php echo e($record->evaluations_done ? 'تم' : 'لا'); ?></strong>
-                        </div>
-
                     </div>
 
-                    <div class="mt-3">
-                        <strong>ملاحظات :</strong>
-                        <br>
+                    
+                    <?php
+                        $sessionShowFields = [
+                            'admin_session_1' => ['label' => 'جلسة ادارية و تقييمية  1', 'link' => 'admin_session_1_link'],
+                            'admin_session_2' => ['label' => 'جلسة ادارية و تقييمية  2', 'link' => 'admin_session_2_link'],
+                            'admin_session_3' => ['label' => 'جلسة ادارية و تقييمية  3', 'link' => 'admin_session_3_link'],
+                            'evaluations_done' => ['label' => 'جلسة ادارية و تقييمية', 'link' => 'evaluations_done_link'],
+                        ];
+                      ?>
+
+                    <div class="row g-3 mb-3">
+                        <?php $__currentLoopData = $sessionShowFields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $info): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="col-md-3">
+                                <div
+                                    style="background:rgba(248,250,252,.9); border:1px solid rgba(226,232,240,.9); border-radius:10px; padding:10px 12px;">
+                                    <div style="font-weight:800; font-size:13px; margin-bottom:4px;">
+                                        <?php echo e($info['label']); ?>
+
+                                    </div>
+                                    <div style="font-size:13px;">
+                                        <?php if($record->$field): ?>
+                                            <span class="badge bg-success">تم ✓</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">لا</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if($record->$field && $record->{$info['link']}): ?>
+                                        <div style="margin-top:6px;">
+                                            <a href="<?php echo e($record->{$info['link']}); ?>" target="_blank"
+                                                style="font-size:11px; font-weight:800; color:#0ea5e9; text-decoration:none;">
+                                                <i class="bi bi-link-45deg"></i> فتح الرابط
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+
+                    <div class="mt-2">
+                        <strong>ملاحظات:</strong><br>
                         <?php echo e($record->notes ?? '-'); ?>
 
                     </div>
@@ -373,6 +395,8 @@
                 </div>
             </div>
         </div>
+
+
 
     </div>
 

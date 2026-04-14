@@ -175,7 +175,7 @@
                             <a href="{{ asset('storage/' . $record->details_file) }}" target="_blank"
                                 class="btn btn-sm btn-outline-success">
 
-                             تحميل  ملف التفاصيل
+                                تحميل ملف التفاصيل
 
                             </a>
 
@@ -327,46 +327,69 @@
         {{-- شؤون الطلاب --}}
         <div class="col-12">
             <div class="card shadow-sm border-0">
-
-                <div class="card-header bg-light fw-bold">
-                    شؤون الطلاب
-                </div>
-
+                <div class="card-header bg-light fw-bold">شؤون الطلاب</div>
                 <div class="card-body small">
 
-                    <div class="row g-3">
-
+                    <div class="row g-3 mb-3">
                         <div class="col-md-3">
-                            الحضور :
-                            <strong>{{ $record->attendance_certificate ? 'تم' : 'لا' }}</strong>
+                            الحضور: <strong>{{ $record->attendance_certificate ? 'تم' : 'لا' }}</strong>
                         </div>
-
                         <div class="col-md-3">
-                            شهادة الجامعة :
-                            <strong>{{ $record->university_certificate ? 'تم' : 'لا' }}</strong>
+                            شهادة الجامعة: <strong>{{ $record->university_certificate ? 'تم' : 'لا' }}</strong>
                         </div>
-
                         <div class="col-md-3">
-                            البطاقات :
-                            <strong>{{ $record->cards_ready ? 'جاهزة' : 'لا' }}</strong>
+                            البطاقات: <strong>{{ $record->cards_ready ? 'جاهزة' : 'لا' }}</strong>
                         </div>
-
-                        <div class="col-md-3">
-                            التقييمات :
-                            <strong>{{ $record->evaluations_done ? 'تم' : 'لا' }}</strong>
-                        </div>
-
                     </div>
 
-                    <div class="mt-3">
-                        <strong>ملاحظات :</strong>
-                        <br>
+                    {{-- الجلسات والتقييمات مع الروابط --}}
+                    @php
+                        $sessionShowFields = [
+                            'admin_session_1' => ['label' => 'جلسة ادارية و تقييمية  1', 'link' => 'admin_session_1_link'],
+                            'admin_session_2' => ['label' => 'جلسة ادارية و تقييمية  2', 'link' => 'admin_session_2_link'],
+                            'admin_session_3' => ['label' => 'جلسة ادارية و تقييمية  3', 'link' => 'admin_session_3_link'],
+                            'evaluations_done' => ['label' => 'جلسة ادارية و تقييمية', 'link' => 'evaluations_done_link'],
+                        ];
+                      @endphp
+
+                    <div class="row g-3 mb-3">
+                        @foreach($sessionShowFields as $field => $info)
+                            <div class="col-md-3">
+                                <div
+                                    style="background:rgba(248,250,252,.9); border:1px solid rgba(226,232,240,.9); border-radius:10px; padding:10px 12px;">
+                                    <div style="font-weight:800; font-size:13px; margin-bottom:4px;">
+                                        {{ $info['label'] }}
+                                    </div>
+                                    <div style="font-size:13px;">
+                                        @if($record->$field)
+                                            <span class="badge bg-success">تم ✓</span>
+                                        @else
+                                            <span class="badge bg-secondary">لا</span>
+                                        @endif
+                                    </div>
+                                    @if($record->$field && $record->{$info['link']})
+                                        <div style="margin-top:6px;">
+                                            <a href="{{ $record->{$info['link']} }}" target="_blank"
+                                                style="font-size:11px; font-weight:800; color:#0ea5e9; text-decoration:none;">
+                                                <i class="bi bi-link-45deg"></i> فتح الرابط
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-2">
+                        <strong>ملاحظات:</strong><br>
                         {{ $record->notes ?? '-' }}
                     </div>
 
                 </div>
             </div>
         </div>
+
+
 
     </div>
 

@@ -15,7 +15,7 @@ class StudentStoreRequest extends FormRequest
   {
     return [
       'first_name' => 'required|string|max:120',
-      'last_name' => 'nullable|string|max:120',
+      'last_name' => 'required|string|max:120',
       'full_name' => 'required|string|max:190',
       'phone' => 'required|string|max:50',
       'whatsapp' => 'required|string|max:120',
@@ -29,31 +29,31 @@ class StudentStoreRequest extends FormRequest
       'diploma_ids.*' => 'exists:diplomas,id',
 
       // nested arrays
-      'crm' => 'required|array',
+      'crm' => 'nullable|array',
      
      
       
-      'crm.organization' => 'required|string|max:190',
-      'crm.source' => 'required|in:ad,referral,social,website,expo,other',
-      'crm.need' => 'required|string',
-      'crm.stage' => 'required|in:new,follow_up,interested,registered,rejected,postponed',
-      'crm.notes' => 'required|string',
+      'crm.organization' => 'nullable|string|max:190',
+      'crm.source' => 'nullable|in:ad,referral,social,website,expo,other',
+      'crm.need' => 'nullable|string',
+      'crm.stage' => 'nullable|in:new,follow_up,interested,registered,rejected,postponed',
+      'crm.notes' => 'nullable|string',
 
-      'crm.country' => 'required|string|max:100',
-      'crm.province' => 'required|string|max:100',
-      'crm.study' => 'required|string|max:150',
-      'crm.job' => 'required|string|max:150',
+      'crm.country' => 'nullable|string|max:100',
+      'crm.province' => 'nullable|string|max:100',
+      'crm.study' => 'nullable|string|max:150',
+      'crm.job' => 'nullable|string|max:150',
 
 
 
-      'profile' => 'required|array',
-      'profile.arabic_full_name' => 'required|string|max:190',
-      'profile.nationality' => 'required|string|max:120',
-      'profile.birth_date' => 'required|date',
-      'profile.national_id' => 'required|string|max:120',
+      'profile' => 'nullable|array',
+      'profile.arabic_full_name' => 'nullable|string|max:190',
+      'profile.nationality' => 'nullable|string|max:120',
+      'profile.birth_date' => 'nullable|date',
+      'profile.national_id' => 'nullable|string|max:120',
      // 'profile.address' => 'required|string|max:255',
-      'profile.exam_score' => 'required|numeric|min:0|max:999.99',
-      'profile.notes' => 'required|string',
+      'profile.exam_score' => 'nullable|numeric|min:0|max:999.99',
+      'profile.notes' => 'nullable|string',
 
 
       'profile.photo' => 'nullable|image|max:2048',
@@ -64,11 +64,11 @@ class StudentStoreRequest extends FormRequest
       'profile.certificate_card' => 'nullable|file|max:5120',
 
 
-      'profile.level' => 'required|string|max:100',
-      'profile.stage_in_state' => 'required|string|max:120',
+      'profile.level' => 'nullable|string|max:100',
+      'profile.stage_in_state' => 'nullable|string|max:120',
 
-      'profile.education_level' => 'required|string|max:120',
-      'profile.message_to_send' => 'required|string',
+      'profile.education_level' => 'nullable|string|max:120',
+      'profile.message_to_send' => 'nullable|string',
 
     ];
   }

@@ -51,7 +51,11 @@ class ProgramManagement extends Model
         'admin_session_3',
         'evaluations_done',
         'graduates_count',
-        'notes'
+        'notes',
+         'admin_session_1_link',
+    'admin_session_2_link',
+    'admin_session_3_link',
+    'evaluations_done_link'
     ];
 
     protected $casts = [
