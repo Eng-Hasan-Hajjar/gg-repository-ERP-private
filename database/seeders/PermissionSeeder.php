@@ -153,6 +153,7 @@ class PermissionSeeder extends Seeder
             | الأصول واللوجستيات
             |--------------------------------------------------------------------------
             */
+            ['name' => 'manage_assets', 'label' => 'إدارة الأصول', 'module' => 'assets'],
             ['name' => 'view_assets', 'label' => 'عرض الأصول', 'module' => 'assets'],
             ['name' => 'create_assets', 'label' => 'إضافة أصل', 'module' => 'assets'],
             ['name' => 'edit_assets', 'label' => 'تعديل أصل', 'module' => 'assets'],

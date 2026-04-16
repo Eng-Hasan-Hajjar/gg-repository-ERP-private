@@ -49,7 +49,7 @@ public function create()
 {
     $user = auth()->user();
 
-    if ($user->hasRole('super_admin')) {
+    if ($user->hasRole('super_admin') || $user->hasPermission('manage_assets') ) {
         $branches = Branch::orderBy('name')->get();
     } else {
         $employee = \App\Models\Employee::withoutGlobalScopes()
@@ -58,6 +58,7 @@ public function create()
 
         $branches = Branch::where('id', $employee?->branch_id)->get();
     }
+
 
     return view('assets.create', [
         'branches' => $branches,
