@@ -332,7 +332,7 @@
                   data-checkin="{{ $r->check_in_at?->format('H:i') }}"
                   data-checkout="{{ $r->check_out_at?->format('H:i') }}" data-break="{{ $r->break_formatted }}"
                   data-late="{{ $r->late_minutes }}" data-worked="{{ $r->net_worked_formatted }}"
-                  data-status="{{ $r->status_label }}" data-notes='@json($r->notes)'>
+                  data-status="{{ $r->status_label }}" data-notes='@json($r->notes, JSON_UNESCAPED_UNICODE)'>
                   <i class="bi bi-eye"></i>
                 </button>
 

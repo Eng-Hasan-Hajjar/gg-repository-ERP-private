@@ -46,7 +46,8 @@
 
             <div class="col-md-4">
                 <label class="form-label">تاريخ التقرير</label>
-                <input type="date" name="report_date" class="form-control" required>
+                <input type="date" name="report_date" class="form-control" value="{{ now()->toDateString() }}" readonly
+                    required>
             </div>
 
             <div class="col-md-4" hidden>
