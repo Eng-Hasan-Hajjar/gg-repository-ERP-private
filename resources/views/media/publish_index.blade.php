@@ -50,11 +50,25 @@
             </select>
         </div>
 
-        <div class="col-md-2">
-            <label class="form-label small fw-bold">الفرع</label>
-            <input type="text" name="branch" class="form-control form-control-sm"
-                   value="{{ request('branch') }}" placeholder="الفرع">
-        </div>
+       <div class="col-md-2">
+    <label class="form-label small fw-bold">الفرع</label>
+    <select name="branch" class="form-select form-select-sm">
+        <option value="">الكل</option>
+        @foreach([
+            'DE'  => 'ألمانيا',
+            'IST' => 'اسطنبول',
+            'MRS' => 'مرسين',
+            'BRS' => 'بورصة',
+            'KLS' => 'كليس',
+            'ANT' => 'عنتاب',
+            'ONL' => 'أونلاين',
+        ] as $code => $name)
+            <option value="{{ $code }}" {{ request('branch') == $code ? 'selected' : '' }}>
+                {{ $name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
         <div class="col-md-auto">
             <button type="submit" class="btn btn-sm btn-namaa">
@@ -94,7 +108,20 @@
                         <span class="badge badge-namaa">{{ $entry->content_category_label }}</span>
                     </td>
                     <td>{{ $entry->content_type_label }}</td>
-                    <td>{{ $entry->branch ?? '—' }}</td>
+                    <td>
+    @php
+        $branchNames = [
+            'DE'  => 'ألمانيا',
+            'IST' => 'اسطنبول',
+            'MRS' => 'مرسين',
+            'BRS' => 'بورصة',
+            'KLS' => 'كليس',
+            'ANT' => 'عنتاب',
+            'ONL' => 'أونلاين',
+        ];
+    @endphp
+    {{ $branchNames[$entry->branch] ?? '—' }}
+</td>?? '—' }}</td>
                     <td class="hide-mobile">
                         {{ Str::limit($entry->caption, 40) ?? '—' }}
                     </td>
@@ -114,7 +141,7 @@
                                     data-diploma="{{ $entry->diploma_name }}"
                                     data-category="{{ $entry->content_category_label }}"
                                     data-type="{{ $entry->content_type_label }}"
-                                    data-branch="{{ $entry->branch ?? '—' }}"
+                                    data-branch="{{ $branchNames[$entry->branch] ?? '—' }}"
                                     data-caption="{{ $entry->caption ?? '—' }}"
                                     data-meta="{{ $entry->published_meta ? '1' : '0' }}"
                                     data-tiktok="{{ $entry->published_tiktok ? '1' : '0' }}"
@@ -122,7 +149,8 @@
                                     data-date="{{ $entry->publish_date?->format('Y-m-d') ?? '—' }}"
                                     data-created="{{ $entry->created_at?->format('Y-m-d H:i') }}"
                                     data-request-id="{{ $entry->media_request_id }}"
-                                    data-request-name="{{ $entry->mediaRequest?->requester_name ?? '—' }}">
+                                    data-request-name="{{ $entry->mediaRequest?->requester_name ?? '—' }}"
+                                    data-content-link="{{ $entry->content_link ?? '' }}">
                                 <i class="bi bi-eye"></i>
                             </button>
 
@@ -241,6 +269,17 @@
                     </div>
                 </div>
 
+
+
+                {{-- رابط المحتوى --}}
+            <div class="mb-3" id="contentLinkBox">
+                <div class="publish-detail-box">
+                    <div class="publish-detail-label">
+                        <i class="bi bi-link-45deg text-primary"></i> رابط المحتوى
+                    </div>
+                    <div class="publish-detail-value" id="modalContentLink"></div>
+                </div>
+            </div>
                 {{-- حالة النشر --}}
                 <div class="mb-3">
                     <div class="publish-detail-label mb-2" style="font-size:.85rem; font-weight:800; color:#64748b; padding-right:4px;">
@@ -389,6 +428,25 @@ document.addEventListener('DOMContentLoaded', function() {
             var created  = this.dataset.created;
             var reqId    = this.dataset.requestId;
             var reqName  = this.dataset.requestName;
+
+
+
+var contentLink = this.dataset.contentLink;
+
+            // رابط المحتوى
+var linkBox = document.getElementById('contentLinkBox');
+var linkEl  = document.getElementById('modalContentLink');
+if (contentLink && contentLink !== '') {
+    linkEl.innerHTML = '<a href="' + contentLink + '" target="_blank" class="text-decoration-none fw-bold">' +
+                       '<i class="bi bi-box-arrow-up-right me-1"></i>' + contentLink + '</a>';
+    linkBox.style.display = 'block';
+} else {
+    linkEl.textContent    = '—';
+    linkBox.style.display = 'block';
+}
+
+
+
 
             document.getElementById('modalId').textContent       = '#' + id;
             document.getElementById('modalDiploma').textContent   = diploma;

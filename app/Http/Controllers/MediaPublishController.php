@@ -61,6 +61,8 @@ class MediaPublishController extends Controller
             'content_type'     => 'required|in:design,video,carousel',
             'branch'           => 'nullable|string|max:255',
             'caption'          => 'nullable|string',
+             'content_link'     => 'nullable|url|max:500',   // ← جديد
+    'branch_link'      => 'nullable|url|max:500',   // ← جديد
             'publish_date'     => 'nullable|date',
         ]);
 
@@ -98,6 +100,8 @@ class MediaPublishController extends Controller
             'branch'           => 'nullable|string|max:255',
             'caption'          => 'nullable|string',
             'publish_date'     => 'nullable|date',
+             'content_link'     => 'nullable|url|max:500',   // ← جديد
+    'branch_link'      => 'nullable|url|max:500',   // ← جديد
         ]);
 
         $data['published_meta']    = $request->has('published_meta');

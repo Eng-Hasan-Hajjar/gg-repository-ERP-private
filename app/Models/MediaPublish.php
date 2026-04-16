@@ -19,13 +19,15 @@ class MediaPublish extends Model
         'published_tiktok',
         'published_youtube',
         'publish_date',
+        'content_link',   // ← جديد
+        'branch_link',    // ← جديد
     ];
 
     protected $casts = [
-        'published_meta'    => 'boolean',
-        'published_tiktok'  => 'boolean',
+        'published_meta' => 'boolean',
+        'published_tiktok' => 'boolean',
         'published_youtube' => 'boolean',
-        'publish_date'      => 'date',
+        'publish_date' => 'date',
     ];
 
     public function mediaRequest()
@@ -36,22 +38,22 @@ class MediaPublish extends Model
     public function getContentCategoryLabelAttribute(): string
     {
         return match ($this->content_category) {
-            'ad'              => 'إعلان',
-            'invitation'      => 'دعوة',
-            'content'         => 'محتوى',
-            'review'          => 'تقييم',
+            'ad' => 'إعلان',
+            'invitation' => 'دعوة',
+            'content' => 'محتوى',
+            'review' => 'تقييم',
             'general_content' => 'محتوى عام',
-            default           => '-',
+            default => '-',
         };
     }
 
     public function getContentTypeLabelAttribute(): string
     {
         return match ($this->content_type) {
-            'design'   => 'تصميم',
-            'video'    => 'فيديو',
+            'design' => 'تصميم',
+            'video' => 'فيديو',
             'carousel' => 'كاروسيل',
-            default    => '-',
+            default => '-',
         };
     }
 }

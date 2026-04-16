@@ -50,11 +50,26 @@
             </select>
         </div>
 
-        <div class="col-md-2">
-            <label class="form-label small fw-bold">الفرع</label>
-            <input type="text" name="branch" class="form-control form-control-sm"
-                   value="<?php echo e(request('branch')); ?>" placeholder="الفرع">
-        </div>
+       <div class="col-md-2">
+    <label class="form-label small fw-bold">الفرع</label>
+    <select name="branch" class="form-select form-select-sm">
+        <option value="">الكل</option>
+        <?php $__currentLoopData = [
+            'DE'  => 'ألمانيا',
+            'IST' => 'اسطنبول',
+            'MRS' => 'مرسين',
+            'BRS' => 'بورصة',
+            'KLS' => 'كليس',
+            'ANT' => 'عنتاب',
+            'ONL' => 'أونلاين',
+        ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $code => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($code); ?>" <?php echo e(request('branch') == $code ? 'selected' : ''); ?>>
+                <?php echo e($name); ?>
+
+            </option>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
+</div>
 
         <div class="col-md-auto">
             <button type="submit" class="btn btn-sm btn-namaa">
@@ -94,7 +109,21 @@
                         <span class="badge badge-namaa"><?php echo e($entry->content_category_label); ?></span>
                     </td>
                     <td><?php echo e($entry->content_type_label); ?></td>
-                    <td><?php echo e($entry->branch ?? '—'); ?></td>
+                    <td>
+    <?php
+        $branchNames = [
+            'DE'  => 'ألمانيا',
+            'IST' => 'اسطنبول',
+            'MRS' => 'مرسين',
+            'BRS' => 'بورصة',
+            'KLS' => 'كليس',
+            'ANT' => 'عنتاب',
+            'ONL' => 'أونلاين',
+        ];
+    ?>
+    <?php echo e($branchNames[$entry->branch] ?? '—'); ?>
+
+</td>?? '—' }}</td>
                     <td class="hide-mobile">
                         <?php echo e(Str::limit($entry->caption, 40) ?? '—'); ?>
 
@@ -115,7 +144,7 @@
                                     data-diploma="<?php echo e($entry->diploma_name); ?>"
                                     data-category="<?php echo e($entry->content_category_label); ?>"
                                     data-type="<?php echo e($entry->content_type_label); ?>"
-                                    data-branch="<?php echo e($entry->branch ?? '—'); ?>"
+                                    data-branch="<?php echo e($branchNames[$entry->branch] ?? '—'); ?>"
                                     data-caption="<?php echo e($entry->caption ?? '—'); ?>"
                                     data-meta="<?php echo e($entry->published_meta ? '1' : '0'); ?>"
                                     data-tiktok="<?php echo e($entry->published_tiktok ? '1' : '0'); ?>"
@@ -123,7 +152,8 @@
                                     data-date="<?php echo e($entry->publish_date?->format('Y-m-d') ?? '—'); ?>"
                                     data-created="<?php echo e($entry->created_at?->format('Y-m-d H:i')); ?>"
                                     data-request-id="<?php echo e($entry->media_request_id); ?>"
-                                    data-request-name="<?php echo e($entry->mediaRequest?->requester_name ?? '—'); ?>">
+                                    data-request-name="<?php echo e($entry->mediaRequest?->requester_name ?? '—'); ?>"
+                                    data-content-link="<?php echo e($entry->content_link ?? ''); ?>">
                                 <i class="bi bi-eye"></i>
                             </button>
 
@@ -243,6 +273,17 @@
                     </div>
                 </div>
 
+
+
+                
+            <div class="mb-3" id="contentLinkBox">
+                <div class="publish-detail-box">
+                    <div class="publish-detail-label">
+                        <i class="bi bi-link-45deg text-primary"></i> رابط المحتوى
+                    </div>
+                    <div class="publish-detail-value" id="modalContentLink"></div>
+                </div>
+            </div>
                 
                 <div class="mb-3">
                     <div class="publish-detail-label mb-2" style="font-size:.85rem; font-weight:800; color:#64748b; padding-right:4px;">
@@ -391,6 +432,25 @@ document.addEventListener('DOMContentLoaded', function() {
             var created  = this.dataset.created;
             var reqId    = this.dataset.requestId;
             var reqName  = this.dataset.requestName;
+
+
+
+var contentLink = this.dataset.contentLink;
+
+            // رابط المحتوى
+var linkBox = document.getElementById('contentLinkBox');
+var linkEl  = document.getElementById('modalContentLink');
+if (contentLink && contentLink !== '') {
+    linkEl.innerHTML = '<a href="' + contentLink + '" target="_blank" class="text-decoration-none fw-bold">' +
+                       '<i class="bi bi-box-arrow-up-right me-1"></i>' + contentLink + '</a>';
+    linkBox.style.display = 'block';
+} else {
+    linkEl.textContent    = '—';
+    linkBox.style.display = 'block';
+}
+
+
+
 
             document.getElementById('modalId').textContent       = '#' + id;
             document.getElementById('modalDiploma').textContent   = diploma;
