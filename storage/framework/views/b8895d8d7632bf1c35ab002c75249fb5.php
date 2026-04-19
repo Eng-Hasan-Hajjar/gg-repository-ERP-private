@@ -1,35 +1,35 @@
-@extends('layouts.app')
-@php($activeModule = 'finance')
-@section('title', 'حركات الصندوق')
 
-@section('content')
+<?php ($activeModule = 'finance'); ?>
+<?php $__env->startSection('title', 'حركات الصندوق'); ?>
 
-{{-- ══ رأس الصفحة ══ --}}
+<?php $__env->startSection('content'); ?>
+
+
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-3">
   <div>
     <h4 class="mb-0 fw-bold">حركات الصندوق</h4>
     <div class="text-muted fw-semibold">
-      {{ $cashbox->name }} — <code>{{ $cashbox->code }}</code>
-      — الرصيد الحالي: <b>{{ $cashbox->current_balance }} {{ $cashbox->currency }}</b>
+      <?php echo e($cashbox->name); ?> — <code><?php echo e($cashbox->code); ?></code>
+      — الرصيد الحالي: <b><?php echo e($cashbox->current_balance); ?> <?php echo e($cashbox->currency); ?></b>
     </div>
   </div>
   <div class="d-flex gap-2 flex-wrap">
-    <a href="{{ route('cashboxes.show', $cashbox) }}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+    <a href="<?php echo e(route('cashboxes.show', $cashbox)); ?>" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
       رجوع للصندوق
     </a>
-    @if(auth()->user()?->hasPermission('add_transaction'))
-      <a href="{{ route('cashboxes.transactions.create', $cashbox) }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
+    <?php if(auth()->user()?->hasPermission('add_transaction')): ?>
+      <a href="<?php echo e(route('cashboxes.transactions.create', $cashbox)); ?>" class="btn btn-namaa rounded-pill px-4 fw-bold">
         <i class="bi bi-plus-circle"></i> إضافة حركة
       </a>
-    @endif
-    <a href="{{ route('cashboxes.transactions.pdf', $cashbox) }}"
+    <?php endif; ?>
+    <a href="<?php echo e(route('cashboxes.transactions.pdf', $cashbox)); ?>"
        class="btn btn-danger rounded-pill px-4 fw-bold" target="_blank">
       <i class="bi bi-file-earmark-pdf"></i> تصدير PDF
     </a>
 
 
 
-    <a href="{{ route('cashboxes.transactions.excel', $cashbox) }}?{{ http_build_query(request()->all()) }}"
+    <a href="<?php echo e(route('cashboxes.transactions.excel', $cashbox)); ?>?<?php echo e(http_build_query(request()->all())); ?>"
    class="btn btn-success rounded-pill px-4 fw-bold">
   <i class="bi bi-file-earmark-excel"></i> تصدير Excel
 </a>
@@ -38,88 +38,88 @@
   </div>
 </div>
 
-{{-- ══ فورم الفلترة ══ --}}
+
 <form class="card border-0 shadow-sm mb-3">
   <div class="card-body">
     <div class="row g-2">
 
-      {{-- بحث نصي --}}
+      
       <div class="col-12 col-md-3">
-        <input name="search" value="{{ request('search') }}" class="form-control"
+        <input name="search" value="<?php echo e(request('search')); ?>" class="form-control"
                placeholder="بحث: تصنيف / مرجع / ملاحظات">
       </div>
 
-      {{-- فلتر النوع --}}
+      
       <div class="col-6 col-md-2">
         <select name="type" class="form-select">
           <option value="">النوع (الكل)</option>
-          <option value="in"       @selected(request('type')=='in')>مقبوض</option>
-          <option value="out"      @selected(request('type')=='out')>مدفوع</option>
-          <option value="transfer" @selected(request('type')=='transfer')>مناقلة</option>
-          <option value="exchange" @selected(request('type')=='exchange')>تصريف</option>
+          <option value="in"       <?php if(request('type')=='in'): echo 'selected'; endif; ?>>مقبوض</option>
+          <option value="out"      <?php if(request('type')=='out'): echo 'selected'; endif; ?>>مدفوع</option>
+          <option value="transfer" <?php if(request('type')=='transfer'): echo 'selected'; endif; ?>>مناقلة</option>
+          <option value="exchange" <?php if(request('type')=='exchange'): echo 'selected'; endif; ?>>تصريف</option>
         </select>
       </div>
 
-      {{-- فلتر التصنيف الرئيسي ← جديد --}}
+      
       <div class="col-6 col-md-2">
         <select name="category" class="form-select">
           <option value="">التصنيف (الكل)</option>
-          @foreach($categories as $key => $label)
-            <option value="{{ $key }}" @selected(request('category') == $key)>{{ $label }}</option>
-          @endforeach
+          <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($key); ?>" <?php if(request('category') == $key): echo 'selected'; endif; ?>><?php echo e($label); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
       </div>
 
-      {{-- فلتر الحالة --}}
+      
       <div class="col-6 col-md-2">
         <select name="status" class="form-select">
           <option value="">الحالة (الكل)</option>
-          <option value="draft"  @selected(request('status')=='draft')>معلّق</option>
-          <option value="posted" @selected(request('status')=='posted')>مُرحّل</option>
+          <option value="draft"  <?php if(request('status')=='draft'): echo 'selected'; endif; ?>>معلّق</option>
+          <option value="posted" <?php if(request('status')=='posted'): echo 'selected'; endif; ?>>مُرحّل</option>
         </select>
       </div>
 
-      {{-- دفعات الطلاب --}}
+      
       <div class="col-6 col-md-2">
         <select name="only_students" class="form-select">
           <option value="">كل الحركات</option>
-          <option value="1" @selected(request('only_students'))>دفعات الطلاب فقط</option>
+          <option value="1" <?php if(request('only_students')): echo 'selected'; endif; ?>>دفعات الطلاب فقط</option>
         </select>
       </div>
 
-      {{-- ترتيب --}}
+      
       <div class="col-6 col-md-2">
         <select name="sort" class="form-select">
-          <option value="trx_date" @selected(request('sort','trx_date')=='trx_date')>ترتيب: التاريخ</option>
-          <option value="amount"   @selected(request('sort')=='amount')>ترتيب: المبلغ</option>
-          <option value="id"       @selected(request('sort')=='id')>ترتيب: رقم الحركة</option>
+          <option value="trx_date" <?php if(request('sort','trx_date')=='trx_date'): echo 'selected'; endif; ?>>ترتيب: التاريخ</option>
+          <option value="amount"   <?php if(request('sort')=='amount'): echo 'selected'; endif; ?>>ترتيب: المبلغ</option>
+          <option value="id"       <?php if(request('sort')=='id'): echo 'selected'; endif; ?>>ترتيب: رقم الحركة</option>
         </select>
       </div>
 
-      {{-- اتجاه --}}
+      
       <div class="col-6 col-md-2">
         <select name="direction" class="form-select">
-          <option value="desc" @selected(request('direction','desc')=='desc')>تنازلي</option>
-          <option value="asc"  @selected(request('direction')=='asc')>تصاعدي</option>
+          <option value="desc" <?php if(request('direction','desc')=='desc'): echo 'selected'; endif; ?>>تنازلي</option>
+          <option value="asc"  <?php if(request('direction')=='asc'): echo 'selected'; endif; ?>>تصاعدي</option>
         </select>
       </div>
 
-      {{-- تطبيق --}}
+      
       <div class="col-12 col-md-2 d-grid">
         <button class="btn btn-namaa fw-bold">تطبيق</button>
       </div>
 
     </div>
 
-    {{-- إجماليات --}}
+    
     <div class="mt-3 small text-muted fw-semibold">
-      إجمالي المقبوض (posted): <b class="text-success">{{ number_format($postedIn, 2) }} {{ $cashbox->currency }}</b>
-      — إجمالي المدفوع (posted): <b class="text-danger">{{ number_format($postedOut, 2) }} {{ $cashbox->currency }}</b>
+      إجمالي المقبوض (posted): <b class="text-success"><?php echo e(number_format($postedIn, 2)); ?> <?php echo e($cashbox->currency); ?></b>
+      — إجمالي المدفوع (posted): <b class="text-danger"><?php echo e(number_format($postedOut, 2)); ?> <?php echo e($cashbox->currency); ?></b>
     </div>
   </div>
 </form>
 
-{{-- ══ الجدول ══ --}}
+
 <div class="card border-0 shadow-sm">
   <div class="table-responsive">
     <table class="table align-middle mb-0">
@@ -127,7 +127,7 @@
         <tr>
           <th>#</th>
           <th>
-            <a href="?sort=trx_date&direction={{ request('direction','desc') == 'asc' ? 'desc' : 'asc' }}&{{ http_build_query(request()->except(['sort','direction'])) }}">
+            <a href="?sort=trx_date&direction=<?php echo e(request('direction','desc') == 'asc' ? 'desc' : 'asc'); ?>&<?php echo e(http_build_query(request()->except(['sort','direction']))); ?>">
               التاريخ
             </a>
           </th>
@@ -143,79 +143,82 @@
         </tr>
       </thead>
       <tbody>
-        @forelse($transactions as $t)
+        <?php $__empty_1 = true; $__currentLoopData = $transactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
           <tr>
-            <td>{{ $t->id }}</td>
-            <td>{{ $t->trx_date->format('Y-m-d') }}</td>
-            <td>{{ optional(optional($t->account)->accountable)->full_name ?? '-' }}</td>
-            <td>{{ optional($t->diploma)->name ?? '-' }}</td>
+            <td><?php echo e($t->id); ?></td>
+            <td><?php echo e($t->trx_date->format('Y-m-d')); ?></td>
+            <td><?php echo e(optional(optional($t->account)->accountable)->full_name ?? '-'); ?></td>
+            <td><?php echo e(optional($t->diploma)->name ?? '-'); ?></td>
 
-            {{-- النوع --}}
+            
             <td>
-              <span class="badge bg-{{ $typeMeta[$t->type]['color'] ?? 'secondary' }}">
-                {{ $typeMeta[$t->type]['label'] ?? $t->type }}
+              <span class="badge bg-<?php echo e($typeMeta[$t->type]['color'] ?? 'secondary'); ?>">
+                <?php echo e($typeMeta[$t->type]['label'] ?? $t->type); ?>
+
               </span>
             </td>
 
-            {{-- المبلغ مع عرض العملة الأجنبية إن وُجدت --}}
+            
             <td class="fw-bold">
-              {{ $t->amount }} {{ $t->currency }}
-              @if($t->foreign_amount && $t->foreign_currency)
+              <?php echo e($t->amount); ?> <?php echo e($t->currency); ?>
+
+              <?php if($t->foreign_amount && $t->foreign_currency): ?>
                 <br><small class="text-muted fw-normal">
-                  ({{ $t->foreign_amount }} {{ $t->foreign_currency }})
+                  (<?php echo e($t->foreign_amount); ?> <?php echo e($t->foreign_currency); ?>)
                 </small>
-              @endif
+              <?php endif; ?>
             </td>
 
-            <td>{{ $t->category ?? '-' }}</td>
+            <td><?php echo e($t->category ?? '-'); ?></td>
             <td>
-              @if($t->sub_category)
-                <span class="text-muted small">{{ $t->sub_category }}</span>
-              @else
+              <?php if($t->sub_category): ?>
+                <span class="text-muted small"><?php echo e($t->sub_category); ?></span>
+              <?php else: ?>
                 -
-              @endif
+              <?php endif; ?>
             </td>
-            <td>{{ $t->reference ?? '-' }}</td>
+            <td><?php echo e($t->reference ?? '-'); ?></td>
 
-            {{-- الحالة --}}
+            
             <td>
-              <span class="badge bg-{{ $t->status == 'posted' ? 'primary' : 'secondary' }}">
-                {{ $t->status == 'posted' ? 'مُرحّل' : 'معلّق' }}
+              <span class="badge bg-<?php echo e($t->status == 'posted' ? 'primary' : 'secondary'); ?>">
+                <?php echo e($t->status == 'posted' ? 'مُرحّل' : 'معلّق'); ?>
+
               </span>
             </td>
 
-            {{-- إجراءات --}}
+            
             <td class="text-end">
               <div class="d-flex gap-1 justify-content-end flex-wrap">
 
-                {{-- زر التفاصيل ← جديد --}}
+                
                 <button type="button"
                         class="btn btn-sm btn-outline-info btn-detail"
-                        data-id="{{ $t->id }}"
-                        data-url="{{ route('cashboxes.transactions.detail', [$cashbox, $t]) }}"
+                        data-id="<?php echo e($t->id); ?>"
+                        data-url="<?php echo e(route('cashboxes.transactions.detail', [$cashbox, $t])); ?>"
                         title="تفاصيل الحركة">
                   <i class="bi bi-eye"></i> تفاصيل
                 </button>
 
-                @if(auth()->user()?->hasPermission('approve_transaction'))
-                  @if($t->status === 'draft')
-                    <form method="POST" action="{{ route('cashboxes.transactions.post', [$cashbox, $t]) }}">
-                      @csrf
+                <?php if(auth()->user()?->hasPermission('approve_transaction')): ?>
+                  <?php if($t->status === 'draft'): ?>
+                    <form method="POST" action="<?php echo e(route('cashboxes.transactions.post', [$cashbox, $t])); ?>">
+                      <?php echo csrf_field(); ?>
                       <button class="btn btn-sm btn-outline-success">
                         <i class="bi bi-check2-circle"></i> ترحيل
                       </button>
                     </form>
-                  @endif
-                @endif
+                  <?php endif; ?>
+                <?php endif; ?>
 
                 <a class="btn btn-sm btn-outline-dark"
-                   href="{{ route('cashboxes.transactions.edit', [$cashbox, $t]) }}">
+                   href="<?php echo e(route('cashboxes.transactions.edit', [$cashbox, $t])); ?>">
                   <i class="bi bi-pencil"></i> تعديل
                 </a>
 
-                <form method="POST" action="{{ route('cashboxes.transactions.destroy', [$cashbox, $t]) }}"
+                <form method="POST" action="<?php echo e(route('cashboxes.transactions.destroy', [$cashbox, $t])); ?>"
                       onsubmit="return confirm('حذف الحركة؟');">
-                  @csrf @method('DELETE')
+                  <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                   <button class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-trash"></i> حذف
                   </button>
@@ -224,27 +227,25 @@
               </div>
             </td>
           </tr>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
           <tr>
             <td colspan="11" class="text-center text-muted py-4">لا يوجد حركات</td>
           </tr>
-        @endforelse
+        <?php endif; ?>
       </tbody>
     </table>
   </div>
 </div>
 
-<div class="mt-3">{{ $transactions->links() }}</div>
+<div class="mt-3"><?php echo e($transactions->links()); ?></div>
 
 
-{{-- ══════════════════════════════════════════════════════════
-     مودال تفاصيل الحركة
-══════════════════════════════════════════════════════════ --}}
+
 <div class="modal fade" id="transactionDetailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow">
 
-      {{-- رأس المودال --}}
+      
       <div class="modal-header" id="detail-modal-header" style="background: linear-gradient(135deg,#11998e,#38ef7d);">
         <h5 class="modal-title text-white fw-bold" id="detailModalLabel">
           <i class="bi bi-receipt"></i> تفاصيل الحركة
@@ -252,19 +253,19 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
 
-      {{-- جسم المودال --}}
+      
       <div class="modal-body p-0">
 
-        {{-- حالة التحميل --}}
+        
         <div id="detail-loading" class="text-center py-5">
           <div class="spinner-border text-success" role="status"></div>
           <div class="mt-2 text-muted small">جارٍ التحميل...</div>
         </div>
 
-        {{-- المحتوى --}}
+        
         <div id="detail-content" style="display:none;">
 
-          {{-- شريط ملخص علوي --}}
+          
           <div id="detail-summary-bar"
                class="d-flex align-items-center justify-content-between flex-wrap gap-2 px-4 py-3"
                style="background:#f8f9fa; border-bottom:1px solid #eee;">
@@ -286,7 +287,7 @@
             </div>
           </div>
 
-          {{-- تفاصيل --}}
+          
           <div class="px-4 py-3">
             <div class="row g-3">
 
@@ -382,10 +383,10 @@
           </div>
 
         </div>
-        {{-- / المحتوى --}}
+        
 
       </div>
-      {{-- / جسم المودال --}}
+      
 
       <div class="modal-footer bg-light">
         <a id="d-edit-link" href="#" class="btn btn-outline-dark rounded-pill px-4">
@@ -397,10 +398,10 @@
     </div>
   </div>
 </div>
-{{-- / مودال --}}
 
 
-@push('styles')
+
+<?php $__env->startPush('styles'); ?>
 <style>
 .detail-field {
   background: #f8f9fa;
@@ -423,9 +424,9 @@
   color: #1a1a2e;
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -507,6 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/cashboxes/transactions/index.blade.php ENDPATH**/ ?>

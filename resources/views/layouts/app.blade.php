@@ -1135,7 +1135,7 @@ ERP Notifications Style
 
 
 
-
+@include('finance._fab')
 
 <body class="bg-light">
 

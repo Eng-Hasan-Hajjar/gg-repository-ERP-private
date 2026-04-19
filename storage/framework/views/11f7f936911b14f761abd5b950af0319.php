@@ -1,21 +1,21 @@
-@extends('layouts.app')
-@php($activeModule = 'finance')
-@section('title', 'ملف الصندوق')
 
-@section('content')
+<?php ($activeModule = 'finance'); ?>
+<?php $__env->startSection('title', 'ملف الصندوق'); ?>
+
+<?php $__env->startSection('content'); ?>
   <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-3">
     <div>
-      <h4 class="mb-1 fw-bold">{{ $cashbox->name }}</h4>
+      <h4 class="mb-1 fw-bold"><?php echo e($cashbox->name); ?></h4>
       <div class="text-muted fw-semibold">
-        كود: <code>{{ $cashbox->code }}</code>
-        — فرع: <b>{{ $cashbox->branch->name ?? '-' }}</b>
-        — عملة: <b>{{ $cashbox->currency }}</b>
+        كود: <code><?php echo e($cashbox->code); ?></code>
+        — فرع: <b><?php echo e($cashbox->branch->name ?? '-'); ?></b>
+        — عملة: <b><?php echo e($cashbox->currency); ?></b>
       </div>
     </div>
 
     <div class="d-flex flex-wrap gap-2">
 
-      <a href="{{ route('cashboxes.transactions.pdf', $cashbox) }}" class="btn btn-danger rounded-pill px-4 fw-bold"
+      <a href="<?php echo e(route('cashboxes.transactions.pdf', $cashbox)); ?>" class="btn btn-danger rounded-pill px-4 fw-bold"
         target="_blank">
 
         <i class="bi bi-file-earmark-pdf"></i>
@@ -23,19 +23,19 @@
 
       </a>
 
-      @if(auth()->user()?->hasPermission('add_transaction'))
-        <a href="{{ route('cashboxes.transactions.create', $cashbox) }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
+      <?php if(auth()->user()?->hasPermission('add_transaction')): ?>
+        <a href="<?php echo e(route('cashboxes.transactions.create', $cashbox)); ?>" class="btn btn-namaa rounded-pill px-4 fw-bold">
           <i class="bi bi-plus-circle"></i> إضافة حركة
         </a>
-      @endif
+      <?php endif; ?>
 
 
 
-      <a href="{{ route('cashboxes.transactions.index', $cashbox) }}" class="btn btn-namaa rounded-pill px-4 fw-bold"
+      <a href="<?php echo e(route('cashboxes.transactions.index', $cashbox)); ?>" class="btn btn-namaa rounded-pill px-4 fw-bold"
         hidden>
         <i class="bi bi-arrow-left-right"></i> الحركات
       </a>
-      <a href="{{ route('cashboxes.edit', $cashbox) }}" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
+      <a href="<?php echo e(route('cashboxes.edit', $cashbox)); ?>" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
         <i class="bi bi-pencil"></i> تعديل
       </a>
     </div>
@@ -48,13 +48,16 @@
           <h6 class="fw-bold mb-3">البيانات</h6>
           <div class="row g-2 small">
             <div class="col-6"><b>الحالة:</b>
-              <span class="badge bg-{{ $cashbox->status == 'active' ? 'success' : 'secondary' }}">
-                {{ $cashbox->status == 'active' ? 'نشط' : 'غير نشط' }}
+              <span class="badge bg-<?php echo e($cashbox->status == 'active' ? 'success' : 'secondary'); ?>">
+                <?php echo e($cashbox->status == 'active' ? 'نشط' : 'غير نشط'); ?>
+
               </span>
             </div>
-            <div class="col-6"><b>الرصيد الافتتاحي:</b> {{ $cashbox->opening_balance }} {{ $cashbox->currency }}</div>
-            <div class="col-12 mt-2"><b>الرصيد الحالي (posted):</b> {{ $cashbox->current_balance }}
-              {{ $cashbox->currency }}
+            <div class="col-6"><b>الرصيد الافتتاحي:</b> <?php echo e($cashbox->opening_balance); ?> <?php echo e($cashbox->currency); ?></div>
+            <div class="col-12 mt-2"><b>الرصيد الحالي (posted):</b> <?php echo e($cashbox->current_balance); ?>
+
+              <?php echo e($cashbox->currency); ?>
+
             </div>
           </div>
         </div>
@@ -79,8 +82,8 @@
     <div>
       <h4 class="mb-0 fw-bold">حركات الصندوق</h4>
       <div class="text-muted fw-semibold">
-        {{ $cashbox->name }} — <code>{{ $cashbox->code }}</code>
-        — الرصيد الحالي: <b>{{ $cashbox->current_balance }} {{ $cashbox->currency }}</b>
+        <?php echo e($cashbox->name); ?> — <code><?php echo e($cashbox->code); ?></code>
+        — الرصيد الحالي: <b><?php echo e($cashbox->current_balance); ?> <?php echo e($cashbox->currency); ?></b>
       </div>
     </div>
 
@@ -91,22 +94,22 @@
     <div class="card-body">
       <div class="row g-2">
         <div class="col-12 col-md-2">
-          <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: تصنيف/مرجع/ملاحظات">
+          <input name="search" value="<?php echo e(request('search')); ?>" class="form-control" placeholder="بحث: تصنيف/مرجع/ملاحظات">
         </div>
 
         <div class="col-6 col-md-2">
           <select name="type" class="form-select">
             <option value="">النوع (الكل)</option>
-            <option value="in" @selected(request('type') == 'in')>مقبوض</option>
-            <option value="out" @selected(request('type') == 'out')>مدفوع</option>
+            <option value="in" <?php if(request('type') == 'in'): echo 'selected'; endif; ?>>مقبوض</option>
+            <option value="out" <?php if(request('type') == 'out'): echo 'selected'; endif; ?>>مدفوع</option>
           </select>
         </div>
 
         <div class="col-6 col-md-2">
           <select name="status" class="form-select">
             <option value="">الحالة (الكل)</option>
-            <option value="draft" @selected(request('status') == 'draft')>معلّق</option>
-            <option value="posted" @selected(request('status') == 'posted')>مُرحّل</option>
+            <option value="draft" <?php if(request('status') == 'draft'): echo 'selected'; endif; ?>>معلّق</option>
+            <option value="posted" <?php if(request('status') == 'posted'): echo 'selected'; endif; ?>>مُرحّل</option>
           </select>
         </div>
 
@@ -115,7 +118,7 @@
         <div class="col-6 col-md-2">
           <select name="only_students" class="form-select">
             <option value="">كل الحركات</option>
-            <option value="1" @selected(request('only_students'))>
+            <option value="1" <?php if(request('only_students')): echo 'selected'; endif; ?>>
               دفعات الطلاب فقط
             </option>
           </select>
@@ -128,16 +131,16 @@
 
         <div class="col-6 col-md-2">
           <select name="sort" class="form-select">
-            <option value="trx_date" @selected(request('sort') == 'trx_date')>ترتيب حسب التاريخ</option>
-            <option value="amount" @selected(request('sort') == 'amount')>ترتيب حسب المبلغ</option>
-            <option value="id" @selected(request('sort') == 'id')>ترتيب حسب رقم الحركة</option>
+            <option value="trx_date" <?php if(request('sort') == 'trx_date'): echo 'selected'; endif; ?>>ترتيب حسب التاريخ</option>
+            <option value="amount" <?php if(request('sort') == 'amount'): echo 'selected'; endif; ?>>ترتيب حسب المبلغ</option>
+            <option value="id" <?php if(request('sort') == 'id'): echo 'selected'; endif; ?>>ترتيب حسب رقم الحركة</option>
           </select>
         </div>
 
         <div class="col-6 col-md-2">
           <select name="direction" class="form-select">
-            <option value="desc" @selected(request('direction') == 'desc')>تنازلي</option>
-            <option value="asc" @selected(request('direction') == 'asc')>تصاعدي</option>
+            <option value="desc" <?php if(request('direction') == 'desc'): echo 'selected'; endif; ?>>تنازلي</option>
+            <option value="asc" <?php if(request('direction') == 'asc'): echo 'selected'; endif; ?>>تصاعدي</option>
           </select>
         </div>
 
@@ -184,8 +187,8 @@
       </div>
 
       <div class="mt-3 small text-muted fw-semibold">
-        إجمالي المقبوض (posted): <b>{{ number_format($postedIn, 2) }}</b>
-        — إجمالي المدفوع (posted): <b>{{ number_format($postedOut, 2) }}</b>
+        إجمالي المقبوض (posted): <b><?php echo e(number_format($postedIn, 2)); ?></b>
+        — إجمالي المدفوع (posted): <b><?php echo e(number_format($postedOut, 2)); ?></b>
       </div>
 
 
@@ -282,7 +285,7 @@
             <th>#</th>
             <th>
 
-              <a href="?sort=trx_date&direction={{ request('direction') == 'asc' ? 'desc' : 'asc' }}">
+              <a href="?sort=trx_date&direction=<?php echo e(request('direction') == 'asc' ? 'desc' : 'asc'); ?>">
                 التاريخ
               </a>
             </th>
@@ -300,85 +303,90 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($transactions as $t)
+          <?php $__empty_1 = true; $__currentLoopData = $transactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
             <tr>
-              <td>{{ $t->id }}</td>
-              <td>{{ $t->trx_date->format('Y-m-d') }}</td>
+              <td><?php echo e($t->id); ?></td>
+              <td><?php echo e($t->trx_date->format('Y-m-d')); ?></td>
 
               <td>
 
-                {{optional(optional($t->account)->accountable)->full_name ?? '-' }}
+                <?php echo e(optional(optional($t->account)->accountable)->full_name ?? '-'); ?>
+
 
 
 
               </td>
 
               <td>
-                {{ optional($t->diploma)->name ?? '-' }}
+                <?php echo e(optional($t->diploma)->name ?? '-'); ?>
+
               </td>
 
 
 
               <td>
-                <span class="badge bg-{{ ($typeMeta[$t->type]['color'] ?? 'secondary') }}">
-                  {{ $typeMeta[$t->type]['label'] ?? $t->type }}
+                <span class="badge bg-<?php echo e(($typeMeta[$t->type]['color'] ?? 'secondary')); ?>">
+                  <?php echo e($typeMeta[$t->type]['label'] ?? $t->type); ?>
+
                 </span>
               </td>
-              <td class="fw-bold">{{ $t->amount }} {{ $t->currency }}</td>
-              <td>{{ $t->category ?? '-' }}</td>
-              <td>{{ $t->reference ?? '-' }}</td>
+              <td class="fw-bold"><?php echo e($t->amount); ?> <?php echo e($t->currency); ?></td>
+              <td><?php echo e($t->category ?? '-'); ?></td>
+              <td><?php echo e($t->reference ?? '-'); ?></td>
               <td>
-                <span class="badge bg-{{ $t->status == 'posted' ? 'primary' : 'secondary' }}">
-                  {{ $t->status == 'posted' ? 'مُرحّل' : 'معلّق' }}
+                <span class="badge bg-<?php echo e($t->status == 'posted' ? 'primary' : 'secondary'); ?>">
+                  <?php echo e($t->status == 'posted' ? 'مُرحّل' : 'معلّق'); ?>
+
                 </span>
               </td>
               <td class="text-end d-flex gap-1 justify-content-end flex-wrap">
-                @if(auth()->user()?->hasPermission('approve_transaction'))
+                <?php if(auth()->user()?->hasPermission('approve_transaction')): ?>
 
 
 
-                  @if(auth()->user()?->hasPermission('approve_transaction'))
+                  <?php if(auth()->user()?->hasPermission('approve_transaction')): ?>
 
-                    @if($t->status === 'draft')
+                    <?php if($t->status === 'draft'): ?>
 
-                      <form method="POST" action="{{ route('transactions.post', $t) }}">
-                        @csrf
+                      <form method="POST" action="<?php echo e(route('transactions.post', $t)); ?>">
+                        <?php echo csrf_field(); ?>
                         <button class="btn btn-sm btn-outline-success">
                           <i class="bi bi-check2-circle"></i> ترحيل
                         </button>
                       </form>
 
-                    @endif
+                    <?php endif; ?>
 
-                  @endif
+                  <?php endif; ?>
 
 
-                @endif
-                <a class="btn btn-sm btn-outline-dark" href="{{ route('cashboxes.transactions.edit', [$cashbox, $t]) }}">
+                <?php endif; ?>
+                <a class="btn btn-sm btn-outline-dark" href="<?php echo e(route('cashboxes.transactions.edit', [$cashbox, $t])); ?>">
                   <i class="bi bi-pencil"></i> تعديل
                 </a>
 
-                <form method="POST" action="{{ route('cashboxes.transactions.destroy', [$cashbox, $t]) }}"
+                <form method="POST" action="<?php echo e(route('cashboxes.transactions.destroy', [$cashbox, $t])); ?>"
                   onsubmit="return confirm('حذف الحركة؟');">
-                  @csrf @method('DELETE')
+                  <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                   <button class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-trash"></i> حذف
                   </button>
                 </form>
               </td>
             </tr>
-          @empty
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <tr>
               <td colspan="8" class="text-center text-muted py-4">لا يوجد حركات</td>
             </tr>
-          @endforelse
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
   </div>
 
   <div class="mt-3">
-    {{ $transactions->links() }}
+    <?php echo e($transactions->links()); ?>
+
   </div>
 
 
@@ -392,7 +400,7 @@
 
 
   <!-- جافاسكريبت محسّن -->
-  @push('scripts')
+  <?php $__env->startPush('scripts'); ?>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const table = document.querySelector('.table');
@@ -401,7 +409,7 @@
         const theadThs = table.querySelectorAll('thead th');
         const tbodyRows = table.querySelectorAll('tbody tr');
 
-        const STORAGE_KEY = `hiddenColumns_cashbox_${{{ $cashbox->id }}}`;
+        const STORAGE_KEY = `hiddenColumns_cashbox_$<?php echo e($cashbox->id); ?>`;
 
         // تحميل الإعدادات المحفوظة
         let hiddenCols = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -458,11 +466,12 @@
         });
       });
     </script>
-  @endpush
+  <?php $__env->stopPush(); ?>
 
 
 
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/cashboxes/show.blade.php ENDPATH**/ ?>

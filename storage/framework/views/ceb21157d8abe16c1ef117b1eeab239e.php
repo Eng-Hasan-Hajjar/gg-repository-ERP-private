@@ -1135,7 +1135,7 @@ ERP Notifications Style
 
 
 
-
+<?php echo $__env->make('finance._fab', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <body class="bg-light">
 

@@ -6,6 +6,18 @@ use App\Models\Branch;
 use App\Models\Cashbox;
 use Illuminate\Http\Request;
 
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+
+
 class CashboxController extends Controller
 {
     public function index(Request $request)
@@ -130,10 +142,20 @@ class CashboxController extends Controller
         $postedIn = (float) $cashbox->transactions()->where('status', 'posted')->where('type', 'in')->sum('amount');
         $postedOut = (float) $cashbox->transactions()->where('status', 'posted')->where('type', 'out')->sum('amount');
 
+        $postedIn = (float) $cashbox->transactions()->where('status', 'posted')->where('type', 'in')->sum('amount');
+        $postedOut = (float) $cashbox->transactions()->where('status', 'posted')->whereIn('type', ['out', 'exchange'])->sum('amount');
 
+        // بعد سطر $transactions = $q->orderBy(...)->paginate(20)->withQueryString();
 
+        $typeMeta = [
+            'in' => ['label' => 'مقبوض', 'color' => 'success'],
+            'out' => ['label' => 'مدفوع', 'color' => 'danger'],
+            'transfer' => ['label' => 'مناقلة', 'color' => 'warning'],
+            'exchange' => ['label' => 'تصريف', 'color' => 'info'],
+        ];
 
-        return view('cashboxes.show', compact('cashbox', 'transactions', 'postedIn', 'postedOut'));
+        return view('cashboxes.show', compact('cashbox', 'transactions', 'postedIn', 'postedOut', 'typeMeta'));
+
     }
 
     public function edit(Cashbox $cashbox)

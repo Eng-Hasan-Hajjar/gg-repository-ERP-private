@@ -799,4 +799,47 @@ Route::put('/reports/task/{report}/notes', [TaskReportController::class, 'update
 
 
 
+
+    // ضع هذا داخل middleware auth في routes/web.php
+Route::get('/finance/fab-cashboxes', function () {
+    $cashboxes = \App\Models\Cashbox::with('branch')
+        ->where('status', 'active')
+        ->get()
+        ->map(fn($c) => [
+            'id'       => $c->id,
+            'name'     => $c->name,
+            'currency' => $c->currency,
+            'branch'   => $c->branch->name ?? '-',
+            'balance'  => number_format($c->current_balance, 2),
+            'url'      => route('cashboxes.show', $c),
+        ]);
+
+    return response()->json($cashboxes);
+})->middleware('auth')->name('finance.fab.cashboxes');
+
+
+
+
+
+// API: تفاصيل حركة للمودال
+Route::get(
+    'cashboxes/{cashbox}/transactions/{transaction}/detail',
+    [CashboxTransactionController::class, 'detail']
+)->name('cashboxes.transactions.detail');
+ 
+
+
+
+
+// ── أضف هذا السطر في routes/web.php مع باقي routes الـ cashboxes ──
+ 
+Route::get(
+    'cashboxes/{cashbox}/transactions/export-excel',
+    [CashboxTransactionController::class, 'exportExcel']
+)->name('cashboxes.transactions.excel');
+ 
+
+
+
+
 require __DIR__ . '/auth.php';
