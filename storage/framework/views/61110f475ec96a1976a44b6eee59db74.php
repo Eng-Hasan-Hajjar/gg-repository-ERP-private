@@ -1,17 +1,17 @@
-@extends('layouts.app')
-@section('title', 'تعديل خطة الدفع')
 
-@section('content')
+<?php $__env->startSection('title', 'تعديل خطة الدفع'); ?>
 
-  {{-- ── أخطاء السيرفر ── --}}
-  @if($errors->any())
+<?php $__env->startSection('content'); ?>
+
+  
+  <?php if($errors->any()): ?>
     <div class="alert alert-danger fw-semibold mb-3">
       <i class="bi bi-exclamation-triangle"></i>
-      @foreach($errors->all() as $e)
-        <div>{{ $e }}</div>
-      @endforeach
+      <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $e): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <div><?php echo e($e); ?></div>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
-  @endif
+  <?php endif; ?>
 
   <div class="container">
 
@@ -22,50 +22,50 @@
 
     <div class="glass-card p-4">
 
-      <h5 class="fw-bold mb-3">{{ $plan->diploma->name }}</h5>
+      <h5 class="fw-bold mb-3"><?php echo e($plan->diploma->name); ?></h5>
 
-      <form method="POST" action="{{ route('payment.plan.update', $plan->id) }}">
-        @csrf
-        @method('PUT')
+      <form method="POST" action="<?php echo e(route('payment.plan.update', $plan->id)); ?>">
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('PUT'); ?>
 
-        <input type="hidden" name="student_id" value="{{ $student->id }}">
-        <input type="hidden" name="diploma_id" value="{{ $plan->diploma_id }}">
+        <input type="hidden" name="student_id" value="<?php echo e($student->id); ?>">
+        <input type="hidden" name="diploma_id" value="<?php echo e($plan->diploma_id); ?>">
 
         <div class="row g-3">
 
-          {{-- المبلغ الإجمالي ── نضيف id هنا ── --}}
+          
           <div class="col-md-4">
             <label class="fw-bold">المبلغ الإجمالي</label>
             <input type="number" step="0.01" name="total_amount"
                    id="edit-total-amount"
-                   value="{{ $plan->total_amount }}"
+                   value="<?php echo e($plan->total_amount); ?>"
                    class="form-control" required>
           </div>
 
           <div class="col-md-4">
             <label class="fw-bold">العملة</label>
             <select name="currency" class="form-select">
-              <option value="USD" @selected($plan->currency == 'USD')>USD</option>
-              <option value="EUR" @selected($plan->currency == 'EUR')>EUR</option>
-              <option value="TRY" @selected($plan->currency == 'TRY')>TRY</option>
+              <option value="USD" <?php if($plan->currency == 'USD'): echo 'selected'; endif; ?>>USD</option>
+              <option value="EUR" <?php if($plan->currency == 'EUR'): echo 'selected'; endif; ?>>EUR</option>
+              <option value="TRY" <?php if($plan->currency == 'TRY'): echo 'selected'; endif; ?>>TRY</option>
             </select>
           </div>
 
           <div class="col-md-4">
             <label class="fw-bold">نوع الدفع</label>
             <select name="payment_type" id="payment_type" class="form-select">
-              <option value="full"         @selected($plan->payment_type == 'full')>كامل</option>
-              <option value="installments" @selected($plan->payment_type == 'installments')>دفعات</option>
+              <option value="full"         <?php if($plan->payment_type == 'full'): echo 'selected'; endif; ?>>كامل</option>
+              <option value="installments" <?php if($plan->payment_type == 'installments'): echo 'selected'; endif; ?>>دفعات</option>
             </select>
           </div>
 
-          <div class="col-md-4 installments-box {{ $plan->payment_type == 'installments' ? '' : 'd-none' }}">
+          <div class="col-md-4 installments-box <?php echo e($plan->payment_type == 'installments' ? '' : 'd-none'); ?>">
             <label class="fw-bold">عدد الدفعات</label>
             <select name="installments_count" id="installments_count" class="form-select">
               <option value="">اختر</option>
-              <option value="2" @selected($plan->installments_count == 2)>2</option>
-              <option value="3" @selected($plan->installments_count == 3)>3</option>
-              <option value="4" @selected($plan->installments_count == 4)>4</option>
+              <option value="2" <?php if($plan->installments_count == 2): echo 'selected'; endif; ?>>2</option>
+              <option value="3" <?php if($plan->installments_count == 3): echo 'selected'; endif; ?>>3</option>
+              <option value="4" <?php if($plan->installments_count == 4): echo 'selected'; endif; ?>>4</option>
             </select>
           </div>
 
@@ -73,39 +73,39 @@
 
         <hr>
 
-        {{-- حقول الدفعات الحالية ── نضيف class هنا ── --}}
+        
         <div id="installments_container">
-          @if($plan->installments->count())
-            @foreach($plan->installments as $i => $installment)
+          <?php if($plan->installments->count()): ?>
+            <?php $__currentLoopData = $plan->installments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $installment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
               <div class="row g-3 mt-2">
                 <div class="col-md-6">
-                  <label class="fw-bold">قيمة الدفعة {{ $loop->iteration }}</label>
+                  <label class="fw-bold">قيمة الدفعة <?php echo e($loop->iteration); ?></label>
                   <input type="number" step="0.01" min="0.01"
-                         name="installments[{{ $i }}][amount]"
-                         value="{{ $installment->amount }}"
+                         name="installments[<?php echo e($i); ?>][amount]"
+                         value="<?php echo e($installment->amount); ?>"
                          class="form-control edit-installment-amount"
                          required>
-                  <small class="text-danger d-none" id="edit-err-{{ $loop->iteration }}"></small>
+                  <small class="text-danger d-none" id="edit-err-<?php echo e($loop->iteration); ?>"></small>
                 </div>
                 <div class="col-md-6">
-                  <label class="fw-bold">تاريخ الدفعة {{ $loop->iteration }}</label>
-                  <input type="date" name="installments[{{ $i }}][due_date]"
-                         value="{{ $installment->due_date }}"
+                  <label class="fw-bold">تاريخ الدفعة <?php echo e($loop->iteration); ?></label>
+                  <input type="date" name="installments[<?php echo e($i); ?>][due_date]"
+                         value="<?php echo e($installment->due_date); ?>"
                          class="form-control" required>
                 </div>
               </div>
-            @endforeach
-          @endif
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          <?php endif; ?>
         </div>
 
-        {{-- ملخص التحقق ── --}}
+        
         <div id="edit-summary" class="mt-2"></div>
 
         <div class="text-end mt-4">
           <button class="btn btn-namaa btn-pill" id="edit-submit-btn">
             <i class="bi bi-check2-circle"></i> تحديث الخطة
           </button>
-          <a href="{{ route('students.show', $student->id) }}" class="btn btn-outline-secondary btn-pill">
+          <a href="<?php echo e(route('students.show', $student->id)); ?>" class="btn btn-outline-secondary btn-pill">
             رجوع
           </a>
         </div>
@@ -114,9 +114,9 @@
     </div>
   </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -233,4 +233,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/payments/edit_plan.blade.php ENDPATH**/ ?>

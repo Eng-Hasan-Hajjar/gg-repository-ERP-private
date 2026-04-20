@@ -49,7 +49,26 @@ class PaymentPlanController extends Controller
             ]);
         }
 
+        // ── التحقق من أن مجموع الدفعات لا يتجاوز الإجمالي ──
+        if ($request->payment_type === 'installments' && $request->installments) {
+            $sumInstallments = collect($request->installments)
+                ->sum(fn($row) => (float) ($row['amount'] ?? 0));
 
+            if ($sumInstallments > (float) $request->total_amount) {
+                return back()
+                    ->withErrors(['installments' => 'مجموع الدفعات (' . number_format($sumInstallments, 2) . ') يتجاوز المبلغ الإجمالي (' . number_format($request->total_amount, 2) . ')'])
+                    ->withInput();
+            }
+
+            // التحقق من عدم وجود قيم سالبة أو صفر
+            foreach ($request->installments as $i => $row) {
+                if ((float) ($row['amount'] ?? 0) <= 0) {
+                    return back()
+                        ->withErrors(['installments' => 'قيمة الدفعة ' . $i . ' يجب أن تكون أكبر من صفر'])
+                        ->withInput();
+                }
+            }
+        }
         DB::transaction(function () use ($request) {
 
             $plan = PaymentPlan::create([
@@ -83,21 +102,57 @@ class PaymentPlanController extends Controller
     }
 
 
+    /*
 
+        public function edit(PaymentPlan $plan)
+        {
 
+            $paid = $plan->student
+                ->financialAccount
+                ->transactions()
+                ->where('diploma_id', $plan->diploma_id)
+                ->where('type', 'in')
+                ->where('status', 'posted')
+                ->sum('amount');
+
+            $paymentsCount = $plan->student
+                ->financialAccount
+                ->transactions()
+                ->where('diploma_id', $plan->diploma_id)
+                ->where('type', 'in')
+                ->where('status', 'posted')
+                ->count();
+
+            if ($paymentsCount > 1) {
+                return back()->withErrors([
+                    'plan' => 'لا يمكن تعديل الخطة بعد وجود أكثر من دفعة'
+                ]);
+            }
+
+            $student = $plan->student;
+
+            return view('payments.edit_plan', compact('plan', 'student'));
+
+        }
+    */
     public function edit(PaymentPlan $plan)
     {
+        $student = $plan->student;
+        $financialAccount = $student->financialAccount;
 
-        $paid = $plan->student
-            ->financialAccount
+        // إذا لم يكن للطالب حساب مالي — نعامله كصفر دفعات
+        if (!$financialAccount) {
+            return view('payments.edit_plan', compact('plan', 'student'));
+        }
+
+        $paid = $financialAccount
             ->transactions()
             ->where('diploma_id', $plan->diploma_id)
             ->where('type', 'in')
             ->where('status', 'posted')
             ->sum('amount');
 
-        $paymentsCount = $plan->student
-            ->financialAccount
+        $paymentsCount = $financialAccount
             ->transactions()
             ->where('diploma_id', $plan->diploma_id)
             ->where('type', 'in')
@@ -110,12 +165,8 @@ class PaymentPlanController extends Controller
             ]);
         }
 
-        $student = $plan->student;
-
         return view('payments.edit_plan', compact('plan', 'student'));
-
     }
-
 
     public function update(Request $request, PaymentPlan $plan)
     {
@@ -129,6 +180,31 @@ class PaymentPlanController extends Controller
             'installments.*.due_date' => 'nullable|date'
 
         ]);
+
+
+
+        // ── التحقق من أن مجموع الدفعات لا يتجاوز الإجمالي ──
+        if ($request->payment_type === 'installments' && $request->installments) {
+            $sumInstallments = collect($request->installments)
+                ->sum(fn($row) => (float) ($row['amount'] ?? 0));
+
+            if ($sumInstallments > (float) $request->total_amount) {
+                return back()
+                    ->withErrors(['installments' => 'مجموع الدفعات (' . number_format($sumInstallments, 2) . ') يتجاوز المبلغ الإجمالي (' . number_format($request->total_amount, 2) . ')'])
+                    ->withInput();
+            }
+
+            // التحقق من عدم وجود قيم سالبة أو صفر
+            foreach ($request->installments as $i => $row) {
+                if ((float) ($row['amount'] ?? 0) <= 0) {
+                    return back()
+                        ->withErrors(['installments' => 'قيمة الدفعة ' . $i . ' يجب أن تكون أكبر من صفر'])
+                        ->withInput();
+                }
+            }
+        }
+
+
 
         DB::transaction(function () use ($request, $plan) {
 
@@ -158,7 +234,7 @@ class PaymentPlanController extends Controller
                     }
 
                 }
-          
+
 
             }
 
