@@ -656,6 +656,13 @@ class CashboxTransactionController extends Controller
         // ── إرسال الملف ──
         $filename = 'حركات-' . $cashbox->code . '-' . now()->format('Y-m-d') . '.xlsx';
 
+
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');
