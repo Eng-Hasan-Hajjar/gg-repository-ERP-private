@@ -20,7 +20,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CashboxController extends Controller
 {
-    public function index(Request $request)
+        // ── مصفوفة الأنواع المشتركة ──
+    private array $typeMeta = [
+        'in' => ['label' => 'مقبوض', 'color' => 'success'],
+        'out' => ['label' => 'مدفوع', 'color' => 'danger'],
+        'transfer' => ['label' => 'مناقلة', 'color' => 'warning'],
+        'exchange' => ['label' => 'تصريف', 'color' => 'info'],
+    ];
+
+
+    public function index(Request $request ,Cashbox $cashbox)
     {
         $q = Cashbox::query()->with('branch');
 
@@ -38,9 +47,14 @@ class CashboxController extends Controller
             });
         }
 
+
+       
+
         return view('cashboxes.index', [
             'cashboxes' => $q->latest()->paginate(15)->withQueryString(),
             'branches' => Branch::orderBy('name')->get(),
+          
+
         ]);
     }
 
@@ -154,7 +168,71 @@ class CashboxController extends Controller
             'exchange' => ['label' => 'تصريف', 'color' => 'info'],
         ];
 
-        return view('cashboxes.show', compact('cashbox', 'transactions', 'postedIn', 'postedOut', 'typeMeta'));
+
+
+          $q = $cashbox->transactions()
+            ->with(['account.accountable', 'diploma'])
+            ->newQuery();
+
+        // فلتر النوع
+        if ($request->filled('type'))
+            $q->where('type', $request->type);
+
+        // فلتر الحالة
+        if ($request->filled('status'))
+            $q->where('status', $request->status);
+
+        // فلتر دفعات الطلاب فقط
+        if ($request->filled('only_students'))
+            $q->whereNotNull('financial_account_id');
+
+        // فلتر التصنيف الرئيسي ← جديد
+        if ($request->filled('category'))
+            $q->where('category', $request->category);
+
+        // بحث نصي
+        if ($request->filled('search')) {
+            $s = trim($request->search);
+            $q->where(function ($x) use ($s) {
+                $x->where('category', 'like', "%$s%")
+                    ->orWhere('sub_category', 'like', "%$s%")
+                    ->orWhere('reference', 'like', "%$s%")
+                    ->orWhere('notes', 'like', "%$s%")
+                    // ── البحث باسم الطالب عبر العلاقة ──
+                    ->orWhereHas('account.accountable', function ($q2) use ($s) {
+                        $q2->where('first_name', 'like', "%$s%")
+                            ->orWhere('last_name', 'like', "%$s%")
+                            ->orWhere('full_name', 'like', "%$s%");
+                    });
+            });
+        }
+
+        // ترتيب
+        $sort = in_array($request->get('sort'), ['trx_date', 'amount', 'id'])
+            ? $request->get('sort') : 'trx_date';
+        $direction = in_array($request->get('direction'), ['asc', 'desc'])
+            ? $request->get('direction') : 'desc';
+
+        $transactions = $q->orderBy($sort, $direction)->paginate(20)->withQueryString();
+
+        // إجماليات
+        $postedIn = (float) $cashbox->transactions()->where('status', 'posted')->where('type', 'in')->sum('amount');
+        $postedOut = (float) $cashbox->transactions()->where('status', 'posted')->whereIn('type', ['out', 'exchange'])->sum('amount');
+
+        // التصنيفات للفلتر المنسدل
+        $categories = \App\Models\CashboxTransaction::$CATEGORIES;
+
+
+
+
+        return view('cashboxes.show', compact('cashbox', 'transactions', 'postedIn', 'postedOut', 'typeMeta'
+          , 'cashbox',
+            'transactions',
+            'postedIn',
+            'postedOut',
+            'categories'
+        ) + ['typeMeta' => $this->typeMeta]
+        );
 
     }
 
