@@ -157,11 +157,11 @@
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-3 gap-2">
   <div>
     <h4 class="mb-0 fw-bold">التقارير والإحصائيات</h4>
-    <div class="text-muted small">ملخص شامل حسب الفرع والفترة — تصدير PDF / Excel</div>
+    <div class="text-muted small">ملخص شامل حسب الفرع والفترة — تصدير  Excel</div>
   </div>
 
   <div class="d-flex gap-2">
-    <a class="btn btn-outline-danger rounded-pill fw-bold px-4" href="<?php echo e(route('reports.pdf', request()->query())); ?>">
+    <a  hidden class="btn btn-outline-danger rounded-pill fw-bold px-4" href="<?php echo e(route('reports.pdf', request()->query())); ?>">
       <i class="bi bi-file-earmark-pdf"></i> تصدير PDF
     </a>
     <a class="btn btn-outline-success rounded-pill fw-bold px-4"

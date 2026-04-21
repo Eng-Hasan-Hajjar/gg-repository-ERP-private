@@ -22,7 +22,7 @@
           <i class="bi bi-plus-circle"></i> إضافة حركة
         </a>
       <?php endif; ?>
-      <a href="<?php echo e(route('cashboxes.transactions.pdf', $cashbox)); ?>" class="btn btn-danger rounded-pill px-4 fw-bold"
+      <a hidden href="<?php echo e(route('cashboxes.transactions.pdf', $cashbox)); ?>" class="btn btn-danger rounded-pill px-4 fw-bold"
         target="_blank">
         <i class="bi bi-file-earmark-pdf"></i> تصدير PDF
       </a>

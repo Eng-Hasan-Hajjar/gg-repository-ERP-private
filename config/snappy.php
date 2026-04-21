@@ -5,7 +5,7 @@ return [
 // config/snappy.php
 'pdf' => [
     'enabled' => true,
-    'binary'  => env('WKHTMLTOPDF_BINARY', 'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'),
+     'binary' => '"' . env('WKHTMLTOPDF_BINARY') . '"',
     'timeout' => false,
     'options' => [],
     'env'     => [],

@@ -236,7 +236,7 @@
             </a>
           </li>
           <li>
-            <a class="dropdown-item" href="{{ route('attendance.calendar.exportPdf', request()->query()) }}">
+            <a hidden class="dropdown-item" href="{{ route('attendance.calendar.exportPdf', request()->query()) }}">
               <i class="bi bi-file-earmark-pdf text-danger"></i> تصدير PDF
             </a>
           </li>
@@ -246,10 +246,7 @@
         href="{{ route('attendance.calendar.exportExcel', request()->query()) }}">
         <i class="bi bi-file-earmark-excel"></i> Excel
       </a>
-      <a class="btn btn-danger d-none d-sm-inline-flex"
-        href="{{ route('attendance.calendar.exportPdf', request()->query()) }}">
-        <i class="bi bi-file-earmark-pdf"></i> PDF
-      </a>
+
     </div>
   </div>
 

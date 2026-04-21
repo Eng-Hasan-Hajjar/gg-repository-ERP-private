@@ -336,7 +336,7 @@
                   data-checkin="<?php echo e($r->check_in_at?->format('H:i')); ?>"
                   data-checkout="<?php echo e($r->check_out_at?->format('H:i')); ?>" data-break="<?php echo e($r->break_formatted); ?>"
                   data-late="<?php echo e($r->late_minutes); ?>" data-worked="<?php echo e($r->net_worked_formatted); ?>"
-                  data-status="<?php echo e($r->status_label); ?>" data-notes='<?php echo json_encode($r->notes, 15, 512) ?>'>
+                  data-status="<?php echo e($r->status_label); ?>" data-notes='<?php echo json_encode($r->notes, JSON_UNESCAPED_UNICODE, 512) ?>'>
                   <i class="bi bi-eye"></i>
                 </button>
 

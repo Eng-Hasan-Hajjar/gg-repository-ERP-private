@@ -15,10 +15,7 @@
           href="{{ route('attendance.reports.exportExcel', request()->all()) }}">
           <i class="bi bi-file-earmark-excel"></i> Excel
         </a>
-        <a class="btn btn-outline-danger rounded-pill px-4 fw-bold"
-          href="{{ route('attendance.reports.exportPdf', request()->all()) }}">
-          <i class="bi bi-file-earmark-pdf"></i> PDF
-        </a>
+  
       @endif
       <a href="{{ route('attendance.calendar') }}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
         <i class="bi bi-calendar3"></i> التقويم
