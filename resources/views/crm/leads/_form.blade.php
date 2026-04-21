@@ -20,15 +20,18 @@
     padding: 20px;
     background: #f8fafc;
   }
+
   .diploma-search-box {
     position: relative;
     margin-bottom: 12px;
   }
+
   .diploma-search-box input {
     padding-right: 40px;
     border-radius: 10px;
     border: 1px solid #cbd5e1;
   }
+
   .diploma-search-box .search-icon {
     position: absolute;
     right: 12px;
@@ -37,6 +40,7 @@
     color: #94a3b8;
     pointer-events: none;
   }
+
   .diploma-list {
     max-height: 220px;
     overflow-y: auto;
@@ -44,6 +48,7 @@
     border-radius: 10px;
     background: #fff;
   }
+
   .diploma-list-item {
     padding: 10px 14px;
     cursor: pointer;
@@ -54,14 +59,26 @@
     transition: background .15s;
     font-size: 14px;
   }
-  .diploma-list-item:last-child { border-bottom: none; }
-  .diploma-list-item:hover { background: #eff6ff; }
+
+  .diploma-list-item:last-child {
+    border-bottom: none;
+  }
+
+  .diploma-list-item:hover {
+    background: #eff6ff;
+  }
+
   .diploma-list-item.disabled {
     opacity: .4;
     pointer-events: none;
     background: #f1f5f9;
   }
-  .diploma-list-item .d-name { font-weight: 600; color: #1e293b; }
+
+  .diploma-list-item .d-name {
+    font-weight: 600;
+    color: #1e293b;
+  }
+
   .diploma-list-item .d-meta {
     font-size: 12px;
     color: #94a3b8;
@@ -69,6 +86,7 @@
     gap: 8px;
     align-items: center;
   }
+
   .diploma-list-empty {
     padding: 20px;
     text-align: center;
@@ -80,6 +98,7 @@
   .selected-diplomas {
     margin-top: 16px;
   }
+
   .selected-diploma-card {
     background: #fff;
     border: 1px solid #e2e8f0;
@@ -92,18 +111,22 @@
     flex-wrap: wrap;
     transition: box-shadow .15s;
   }
+
   .selected-diploma-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
   }
+
   .sd-info {
     flex: 1;
     min-width: 150px;
   }
+
   .sd-name {
     font-weight: 700;
     font-size: 14px;
     color: #1e293b;
   }
+
   .sd-badge {
     font-size: 11px;
     padding: 2px 8px;
@@ -111,14 +134,24 @@
     display: inline-block;
     margin-top: 4px;
   }
-  .sd-badge.online { background: #dbeafe; color: #2563eb; }
-  .sd-badge.onsite { background: #d1fae5; color: #059669; }
+
+  .sd-badge.online {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  .sd-badge.onsite {
+    background: #d1fae5;
+    color: #059669;
+  }
+
   .sd-selects {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     align-items: center;
   }
+
   .sd-selects select {
     min-width: 140px;
     font-size: 13px;
@@ -126,6 +159,7 @@
     border: 1px solid #cbd5e1;
     padding: 6px 10px;
   }
+
   .sd-selects label {
     font-size: 11px;
     font-weight: 700;
@@ -133,6 +167,7 @@
     margin-bottom: 2px;
     display: block;
   }
+
   .sd-remove {
     width: 32px;
     height: 32px;
@@ -148,9 +183,11 @@
     transition: background .15s;
     flex-shrink: 0;
   }
+
   .sd-remove:hover {
     background: #fee2e2;
   }
+
   .no-diplomas-msg {
     text-align: center;
     padding: 16px;
@@ -162,18 +199,13 @@
 
 {{-- ===== Strict Mode Checkbox ===== --}}
 <div class="alert alert-warning d-flex align-items-center gap-3 mb-4" id="strict_mode_alert">
-    <div class="form-check form-switch mb-0">
-        <input class="form-check-input"
-               type="checkbox"
-               role="switch"
-               id="strict_mode"
-               name="strict_mode"
-               value="1"
-               style="width:3rem; height:1.5rem; cursor:pointer;">
-        <label class="form-check-label fw-bold fs-6 me-2" for="strict_mode">
-            🔒 تعبئة كاملة — تفعيل هذا الخيار يجعل جميع الحقول إلزامية
-        </label>
-    </div>
+  <div class="form-check form-switch mb-0">
+    <input class="form-check-input" type="checkbox" role="switch" id="strict_mode" name="strict_mode" value="1"
+      style="width:3rem; height:1.5rem; cursor:pointer;">
+    <label class="form-check-label fw-bold fs-6 me-2" for="strict_mode">
+      🔒 تعبئة كاملة — تفعيل هذا الخيار يجعل جميع الحقول إلزامية
+    </label>
+  </div>
 </div>
 
 
@@ -203,7 +235,7 @@
       <div class="col-md-4">
         <label class="form-label fw-bold">تاريخ أول تواصل *</label>
         <input type="date" name="first_contact_date"
-          value="{{ old('first_contact_date', $lead->first_contact_date ?? '') }}"
+          value="{{ old('first_contact_date', isset($lead) ? \Carbon\Carbon::parse($lead->first_contact_date)->format('Y-m-d') : '') }}"
           class="form-control @error('first_contact_date') is-invalid @enderror">
         @error('first_contact_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
@@ -241,11 +273,11 @@
 
       {{-- البلد --}}
       <div class="col-md-4">
-        <label class="form-label fw-bold">البلد *</label>
+        <label class="form-label fw-bold">البلد </label>
         <select name="country" id="country" class="form-select @error('country') is-invalid @enderror">
           <option value="">اختر البلد</option>
           @php
-            $countries = ['تركيا','العراق','ليبيا','سوريا','الأردن','لبنان','فلسطين','الإمارات','قطر','الكويت','سلطنة عمان','ألمانيا','السويد','الولايات المتحدة','المملكة المتحدة'];
+            $countries = ['تركيا', 'العراق', 'ليبيا', 'سوريا', 'الأردن', 'لبنان', 'فلسطين', 'الإمارات', 'قطر', 'الكويت', 'سلطنة عمان', 'ألمانيا', 'السويد', 'الولايات المتحدة', 'المملكة المتحدة'];
           @endphp
           @foreach($countries as $c)
             <option value="{{ $c }}" @selected(old('country', $lead->country ?? '') == $c)>{{ $c }}</option>
@@ -256,7 +288,7 @@
 
       {{-- المحافظة --}}
       <div class="col-md-4" id="province_container">
-        <label class="form-label fw-bold">المحافظة *</label>
+        <label class="form-label fw-bold">المحافظة </label>
         <input name="province" id="province_input" value="{{ old('province', $lead->province ?? '') }}"
           class="form-control @error('province') is-invalid @enderror">
         <select id="province_select" class="form-select" style="display:none;">
@@ -288,12 +320,12 @@
         <label class="form-label fw-bold">المصدر *</label>
         <select name="source" class="form-select @error('source') is-invalid @enderror">
           <option value="">اختر المصدر</option>
-          <option value="ad">إعلان</option>
-          <option value="referral">إحالة</option>
-          <option value="social">سوشيال</option>
-          <option value="website">موقع</option>
-          <option value="expo">فعالية</option>
-          <option value="other">أخرى</option>
+          <option value="ad" @selected(old('source', $lead->source ?? '') == 'ad')>إعلان</option>
+          <option value="referral" @selected(old('source', $lead->source ?? '') == 'referral')>إحالة</option>
+          <option value="social" @selected(old('source', $lead->source ?? '') == 'social')>سوشيال</option>
+          <option value="website" @selected(old('source', $lead->source ?? '') == 'website')>موقع</option>
+          <option value="expo" @selected(old('source', $lead->source ?? '') == 'expo')>فعالية</option>
+          <option value="other" @selected(old('source', $lead->source ?? '') == 'other')>أخرى</option>
         </select>
         @error('source') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
@@ -303,12 +335,13 @@
         <label class="form-label fw-bold">المرحلة *</label>
         <select name="stage" class="form-select @error('stage') is-invalid @enderror">
           <option value="">اختر المرحلة</option>
-          <option value="new">جديد</option>
-          <option value="follow_up">متابعة</option>
-          <option value="interested">مهتم</option>
-          <option value="registered">مسجل</option>
-          <option value="rejected">لم يسجل</option>
-          <option value="postponed">مؤجل</option>
+
+          <option value="new" @selected(old('stage', $lead->stage ?? '') == 'new')>جديد</option>
+          <option value="follow_up" @selected(old('stage', $lead->stage ?? '') == 'follow_up')>متابعة</option>
+          <option value="interested" @selected(old('stage', $lead->stage ?? '') == 'interested')>مهتم</option>
+          <option value="registered" @selected(old('stage', $lead->stage ?? '') == 'registered')>مسجل</option>
+          <option value="rejected" @selected(old('stage', $lead->stage ?? '') == 'rejected')>لم يسجل</option>
+          <option value="postponed" @selected(old('stage', $lead->stage ?? '') == 'postponed')>مؤجل</option>
         </select>
         <div class="form-text text-muted">عند اختيار "مسجل" سيظهر حقل البريد الإلكتروني.</div>
         @error('stage') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -325,7 +358,7 @@
       <hr class="my-4">
 
       {{-- ═══════════════════════════════════════════════════ --}}
-      {{-- نظام اختيار الدبلومات المحسّن                       --}}
+      {{-- نظام اختيار الدبلومات المحسّن --}}
       {{-- ═══════════════════════════════════════════════════ --}}
       <div class="col-12">
         <label class="form-label fw-bold fs-6">
@@ -377,20 +410,20 @@
 
 
 @php
-    $diplomasJson = $diplomas->map(function($d) {
-        return [
-            'id'          => $d->id,
-            'name'        => $d->name,
-            'code'        => $d->code,
-            'type'        => $d->type,
-            'branch_id'   => $d->branch_id,
-            'branch_name' => $d->branch->name ?? '—',
-        ];
-    })->values();
+  $diplomasJson = $diplomas->map(function ($d) {
+    return [
+      'id' => $d->id,
+      'name' => $d->name,
+      'code' => $d->code,
+      'type' => $d->type,
+      'branch_id' => $d->branch_id,
+      'branch_name' => $d->branch->name ?? '—',
+    ];
+  })->values();
 @endphp
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function () {
 
     const allDiplomas = @json($diplomasJson);
 
@@ -398,19 +431,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // تجميع الدبلومات بنفس الاسم (لعرض الأكواد والفروع المتعددة)
     const diplomasByName = {};
     allDiplomas.forEach(d => {
-        if (!diplomasByName[d.name]) {
-            diplomasByName[d.name] = {
-                name: d.name,
-                type: d.type,
-                variants: []
-            };
-        }
-        diplomasByName[d.name].variants.push({
-            id: d.id,
-            code: d.code,
-            branch_id: d.branch_id,
-            branch_name: d.branch_name,
-        });
+      if (!diplomasByName[d.name]) {
+        diplomasByName[d.name] = {
+          name: d.name,
+          type: d.type,
+          variants: []
+        };
+      }
+      diplomasByName[d.name].variants.push({
+        id: d.id,
+        code: d.code,
+        branch_id: d.branch_id,
+        branch_name: d.branch_name,
+      });
     });
 
     const diplomaNames = Object.values(diplomasByName);
@@ -418,51 +451,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // الدبلومات المختارة مسبقاً (عند التعديل)
     @if(isset($lead) && $lead->diplomas->count())
-    @foreach($lead->diplomas as $ld)
+      @foreach($lead->diplomas as $ld)
         const existingName_{{ $ld->id }} = @json($ld->name);
         const existingVariant_{{ $ld->id }} = {
-            variantId: {{ $ld->id }},
-            code: @json($ld->code),
-            branch_id: {{ $ld->branch_id ?? 'null' }},
+          variantId: {{ $ld->id }},
+          code: @json($ld->code),
+          branch_id: {{ $ld->branch_id ?? 'null' }},
         };
         selectedDiplomas.set(existingName_{{ $ld->id }}, existingVariant_{{ $ld->id }});
-    @endforeach
+      @endforeach
     @endif
 
-    const diplomaList      = document.getElementById('diplomaList');
-    const diplomaSearch    = document.getElementById('diplomaSearch');
-    const diplomaEmpty     = document.getElementById('diplomaEmpty');
+    const diplomaList = document.getElementById('diplomaList');
+    const diplomaSearch = document.getElementById('diplomaSearch');
+    const diplomaEmpty = document.getElementById('diplomaEmpty');
     const selectedContainer = document.getElementById('selectedDiplomas');
-    const noDiplomasMsg    = document.getElementById('noDiplomasMsg');
-    const hiddenInputs     = document.getElementById('diplomaHiddenInputs');
-    const branchSelect     = document.getElementById('branch');
+    const noDiplomasMsg = document.getElementById('noDiplomasMsg');
+    const hiddenInputs = document.getElementById('diplomaHiddenInputs');
+    const branchSelect = document.getElementById('branch');
 
     // ============================================================
     // عرض قائمة الدبلومات
     // ============================================================
     function renderDiplomaList(filter = '') {
-        // مسح القائمة
-        diplomaList.querySelectorAll('.diploma-list-item').forEach(el => el.remove());
+      // مسح القائمة
+      diplomaList.querySelectorAll('.diploma-list-item').forEach(el => el.remove());
 
-        const selectedBranchId = branchSelect.value;
-        let visibleCount = 0;
+      const selectedBranchId = branchSelect.value;
+      let visibleCount = 0;
 
-        diplomaNames.forEach(group => {
-            const nameMatch = filter === '' || group.name.includes(filter);
+      diplomaNames.forEach(group => {
+        const nameMatch = filter === '' || group.name.includes(filter);
 
-            // فلترة حسب فرع العميل المختار
-            const hasMatchingBranch = !selectedBranchId ||
-                group.variants.some(v => v.branch_id == selectedBranchId);
+        // فلترة حسب فرع العميل المختار
+        const hasMatchingBranch = !selectedBranchId ||
+          group.variants.some(v => v.branch_id == selectedBranchId);
 
-            if (!nameMatch || !hasMatchingBranch) return;
+        if (!nameMatch || !hasMatchingBranch) return;
 
-            const isSelected = selectedDiplomas.has(group.name);
-            const branches = group.variants.map(v => v.branch_name).filter((v,i,a) => a.indexOf(v) === i).join('، ');
-            const codes = group.variants.map(v => v.code).filter((v,i,a) => a.indexOf(v) === i).join('، ');
+        const isSelected = selectedDiplomas.has(group.name);
+        const branches = group.variants.map(v => v.branch_name).filter((v, i, a) => a.indexOf(v) === i).join('، ');
+        const codes = group.variants.map(v => v.code).filter((v, i, a) => a.indexOf(v) === i).join('، ');
 
-            const item = document.createElement('div');
-            item.className = 'diploma-list-item' + (isSelected ? ' disabled' : '');
-            item.innerHTML = `
+        const item = document.createElement('div');
+        item.className = 'diploma-list-item' + (isSelected ? ' disabled' : '');
+        item.innerHTML = `
                 <div>
                     <span class="d-name">${group.name}</span>
                     <div class="d-meta">
@@ -478,98 +511,98 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
 
-            if (!isSelected) {
-                item.addEventListener('click', () => addDiploma(group));
-            }
+        if (!isSelected) {
+          item.addEventListener('click', () => addDiploma(group));
+        }
 
-            diplomaList.appendChild(item);
-            visibleCount++;
-        });
+        diplomaList.appendChild(item);
+        visibleCount++;
+      });
 
-        diplomaEmpty.style.display = visibleCount === 0 ? 'block' : 'none';
+      diplomaEmpty.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
     // ============================================================
     // إضافة دبلومة
     // ============================================================
     function addDiploma(group) {
-        const selectedBranchId = branchSelect.value;
+      const selectedBranchId = branchSelect.value;
 
-        // فلتر الفروع المتاحة حسب فرع العميل
-        let availableVariants = group.variants;
-        if (selectedBranchId) {
-            availableVariants = group.variants.filter(v => v.branch_id == selectedBranchId);
-        }
+      // فلتر الفروع المتاحة حسب فرع العميل
+      let availableVariants = group.variants;
+      if (selectedBranchId) {
+        availableVariants = group.variants.filter(v => v.branch_id == selectedBranchId);
+      }
 
-        if (availableVariants.length === 0) return;
+      if (availableVariants.length === 0) return;
 
-        // الاختيار الافتراضي = أول variant متاح
-        const defaultVariant = availableVariants[0];
-        selectedDiplomas.set(group.name, {
-            variantId: defaultVariant.id,
-            code: defaultVariant.code,
-            branch_id: defaultVariant.branch_id,
-        });
+      // الاختيار الافتراضي = أول variant متاح
+      const defaultVariant = availableVariants[0];
+      selectedDiplomas.set(group.name, {
+        variantId: defaultVariant.id,
+        code: defaultVariant.code,
+        branch_id: defaultVariant.branch_id,
+      });
 
-        renderSelectedDiplomas();
-        renderDiplomaList(diplomaSearch.value);
-        updateHiddenInputs();
+      renderSelectedDiplomas();
+      renderDiplomaList(diplomaSearch.value);
+      updateHiddenInputs();
     }
 
     // ============================================================
     // حذف دبلومة
     // ============================================================
     function removeDiploma(name) {
-        selectedDiplomas.delete(name);
-        renderSelectedDiplomas();
-        renderDiplomaList(diplomaSearch.value);
-        updateHiddenInputs();
+      selectedDiplomas.delete(name);
+      renderSelectedDiplomas();
+      renderDiplomaList(diplomaSearch.value);
+      updateHiddenInputs();
     }
 
     // ============================================================
     // عرض الدبلومات المختارة
     // ============================================================
     function renderSelectedDiplomas() {
-        // مسح الكاردات
-        selectedContainer.querySelectorAll('.selected-diploma-card').forEach(el => el.remove());
+      // مسح الكاردات
+      selectedContainer.querySelectorAll('.selected-diploma-card').forEach(el => el.remove());
 
-        if (selectedDiplomas.size === 0) {
-            noDiplomasMsg.style.display = 'block';
-            return;
+      if (selectedDiplomas.size === 0) {
+        noDiplomasMsg.style.display = 'block';
+        return;
+      }
+      noDiplomasMsg.style.display = 'none';
+
+      const selectedBranchId = branchSelect.value;
+
+      selectedDiplomas.forEach((selection, name) => {
+        const group = diplomasByName[name];
+        if (!group) return;
+
+        // الفروع المتاحة
+        let availableVariants = group.variants;
+        if (selectedBranchId) {
+          availableVariants = group.variants.filter(v => v.branch_id == selectedBranchId);
         }
-        noDiplomasMsg.style.display = 'none';
 
-        const selectedBranchId = branchSelect.value;
+        // الأكواد الفريدة
+        const uniqueCodes = [...new Map(availableVariants.map(v => [v.code, v])).values()];
+        // الفروع الفريدة
+        const uniqueBranches = [...new Map(availableVariants.map(v => [v.branch_id, v])).values()];
 
-        selectedDiplomas.forEach((selection, name) => {
-            const group = diplomasByName[name];
-            if (!group) return;
+        const card = document.createElement('div');
+        card.className = 'selected-diploma-card';
 
-            // الفروع المتاحة
-            let availableVariants = group.variants;
-            if (selectedBranchId) {
-                availableVariants = group.variants.filter(v => v.branch_id == selectedBranchId);
-            }
+        // بناء select الأكواد
+        let codeOptions = uniqueCodes.map(v =>
+          `<option value="${v.id}" ${v.id == selection.variantId ? 'selected' : ''}>${v.code}</option>`
+        ).join('');
 
-            // الأكواد الفريدة
-            const uniqueCodes = [...new Map(availableVariants.map(v => [v.code, v])).values()];
-            // الفروع الفريدة
-            const uniqueBranches = [...new Map(availableVariants.map(v => [v.branch_id, v])).values()];
+        // بناء select الفروع
+        let branchOptions = uniqueBranches.map(v =>
+          `<option value="${v.branch_id}" ${v.branch_id == selection.branch_id ? 'selected' : ''}>${v.branch_name}</option>`
+        ).join('');
 
-            const card = document.createElement('div');
-            card.className = 'selected-diploma-card';
-
-            // بناء select الأكواد
-            let codeOptions = uniqueCodes.map(v =>
-                `<option value="${v.id}" ${v.id == selection.variantId ? 'selected' : ''}>${v.code}</option>`
-            ).join('');
-
-            // بناء select الفروع
-            let branchOptions = uniqueBranches.map(v =>
-                `<option value="${v.branch_id}" ${v.branch_id == selection.branch_id ? 'selected' : ''}>${v.branch_name}</option>`
-            ).join('');
-
-            card.innerHTML = `
+        card.innerHTML = `
                 <div class="sd-info">
                     <div class="sd-name">${name}</div>
                     <span class="sd-badge ${group.type === 'online' ? 'online' : 'onsite'}">
@@ -595,73 +628,73 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
 
-            selectedContainer.appendChild(card);
+        selectedContainer.appendChild(card);
 
-            // أحداث التغيير
-            card.querySelector('.diploma-code-select').addEventListener('change', function() {
-                const variant = availableVariants.find(v => v.id == this.value);
-                if (variant) {
-                    selection.variantId = variant.id;
-                    selection.code = variant.code;
-                    selection.branch_id = variant.branch_id;
+        // أحداث التغيير
+        card.querySelector('.diploma-code-select').addEventListener('change', function () {
+          const variant = availableVariants.find(v => v.id == this.value);
+          if (variant) {
+            selection.variantId = variant.id;
+            selection.code = variant.code;
+            selection.branch_id = variant.branch_id;
 
-                    // تحديث الفرع تلقائياً
-                    const branchSel = card.querySelector('.diploma-branch-select');
-                    if (branchSel) branchSel.value = variant.branch_id;
+            // تحديث الفرع تلقائياً
+            const branchSel = card.querySelector('.diploma-branch-select');
+            if (branchSel) branchSel.value = variant.branch_id;
 
-                    updateHiddenInputs();
-                }
-            });
-
-            card.querySelector('.diploma-branch-select').addEventListener('change', function() {
-                const branchId = this.value;
-                // إيجاد variant يطابق هذا الفرع
-                const variant = availableVariants.find(v => v.branch_id == branchId);
-                if (variant) {
-                    selection.variantId = variant.id;
-                    selection.code = variant.code;
-                    selection.branch_id = variant.branch_id;
-
-                    // تحديث الكود تلقائياً
-                    const codeSel = card.querySelector('.diploma-code-select');
-                    if (codeSel) codeSel.value = variant.id;
-
-                    updateHiddenInputs();
-                }
-            });
-
-            card.querySelector('.sd-remove').addEventListener('click', function() {
-                removeDiploma(this.dataset.name);
-            });
+            updateHiddenInputs();
+          }
         });
+
+        card.querySelector('.diploma-branch-select').addEventListener('change', function () {
+          const branchId = this.value;
+          // إيجاد variant يطابق هذا الفرع
+          const variant = availableVariants.find(v => v.branch_id == branchId);
+          if (variant) {
+            selection.variantId = variant.id;
+            selection.code = variant.code;
+            selection.branch_id = variant.branch_id;
+
+            // تحديث الكود تلقائياً
+            const codeSel = card.querySelector('.diploma-code-select');
+            if (codeSel) codeSel.value = variant.id;
+
+            updateHiddenInputs();
+          }
+        });
+
+        card.querySelector('.sd-remove').addEventListener('click', function () {
+          removeDiploma(this.dataset.name);
+        });
+      });
     }
 
     // ============================================================
     // تحديث الـ hidden inputs
     // ============================================================
     function updateHiddenInputs() {
-        hiddenInputs.innerHTML = '';
-        selectedDiplomas.forEach((selection, name) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'diploma_ids[]';
-            input.value = selection.variantId;
-            hiddenInputs.appendChild(input);
-        });
+      hiddenInputs.innerHTML = '';
+      selectedDiplomas.forEach((selection, name) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'diploma_ids[]';
+        input.value = selection.variantId;
+        hiddenInputs.appendChild(input);
+      });
     }
 
     // ============================================================
     // أحداث البحث
     // ============================================================
-    diplomaSearch.addEventListener('input', function() {
-        renderDiplomaList(this.value.trim());
+    diplomaSearch.addEventListener('input', function () {
+      renderDiplomaList(this.value.trim());
     });
 
     // عند تغيير فرع العميل — إعادة فلترة
-    branchSelect.addEventListener('change', function() {
-        renderDiplomaList(diplomaSearch.value.trim());
-        renderSelectedDiplomas();
-        updateHiddenInputs();
+    branchSelect.addEventListener('change', function () {
+      renderDiplomaList(diplomaSearch.value.trim());
+      renderSelectedDiplomas();
+      updateHiddenInputs();
     });
 
     // التهيئة الأولى
@@ -673,15 +706,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // ١. إظهار الإيميل عند اختيار "مسجل"
     // ============================================================
-    const stage      = document.querySelector('[name="stage"]');
+    const stage = document.querySelector('[name="stage"]');
     const emailField = document.getElementById('email_field');
 
     function toggleEmail() {
-        if (stage.value === 'registered') {
-            emailField.style.display = 'block';
-        } else if (!document.getElementById('strict_mode').checked) {
-            emailField.style.display = 'none';
-        }
+      if (stage.value === 'registered') {
+        emailField.style.display = 'block';
+      } else if (!document.getElementById('strict_mode').checked) {
+        emailField.style.display = 'none';
+      }
     }
     stage.addEventListener('change', toggleEmail);
     toggleEmail();
@@ -693,8 +726,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const residenceField = document.getElementById('residence_field');
 
     function toggleResidence() {
-        const text = branchSelect.options[branchSelect.selectedIndex]?.text ?? '';
-        residenceField.style.display = text.includes('أونلاين') ? 'none' : 'block';
+      const text = branchSelect.options[branchSelect.selectedIndex]?.text ?? '';
+      residenceField.style.display = text.includes('أونلاين') ? 'none' : 'block';
     }
     branchSelect.addEventListener('change', toggleResidence);
     toggleResidence();
@@ -704,34 +737,34 @@ document.addEventListener('DOMContentLoaded', function () {
     // ٣. مدن تركيا
     // ============================================================
     const turkeyCities = [
-        'اسطنبول','مرسين','غازي عنتاب','بورصا','كيليس','ازمير',
-        'قونيا','اضنة','اورفا','اسكي شهير','سكاريا','يالوفا',
-        'انطاليا','الانيا','بوردور','موغلا','ماردين'
+      'اسطنبول', 'مرسين', 'غازي عنتاب', 'بورصا', 'كيليس', 'ازمير',
+      'قونيا', 'اضنة', 'اورفا', 'اسكي شهير', 'سكاريا', 'يالوفا',
+      'انطاليا', 'الانيا', 'بوردور', 'موغلا', 'ماردين'
     ];
-    const country        = document.getElementById('country');
-    const provinceInput  = document.getElementById('province_input');
+    const country = document.getElementById('country');
+    const provinceInput = document.getElementById('province_input');
     const provinceSelect = document.getElementById('province_select');
 
     function handleProvince() {
-        if (country.value === 'تركيا') {
-            provinceInput.style.display  = 'none';
-            provinceSelect.style.display = 'block';
-            provinceSelect.innerHTML = '<option value="">اختر المدينة</option>';
-            turkeyCities.forEach(city => {
-                const opt = document.createElement('option');
-                opt.value = city;
-                opt.textContent = city;
-                if ('{{ old('province', $lead->province ?? '') }}' === city) opt.selected = true;
-                provinceSelect.appendChild(opt);
-            });
-            provinceSelect.setAttribute('name', 'province');
-            provinceInput.removeAttribute('name');
-        } else {
-            provinceInput.style.display  = 'block';
-            provinceSelect.style.display = 'none';
-            provinceInput.setAttribute('name', 'province');
-            provinceSelect.removeAttribute('name');
-        }
+      if (country.value === 'تركيا') {
+        provinceInput.style.display = 'none';
+        provinceSelect.style.display = 'block';
+        provinceSelect.innerHTML = '<option value="">اختر المدينة</option>';
+        turkeyCities.forEach(city => {
+          const opt = document.createElement('option');
+          opt.value = city;
+          opt.textContent = city;
+          if ('{{ old('province', $lead->province ?? '') }}' === city) opt.selected = true;
+          provinceSelect.appendChild(opt);
+        });
+        provinceSelect.setAttribute('name', 'province');
+        provinceInput.removeAttribute('name');
+      } else {
+        provinceInput.style.display = 'block';
+        provinceSelect.style.display = 'none';
+        provinceInput.setAttribute('name', 'province');
+        provinceSelect.removeAttribute('name');
+      }
     }
     country.addEventListener('change', handleProvince);
     handleProvince();
@@ -742,42 +775,42 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const strictCheckbox = document.getElementById('strict_mode');
     const strictFields = [
-        { selector: '[name="whatsapp"]',    container: null },
-        { selector: '[name="email"]',       container: 'email_field' },
-        { selector: '[name="residence"]',   container: 'residence_field' },
-        { selector: '[name="organization"]',container: null },
-        { selector: '[name="province"]',    container: 'province_container' },
-        { selector: '[name="need"]',        container: null },
+      { selector: '[name="whatsapp"]', container: null },
+      { selector: '[name="email"]', container: 'email_field' },
+      { selector: '[name="residence"]', container: 'residence_field' },
+      { selector: '[name="organization"]', container: null },
+      { selector: '[name="province"]', container: 'province_container' },
+      { selector: '[name="need"]', container: null },
     ];
 
     function applyStrictMode(isStrict) {
-        strictFields.forEach(({ selector, container }) => {
-            const input = document.querySelector(selector);
-            if (!input) return;
-            if (isStrict) {
-                input.setAttribute('required', 'required');
-                input.classList.add('border-danger');
-                if (container) {
-                    const el = document.getElementById(container);
-                    if (el) el.style.display = 'block';
-                }
-            } else {
-                input.removeAttribute('required');
-                input.classList.remove('border-danger');
-                if (container === 'email_field') toggleEmail();
-                if (container === 'residence_field') toggleResidence();
-            }
-        });
+      strictFields.forEach(({ selector, container }) => {
+        const input = document.querySelector(selector);
+        if (!input) return;
+        if (isStrict) {
+          input.setAttribute('required', 'required');
+          input.classList.add('border-danger');
+          if (container) {
+            const el = document.getElementById(container);
+            if (el) el.style.display = 'block';
+          }
+        } else {
+          input.removeAttribute('required');
+          input.classList.remove('border-danger');
+          if (container === 'email_field') toggleEmail();
+          if (container === 'residence_field') toggleResidence();
+        }
+      });
 
-        const alert = document.getElementById('strict_mode_alert');
-        alert.classList.toggle('alert-danger', isStrict);
-        alert.classList.toggle('alert-warning', !isStrict);
+      const alert = document.getElementById('strict_mode_alert');
+      alert.classList.toggle('alert-danger', isStrict);
+      alert.classList.toggle('alert-warning', !isStrict);
     }
 
     strictCheckbox.addEventListener('change', function () {
-        applyStrictMode(this.checked);
+      applyStrictMode(this.checked);
     });
     applyStrictMode(strictCheckbox.checked);
 
-});
+  });
 </script>

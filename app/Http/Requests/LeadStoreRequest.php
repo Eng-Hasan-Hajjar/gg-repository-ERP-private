@@ -23,7 +23,7 @@ class LeadStoreRequest extends FormRequest
             'age' => 'required|integer|min:1|max:120',
             'job' => 'required|string|max:120',
             'branch_id' => 'required|exists:branches,id',
-            'country' => 'required|string|max:100',
+            'country' => 'nullable|string|max:100',
             'source' => 'required|in:ad,referral,social,website,expo,other',
             'stage' => 'required|in:new,follow_up,interested,registered,rejected,postponed',
             'diploma_ids' => 'required|array|min:1',
@@ -35,7 +35,7 @@ class LeadStoreRequest extends FormRequest
             'email' => $strict ? 'required|email|max:190' : 'nullable|required_if:stage,registered|email|max:190',
             'residence' => $strict ? 'nullable|string|max:190' : 'nullable|string|max:190',
             'organization' => $strict ? 'required|string|max:190' : 'nullable|string|max:190',
-            'province' => $strict ? 'required|string|max:100' : 'nullable|string|max:100',
+            'province' => $strict ? 'nullable|string|max:100' : 'nullable|string|max:100',
             'need' => $strict ? 'nullable|string' : 'nullable|string',
             'notes' => $strict ? 'required|string|max:200' : 'nullable|string|max:200',
 
