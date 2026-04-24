@@ -244,6 +244,19 @@
           <div class="kv"><div class="k">حالة الطالب</div><div class="v">{{ $status_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">حالة التسجيل</div><div class="v">{{ $registration_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">الرقم الجامعي</div><div class="v"><code>{{ $student->university_id }}</code></div></div>
+          <div class="row g-3 mt-3">
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cert_agree" 
+                      {{ $student->certificate_agreement ? 'checked' : '' }}
+                      disabled>
+                <label class="form-check-label fw-bold" for="cert_agree">
+                  اتفاق الشهادة الممنوحة
+                </label>
+              </div>
+            </div>
+          </div>
+        
         </div>
       </div>
     </div>
@@ -453,9 +466,61 @@
       </div>
     </div>
 
+
+
+
+    {{-- ══ خطط الدفع المنقولة من CRM (للاطلاع فقط) ══ --}}
+@if($paymentPlans->where('lead_id', '!=', null)->count())
+  <div class="section-header">
+    <i class="bi bi-calendar-check"></i> خطط الدفع
+    <small class="ms-2 fw-normal opacity-75">(من CRM — للاطلاع)</small>
+  </div>
+  <div class="row g-3 mt-1 mb-3">
+    @foreach($paymentPlans->filter(fn($p) => $p->lead_id) as $plan)
+      <div class="col-md-6">
+        <div class="glass-card p-3" style="border: 2px solid rgba(14,165,233,.2);">
+          <h6 class="fw-bold mb-2">
+            <i class="bi bi-mortarboard-fill" style="color:#0ea5e9"></i>
+            {{ $plan->diploma->name }}
+            <span class="badge bg-secondary ms-2">من CRM</span>
+            <span class="badge bg-info text-dark ms-1">{{ $plan->currency }}</span>
+          </h6>
+          <div class="kv"><div class="k">المبلغ الإجمالي</div><div class="v fw-bold">{{ number_format($plan->total_amount, 2) }}</div></div>
+          <div class="kv"><div class="k">نوع الدفع</div><div class="v">{{ $plan->payment_type === 'full' ? 'كامل' : 'دفعات' }}</div></div>
+          @if($plan->payment_type === 'installments')
+            <div class="kv"><div class="k">عدد الدفعات</div><div class="v">{{ $plan->installments_count }}</div></div>
+          @endif
+          <div class="kv"><div class="k">المدفوع</div><div class="v text-success fw-bold">{{ number_format($plan->paid ?? 0, 2) }}</div></div>
+          <div class="kv"><div class="k">المتبقي</div><div class="v fw-bold text-warning">{{ number_format(max($plan->remaining ?? 0, 0), 2) }}</div></div>
+          @if($plan->installments->count())
+            <hr>
+            <h6 class="fw-bold small text-muted">جدول الأقساط:</h6>
+            @foreach($plan->installments as $i)
+              <div class="kv">
+                <div class="k">الدفعة {{ $loop->iteration }}</div>
+                <div class="v">{{ number_format($i->amount, 2) }} <span class="text-muted">({{ $i->due_date->format('Y-m-d') }})</span></div>
+              </div>
+            @endforeach
+          @endif
+          <div class="mt-2 pt-2 border-top">
+            <small class="text-muted"><i class="bi bi-info-circle"></i> للاطلاع فقط — الدفعات تُكمَل من قسم المالية</small>
+          </div>
+        </div>
+      </div>
+    @endforeach
+  </div>
+@endif
+
+
+
+
+ 
+
     {{-- ══════════════════════════════════════════════
          إنشاء خطة دفع ← مع التحقق المحكم
     ═══════════════════════════════════════════════ --}}
+  @if(auth()->user()?->hasPermission('manage_student_payment_plan') || auth()->user()?->hasRole('super_admin') )
+
     <div class="section-header"><i class="bi bi-wallet2"></i> إنشاء خطة دفع</div>
 
     <div class="glass-card p-3">
@@ -544,39 +609,13 @@
       </form>
     </div>
 
-    {{-- ══ خطط الدفع ══ --}}
-    @if($paymentPlans->count())
-      <div class="section-header"><i class="bi bi-calendar-check"></i> خطط الدفع</div>
-      <div class="row g-3 p-3">
-        @foreach($paymentPlans as $plan)
-          <div class="col-md-6">
-            <div class="glass-card p-3">
-              <h6 class="fw-bold mb-2">{{ $plan->diploma->name }}</h6>
-              <div class="text-muted small mb-2">
-                العملة المعتمدة: <span class="badge bg-info">{{ $plan->currency }}</span>
-              </div>
-              <div class="kv"><div class="k">المبلغ الإجمالي</div><div class="v">{{ number_format($plan->total_amount, 2) }}</div></div>
-              <div class="kv"><div class="k">نوع الدفع</div><div class="v">{{ $plan->payment_type == 'full' ? 'كامل' : 'دفعات' }}</div></div>
-              @if($plan->payment_type == 'installments')
-                <div class="kv"><div class="k">عدد الدفعات</div><div class="v">{{ $plan->installments_count }}</div></div>
-              @endif
-              <div class="kv"><div class="k">المقبوض</div><div class="v text-success">{{ number_format($plan->paid, 2) }}</div></div>
-              <div class="kv"><div class="k">المتبقي</div><div class="v text-warning">{{ number_format(max($plan->remaining,0), 2) }}</div></div>
-              @if($plan->installments->count())
-                <hr>
-                <h6 class="fw-bold">تواريخ الأقساط</h6>
-                @foreach($plan->installments as $i)
-                  <div class="kv">
-                    <div class="k">الدفعة {{ $loop->iteration }}</div>
-                    <div class="v">{{ number_format($i->amount, 2) }} <span class="text-muted">({{ $i->due_date->format('Y-m-d') }})</span></div>
-                  </div>
-                @endforeach
-              @endif
-            </div>
-          </div>
-        @endforeach
-      </div>
-    @endif
+
+@endif
+
+
+
+
+
 
     {{-- ══ المعلومات المالية ══ --}}
     <div class="section-header"><i class="bi bi-cash-coin"></i> المعلومات المالية</div>
@@ -800,6 +839,9 @@
       errEl.classList.remove('show');
     });
 
+
+
+    
     const overLimit = total > 0 && sum > total;
     const remaining = total - sum;
     const boxClass  = (overLimit || hasError) ? 'bad' : 'ok';

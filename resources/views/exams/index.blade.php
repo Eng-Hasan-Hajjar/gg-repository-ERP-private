@@ -179,7 +179,7 @@
         <input name="search" value="{{ request('search') }}"
                class="form-control form-control-sm" placeholder="بحث: اسم / كود الامتحان">
       </div>
-      <div class="col-6 col-md-2">
+      <div class="col-6 col-md-2" hidden>
         <select name="branch_id" class="form-select form-select-sm">
           <option value="">كل الفروع</option>
           @foreach($branches as $b)
@@ -238,7 +238,7 @@
           <th>الامتحان</th>
           <th>النوع</th>
           <th>الدبلومة</th>
-          <th>الفرع</th>
+          <th hidden>الفرع</th>
           <th>المدرب</th>
           <th>الدرجات</th>
           <th class="text-end">إجراءات</th>
@@ -266,7 +266,7 @@
                 <div style="font-size:11px; color:#94a3b8;">{{ $e->diploma->code }}</div>
               @endif
             </td>
-            <td style="font-weight:700;">{{ $e->branch->name ?? '—' }}</td>
+            <td style="font-weight:700;" hidden>{{ $e->branch->name ?? '—' }}</td>
             <td>{{ $e->trainer->full_name ?? '—' }}</td>
             <td>
               <span class="score-pill">
@@ -333,7 +333,7 @@
           <i class="bi bi-calendar3" style="font-size:10px"></i>
           {{ $e->exam_date?->format('Y/m/d') ?? '—' }}
         </span>
-        <span class="info-chip">
+        <span class="info-chip" hidden>
           <i class="bi bi-building" style="font-size:10px"></i>
           {{ $e->branch->name ?? '—' }}
         </span>

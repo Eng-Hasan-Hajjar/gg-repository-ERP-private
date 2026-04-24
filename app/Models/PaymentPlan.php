@@ -6,15 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaymentPlan extends Model
 {
-
     protected $fillable = [
-        'student_id',
+        'lead_id',        // ← صاحب الخطة إذا كان عميلاً
+        'student_id',     // ← صاحب الخطة إذا كان طالباً
         'diploma_id',
         'total_amount',
         'payment_type',
         'installments_count',
-'currency'
+        'currency',
     ];
+
+    // ══ العلاقات ══
+
+    public function lead()
+    {
+        return $this->belongsTo(Lead::class);
+    }
 
     public function student()
     {
@@ -28,7 +35,28 @@ class PaymentPlan extends Model
 
     public function installments()
     {
-        return $this->hasMany(PaymentInstallment::class,'plan_id');
+        return $this->hasMany(PaymentInstallment::class, 'plan_id');
     }
 
+    // ══ Accessor: صاحب الخطة (Lead أو Student) ══
+    public function getOwnerAttribute()
+    {
+        return $this->lead_id ? $this->lead : $this->student;
+    }
+
+    // ══ Accessor: عدد الدفعات المسجلة ══
+    public function getPaymentsCountAttribute(): int
+    {
+        $account = $this->lead_id
+            ? optional($this->lead)->financialAccount
+            : optional($this->student)->financialAccount;
+
+        if (!$account) return 0;
+
+        return $account->transactions()
+            ->where('diploma_id', $this->diploma_id)
+            ->where('type', 'in')
+            ->where('status', 'posted')
+            ->count();
+    }
 }

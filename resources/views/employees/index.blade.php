@@ -9,12 +9,12 @@
     </div>
 
     
-    @if(auth()->user()?->hasPermission('create_employees'))
+    @if(auth()->user()?->hasPermission('create_trainer'))
       <a href="{{ route('employees.create', ['type' => 'trainer']) }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
         إضافة مدرب
       </a>
     @endif
-    @if(auth()->user()?->hasPermission('create_trainer'))
+    @if(auth()->user()?->hasPermission('create_employees'))
        <a href="{{ route('employees.create', ['type' => 'employee']) }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
         إضافة موظف
       </a>

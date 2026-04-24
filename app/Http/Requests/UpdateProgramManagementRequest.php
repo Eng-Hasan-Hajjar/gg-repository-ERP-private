@@ -29,10 +29,10 @@ class UpdateProgramManagementRequest extends FormRequest
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
 
-            'mid_exam' => 'nullable|date|before:final_exam',
+            'mid_exam' => 'nullable|date',
             'final_exam' => 'nullable|date|after:mid_exam',
 
-            'details_file' => 'nullable|file|mimes:pdf,xlsx,xls,doc,docx|max:5120',
+            'details_file' => 'nullable|file|mimes:pdf,xlsx,xls,doc,docx|max:512000000000',
 
             'confirmed_students' => 'nullable|integer|min:0',
 
@@ -96,8 +96,8 @@ class UpdateProgramManagementRequest extends FormRequest
             'mid_exam.date' =>
                 'يرجى إدخال تاريخ صحيح للامتحان النصفي.',
 
-            'mid_exam.before' =>
-                'يجب أن يكون الامتحان النصفي قبل الامتحان النهائي.',
+         //   'mid_exam.before' =>
+          //      'يجب أن يكون الامتحان النصفي قبل الامتحان النهائي.',
 
             'final_exam.date' =>
                 'يرجى إدخال تاريخ صحيح للامتحان النهائي.',
@@ -113,7 +113,7 @@ class UpdateProgramManagementRequest extends FormRequest
                 'يجب أن يكون ملف التفاصيل بصيغة: PDF أو Excel أو Word.',
 
             'details_file.max' =>
-                'يجب ألا يتجاوز حجم ملف التفاصيل 5 ميغابايت.',
+                'يجب ألا يتجاوز حجم ملف التفاصيل 100 ميغابايت.',
 
 
             'confirmed_students.integer' =>

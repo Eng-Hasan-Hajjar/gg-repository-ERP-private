@@ -95,7 +95,22 @@
       </div>
 
 
+<div class="row g-3 mt-3">
+  <div class="col-12">
+    <div class="form-check">
+      <input type="hidden" name="certificate_agreement" value="0">
 
+<input class="form-check-input" type="checkbox" 
+       id="certificate_agreement"
+       name="certificate_agreement"
+       value="1"
+       {{ old('certificate_agreement', $student->certificate_agreement ?? 0) ? 'checked' : '' }}>
+      <label class="form-check-label fw-bold" for="certificate_agreement">
+        اتفاق الشهادة الممنوحة
+      </label>
+    </div>
+  </div>
+</div>
 
       {{-- branch_id --}}
 <div class="col-md-4">
@@ -151,7 +166,7 @@ class="form-select @error('mode') is-invalid @enderror">
 
             @foreach($statusOptions as $st => $label)
                 <option value="{{ $st }}"
-                    @selected(old('status') == $st)>
+                   @selected(old('status', $student->status ?? '') == $st)>
                     {{ $label }}
                 </option>
             @endforeach
@@ -437,7 +452,7 @@ class="form-select @error('mode') is-invalid @enderror">
          <div class="col-md-3">
             <label class="form-label fw-bold">العمل</label>
             <input name="crm[job]" class="form-control @error('crm.job') is-invalid @enderror"
-                    value="{{ $crm['job'] ?? '' }}">
+                    value="{{ old('crm.job', $crm['job'] ?? '') }}">
 
 
             @error('crm.job')
@@ -452,7 +467,7 @@ class="form-select @error('mode') is-invalid @enderror">
           <div class="col-md-4">
             <label class="form-label fw-bold">البلد</label>
             <input name="crm[country]" class="form-control @error('crm.country') is-invalid @enderror"
-                  value="{{ $crm['country'] ?? '' }}">
+                  value="{{ old('crm.country', $crm['country'] ?? '') }}">
 
 
                   @error('crm.country')
@@ -463,7 +478,7 @@ class="form-select @error('mode') is-invalid @enderror">
           <div class="col-md-4">
             <label class="form-label fw-bold">المحافظة</label>
             <input name="crm[province]" class="form-control  @error('crm.province') is-invalid @enderror"
-                  value="{{ $crm['province'] ?? '' }}">
+                  value="{{ old('crm.province', $crm['province'] ?? '') }}">
 
 
               @error('crm.province')
@@ -476,7 +491,7 @@ class="form-select @error('mode') is-invalid @enderror">
           <div class="col-md-4">
             <label class="form-label fw-bold">الدراسة</label>
             <input name="crm[study]" class="form-control @error('crm.study') is-invalid @enderror"
-                  value="{{ $crm['study'] ?? '' }}">
+                  value="{{ old('crm.study', $crm['study'] ?? '') }}">
 
                     @error('crm.study')
               <div class="invalid-feedback">{{ $message }}</div>

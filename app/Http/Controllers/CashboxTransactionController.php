@@ -297,6 +297,138 @@ class CashboxTransactionController extends Controller
     // ══════════════════════════════════════════
     // ترحيل
     // ══════════════════════════════════════════
+
+
+    public function post(Cashbox $cashbox, CashboxTransaction $transaction)
+    {
+        abort_unless($transaction->cashbox_id === $cashbox->id, 404);
+
+        if ($transaction->status === 'posted') {
+            return redirect()->back()->with('error', 'الحركة مرحّلة مسبقاً');
+        }
+
+        // ── الترحيل ──
+        $transaction->update(['status' => 'posted', 'posted_at' => now()]);
+
+        // ── التحويل التلقائي Lead → Student ──
+        $transaction->load('financialAccount');
+        $account = $transaction->financialAccount;
+
+        if ($account && $account->accountable_type === \App\Models\Lead::class) {
+
+            $lead = \App\Models\Lead::withoutGlobalScopes()
+                ->find($account->accountable_id);
+
+            if ($lead && $lead->registration_status === 'pending') {
+
+                // تحقق من وجود دفعة posted (الحركة الحالية أصبحت posted الآن)
+                $hasPostedPayment = $account->transactions()
+                    ->where('type', 'in')
+                    ->where('status', 'posted')
+                    ->exists();
+
+                if ($hasPostedPayment) {
+                    try {
+                        $student = $this->doConvertLeadToStudent($lead, $account);
+                        return redirect()->route('students.show', $student)
+                            ->with('success', '✅ تم ترحيل الحركة وتحويل العميل "' . $lead->full_name . '" إلى طالب بنجاح!');
+                    } catch (\Exception $e) {
+                        \Log::error('convertToStudent failed: ' . $e->getMessage());
+                        return redirect()->back()->with('warning', 'تم الترحيل لكن فشل التحويل: ' . $e->getMessage());
+                    }
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'تم ترحيل الحركة.');
+    }
+
+    // ── دالة التحويل المستقلة (لا تعتمد على LeadController) ──
+    private function doConvertLeadToStudent(\App\Models\Lead $lead, \App\Models\FinancialAccount $account): \App\Models\Student
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($lead, $account) {
+
+            $student = \App\Models\Student::create([
+                'university_id' => 'NMA-' . now()->format('Y') . '-' . \Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6)),
+                'first_name' => explode(' ', trim($lead->full_name))[0] ?? $lead->full_name,
+                'last_name' => '-',
+                'full_name' => $lead->full_name,
+                'phone' => $lead->phone,
+                'whatsapp' => $lead->whatsapp,
+                'email' => $lead->email,
+                'job' => $lead->job,
+                'branch_id' => $lead->branch_id,
+                'mode' => 'onsite',
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'is_confirmed' => true,
+                'country' => $lead->country,
+                'province' => $lead->province,
+                'study' => $lead->study,
+                'created_by' => $lead->created_by,
+                'confirmed_at' => now(),
+            ]);
+
+            // نقل الحساب المالي من Lead إلى Student
+            $account->update([
+                'accountable_type' => \App\Models\Student::class,
+                'accountable_id' => $student->id,
+            ]);
+
+            // نقل الدبلومات
+            $sync = [];
+            foreach ($lead->diplomas as $i => $d) {
+                $sync[$d->id] = [
+                    'is_primary' => (bool) ($d->pivot->is_primary) || $i === 0,
+                    'enrolled_at' => now()->toDateString(),
+                    'status' => 'active',
+                ];
+            }
+            if (!empty($sync)) {
+                $student->diplomas()->sync($sync);
+            }
+
+            // حفظ CRM info
+            $student->crmInfo()->updateOrCreate(
+                ['student_id' => $student->id],
+                [
+                    'first_contact_date' => $lead->first_contact_date,
+                    'residence' => $lead->residence,
+                    'age' => $lead->age,
+                    'email' => $lead->email,
+                    'job' => $lead->job,
+                    'organization' => $lead->organization,
+                    'source' => $lead->source,
+                    'need' => $lead->need,
+                    'stage' => $lead->stage,
+                    'notes' => $lead->notes,
+                    'country' => $lead->country,
+                    'province' => $lead->province,
+                    'study' => $lead->study,
+                    'created_by' => $lead->created_by,
+                    'converted_at' => now(),
+                ]
+            );
+
+            // profile مبدئي
+            $student->profile()->updateOrCreate(
+                ['student_id' => $student->id],
+                ['arabic_full_name' => null, 'address' => $lead->residence, 'notes' => 'تم الإنشاء من CRM']
+            );
+
+            // تحديث Lead
+            $lead->update([
+                'registration_status' => 'converted',
+                'registered_at' => now()->toDateString(),
+                'student_id' => $student->id,
+                'stage' => 'registered',
+            ]);
+
+            return $student;
+        });
+    }
+    
+    /*
     public function post(Cashbox $cashbox, CashboxTransaction $transaction)
     {
         abort_unless($transaction->cashbox_id === $cashbox->id, 404);
@@ -305,7 +437,7 @@ class CashboxTransactionController extends Controller
         }
         return redirect()->back()->with('success', 'تم ترحيل الحركة.');
     }
-
+*/
     // ══════════════════════════════════════════
     // تصدير PDF
     // ══════════════════════════════════════════

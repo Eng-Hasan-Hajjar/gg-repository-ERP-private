@@ -21,10 +21,8 @@ use App\Http\Controllers\ExamResultController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadFollowupController;
 use App\Http\Controllers\LeadReportController;
-
 use App\Http\Controllers\FinancialTransactionController;
 use App\Http\Controllers\MediaRequestController;
-
 //طلبات الإجازات + صفحة موافقات الأدمن
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\AttendanceReportController;
@@ -43,7 +41,6 @@ Route::get('/dashboard', function () {
 
 */
 
-
 use App\Http\Controllers\DashboardController;
 
 Route::middleware(['auth'])->group(function () {
@@ -53,28 +50,11 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 Route::middleware(['auth'])->group(function () {
@@ -102,11 +82,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('branches', BranchController::class)->except(['show']);
 
-
-
-
-
-
     Route::post(
         'employees/{employee}/create-user',
         [EmployeeController::class, 'createUser']
@@ -131,9 +106,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('employees.contracts.destroy');
 
 
-
-
-
     // Nested: Payouts (مستحقات)
     Route::get('employees/{employee}/payouts', [EmployeePayoutController::class, 'index'])->name('employees.payouts.index');
     Route::get('employees/{employee}/payouts/create', [EmployeePayoutController::class, 'create'])->name('employees.payouts.create');
@@ -150,19 +122,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::patch('employees/{employee}/payouts/{payout}/mark-paid', [EmployeePayoutController::class, 'markPaid'])
         ->name('employees.payouts.markPaid');
-
-
-
-
-
-
     // Assets
+    Route::get('assets/export-excel', [AssetController::class, 'exportExcel'])
+        ->name('assets.export.excel');
+
     Route::resource('assets', AssetController::class);
 
     // Asset Categories
     Route::resource('asset-categories', AssetCategoryController::class);
-
-
 
 
     Route::resource('cashboxes', CashboxController::class);
@@ -184,11 +151,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 });
-
-
-
-
-
 
 
 // Attendance
@@ -229,13 +191,9 @@ Route::get('attendance/calendar', [AttendanceCalendarController::class, 'month']
 
 Route::get('attendance/reports', [AttendanceReportController::class, 'index'])->name('attendance.reports');
 
-
-
 Route::get('attendance/reports/export-excel', [AttendanceReportController::class, 'exportExcel'])->name('attendance.reports.exportExcel');
 
-
 Route::get('attendance/reports/export-pdf', [AttendanceReportController::class, 'exportPdf'])->name('attendance.reports.exportPdf');
-
 
 
 Route::get('attendance/calendar/export-excel', [AttendanceCalendarController::class, 'exportExcel'])
@@ -245,20 +203,11 @@ Route::get('attendance/calendar/export-pdf', [AttendanceCalendarController::clas
     ->name('attendance.calendar.exportPdf');
 
 
-
-
-
-
-
 Route::resource('exams', ExamController::class);
 
 // إدخال درجات امتحان
 Route::get('exams/{exam}/results', [ExamResultController::class, 'edit'])->name('exams.results.edit');
 Route::put('exams/{exam}/results', [ExamResultController::class, 'update'])->name('exams.results.update');
-
-
-
-
 
 
 Route::resource('leads', LeadController::class);
@@ -278,10 +227,6 @@ Route::get('crm_lead_reports', [LeadReportController::class, 'index'])->name('cr
 Route::get('/crm/reports/pdf', [LeadReportController::class, 'exportPdf'])
     ->name('crm.reports.pdf')
     ->middleware('auth');
-
-
-
-
 
 
 Route::middleware(['auth'])->group(function () {
@@ -315,21 +260,14 @@ Route::middleware(['auth'])
         Route::resource('users', UserController::class);
     });
 
-
-
 use App\Http\Controllers\Admin\AuditController;
 
 Route::get('/admin/audit-logs', [AuditController::class, 'index'])
     ->middleware(['auth'])
     ->name('admin.audit.index2');
 
-
-
 Route::get('/audit-center', [AuditController::class, 'index'])
     ->name('admin.audit.index');
-
-
-
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -356,19 +294,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('roles.togglePermission');
 
 
-
-
-
 });
-
-
-
-
-
-
-
-
-
 
 
 Route::get('/reports/executive', [ReportsController::class, 'executive'])
@@ -380,9 +306,6 @@ Route::get('/reports/branches-map', [ReportsController::class, 'branchesMap'])
     ->middleware('auth');
 
 
-
-
-
 /* Route::get('/reports/students-growth', function(){
 return view('reports.students-growth');
 })->name('reports.students.growth');*/
@@ -390,12 +313,8 @@ return view('reports.students-growth');
 Route::get('/reports/students-growth', [ReportsController::class, 'studentsGrowth'])
     ->name('reports.students.growth');
 
-
-
 Route::get('/reports/revenue-branches', [ReportsController::class, 'revenuePerBranch'])
     ->name('reports.revenue.branches');
-
-
 
 Route::get('/reports/system-alerts', [ReportsController::class, 'alerts'])
     ->name('reports.system.alerts');
@@ -404,10 +323,6 @@ Route::get('/reports/system-alerts', [ReportsController::class, 'alerts'])
 Route::get('/reports/charts', [ReportsController::class, 'charts'])
     ->name('reports.charts')
     ->middleware('auth');
-
-
-
-
 
 
 
@@ -423,12 +338,8 @@ Route::get('/admin/reports/attendance/monthly/pdf', [AttendanceReportController2
     ->name('reports.attendance.monthly.pdf');
 
 
-
 Route::post('/financial/pay', [\App\Http\Controllers\FinancialTransactionController::class, 'store'])
     ->name('financial.pay');
-
-
-
 
 
 Route::prefix('finance')->name('finance.')->group(function () {
@@ -446,10 +357,6 @@ Route::prefix('finance')->name('finance.')->group(function () {
         ->name('reports.daily');
 
 });
-
-
-
-
 
 use App\Http\Controllers\ProgramManagementController;
 
@@ -484,19 +391,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 use App\Http\Controllers\TaskReportController;
 
 Route::middleware(['auth'])->group(function () {
@@ -526,18 +420,6 @@ Route::get(
 )->name('cashboxes.transactions.pdf');
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 use App\Http\Controllers\AlertController;
 Route::middleware('auth')->group(function () {
 
@@ -546,19 +428,8 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
-
-
-
-
-
 Route::post('/transactions/{trx}/post', [FinancialTransactionController::class, 'post'])
     ->name('transactions.post');
-
-
-
-
-
 
 use App\Http\Controllers\System\BackupController;
 
@@ -584,11 +455,6 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-
-
-
-
-
 Route::middleware(['auth'])->prefix('system')->name('system.')->group(function () {
 
     Route::get('/backup', [BackupController::class, 'index'])
@@ -605,19 +471,9 @@ Route::middleware(['auth'])->prefix('system')->name('system.')->group(function (
 
 });
 
-
-
-
-
-
-
-
 Route::get('/diplomas/{id}/groups', [LeadController::class, 'getDiplomaGroups']);
 
 //Route::get('/diplomas/groups/{name}', [LeadController::class,'getDiplomaGroups']);
-
-
-
 
 use App\Http\Controllers\PaymentPlanController;
 
@@ -635,16 +491,6 @@ Route::get(
 
 Route::put('/payment-plan/{plan}', [PaymentPlanController::class, 'update'])
     ->name('payment.plan.update');
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -721,7 +567,6 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-
 /*
 Route::middleware('auth')->group(function () {
     Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
@@ -729,7 +574,6 @@ Route::middleware('auth')->group(function () {
 });
 
 */
-
 
 Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
 Route::post('/location/skip', [LocationController::class, 'skip'])->name('location.skip');
@@ -749,17 +593,11 @@ Route::post('/attendance/{record}/break-end', [App\Http\Controllers\AttendanceCo
     ->name('attendance.break.end');
 
 
-
-
-
 Route::post('users/{user}/force-logout', [UserController::class, 'forceLogout'])
     ->name('admin.users.forceLogout');
 
 Route::post('users/logout-all', [UserController::class, 'logoutAll'])
     ->name('admin.users.logoutAll');
-
-
-
 
 Route::get('/session/check', function () {
 
@@ -779,9 +617,6 @@ Route::get('/session/check', function () {
 })->middleware('auth');
 
 
-
-
-
 Route::post(
     '/attendance/{record}/notes',
     [AttendanceController::class, 'updateNotes']
@@ -789,57 +624,44 @@ Route::post(
     ->name('attendance.notes.update');
 
 
-
-
-
 Route::put('/reports/task/{report}/notes', [TaskReportController::class, 'updateNotes'])
     ->name('reports.task.updateNotes');
 
 
-
-
-
-
-    // ضع هذا داخل middleware auth في routes/web.php
+// ضع هذا داخل middleware auth في routes/web.php
 Route::get('/finance/fab-cashboxes', function () {
     $cashboxes = \App\Models\Cashbox::with('branch')
         ->where('status', 'active')
         ->get()
         ->map(fn($c) => [
-            'id'       => $c->id,
-            'name'     => $c->name,
+            'id' => $c->id,
+            'name' => $c->name,
             'currency' => $c->currency,
-            'branch'   => $c->branch->name ?? '-',
-            'balance'  => number_format($c->current_balance, 2),
-            'url'      => route('cashboxes.show', $c),
+            'branch' => $c->branch->name ?? '-',
+            'balance' => number_format($c->current_balance, 2),
+            'url' => route('cashboxes.show', $c),
         ]);
 
     return response()->json($cashboxes);
 })->middleware('auth')->name('finance.fab.cashboxes');
-
-
-
-
 
 // API: تفاصيل حركة للمودال
 Route::get(
     'cashboxes/{cashbox}/transactions/{transaction}/detail',
     [CashboxTransactionController::class, 'detail']
 )->name('cashboxes.transactions.detail');
- 
-
-
 
 
 // ── أضف هذا السطر في routes/web.php مع باقي routes الـ cashboxes ──
- 
+
 Route::get(
     'cashboxes/{cashbox}/transactions/export-excel',
     [CashboxTransactionController::class, 'exportExcel']
 )->name('cashboxes.transactions.excel');
- 
 
 
+Route::get('/admin/reports/attendance/monthly/excel', [AttendanceReportController2::class, 'exportExcel'])
+    ->name('reports.attendance.monthly.excel');
 
 
 require __DIR__ . '/auth.php';

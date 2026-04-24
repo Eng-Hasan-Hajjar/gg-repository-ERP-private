@@ -14,8 +14,8 @@ use App\Http\Requests\LeadUpdateRequest;
 
 class LeadController extends Controller
 {
-public function index(Request $request)
-{
+  public function index(Request $request)
+  {
     $q = Lead::query()->with(['branch', 'diplomas', 'followups']);
 
     $user = auth()->user();
@@ -23,103 +23,30 @@ public function index(Request $request)
     // 🔒 تحديد الفروع المسموحة
     if (!$user->hasRole('super_admin')) {
 
-        $employee = $user->employee;
+      $employee = $user->employee;
 
-        $branchIds = collect([
-            $employee?->branch_id,
-            $employee?->secondary_branch_id
-        ])->filter()->unique()->values()->all();
+      $branchIds = collect([
+        $employee?->branch_id,
+        $employee?->secondary_branch_id
+      ])->filter()->unique()->values()->all();
 
-        if (!empty($branchIds)) {
-            $q->whereIn('branch_id', $branchIds);
-        }
+      if (!empty($branchIds)) {
+        $q->whereIn('branch_id', $branchIds);
+      }
     }
 
     // 🔎 فلاتر
     if ($request->filled('branch_id')) {
-        $q->where('branch_id', $request->branch_id);
+      $q->where('branch_id', $request->branch_id);
     }
 
     if ($request->filled('stage')) {
-        $q->where('stage', $request->stage);
+      $q->where('stage', $request->stage);
     }
 
     if ($request->filled('registration_status')) {
-        $q->where('registration_status', $request->registration_status);
-    }
-
-    if ($request->filled('diploma_id')) {
-        $did = $request->diploma_id;
-        $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $did));
-    }
-
-    if ($request->filled('search')) {
-        $s = trim($request->search);
-        $q->where(function ($x) use ($s) {
-            $x->where('full_name', 'like', "%$s%")
-              ->orWhere('phone', 'like', "%$s%")
-              ->orWhere('whatsapp', 'like', "%$s%");
-        });
-    }
-
-    $leads = $q->latest()->paginate(15)->withQueryString();
-
-    // 🧠 تعريب
-    $labels = $this->leadArabicLabels();
-
-    $leads->getCollection()->transform(function ($l) use ($labels) {
-        $l->stage_ar = $labels['stage'][$l->stage] ?? '-';
-        $l->registration_ar = $labels['registration_status'][$l->registration_status] ?? '-';
-        return $l;
-    });
-
-    return view('crm.leads.index', [
-        'leads' => $leads,
-        'branches' => Branch::orderBy('name')->get(),
-        'diplomas' => Diploma::orderBy('name')->get(),
-
-        'stageOptions' => $labels['stage'],
-        'registrationOptions' => $labels['registration_status'],
-    ]);
-}
-/*
-  public function index(Request $request)
-  {
-    $q = Lead::query()->with(['branch', 'diplomas', 'followups']);
-
-
-    $user = auth()->user();
-
-
-
-        if (!$user->hasRole('super_admin')) {
-
-            $branchId = $user->employee?->branch_id;
-
-            if ($branchId) {
-                $q->where('branch_id', $branchId);
-            }
-
-
-            $employee = $user->employee;
-
-            $branchIds = collect([
-                $employee?->branch_id,
-                $employee?->secondary_branch_id
-            ])->filter()->unique()->all();
-
-            if (!$user->hasRole('super_admin') && !empty($branchIds)) {
-                $q->whereIn('branch_id', $branchIds);
-            }
-
-        }
-
-    if ($request->filled('branch_id'))
-      $q->where('branch_id', $request->branch_id);
-    if ($request->filled('stage'))
-      $q->where('stage', $request->stage);
-    if ($request->filled('registration_status'))
       $q->where('registration_status', $request->registration_status);
+    }
 
     if ($request->filled('diploma_id')) {
       $did = $request->diploma_id;
@@ -128,31 +55,21 @@ public function index(Request $request)
 
     if ($request->filled('search')) {
       $s = trim($request->search);
-      $q->where(
-        fn($x) => $x
-          ->where('full_name', 'like', "%$s%")
+      $q->where(function ($x) use ($s) {
+        $x->where('full_name', 'like', "%$s%")
           ->orWhere('phone', 'like', "%$s%")
-          ->orWhere('whatsapp', 'like', "%$s%")
-      );
+          ->orWhere('whatsapp', 'like', "%$s%");
+      });
     }
 
     $leads = $q->latest()->paginate(15)->withQueryString();
 
-    // ======= خرائط التعريب =======
+    // 🧠 تعريب
     $labels = $this->leadArabicLabels();
 
-    // ======= خيارات الفلاتر بالعربي =======
-    $stageOptions = $labels['stage']; // key => عربي
-    $registrationOptions = $labels['registration_status']; // key => عربي
-
-    // ======= أضف ترجمة جاهزة لكل Lead للعرض =======
     $leads->getCollection()->transform(function ($l) use ($labels) {
-      $l->stage_ar = $labels['stage'][$l->stage]
-        ?? ($l->stage ?? '-');
-
-      $l->registration_ar = $labels['registration_status'][$l->registration_status]
-        ?? ($l->registration_status ?? '-');
-
+      $l->stage_ar = $labels['stage'][$l->stage] ?? '-';
+      $l->registration_ar = $labels['registration_status'][$l->registration_status] ?? '-';
       return $l;
     });
 
@@ -161,12 +78,95 @@ public function index(Request $request)
       'branches' => Branch::orderBy('name')->get(),
       'diplomas' => Diploma::orderBy('name')->get(),
 
-      // للفلاتر:
-      'stageOptions' => $stageOptions,
-      'registrationOptions' => $registrationOptions,
+      'stageOptions' => $labels['stage'],
+      'registrationOptions' => $labels['registration_status'],
     ]);
   }
-*/
+  /*
+    public function index(Request $request)
+    {
+      $q = Lead::query()->with(['branch', 'diplomas', 'followups']);
+
+
+      $user = auth()->user();
+
+
+
+          if (!$user->hasRole('super_admin')) {
+
+              $branchId = $user->employee?->branch_id;
+
+              if ($branchId) {
+                  $q->where('branch_id', $branchId);
+              }
+
+
+              $employee = $user->employee;
+
+              $branchIds = collect([
+                  $employee?->branch_id,
+                  $employee?->secondary_branch_id
+              ])->filter()->unique()->all();
+
+              if (!$user->hasRole('super_admin') && !empty($branchIds)) {
+                  $q->whereIn('branch_id', $branchIds);
+              }
+
+          }
+
+      if ($request->filled('branch_id'))
+        $q->where('branch_id', $request->branch_id);
+      if ($request->filled('stage'))
+        $q->where('stage', $request->stage);
+      if ($request->filled('registration_status'))
+        $q->where('registration_status', $request->registration_status);
+
+      if ($request->filled('diploma_id')) {
+        $did = $request->diploma_id;
+        $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $did));
+      }
+
+      if ($request->filled('search')) {
+        $s = trim($request->search);
+        $q->where(
+          fn($x) => $x
+            ->where('full_name', 'like', "%$s%")
+            ->orWhere('phone', 'like', "%$s%")
+            ->orWhere('whatsapp', 'like', "%$s%")
+        );
+      }
+
+      $leads = $q->latest()->paginate(15)->withQueryString();
+
+      // ======= خرائط التعريب =======
+      $labels = $this->leadArabicLabels();
+
+      // ======= خيارات الفلاتر بالعربي =======
+      $stageOptions = $labels['stage']; // key => عربي
+      $registrationOptions = $labels['registration_status']; // key => عربي
+
+      // ======= أضف ترجمة جاهزة لكل Lead للعرض =======
+      $leads->getCollection()->transform(function ($l) use ($labels) {
+        $l->stage_ar = $labels['stage'][$l->stage]
+          ?? ($l->stage ?? '-');
+
+        $l->registration_ar = $labels['registration_status'][$l->registration_status]
+          ?? ($l->registration_status ?? '-');
+
+        return $l;
+      });
+
+      return view('crm.leads.index', [
+        'leads' => $leads,
+        'branches' => Branch::orderBy('name')->get(),
+        'diplomas' => Diploma::orderBy('name')->get(),
+
+        // للفلاتر:
+        'stageOptions' => $stageOptions,
+        'registrationOptions' => $registrationOptions,
+      ]);
+    }
+  */
   public function create()
   {
     $user = auth()->user();
@@ -303,11 +303,58 @@ public function create()
     $source_ar = $labels['source'][$lead->source]
       ?? ($lead->source ?? '-');
 
+
+
+
+
+
+    $paymentPlans = $lead->paymentPlans()
+      ->with(['installments', 'diploma'])
+      ->get();
+
+
+
+
+
+
+    $plansByDiploma = $paymentPlans->keyBy('diploma_id');
+
+
+    $paidAmounts = [];
+
+    foreach ($paymentPlans as $plan) {
+
+      $paid = $lead->financialAccount
+        ? $lead->financialAccount
+          ->transactions()
+          ->where('diploma_id', $plan->diploma_id)
+          ->where('type', 'in')
+          ->whereHas('cashbox', function ($q) use ($plan) {
+            $q->where('currency', $plan->currency);
+          })
+          ->sum('amount')
+        : 0;
+
+      $plan->paid = $paid;
+
+      $remaining = max($plan->total_amount - $paid, 0);
+      $plan->remaining = $plan->total_amount - $paid;
+    }
+
+
+
+
+
+
     return view('crm.leads.show', compact(
       'lead',
       'stage_ar',
       'registration_ar',
       'source_ar'
+      ,
+      'paymentPlans',
+
+      'plansByDiploma'
     ));
   }
 
@@ -411,6 +458,11 @@ public function create()
     return redirect()->route('leads.index')->with('success', 'تم حذف العميل المحتمل.');
   }
 
+
+
+
+
+  /*
   // ✅ تحويل إلى طالب
   public function convertToStudent(Lead $lead)
   {
@@ -539,6 +591,127 @@ public function create()
 
     return redirect()->route('students.show', $student)->with('success', 'تم تحويل العميل إلى طالب رسمي.');
   }
+
+*/
+
+
+
+  /**
+   * تحويل العميل المحتمل إلى طالب مسجل
+   */
+  public function convertToStudent(Lead $lead)
+  {
+    // التحقق من أن العميل لم يتحول بعد
+    if ($lead->registration_status !== 'pending') {
+      return null;
+    }
+
+    DB::beginTransaction();
+
+    try {
+      // 1️⃣ إنشاء حساب الطالب الجديد
+      $student = Student::create([
+        'university_id' => $this->generateUniversityId(),
+        'first_name' => $lead->first_name,
+        'last_name' => $lead->last_name,
+        'full_name' => $lead->full_name,
+        'phone' => $lead->phone,
+        'whatsapp' => $lead->whatsapp,
+        'branch_id' => $lead->branch_id,
+        'mode' => $lead->mode ?? 'onsite',
+        'status' => 'active',
+        'registration_status' => 'confirmed',
+        'is_confirmed' => true,
+        'confirmed_at' => now(),
+        'certificate_agreement' => false,
+      ]);
+
+      // 2️⃣ ربط الدبلومات مع الطالب
+      foreach ($lead->diplomas as $diploma) {
+        $student->diplomas()->attach($diploma->id, [
+          'is_primary' => $diploma->pivot->is_primary,
+          'enrolled_at' => now(),
+          'status' => 'active',
+        ]);
+      }
+
+      // 3️⃣ نقل بيانات CRM إلى الطالب
+      if ($lead->crmInfo) {
+        StudentCrmInfo::create([
+          'student_id' => $student->id,
+          'first_contact_date' => $lead->crmInfo->first_contact_date,
+          'source' => $lead->crmInfo->source ?? 'other',
+          'stage' => $lead->crmInfo->stage ?? 'registered',
+          'organization' => $lead->crmInfo->organization,
+          'need' => $lead->crmInfo->need,
+          'notes' => $lead->crmInfo->notes,
+          'residence' => $lead->crmInfo->residence,
+          'age' => $lead->crmInfo->age,
+          'email' => $lead->crmInfo->email,
+          'job' => $lead->crmInfo->job,
+          'country' => $lead->crmInfo->country,
+          'province' => $lead->crmInfo->province,
+          'study' => $lead->crmInfo->study,
+          'converted_at' => now(),
+        ]);
+      }
+
+      // 4️⃣ نقل الحساب المالي من الـ Lead إلى الـ Student
+      $financialAccount = $lead->financialAccount;
+      if ($financialAccount) {
+        $financialAccount->update([
+          'accountable_type' => Student::class,
+          'accountable_id' => $student->id,
+        ]);
+      } else {
+        // إنشاء حساب مالي جديد للطالب
+        FinancialAccount::create([
+          'accountable_type' => Student::class,
+          'accountable_id' => $student->id,
+        ]);
+      }
+
+      // 5️⃣ نقل خطط الدفع من الـ Lead إلى الـ Student
+      \App\Models\PaymentPlan::where('lead_id', $lead->id)
+        ->update([
+          'lead_id' => null,
+          'student_id' => $student->id,
+        ]);
+
+      // 6️⃣ تحديث حالة الـ Lead إلى "تم التحويل"
+      $lead->update([
+        'registration_status' => 'converted',
+        'student_id' => $student->id,
+        'registered_at' => now(),
+        'converted_at' => now(),
+      ]);
+
+      DB::commit();
+
+      // ✅ تسجيل في السجل
+      \Log::info("تم تحويل العميل {$lead->full_name} (ID: {$lead->id}) إلى طالب (ID: {$student->id})");
+
+      return $student;
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+      \Log::error("فشل تحويل العميل {$lead->id} إلى طالب: " . $e->getMessage());
+      return null;
+    }
+  }
+
+  /**
+   * إنشاء رقم جامعي فريد
+   */
+  private function generateUniversityId(): string
+  {
+    do {
+      $id = 'STU-' . now()->format('Y') . '-' . strtoupper(substr(uniqid(), -6));
+    } while (Student::where('university_id', $id)->exists());
+
+    return $id;
+  }
+
 
 
 

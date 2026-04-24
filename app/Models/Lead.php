@@ -30,6 +30,7 @@ class Lead extends Model
     'country',
     'province',
     'study',
+    
   ];
 
   protected $casts = [
@@ -82,6 +83,19 @@ class Lead extends Model
 
 
 
+  public function paymentPlans()
+  {
+      return $this->hasMany(\App\Models\PaymentPlan::class);
+  }
+
+
+
+
+public function crmInfo()
+{
+    return $this->hasOne(LeadCrmInfo::class); // أو حسب اسم الموديل عندك
+}
+
 
 
 
@@ -124,59 +138,6 @@ protected static function booted()
     });
 }
 
-/*
 
-  protected static function booted()
-  {
-    static::addGlobalScope('branch', function ($query) {
-
-      if (!auth()->check()) {
-        return;
-      }
-
-      $user = auth()->user();
-
-      if (!$user->hasRole('super_admin')) {
-
-        $branchId = $user->employee?->branch_id;
-        // $branchId2 = $user->employee?->branch_id;
-        if ($branchId) {
-          $query->where('branch_id', $branchId);
-        }
-
-      }
-
-    });
-
-
-
-
-    static::addGlobalScope('branch', function ($query) {
-      if (!auth()->check())
-        return;
-
-      $user = auth()->user();
-      if ($user->hasRole('super_admin'))
-        return;
-
-      $employee = \App\Models\Employee::withoutGlobalScopes()
-        ->where('user_id', $user->id)
-        ->first();
-
-      if ($employee) {
-        $branchIds = collect([$employee->branch_id, $employee->secondary_branch_id])
-          ->filter()->unique()->all();
-
-        if (count($branchIds)) {
-          $query->whereIn('branch_id', $branchIds);
-        }
-      }
-    });
-
-
-
-  }
-
-*/
 
 }

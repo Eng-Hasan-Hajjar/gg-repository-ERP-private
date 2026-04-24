@@ -71,6 +71,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'approve_transaction', 'label' => 'اعتماد حركة مالية', 'module' => 'finance'],
 
 
+            ['name' => 'manage_student_payment_plan', 'label' => ' إدارة خطة الدفع للطالب ', 'module' => 'finance'],
+            ['name' => 'manage_lead_payment_plan', 'label' => ' إدارة خطة الدفع للعميل ', 'module' => 'finance'],
+
+
             /*
             |--------------------------------------------------------------------------
             | الدوام والإجازات

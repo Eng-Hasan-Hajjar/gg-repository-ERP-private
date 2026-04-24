@@ -6,7 +6,7 @@
   <div>
     <h4 class="fw-bold mb-0">درجات المكونات — {{ $exam->title }}</h4>
     <div class="text-muted small">
-      فرع: {{ $exam->branch->name }} — دبلومة: {{ $exam->diploma->name }}
+      دبلومة: {{ $exam->diploma->name }}
     </div>
   </div>
   <a class="btn btn-outline-secondary rounded-pill px-4 fw-bold" href="{{ route('exams.show',$exam) }}">

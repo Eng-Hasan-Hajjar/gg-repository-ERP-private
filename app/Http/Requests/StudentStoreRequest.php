@@ -28,6 +28,10 @@ class StudentStoreRequest extends FormRequest
       'diploma_ids' => 'required|array',
       'diploma_ids.*' => 'exists:diplomas,id',
 
+
+       'certificate_agreement' => ['sometimes', 'boolean'], 
+
+
       // nested arrays
       'crm' => 'nullable|array',
      
@@ -126,7 +130,7 @@ public function messages(): array
         'crm.required' => 'يجب إدخال بيانات CRM',
 
 
-       
+       'certificate_agreement.boolean' => 'يجب أن تكون قيمة اتفاق الشهادة صحيحة أو خاطئة.',
 
         'crm.organization.required' => 'يجب إدخال جهة العمل / المؤسسة',
 

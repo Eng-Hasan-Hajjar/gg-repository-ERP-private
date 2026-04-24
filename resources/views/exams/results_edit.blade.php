@@ -6,7 +6,7 @@
   <div>
     <h4 class="fw-bold mb-0">إدخال الدرجات — {{ $exam->title }}</h4>
     <div class="text-muted small">
-      الفرع: {{ $exam->branch->name }} — الدبلومة: {{ $exam->diploma->name }} {{ $exam->diploma->code }} — الحد الأعلى: {{ $exam->max_score }}
+     الدبلومة: {{ $exam->diploma->name }} {{ $exam->diploma->code }} — الحد الأعلى: {{ $exam->max_score }}
     </div>
   </div>
   <a class="btn btn-outline-secondary rounded-pill px-4 fw-bold" href="{{ route('exams.show',$exam) }}">

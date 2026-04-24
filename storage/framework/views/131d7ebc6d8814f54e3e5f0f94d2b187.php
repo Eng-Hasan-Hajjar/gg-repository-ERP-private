@@ -1,8 +1,7 @@
 
 <?php $__env->startSection('title', 'CRM - تفاصيل العميل المحتمل'); ?>
 
-<?php $__env->startSection('content'); ?>
-
+<?php $__env->startPush('styles'); ?>
 <style>
   /* ── Lead Profile Page ── */
   .lead-hero {
@@ -40,7 +39,6 @@
   .badge-status-canceled  { background: rgba(239,68,68,.1);  color: #b91c1c; border-color: rgba(239,68,68,.25); }
   .badge-source { background: rgba(14,165,233,.08); color: #0369a1; border-color: rgba(14,165,233,.2); }
 
-  /* ── Timeline كرت الإحصاء السريع ── */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -65,7 +63,6 @@
   .stat-tile-label { font-size: 11px; color: #64748b; font-weight: 700; }
   .stat-tile-val   { font-size: 15px; font-weight: 900; color: #0b1220; margin-top: 1px; }
 
-  /* ── Info Cards ── */
   .info-card {
     background: #fff;
     border: 1px solid rgba(226,232,240,.9);
@@ -84,18 +81,14 @@
     gap: 14px 20px;
   }
   @media(max-width:768px) { .info-grid { grid-template-columns: 1fr 1fr; } }
-  .info-item {}
   .info-item .lbl {
     font-size: 11px; font-weight: 700;
     color: #94a3b8; text-transform: uppercase; letter-spacing: .4px;
     margin-bottom: 3px;
   }
-  .info-item .val {
-    font-size: 14px; font-weight: 700; color: #1e293b;
-  }
+  .info-item .val { font-size: 14px; font-weight: 700; color: #1e293b; }
   .info-item .val.muted { color: #94a3b8; font-weight: 400; }
 
-  /* ── Diploma pills ── */
   .diploma-pill {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 14px; border-radius: 20px;
@@ -109,7 +102,6 @@
     border-color: rgba(14,165,233,.35);
   }
 
-  /* ── Pending alert banner ── */
   .pending-banner {
     background: rgba(245,158,11,.08);
     border: 1px solid rgba(245,158,11,.25);
@@ -119,7 +111,7 @@
     margin-bottom: 16px; color: #92400e; font-weight: 700; font-size: 14px;
     border-top-right-radius: 0; border-bottom-right-radius: 0;
   }
-  /* ── Timeline متابعات ── */
+
   .followup-timeline { position: relative; padding-right: 24px; }
   .followup-timeline::before {
     content: ''; position: absolute; right: 8px; top: 0; bottom: 0;
@@ -137,31 +129,44 @@
     background: #0ea5e9; border: 2px solid #fff;
     box-shadow: 0 0 0 2px rgba(14,165,233,.3);
   }
-  .followup-date {
-    font-size: 11px; font-weight: 700; color: #94a3b8;
-    text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px;
-  }
-  .followup-result {
-    font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 2px;
-  }
+  .followup-date { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+  .followup-result { font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 2px; }
   .followup-notes { font-size: 13px; color: #64748b; }
 
-  /* ── Payment Form ── */
-  .payment-section {
+  /* ── خطة الدفع ── */
+  .payment-plan-section {
     background: rgba(16,185,129,.04);
-    border: 1px solid rgba(16,185,129,.2);
+    border: 2px solid rgba(16,185,129,.2);
     border-radius: 16px; padding: 20px 22px;
+    margin-bottom: 20px;
+  }
+  .payment-plan-section .section-head {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 900; font-size: 16px; color: #047857;
     margin-bottom: 16px;
   }
-  .payment-section .section-head {
-    display: flex; align-items: center; gap: 8px;
-    font-weight: 900; font-size: 15px; color: #047857; margin-bottom: 16px;
+
+  /* ── ستايلات التحقق ── */
+  .installment-input.invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.15rem rgba(220,53,69,0.25) !important;
+  }
+  .installment-input.valid { border-color: #198754 !important; }
+  .inst-error-msg { color: #dc3545; font-size: 12px; font-weight: 700; margin-top: 4px; display: none; }
+  .inst-error-msg.show { display: block; }
+  .summary-box { border-radius: 12px; padding: 14px; margin-top: 16px; border: 2px solid; }
+  .summary-box.ok   { background: rgba(16,185,129,0.08); border-color: #10b981; }
+  .summary-box.bad  { background: rgba(220,53,69,0.08);  border-color: #dc3545; }
+  .summary-row { display: flex; justify-content: space-around; text-align: center; }
+  .summary-row .item small { display: block; color: #64748b; font-size: 11px; font-weight: 700; }
+  .summary-row .item strong { font-size: 16px; font-weight: 800; }
+  .summary-box .warning-msg {
+    text-align: center; color: #dc3545;
+    font-weight: 800; font-size: 13px; margin-top: 8px;
+    padding-top: 8px; border-top: 1px dashed rgba(220,53,69,0.3);
   }
 
-  /* ── Action buttons ── */
-  .action-bar {
-    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;
-  }
+  .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
   .btn-convert {
     background: linear-gradient(135deg, #10b981, #059669);
     color: #fff; border: 0; border-radius: 12px;
@@ -186,7 +191,31 @@
     margin-bottom: 16px;
   }
   .btn-back:hover { color: #0ea5e9; }
+
+  /* ── كرت خطة الدفع الموجودة ── */
+  .plan-card {
+    background: #fff;
+    border: 1px solid rgba(16,185,129,.25);
+    border-radius: 14px; padding: 18px;
+    margin-bottom: 12px;
+  }
+  .plan-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+  }
+  .plan-card-title { font-weight: 900; font-size: 15px; color: #1e293b; }
+  .plan-kv {
+    display: grid; grid-template-columns: 150px 1fr;
+    gap: 8px; padding: 7px 0;
+    border-bottom: 1px dashed rgba(226,232,240,.8);
+  }
+  .plan-kv:last-child { border-bottom: 0; }
+  .plan-kv .k { font-size: 12px; font-weight: 700; color: #94a3b8; }
+  .plan-kv .v { font-size: 13px; font-weight: 700; color: #1e293b; }
 </style>
+<?php $__env->stopPush(); ?>
+
+<?php $__env->startSection('content'); ?>
 
 
 <a class="btn-back" href="<?php echo e(route('leads.index')); ?>">
@@ -249,14 +278,8 @@
         <i class="bi bi-pencil" style="font-size:13px"></i> تعديل
       </a>
     <?php endif; ?>
-    <?php if(auth()->user()?->hasPermission('convert_leads') && $lead->registration_status === 'pending'): ?>
-      <form method="POST" action="<?php echo e(route('leads.convert', $lead)); ?>" style="margin:0">
-        <?php echo csrf_field(); ?>
-        <button class="btn-convert">
-          <i class="bi bi-person-check-fill" style="font-size:13px"></i> تحويل إلى طالب
-        </button>
-      </form>
-    <?php endif; ?>
+
+  
   </div>
 </div>
 
@@ -266,20 +289,14 @@
     <div class="stat-tile-icon blue"><i class="bi bi-calendar-event"></i></div>
     <div>
       <div class="stat-tile-label">أول تواصل</div>
-      <div class="stat-tile-val">
-        <?php echo e($lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—'); ?>
-
-      </div>
+      <div class="stat-tile-val"><?php echo e($lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—'); ?></div>
     </div>
   </div>
   <div class="stat-tile">
     <div class="stat-tile-icon amber"><i class="bi bi-clock-history"></i></div>
     <div>
       <div class="stat-tile-label">منذ التواصل</div>
-      <div class="stat-tile-val">
-        <?php echo e($lead->first_contact_date ? $lead->first_contact_date->diffForHumans() : '—'); ?>
-
-      </div>
+      <div class="stat-tile-val"><?php echo e($lead->first_contact_date ? $lead->first_contact_date->diffForHumans() : '—'); ?></div>
     </div>
   </div>
   <div class="stat-tile">
@@ -293,10 +310,7 @@
     <div class="stat-tile-icon purple"><i class="bi bi-person-circle"></i></div>
     <div>
       <div class="stat-tile-label">مسؤول التواصل</div>
-      <div class="stat-tile-val" style="font-size:13px;">
-        <?php echo e($lead->creator->name ?? $lead->creator->email ?? '—'); ?>
-
-      </div>
+      <div class="stat-tile-val" style="font-size:13px;"><?php echo e($lead->creator->name ?? $lead->creator->email ?? '—'); ?></div>
     </div>
   </div>
 </div>
@@ -305,7 +319,7 @@
 <?php if($lead->registration_status === 'pending'): ?>
   <div class="pending-banner">
     <i class="bi bi-info-circle-fill" style="font-size:16px"></i>
-    العميل قيد الانتظار — سيُحوَّل إلى طالب بعد تسجيل دفعة مالية أولية
+    العميل قيد الانتظار — سيُحوَّل إلى طالب تلقائياً بعد ترحيل أول دفعة
   </div>
 <?php endif; ?>
 
@@ -315,9 +329,7 @@
 
     
     <div class="info-card">
-      <div class="info-card-title">
-        <i class="bi bi-person-vcard"></i> المعلومات الشخصية
-      </div>
+      <div class="info-card-title"><i class="bi bi-person-vcard"></i> المعلومات الشخصية</div>
       <div class="info-grid">
         <div class="info-item">
           <div class="lbl">الاسم الكامل</div>
@@ -375,50 +387,25 @@
 
     
     <div class="info-card">
-      <div class="info-card-title">
-        <i class="bi bi-geo-alt"></i> الموقع الجغرافي
-      </div>
+      <div class="info-card-title"><i class="bi bi-geo-alt"></i> الموقع الجغرافي</div>
       <div class="info-grid">
-        <div class="info-item">
-          <div class="lbl">البلد</div>
-          <div class="val"><?php echo e($lead->country ?? '—'); ?></div>
-        </div>
-        <div class="info-item">
-          <div class="lbl">المحافظة / المدينة</div>
-          <div class="val"><?php echo e($lead->province ?? '—'); ?></div>
-        </div>
-        <div class="info-item">
-          <div class="lbl">الفرع المسجَّل</div>
-          <div class="val"><?php echo e($lead->branch->name ?? '—'); ?></div>
-        </div>
+        <div class="info-item"><div class="lbl">البلد</div><div class="val"><?php echo e($lead->country ?? '—'); ?></div></div>
+        <div class="info-item"><div class="lbl">المحافظة / المدينة</div><div class="val"><?php echo e($lead->province ?? '—'); ?></div></div>
+        <div class="info-item"><div class="lbl">الفرع المسجَّل</div><div class="val"><?php echo e($lead->branch->name ?? '—'); ?></div></div>
       </div>
     </div>
 
     
     <div class="info-card">
-      <div class="info-card-title">
-        <i class="bi bi-headset"></i> معلومات CRM
-      </div>
+      <div class="info-card-title"><i class="bi bi-headset"></i> معلومات CRM</div>
       <div class="info-grid">
         <div class="info-item">
           <div class="lbl">تاريخ أول تواصل</div>
-          <div class="val">
-            <?php echo e($lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—'); ?>
-
-          </div>
+          <div class="val"><?php echo e($lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—'); ?></div>
         </div>
-        <div class="info-item">
-          <div class="lbl">مرحلة العميل</div>
-          <div class="val"><?php echo e($stage_ar); ?></div>
-        </div>
-        <div class="info-item">
-          <div class="lbl">حالة التسجيل</div>
-          <div class="val"><?php echo e($registration_ar); ?></div>
-        </div>
-        <div class="info-item">
-          <div class="lbl">المصدر</div>
-          <div class="val"><?php echo e($source_ar); ?></div>
-        </div>
+        <div class="info-item"><div class="lbl">مرحلة العميل</div><div class="val"><?php echo e($stage_ar); ?></div></div>
+        <div class="info-item"><div class="lbl">حالة التسجيل</div><div class="val"><?php echo e($registration_ar); ?></div></div>
+        <div class="info-item"><div class="lbl">المصدر</div><div class="val"><?php echo e($source_ar); ?></div></div>
         <div class="info-item">
           <div class="lbl">مسؤول التواصل</div>
           <div class="val"><?php echo e($lead->creator->name ?? $lead->creator->email ?? '—'); ?></div>
@@ -454,6 +441,252 @@
       <?php endif; ?>
     </div>
 
+    
+    <?php if($lead->registration_status === 'pending'): ?>
+
+      
+      <?php if($paymentPlans->count()): ?>
+        <div class="info-card" style="border-color:rgba(16,185,129,.3);">
+          <div class="info-card-title" style="color:#047857;">
+            <i class="bi bi-calendar-check-fill"></i> خطط الدفع المسجّلة
+          </div>
+
+          <?php $__currentLoopData = $paymentPlans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="plan-card">
+              <div class="plan-card-header">
+                <div class="plan-card-title">
+                  <i class="bi bi-mortarboard-fill" style="color:#0ea5e9; font-size:14px"></i>
+                  <?php echo e($plan->diploma->name); ?>
+
+                </div>
+                <span class="badge bg-info text-dark"><?php echo e($plan->currency); ?></span>
+              </div>
+
+              <div class="plan-kv">
+                <div class="k">المبلغ الإجمالي</div>
+                <div class="v fw-bold"><?php echo e(number_format($plan->total_amount, 2)); ?></div>
+              </div>
+              <div class="plan-kv">
+                <div class="k">نوع الدفع</div>
+                <div class="v"><?php echo e($plan->payment_type === 'full' ? 'كامل' : 'دفعات'); ?></div>
+              </div>
+              <?php if($plan->payment_type === 'installments'): ?>
+                <div class="plan-kv">
+                  <div class="k">عدد الدفعات</div>
+                  <div class="v"><?php echo e($plan->installments_count); ?></div>
+                </div>
+              <?php endif; ?>
+              <div class="plan-kv">
+                <div class="k">المدفوع</div>
+                <div class="v text-success fw-bold"><?php echo e(number_format($plan->paid ?? 0, 2)); ?></div>
+              </div>
+              <div class="plan-kv">
+                <div class="k">المتبقي</div>
+                <div class="v text-warning fw-bold"><?php echo e(number_format(max($plan->remaining ?? 0, 0), 2)); ?></div>
+              </div>
+
+              <?php if($plan->installments->count()): ?>
+                <div class="mt-3 pt-2 border-top">
+                  <div class="fw-bold small text-muted mb-2">جدول الأقساط:</div>
+                  <?php $__currentLoopData = $plan->installments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="plan-kv">
+                      <div class="k">الدفعة <?php echo e($loop->iteration); ?></div>
+                      <div class="v">
+                        <?php echo e(number_format($i->amount, 2)); ?>
+
+                        <span class="text-muted">(<?php echo e($i->due_date->format('Y-m-d')); ?>)</span>
+                      </div>
+                    </div>
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+              <?php endif; ?>
+
+              
+              <?php if(($plan->payments_count ?? 0) <= 1): ?>
+                <div class="mt-3">
+                  <a href="<?php echo e(route('payment.plan.edit', $plan->id)); ?>"
+                     class="btn btn-sm btn-outline-warning fw-bold">
+                    <i class="bi bi-pencil"></i> تعديل الخطة
+                  </a>
+                </div>
+              <?php else: ?>
+                <div class="mt-3">
+                  <span class="badge bg-secondary">
+                    <i class="bi bi-lock"></i> لا يمكن تعديل الخطة بعد وجود دفعات
+                  </span>
+                </div>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+      <?php endif; ?>
+
+      
+      <?php
+        $diplomasWithoutPlan = $lead->diplomas->filter(fn($d) => !isset($plansByDiploma[$d->id]));
+      ?>
+
+      <?php if($diplomasWithoutPlan->count()): ?>
+        <div class="payment-plan-section">
+          <div class="section-head">
+            <i class="bi bi-wallet2" style="font-size:20px"></i>
+            إنشاء خطة دفع
+          </div>
+
+          <form method="POST" action="<?php echo e(route('payment.plan.store')); ?>" id="lead-plan-form">
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="lead_id" value="<?php echo e($lead->id); ?>">
+            <input type="hidden" name="diploma_id" id="lead_selected_diploma">
+
+            <?php if($errors->any()): ?>
+              <div class="alert alert-danger fw-semibold mb-3">
+                <i class="bi bi-exclamation-triangle"></i>
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $e): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><div><?php echo e($e); ?></div><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              </div>
+            <?php endif; ?>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="fw-bold">الدبلومة</label>
+                <select class="form-select" id="lead_diploma_preview">
+                  <?php $__currentLoopData = $diplomasWithoutPlan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($d->id); ?>"><?php echo e($d->name); ?></option>
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="fw-bold">المبلغ الإجمالي</label>
+                <input type="number" step="0.01" min="0.01" name="total_amount"
+                       id="lead_total_amount" class="form-control" required>
+              </div>
+
+              <div class="col-md-4">
+                <label class="fw-bold">العملة</label>
+                <select name="currency" class="form-select">
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="TRY">TRY</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="fw-bold">نوع الدفع</label>
+                <select name="payment_type" id="lead_payment_type" class="form-select">
+                  <option value="full">كامل</option>
+                  <option value="installments">دفعات</option>
+                </select>
+              </div>
+
+              <div class="col-md-4 lead-installments-box d-none">
+                <label class="fw-bold">عدد الدفعات</label>
+                <select name="installments_count" id="lead_installments_count" class="form-select">
+                  <option value="">اختر</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+            </div>
+
+            <hr>
+
+            <div id="lead_installments_container"></div>
+            <div id="lead_installments_summary"></div>
+
+            <div class="row mt-3">
+              <?php $__currentLoopData = $diplomasWithoutPlan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <div class="col-md-6 mt-2">
+                  <button type="submit" class="btn btn-success fw-bold w-100 lead-plan-save-btn"
+                          onclick="selectLeadDiploma(<?php echo e($d->id); ?>)">
+                    <i class="bi bi-check2-circle"></i> حفظ خطة <?php echo e($d->name); ?>
+
+                  </button>
+                </div>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+          </form>
+        </div>
+      <?php endif; ?>
+
+      
+      <div class="info-card" style="background:rgba(16,185,129,.04); border-color:rgba(16,185,129,.2);">
+        <div class="info-card-title" style="color:#047857;">
+          <i class="bi bi-cash-coin"></i> تسجيل دفعة مالية
+        </div>
+
+        <?php if(session('success')): ?>
+          <div class="alert alert-success fw-bold">
+            <i class="bi bi-check-circle"></i> <?php echo e(session('success')); ?>
+
+          </div>
+        <?php endif; ?>
+
+        <?php if($errors->has('amount')): ?>
+          <div class="alert alert-danger fw-bold">
+            <i class="bi bi-exclamation-triangle"></i> <?php echo e($errors->first('amount')); ?>
+
+          </div>
+        <?php endif; ?>
+
+        <form method="POST" action="<?php echo e(route('financial.pay')); ?>">
+          <?php echo csrf_field(); ?>
+          <input type="hidden" name="financial_account_id" value="<?php echo e($lead->financialAccount?->id); ?>">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-bold">الدبلومة</label>
+              <select name="diploma_id" class="form-select" required>
+                <?php $__currentLoopData = $lead->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $diploma): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <option value="<?php echo e($diploma->id); ?>"><?php echo e($diploma->name); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-bold">الصندوق</label>
+              <select name="cashbox_id" class="form-select" required>
+                <?php $__currentLoopData = \App\Models\Cashbox::where('status','active')->where('branch_id',$lead->branch_id)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <option value="<?php echo e($box->id); ?>"><?php echo e($box->name); ?> — <?php echo e($box->currency); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-bold">المبلغ</label>
+              <input type="number" step="0.01" name="amount" class="form-control" required placeholder="0.00">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-bold">ملاحظات</label>
+              <input type="text" name="notes" class="form-control" placeholder="اختياري">
+            </div>
+            <div class="col-12">
+              <button class="btn btn-success fw-bold px-4">
+                <i class="bi bi-check-circle-fill"></i> تسجيل الدفعة
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+    <?php else: ?>
+      
+      <?php if($lead->student_id): ?>
+        <div class="info-card" style="background:rgba(16,185,129,.04); border-color:rgba(16,185,129,.3);">
+          <div class="info-card-title" style="color:#047857;">
+            <i class="bi bi-person-check-fill"></i> تم التحويل إلى طالب
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="fs-5 fw-bold text-success">
+              <i class="bi bi-check-circle-fill"></i>
+              تم تحويل هذا العميل إلى طالب بنجاح
+            </div>
+            <a href="<?php echo e(route('students.show', $lead->student_id)); ?>"
+               class="btn btn-success fw-bold">
+              <i class="bi bi-mortarboard-fill"></i> عرض ملف الطالب
+            </a>
+          </div>
+        </div>
+      <?php endif; ?>
+    <?php endif; ?>
+
   </div>
 
   
@@ -461,9 +694,7 @@
 
     
     <div class="info-card">
-      <div class="info-card-title">
-        <i class="bi bi-mortarboard-fill"></i> الدبلومات
-      </div>
+      <div class="info-card-title"><i class="bi bi-mortarboard-fill"></i> الدبلومات</div>
       <?php $__empty_1 = true; $__currentLoopData = $lead->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
         <div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(226,232,240,.7);">
           <div style="width:34px;height:34px;border-radius:10px;background:rgba(14,165,233,.1);color:#0369a1;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">
@@ -491,14 +722,12 @@
     
     <?php if($lead->financialAccount): ?>
       <div class="info-card">
-        <div class="info-card-title">
-          <i class="bi bi-wallet2"></i> الحساب المالي
-        </div>
+        <div class="info-card-title"><i class="bi bi-wallet2"></i> الحساب المالي</div>
         <?php
-          $account   = $lead->financialAccount;
-          $totalIn   = $account->transactions()->where('type','in')->sum('amount');
-          $totalOut  = $account->transactions()->where('type','out')->sum('amount');
-          $lastTrx   = $account->transactions()->latest()->first();
+          $account  = $lead->financialAccount;
+          $totalIn  = $account->transactions()->where('type','in')->sum('amount');
+          $totalOut = $account->transactions()->where('type','out')->sum('amount');
+          $lastTrx  = $account->transactions()->latest()->first();
         ?>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
           <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:10px 12px;">
@@ -537,57 +766,9 @@
 </div>
 
 
-<?php if($lead->registration_status === 'pending'): ?>
-  <div class="payment-section">
-    <div class="section-head">
-      <i class="bi bi-cash-coin" style="font-size:18px"></i>
-      تسجيل دفعة مالية
-    </div>
-    <form method="POST" action="<?php echo e(route('financial.pay')); ?>">
-      <?php echo csrf_field(); ?>
-      <input type="hidden" name="financial_account_id" value="<?php echo e($lead->financialAccount?->id); ?>">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label fw-bold" style="font-size:13px;">الدبلومة</label>
-          <select name="diploma_id" class="form-select" required>
-            <?php $__currentLoopData = $lead->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $diploma): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <option value="<?php echo e($diploma->id); ?>"><?php echo e($diploma->name); ?></option>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-bold" style="font-size:13px;">الصندوق</label>
-          <select name="cashbox_id" class="form-select" required>
-            <?php $__currentLoopData = \App\Models\Cashbox::where('status','active')->where('branch_id',$lead->branch_id)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <option value="<?php echo e($box->id); ?>"><?php echo e($box->name); ?> — <?php echo e($box->currency); ?></option>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label fw-bold" style="font-size:13px;">المبلغ</label>
-          <input type="number" step="0.01" name="amount" class="form-control" required placeholder="0.00">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label fw-bold" style="font-size:13px;">ملاحظات</label>
-          <input type="text" name="notes" class="form-control" placeholder="اختياري">
-        </div>
-        <div class="col-12">
-          <button class="btn btn-success fw-bold px-4">
-            <i class="bi bi-check-circle-fill"></i> تسجيل الدفعة
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
-<?php endif; ?>
-
-
 <div class="info-card">
-  <div class="info-card-title">
-    <i class="bi bi-chat-square-dots-fill"></i> سجل المتابعات
-  </div>
+  <div class="info-card-title"><i class="bi bi-chat-square-dots-fill"></i> سجل المتابعات</div>
 
-  
   <form method="POST" action="<?php echo e(route('leads.followups.store', $lead)); ?>"
         style="background:rgba(248,250,252,.8);border:1px solid rgba(226,232,240,.9);border-radius:12px;padding:16px;margin-bottom:20px;">
     <?php echo csrf_field(); ?>
@@ -615,7 +796,6 @@
     </div>
   </form>
 
-  
   <?php if($lead->followups->count()): ?>
     <div class="followup-timeline">
       <?php $__currentLoopData = $lead->followups->sortByDesc('followup_date'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -644,4 +824,137 @@
 </div>
 
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+(function () {
+  'use strict';
+
+  const $totalInput  = document.getElementById('lead_total_amount');
+  const $paymentType = document.getElementById('lead_payment_type');
+  const $countSelect = document.getElementById('lead_installments_count');
+  const $container   = document.getElementById('lead_installments_container');
+  const $summary     = document.getElementById('lead_installments_summary');
+  const $installBox  = document.querySelector('.lead-installments-box');
+
+  if (!$totalInput) return; // إذا لم يكن النموذج موجوداً (العميل تحوّل)
+
+  function buildInstallmentRow(index) {
+    return `
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          <label class="fw-bold">قيمة الدفعة ${index}</label>
+          <input type="number" step="0.01" min="0.01"
+                 name="installments[${index}][amount]"
+                 class="form-control installment-input"
+                 data-index="${index}"
+                 placeholder="0.00" required>
+          <div class="inst-error-msg" data-error="${index}"></div>
+        </div>
+        <div class="col-md-6">
+          <label class="fw-bold">تاريخ الدفعة ${index}</label>
+          <input type="date" name="installments[${index}][due_date]"
+                 class="form-control" required>
+        </div>
+      </div>`;
+  }
+
+  function runValidation() {
+    const total  = parseFloat($totalInput.value) || 0;
+    const inputs = document.querySelectorAll('.installment-input');
+    const btns   = document.querySelectorAll('.lead-plan-save-btn');
+
+    if (inputs.length === 0) {
+      $summary.innerHTML = '';
+      btns.forEach(b => { b.disabled = false; b.classList.remove('opacity-50'); });
+      return true;
+    }
+
+    let sum = 0, hasError = false;
+    inputs.forEach(inp => { sum += parseFloat(inp.value) || 0; });
+
+    inputs.forEach(inp => {
+      const idx   = inp.dataset.index;
+      const val   = parseFloat(inp.value) || 0;
+      const errEl = document.querySelector(`[data-error="${idx}"]`);
+      if (inp.value === '') { inp.classList.remove('invalid','valid'); errEl.classList.remove('show'); return; }
+      if (val <= 0) {
+        inp.classList.add('invalid'); inp.classList.remove('valid');
+        errEl.textContent = '⚠️ القيمة يجب أن تكون أكبر من صفر';
+        errEl.classList.add('show'); hasError = true; return;
+      }
+      if (total > 0 && val > total) {
+        inp.classList.add('invalid'); inp.classList.remove('valid');
+        errEl.textContent = `⚠️ قيمة الدفعة (${val.toFixed(2)}) أكبر من الإجمالي (${total.toFixed(2)})`;
+        errEl.classList.add('show'); hasError = true; return;
+      }
+      inp.classList.add('valid'); inp.classList.remove('invalid');
+      errEl.classList.remove('show');
+    });
+
+    const overLimit = total > 0 && sum > total;
+    const remaining = total - sum;
+    const boxClass  = (overLimit || hasError) ? 'bad' : 'ok';
+
+    $summary.innerHTML = `
+      <div class="summary-box ${boxClass}">
+        <div class="summary-row">
+          <div class="item"><small>الإجمالي</small><strong>${total.toFixed(2)}</strong></div>
+          <div class="item"><small>مجموع الدفعات</small><strong class="${overLimit ? 'text-danger' : ''}">${sum.toFixed(2)}</strong></div>
+          <div class="item"><small>المتبقي</small><strong class="${remaining < 0 ? 'text-danger' : 'text-success'}">${remaining.toFixed(2)}</strong></div>
+        </div>
+        ${overLimit ? '<div class="warning-msg">⚠️ مجموع الدفعات يتجاوز المبلغ الإجمالي!</div>' : ''}
+        ${hasError && !overLimit ? '<div class="warning-msg">⚠️ يوجد أخطاء في القيم المدخلة</div>' : ''}
+      </div>`;
+
+    const isValid = !hasError && !overLimit;
+    btns.forEach(btn => {
+      btn.disabled = !isValid;
+      btn.classList.toggle('opacity-50', !isValid);
+      btn.style.cursor = isValid ? 'pointer' : 'not-allowed';
+    });
+    return isValid;
+  }
+
+  function attachInputListeners() {
+    document.querySelectorAll('.installment-input').forEach(inp => {
+      inp.addEventListener('input', runValidation);
+    });
+  }
+
+  $paymentType.addEventListener('change', function () {
+    const isInst = this.value === 'installments';
+    $installBox.classList.toggle('d-none', !isInst);
+    if (!isInst) { $container.innerHTML = ''; $summary.innerHTML = ''; $countSelect.value = ''; runValidation(); }
+  });
+
+  $countSelect.addEventListener('change', function () {
+    const count = parseInt(this.value);
+    $container.innerHTML = ''; $summary.innerHTML = '';
+    if (!count) { runValidation(); return; }
+    let html = '';
+    for (let i = 1; i <= count; i++) html += buildInstallmentRow(i);
+    $container.innerHTML = html;
+    attachInputListeners();
+    runValidation();
+  });
+
+  $totalInput.addEventListener('input', runValidation);
+
+  document.getElementById('lead-plan-form').addEventListener('submit', function (e) {
+    if (!runValidation()) {
+      e.preventDefault();
+      alert('⚠️ يرجى تصحيح الأخطاء قبل الحفظ');
+      return false;
+    }
+  });
+
+  window.selectLeadDiploma = function (id) {
+    document.getElementById('lead_selected_diploma').value = id;
+  };
+
+  runValidation();
+})();
+</script>
+<?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/crm/leads/show.blade.php ENDPATH**/ ?>

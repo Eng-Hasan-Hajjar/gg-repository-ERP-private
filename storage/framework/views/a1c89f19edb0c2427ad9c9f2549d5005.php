@@ -165,7 +165,22 @@ unset($__errorArgs, $__bag); ?>
       </div>
 
 
+<div class="row g-3 mt-3">
+  <div class="col-12">
+    <div class="form-check">
+      <input type="hidden" name="certificate_agreement" value="0">
 
+<input class="form-check-input" type="checkbox" 
+       id="certificate_agreement"
+       name="certificate_agreement"
+       value="1"
+       <?php echo e(old('certificate_agreement', $student->certificate_agreement ?? 0) ? 'checked' : ''); ?>>
+      <label class="form-check-label fw-bold" for="certificate_agreement">
+        اتفاق الشهادة الممنوحة
+      </label>
+    </div>
+  </div>
+</div>
 
       
 <div class="col-md-4">
@@ -257,7 +272,7 @@ unset($__errorArgs, $__bag); ?>">
 
             <?php $__currentLoopData = $statusOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $st => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <option value="<?php echo e($st); ?>"
-                    <?php if(old('status') == $st): echo 'selected'; endif; ?>>
+                   <?php if(old('status', $student->status ?? '') == $st): echo 'selected'; endif; ?>>
                     <?php echo e($label); ?>
 
                 </option>
@@ -728,7 +743,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                    value="<?php echo e($crm['job'] ?? ''); ?>">
+                    value="<?php echo e(old('crm.job', $crm['job'] ?? '')); ?>">
 
 
             <?php $__errorArgs = ['crm.job'];
@@ -757,7 +772,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                  value="<?php echo e($crm['country'] ?? ''); ?>">
+                  value="<?php echo e(old('crm.country', $crm['country'] ?? '')); ?>">
 
 
                   <?php $__errorArgs = ['crm.country'];
@@ -782,7 +797,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                  value="<?php echo e($crm['province'] ?? ''); ?>">
+                  value="<?php echo e(old('crm.province', $crm['province'] ?? '')); ?>">
 
 
               <?php $__errorArgs = ['crm.province'];
@@ -809,7 +824,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                  value="<?php echo e($crm['study'] ?? ''); ?>">
+                  value="<?php echo e(old('crm.study', $crm['study'] ?? '')); ?>">
 
                     <?php $__errorArgs = ['crm.study'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');

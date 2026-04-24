@@ -23,11 +23,13 @@ class Student extends Model
     'registration_status',
     'is_confirmed',
     'confirmed_at',
+    'certificate_agreement',  
   ];
 
   protected $casts = [
     'is_confirmed' => 'boolean',
     'confirmed_at' => 'datetime',
+     'certificate_agreement' => 'boolean',
   ];
 
   public function branch()

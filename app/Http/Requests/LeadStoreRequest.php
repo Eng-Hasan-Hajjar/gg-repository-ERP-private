@@ -20,7 +20,7 @@ class LeadStoreRequest extends FormRequest
             'full_name' => 'required|string|max:190',
             'phone' => 'required|string|max:50',
             'first_contact_date' => 'required|date',
-            'age' => 'required|integer|min:1|max:120',
+            
             'job' => 'required|string|max:120',
             'branch_id' => 'required|exists:branches,id',
             'country' => 'nullable|string|max:100',
@@ -38,6 +38,7 @@ class LeadStoreRequest extends FormRequest
             'province' => $strict ? 'nullable|string|max:100' : 'nullable|string|max:100',
             'need' => $strict ? 'nullable|string' : 'nullable|string',
             'notes' => $strict ? 'required|string|max:200' : 'nullable|string|max:200',
+            'age' => $strict ? 'required|integer|min:1|max:120' : 'nullable|integer|min:1|max:100',
 
         ];
     }

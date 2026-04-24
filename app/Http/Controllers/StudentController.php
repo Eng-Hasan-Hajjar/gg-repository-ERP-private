@@ -232,6 +232,13 @@ class StudentController extends Controller
         $data['confirmed_at'] = now();
         $data['university_id'] = $this->generateUniversityId();
 
+
+
+          // ✅ تأكد من وجود قيمة للحقل certificate_agreement
+    $data['certificate_agreement'] = $request->has('certificate_agreement') && $request->certificate_agreement == 1;
+
+
+
         $student = DB::transaction(function () use ($data, $request) {
 
             $student = Student::create($data);
@@ -316,6 +323,125 @@ class StudentController extends Controller
     }
 
 
+
+    
+public function show(Student $student)
+{
+    $student->load(['branch', 'diplomas', 'profile', 'crmInfo']);
+ 
+    $results = \App\Models\ExamResult::with(['exam.diploma'])
+        ->where('student_id', $student->id)
+        ->get();
+ 
+    $p       = $student->profile;
+    $waDigits = $student->whatsapp ? preg_replace('/\D+/', '', $student->whatsapp) : null;
+    $waLink  = $waDigits ? "https://wa.me/{$waDigits}" : null;
+    $files   = $this->buildProfileFiles($p);
+    $diplomaFiles = $this->buildDiplomaFiles($student);
+    $labels  = $this->studentArabicLabels();
+ 
+    $status_ar       = $labels['student_status'][$student->status]             ?? ($student->status ?? '-');
+    $registration_ar = $labels['registration_status'][$student->registration_status] ?? '-';
+    $mode_ar         = $labels['mode'][$student->mode]                         ?? '-';
+ 
+    $crm_source_ar = $student->crmInfo
+        ? ($labels['crm_source'][$student->crmInfo->source] ?? '-')
+        : '-';
+ 
+    $crm_stage_ar = $student->crmInfo
+        ? ($labels['crm_stage'][$student->crmInfo->stage] ?? '-')
+        : '-';
+ 
+    // تعريب حالة الدبلومة
+    $diplomaStatusMap = [
+        'active'  => 'مستمر',
+        'waiting' => 'قيد الانتظار',
+        'finished'=> 'منتهي',
+    ];
+    $student->diplomas->transform(function ($d) use ($diplomaStatusMap) {
+        $d->pivot->status_ar = $diplomaStatusMap[$d->pivot->status] ?? $d->pivot->status;
+        return $d;
+    });
+ 
+    $financial = $student->financialAccount?->load('transactions.cashbox');
+ 
+    // الرصيد حسب العملة
+    $balancesByCurrency = [];
+    if ($financial) {
+        $transactions = $financial->transactions()
+            ->with('cashbox')
+            ->where('status', 'posted')
+            ->get();
+ 
+        $grouped = $transactions->groupBy(fn($trx) => $trx->cashbox->currency);
+        foreach ($grouped as $currency => $items) {
+            $in  = $items->where('type', 'in')->sum('amount');
+            $out = $items->where('type', 'out')->sum('amount');
+            $balancesByCurrency[$currency] = $in - $out;
+        }
+    }
+ 
+    // ══════════════════════════════════════════════════════════════
+    // خطط الدفع:
+    // الأولوية: الخطة المنقولة من Lead (lead_id مرتبط بهذا الطالب)
+    // ثم الخطط المرتبطة مباشرة بالطالب
+    // ══════════════════════════════════════════════════════════════
+    $paymentPlans = \App\Models\PaymentPlan::where(function ($q) use ($student) {
+            $q->where('student_id', $student->id)
+              ->orWhere(function ($q2) use ($student) {
+                  // الخطط المرتبطة بـ Lead تحوّل إلى هذا الطالب
+                  $q2->whereHas('lead', fn($lq) =>
+                      $lq->where('student_id', $student->id)
+                  );
+              });
+        })
+        ->with(['installments', 'diploma'])
+        ->get();
+ 
+    // حساب المدفوع والمتبقي لكل خطة
+    foreach ($paymentPlans as $plan) {
+        $paid = $financial
+            ? $financial->transactions()
+                ->where('diploma_id', $plan->diploma_id)
+                ->where('type', 'in')
+                ->whereHas('cashbox', function ($q) use ($plan) {
+                    $q->where('currency', $plan->currency);
+                })
+                ->sum('amount')
+            : 0;
+ 
+        $plan->paid      = $paid;
+        $plan->remaining = $plan->total_amount - $paid;
+    }
+ 
+    $plansByDiploma = $paymentPlans->keyBy('diploma_id');
+ 
+    // هل الخطة قادمة من Lead (قراءة فقط في بعض الحالات)؟
+    $planFromLead = $paymentPlans->filter(fn($p) => !is_null($p->lead_id))->keyBy('diploma_id');
+ 
+    return view('students.show', compact(
+        'student',
+        'p',
+        'waLink',
+        'files',
+        'diplomaFiles',
+        'results',
+        'status_ar',
+        'registration_ar',
+        'mode_ar',
+        'crm_source_ar',
+        'crm_stage_ar',
+        'financial',
+        'balancesByCurrency',
+        'paymentPlans',
+        'plansByDiploma',
+        'planFromLead'    // ← جديد: الخطط المنقولة من Lead
+    ));
+}
+ 
+
+
+/*
     public function show(Student $student)
     {
         $student->load(['branch', 'diplomas', 'profile', 'crmInfo']);
@@ -453,7 +579,7 @@ class StudentController extends Controller
             'plansByDiploma'
         ));
     }
-
+*/
     /**
      * ✅ تجهيز روابط الملفات + exists بشكل آمن حتى لو ما في بروفايل
      */
@@ -575,6 +701,12 @@ class StudentController extends Controller
     {
         $data = $request->validated();
 
+
+
+            // ✅ تأكد من وجود قيمة للحقل certificate_agreement
+    $data['certificate_agreement'] = $request->has('certificate_agreement') && $request->certificate_agreement == 1;
+
+    
 
 
         $user = auth()->user();

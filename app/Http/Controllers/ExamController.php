@@ -89,7 +89,7 @@ $hasFilter = collect($request->only(['search','branch_id','diploma_id','trainer_
                 ->get(),
         ]);
     }
-
+/*
     public function store(ExamStoreRequest $request)
     {
 
@@ -110,6 +110,7 @@ $hasFilter = collect($request->only(['search','branch_id','diploma_id','trainer_
             ->route('exams.show', $exam)
             ->with('success', 'تم إنشاء الامتحان بنجاح.');
     }
+            */
     /*
         public function show(Exam $exam)
         {
@@ -118,6 +119,40 @@ $hasFilter = collect($request->only(['search','branch_id','diploma_id','trainer_
             return view('exams.show', compact('exam'));
         }
     */
+        // في ExamController.php
+public function store(ExamStoreRequest $request)
+{
+    $data = $request->validated();
+    
+    $user = auth()->user();
+    
+    if (!$user->hasRole('super_admin')) {
+        $data['branch_id'] = $user->employee?->branch_id;
+    }
+    
+    $exam = Exam::create($data);
+    
+    return redirect()
+        ->route('exams.show', $exam)
+        ->with('success', 'تم إنشاء الامتحان بنجاح.');
+}
+
+public function update(ExamUpdateRequest $request, Exam $exam)
+{
+    $data = $request->validated();
+    
+    $user = auth()->user();
+    
+    if (!$user->hasRole('super_admin')) {
+        $data['branch_id'] = $user->employee?->branch_id;
+    }
+    
+    $exam->update($data);
+    
+    return redirect()
+        ->route('exams.show', $exam)
+        ->with('success', 'تم تعديل الامتحان بنجاح');
+}
     public function show(Exam $exam)
     {
         $exam->load(['branch', 'diploma', 'trainer', 'results.student', 'results.student.branch', 'results.student.diploma']);
@@ -167,7 +202,7 @@ $hasFilter = collect($request->only(['search','branch_id','diploma_id','trainer_
                 ->with('success','تم تحديث الامتحان.');
         }
     */
-
+/*
 
     public function update(ExamUpdateRequest $request, Exam $exam)
     {
@@ -185,7 +220,7 @@ $hasFilter = collect($request->only(['search','branch_id','diploma_id','trainer_
             ->route('exams.show', $exam)
             ->with('success', 'تم تعديل الامتحان بنجاح');
     }
-
+*/
 
     /*
         public function update(Request $request, Exam $exam)

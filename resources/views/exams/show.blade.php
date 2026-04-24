@@ -95,7 +95,7 @@
                         {{ $exam->diploma->name ?? '-' }}     {{ $exam->diploma->code ?? '-' }}
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6" hidden>
                         <b>الفرع:</b>
                         {{ $exam->branch->name ?? '-' }}
                     </div>
