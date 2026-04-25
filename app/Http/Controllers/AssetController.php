@@ -163,7 +163,7 @@ class AssetController extends Controller
         $ws->setRightToLeft(true);
 
         // رأس الجدول
-        $headers = ['#', 'التاغ', 'الأصل', 'التصنيف', 'الفرع', 'الحالة', 'الموقع', 'رقم السيريال'];
+        $headers = ['#', 'التاغ', 'الأصل', 'التصنيف', 'الفرع', 'العدد', 'الحالة', 'الموقع', 'رقم السيريال'];
         foreach ($headers as $i => $h) {
             $col = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
             $ws->setCellValue("{$col}1", $h);
@@ -171,7 +171,7 @@ class AssetController extends Controller
             $ws->getColumnDimension($col)->setAutoSize(true);
         }
 
-        // البيانات
+        // ثم في حلقة البيانات:
         foreach ($assets as $idx => $a) {
             $row = $idx + 2;
             $ws->setCellValue("A{$row}", $a->id);
@@ -179,9 +179,10 @@ class AssetController extends Controller
             $ws->setCellValue("C{$row}", $a->name);
             $ws->setCellValue("D{$row}", $a->category->name ?? '-');
             $ws->setCellValue("E{$row}", $a->branch->name ?? '-');
-            $ws->setCellValue("F{$row}", $conditionMap[$a->condition] ?? $a->condition);
-            $ws->setCellValue("G{$row}", $a->location ?? '-');
-            $ws->setCellValue("H{$row}", $a->serial_number ?? '-');
+            $ws->setCellValue("F{$row}", $a->quantity ?? 1); // عمود العدد
+            $ws->setCellValue("G{$row}", $conditionMap[$a->condition] ?? $a->condition);
+            $ws->setCellValue("H{$row}", $a->location ?? '-');
+            $ws->setCellValue("I{$row}", $a->serial_number ?? '-');
         }
 
         $filename = 'assets-' . now()->format('Y-m-d') . '.xlsx';
@@ -190,14 +191,14 @@ class AssetController extends Controller
 
 
 
-        
+
         while (ob_get_level()) {
             ob_end_clean();
         }
 
 
 
-        
+
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $writer->save('php://output');

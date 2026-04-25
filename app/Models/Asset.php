@@ -11,13 +11,14 @@ class Asset extends Model
     protected $fillable = [
         'asset_tag','name','description',
         'asset_category_id','branch_id',
-        'condition','purchase_date','purchase_cost','currency',
+        'condition','purchase_date','purchase_cost','currency','quantity',
         'serial_number','location','photo_path',
     ];
 
     protected $casts = [
         'purchase_date' => 'date',
         'purchase_cost' => 'decimal:2',
+        'quantity' => 'integer',
     ];
 
     public function category(): BelongsTo

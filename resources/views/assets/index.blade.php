@@ -28,6 +28,41 @@
     </div>
   </div>
 
+
+  
+
+  <div class="row g-2 mb-3">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">إجمالي الأصول (القطع)</h6>
+                        <h3 class="mb-0 mt-1">{{ $assets->sum('quantity') }}</h3>
+                    </div>
+                    <i class="bi bi-box-seam fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">إجمالي الأصول (الأنواع)</h6>
+                        <h3 class="mb-0 mt-1">{{ $assets->count() }}</h3>
+                    </div>
+                    <i class="bi bi-grid-3x3-gap-fill fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
   <form class="card border-0 shadow-sm mb-3" method="GET" action="{{ route('assets.index') }}">
     <div class="card-body">
       <div class="row g-2">
@@ -81,6 +116,7 @@
             <th>التصنيف</th>
             <th>الفرع</th>
             <th>الحالة</th>
+            <th>العدد</th>
             <th>الموقع</th>
             <th class="text-end">إجراءات</th>
           </tr>
@@ -96,6 +132,11 @@
               <td>
                 <span class="badge {{ $a->condition_badge_class }}">
                   {{ $a->condition_label }}
+                </span>
+              </td>
+              <td>
+                <span class="badge bg-info text-dark">
+                  <i class="bi bi-layers"></i> {{ $a->quantity ?? 1 }}
                 </span>
               </td>
               <td>{{ $a->location ?? '-' }}</td>

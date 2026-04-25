@@ -60,6 +60,18 @@
       value="{{ old('purchase_cost', $asset->purchase_cost ?? '') }}">
   </div>
 
+
+
+  {{-- حقل العدد الجديد --}}
+  <div class="col-6 col-lg-2">
+    <label class="form-label fw-bold">العدد <span class="text-muted">(الكمية)</span></label>
+    <input type="number" name="quantity" class="form-control" min="1" value="1"
+      value="{{ old('quantity', $asset->quantity ?? 1) }}">
+    <small class="text-muted">عدد القطع الموجودة من هذا الأصل</small>
+  </div>
+
+
+
   <div class="col-6 col-lg-3">
     <label class="form-label fw-bold">العملة</label>
     <select name="currency" class="form-select">
@@ -90,7 +102,8 @@
 
     @if(isset($asset) && $asset->photo_path)
       <div class="mt-2">
-        <img src="{{ asset('storage/' . $asset->photo_path) }}" style="max-height:120px;border-radius:12px" class="border">
+        <img src="{{ asset('storage/' . $asset->photo_path) }}" style="max-height:120px;border-radius:12px"
+          class="border">
       </div>
     @endif
   </div>

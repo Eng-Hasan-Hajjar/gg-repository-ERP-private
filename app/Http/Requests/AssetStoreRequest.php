@@ -21,6 +21,9 @@ class AssetStoreRequest extends FormRequest
             'condition' => ['required','in:good,maintenance,out_of_service'],
             'purchase_date' => ['nullable','date'],
             'purchase_cost' => ['nullable','numeric','min:0'],
+
+            
+             'quantity' => ['nullable', 'integer', 'min:1'],
             'currency' => ['required','string','size:3'],
             'serial_number' => ['nullable','string','max:255'],
             'location' => ['nullable','string','max:255'],
