@@ -186,6 +186,18 @@ class AssetController extends Controller
 
         $filename = 'assets-' . now()->format('Y-m-d') . '.xlsx';
 
+
+
+
+
+        
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+
+
+        
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $writer->save('php://output');
