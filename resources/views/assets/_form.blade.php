@@ -5,8 +5,7 @@
 
   <div class="col-12 col-lg-6">
     <label class="form-label fw-bold">اسم الأصل</label>
-    <input name="name" class="form-control" required
-           value="{{ old('name', $asset->name ?? '') }}">
+    <input name="name" class="form-control" required value="{{ old('name', $asset->name ?? '') }}">
   </div>
 
   <div class="col-12 col-lg-3">
@@ -14,7 +13,7 @@
     <select name="asset_category_id" class="form-select">
       <option value="">—</option>
       @foreach($categories as $c)
-        <option value="{{ $c->id }}" @selected(old('asset_category_id', $asset->asset_category_id ?? '')==$c->id)>
+        <option value="{{ $c->id }}" @selected(old('asset_category_id', $asset->asset_category_id ?? '') == $c->id)>
           {{ $c->name }}
         </option>
       @endforeach
@@ -26,7 +25,7 @@
     <select name="branch_id" class="form-select">
       <option value="">—</option>
       @foreach($branches as $b)
-        <option value="{{ $b->id }}" @selected(old('branch_id', $asset->branch_id ?? '')==$b->id)>
+        <option value="{{ $b->id }}" @selected(old('branch_id', $asset->branch_id ?? '') == $b->id)>
           {{ $b->name }}
         </option>
       @endforeach
@@ -35,46 +34,54 @@
 
   <div class="col-12">
     <label class="form-label fw-bold">الوصف</label>
-    <textarea name="description" class="form-control" rows="3">{{ old('description', $asset->description ?? '') }}</textarea>
+    <textarea name="description" class="form-control"
+      rows="3">{{ old('description', $asset->description ?? '') }}</textarea>
   </div>
 
   <div class="col-6 col-lg-3">
     <label class="form-label fw-bold">الحالة</label>
     <select name="condition" class="form-select" required>
-      <option value="good" @selected(old('condition', $asset->condition ?? 'good')=='good')>جيد</option>
-      <option value="maintenance" @selected(old('condition', $asset->condition ?? '')=='maintenance')>صيانة</option>
-      <option value="out_of_service" @selected(old('condition', $asset->condition ?? '')=='out_of_service')>خارج الخدمة</option>
+      <option value="good" @selected(old('condition', $asset->condition ?? 'good') == 'good')>جيد</option>
+      <option value="maintenance" @selected(old('condition', $asset->condition ?? '') == 'maintenance')>صيانة</option>
+      <option value="out_of_service" @selected(old('condition', $asset->condition ?? '') == 'out_of_service')>خارج الخدمة
+      </option>
     </select>
   </div>
 
   <div class="col-6 col-lg-3">
     <label class="form-label fw-bold">تاريخ الشراء</label>
     <input type="date" name="purchase_date" class="form-control"
-           value="{{ old('purchase_date', optional($asset->purchase_date ?? null)->format('Y-m-d')) }}">
+      value="{{ old('purchase_date', optional($asset->purchase_date ?? null)->format('Y-m-d')) }}">
   </div>
 
   <div class="col-6 col-lg-3">
     <label class="form-label fw-bold">تكلفة الشراء</label>
     <input type="number" step="0.01" name="purchase_cost" class="form-control"
-           value="{{ old('purchase_cost', $asset->purchase_cost ?? '') }}">
+      value="{{ old('purchase_cost', $asset->purchase_cost ?? '') }}">
   </div>
 
   <div class="col-6 col-lg-3">
     <label class="form-label fw-bold">العملة</label>
-    <input name="currency" class="form-control" maxlength="3" placeholder="USD"
-           value="{{ old('currency', $asset->currency ?? 'USD') }}">
+    <select name="currency" class="form-select">
+      <option value="USD" {{ old('currency', $asset->currency ?? 'USD') == 'USD' ? 'selected' : '' }}>دولار أمريكي (USD)
+      </option>
+      <option value="TRY" {{ old('currency', $asset->currency ?? 'USD') == 'TRY' ? 'selected' : '' }}>ليرة تركية (TRY)
+      </option>
+      <option value="EUR" {{ old('currency', $asset->currency ?? 'USD') == 'EUR' ? 'selected' : '' }}>يورو (EUR)</option>
+      <option value="SYP" {{ old('currency', $asset->currency ?? 'USD') == 'SYP' ? 'selected' : '' }}>ليرة سورية (SYP)
+      </option>
+    </select>
   </div>
 
   <div class="col-12 col-lg-6">
     <label class="form-label fw-bold">Serial / رقم السيريال</label>
-    <input name="serial_number" class="form-control"
-           value="{{ old('serial_number', $asset->serial_number ?? '') }}">
+    <input name="serial_number" class="form-control" value="{{ old('serial_number', $asset->serial_number ?? '') }}">
   </div>
 
   <div class="col-12 col-lg-6">
     <label class="form-label fw-bold">الموقع داخل الفرع</label>
     <input name="location" class="form-control" placeholder="غرفة / مخزن / قاعة"
-           value="{{ old('location', $asset->location ?? '') }}">
+      value="{{ old('location', $asset->location ?? '') }}">
   </div>
 
   <div class="col-12">
@@ -83,7 +90,7 @@
 
     @if(isset($asset) && $asset->photo_path)
       <div class="mt-2">
-        <img src="{{ asset('storage/'.$asset->photo_path) }}" style="max-height:120px;border-radius:12px" class="border">
+        <img src="{{ asset('storage/' . $asset->photo_path) }}" style="max-height:120px;border-radius:12px" class="border">
       </div>
     @endif
   </div>
