@@ -23,7 +23,7 @@
       </a>
     @endif
     <a href="{{ route('cashboxes.transactions.pdf', $cashbox) }}"
-       class="btn btn-danger rounded-pill px-4 fw-bold" target="_blank">
+       class="btn btn-danger rounded-pill px-4 fw-bold" target="_blank" hidden>
       <i class="bi bi-file-earmark-pdf"></i> تصدير PDF
     </a>
 

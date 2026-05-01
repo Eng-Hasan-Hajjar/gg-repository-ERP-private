@@ -308,6 +308,10 @@
         <b style="color:#1e293b;">{{ $reports->total() }}</b>
       </div>
     </div>
+     <a href="{{ route('reports.task.excel') }}?{{ http_build_query(request()->all()) }}"
+       class="btn btn-success rounded-pill px-4 fw-bold">
+      <i class="bi bi-file-earmark-excel"></i> تصدير Excel
+    </a>
     <a href="{{ route('reports.task.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
       <i class="bi bi-upload"></i> رفع تقرير
     </a>

@@ -12,6 +12,7 @@ use App\Models\Exam;
 use App\Models\Cashbox;
 use App\Models\CashboxTransaction;
 
+use App\Models\PaymentPlan;
 class DashboardController extends Controller
 {
     public function index(ReportsService $reports)
@@ -215,6 +216,36 @@ class DashboardController extends Controller
             ? round(($taskStats['done'] / $taskStats['total']) * 100) : 0;
 
 
+
+        // ── إحصائيات الذمم ──
+        $studentsWithPlans = Student::whereHas('paymentPlans')->with([
+            'financialAccount.transactions',
+            'paymentPlans',
+        ])->get();
+
+        $debtStats = [
+            'total_students' => $studentsWithPlans->count(),
+            'has_debt' => 0,
+            'paid' => 0,
+            'total_remaining' => 0,
+        ];
+
+        foreach ($studentsWithPlans as $s) {
+            $total = (float) $s->paymentPlans->sum('total_amount');
+            $paid = $s->financialAccount
+                ? (float) $s->financialAccount->transactions()
+                    ->where('type', 'in')->where('status', 'posted')->sum('amount')
+                : 0;
+            $remaining = $total - $paid;
+
+            if ($remaining > 0) {
+                $debtStats['has_debt']++;
+                $debtStats['total_remaining'] += $remaining;
+            } else {
+                $debtStats['paid']++;
+            }
+        }
+
         return view('dashboard', [
             'highlights' => $highlights,
             'todayStats' => $todayStats,
@@ -241,6 +272,7 @@ class DashboardController extends Controller
             'convRate' => $convRate,
             'confRate' => $confRate,
             'doneRate' => $doneRate,
+             'debtStats' => $debtStats,
 
 
         ]);

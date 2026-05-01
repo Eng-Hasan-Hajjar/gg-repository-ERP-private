@@ -796,6 +796,61 @@
       </div>
     <?php endif; ?>
 
+
+    
+<?php if(auth()->user()?->hasPermission('view_debts')): ?>
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="module-card">
+      <div class="module-head">
+        <div class="module-icon" style="background:linear-gradient(135deg,#fde68a,#f59e0b); color:#92400e;">
+          <i class="bi bi-wallet2 fs-3"></i>
+        </div>
+        <div>
+          <p class="module-title">الذمم وكشف الحسابات</p>
+          <p class="module-sub">ذمم الطلاب — كشف حساب شامل لكل الحركات</p>
+        </div>
+      </div>
+      <div class="module-body">
+        <p class="section-note">
+          متابعة الذمم المالية للطلاب، وكشف حساب تفصيلي لكل شخص أو حركة في أي صندوق مع تصدير Excel.
+        </p>
+      </div>
+      <div class="stats-mini">
+        <div class="sm-item">
+          <div class="sm-val text-danger"><?php echo e($debtStats['has_debt']); ?></div>
+          <div class="sm-label"><i class="bi bi-exclamation-circle"></i> عليهم ذمة</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-success"><?php echo e($debtStats['paid']); ?></div>
+          <div class="sm-label"><i class="bi bi-check-circle"></i> مسدّد</div>
+        </div>
+       
+        
+        <div class="sm-item">
+          <div class="sm-val text-warning"><?php echo e(number_format($debtStats['total_remaining'], 0)); ?></div>
+          <div class="sm-label"><i class="bi bi-currency-dollar"></i> إجمالي الذمم</div>
+        </div>
+      
+        <div class="sm-item">
+          <div class="sm-val text-info"><?php echo e($debtStats['total_students']); ?></div>
+          <div class="sm-label"><i class="bi bi-people"></i> إجمالي</div>
+        </div>
+      </div>
+      <div class="module-actions grid-2">
+        <a href="<?php echo e(route('debts.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">
+          <i class="bi bi-wallet2"></i> الذمم المالية
+        </a>
+         <?php if(auth()->user()?->hasPermission('view_account_statement')): ?>
+        <a href="<?php echo e(route('accounts.statement.index')); ?>" class="btn btn-soft w-100 w-sm-auto">
+          <i class="bi bi-receipt-cutoff"></i> كشف الحسابات
+        </a>
+          <?php endif; ?>
+      </div>
+    </div>
+  </div>
+<?php endif; ?>
+
+
     
     <?php if(auth()->user()?->hasPermission('view_attendance')): ?>
       <div class="col-12 col-md-6 col-xl-4">

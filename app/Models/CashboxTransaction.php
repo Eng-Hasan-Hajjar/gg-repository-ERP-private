@@ -28,6 +28,7 @@ class CashboxTransaction extends Model
         'financial_account_id',
         'diploma_id',
         'to_cashbox_id',
+        'exchange_to_cashbox_id',
         
     ];
 

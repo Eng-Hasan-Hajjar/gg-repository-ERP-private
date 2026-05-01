@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'الدوام والحضور')
 
-@section('content')
+<?php $__env->startSection('title', 'الدوام والحضور'); ?>
+
+<?php $__env->startSection('content'); ?>
   <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-3">
     <div>
       <h4 class="mb-0 fw-bold">الدوام والحضور</h4>
@@ -98,15 +98,15 @@
     }
   </style>
 
-  @if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('manager_attendance'))
-    <form method="POST" action="{{ route('attendance.generateWeek') }}" class="card border-0 shadow-sm mb-3">
-      @csrf
+  <?php if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('manager_attendance')): ?>
+    <form method="POST" action="<?php echo e(route('attendance.generateWeek')); ?>" class="card border-0 shadow-sm mb-3">
+      <?php echo csrf_field(); ?>
       <div class="card-body py-2">
         <div class="row align-items-end g-2">
           <div class="col-md-3">
             <label class="fw-bold small mb-1">بداية الأسبوع</label>
             <input type="date" name="week_start" class="form-control" required
-              value="{{ now()->startOfWeek()->format('Y-m-d') }}">
+              value="<?php echo e(now()->startOfWeek()->format('Y-m-d')); ?>">
           </div>
           <div class="col-md-auto">
             <button class="btn btn-namaa fw-bold mt-3">
@@ -118,26 +118,27 @@
     </form>
 
     <div class="mb-2 text-muted small">
-      عدد السجلات: {{ $records->total() }}
+      عدد السجلات: <?php echo e($records->total()); ?>
+
     </div>
 
     <div class="d-flex flex-wrap gap-2 mt-2 mb-3">
-      <a href="{{ route('attendance.index', [
+      <a href="<?php echo e(route('attendance.index', [
         'from' => now()->startOfWeek()->toDateString(),
         'to' => now()->endOfWeek()->toDateString()
-      ]) }}" class="btn btn-sm btn-outline-primary">
+      ])); ?>" class="btn btn-sm btn-outline-primary">
         <i class="bi bi-calendar-week"></i> هذا الأسبوع
       </a>
-      <a href="{{ route('attendance.index', [
+      <a href="<?php echo e(route('attendance.index', [
         'from' => now()->startOfMonth()->toDateString(),
         'to' => now()->endOfMonth()->toDateString()
-      ]) }}" class="btn btn-sm btn-outline-success">
+      ])); ?>" class="btn btn-sm btn-outline-success">
         <i class="bi bi-calendar-month"></i> هذا الشهر
       </a>
-      <a href="{{ route('attendance.index', [
+      <a href="<?php echo e(route('attendance.index', [
         'from' => now()->subMonths(3)->startOfMonth()->toDateString(),
         'to' => now()->endOfMonth()->toDateString()
-      ]) }}" class="btn btn-sm btn-outline-dark">
+      ])); ?>" class="btn btn-sm btn-outline-dark">
         <i class="bi bi-calendar-range"></i> آخر 3 أشهر
       </a>
     </div>
@@ -146,50 +147,50 @@
       <div class="card-body">
         <div class="row g-2">
           <div class="col-6 col-md-2">
-            <input name="search" value="{{ request('search') }}" class="form-control" placeholder="بحث: اسم/كود">
+            <input name="search" value="<?php echo e(request('search')); ?>" class="form-control" placeholder="بحث: اسم/كود">
           </div>
           <div class="col-6 col-md-2">
             <select name="branch_id" class="form-select">
               <option value="">الفرع (الكل)</option>
-              @foreach($branches as $b)
-                <option value="{{ $b->id }}" @selected(request('branch_id') == $b->id)>{{ $b->name }}</option>
-              @endforeach
+              <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($b->id); ?>" <?php if(request('branch_id') == $b->id): echo 'selected'; endif; ?>><?php echo e($b->name); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
           <div class="col-6 col-md-2">
             <select name="employee_id" class="form-select">
               <option value="">الموظف (الكل)</option>
-              @foreach($employees as $e)
-                <option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>{{ $e->full_name }}</option>
-              @endforeach
+              <?php $__currentLoopData = $employees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $e): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($e->id); ?>" <?php if(request('employee_id') == $e->id): echo 'selected'; endif; ?>><?php echo e($e->full_name); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
           <div class="col-6 col-md-2">
             <select name="status" class="form-select">
               <option value="">الحالة (الكل)</option>
-              @foreach(['scheduled', 'present', 'late', 'absent', 'off', 'leave'] as $s)
-                <option value="{{ $s }}" @selected(request('status') == $s)>{{ $s }}</option>
-              @endforeach
+              <?php $__currentLoopData = ['scheduled', 'present', 'late', 'absent', 'off', 'leave']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($s); ?>" <?php if(request('status') == $s): echo 'selected'; endif; ?>><?php echo e($s); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
           <div class="col-6 col-md-2">
-            <input type="date" name="from" value="{{ request('from') }}" class="form-control">
+            <input type="date" name="from" value="<?php echo e(request('from')); ?>" class="form-control">
           </div>
           <div class="col-6 col-md-2">
-            <input type="date" name="to" value="{{ request('to') }}" class="form-control">
+            <input type="date" name="to" value="<?php echo e(request('to')); ?>" class="form-control">
           </div>
           <div class="col-6 col-md-6 d-grid">
             <button class="btn btn-namaa fw-bold"><i class="bi bi-funnel"></i> تطبيق الفلتر</button>
           </div>
           <div class="col-6 col-md-6 d-grid">
-            <a href="{{ route('attendance.index') }}" class="btn btn-outline-secondary fw-bold">
+            <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-outline-secondary fw-bold">
               <i class="bi bi-x-circle"></i> تنظيف
             </a>
           </div>
         </div>
       </div>
     </form>
-  @endif
+  <?php endif; ?>
 
   <div class="card border-0 shadow-sm">
     <div class="table-responsive">
@@ -213,8 +214,8 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($records as $r)
-            @php
+          <?php $__empty_1 = true; $__currentLoopData = $records; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <?php
               // مصفوفة أيام الأسبوع بالعربية
               $daysOfWeek = [
                 'Monday' => 'الإثنين',
@@ -239,142 +240,147 @@
                       ->filter()->implode('، ');
                 }
               }
-            @endphp
+            ?>
             <tr>
-              <td class="fw-bold">{{ $r->work_date->format('Y-m-d') }}</td>
+              <td class="fw-bold"><?php echo e($r->work_date->format('Y-m-d')); ?></td>
               <td>
-                <span class="badge {{ $r->work_date->isToday() ? 'bg-primary' : 'bg-secondary' }}">
-                  {{ $dayName }}
+                <span class="badge <?php echo e($r->work_date->isToday() ? 'bg-primary' : 'bg-secondary'); ?>">
+                  <?php echo e($dayName); ?>
+
                 </span>
               </td>
-              <td>{{ $r->employee->full_name }}</td>
-              <td class="hide-mobile">{{ $r->employee->branch->name ?? '-' }}</td>
-              <td class="hide-mobile">{{ $r->check_in_at?->format('H:i') ?? '-' }}</td>
-              <td class="hide-mobile">{{ $r->check_out_at?->format('H:i') ?? '-' }}</td>
+              <td><?php echo e($r->employee->full_name); ?></td>
+              <td class="hide-mobile"><?php echo e($r->employee->branch->name ?? '-'); ?></td>
+              <td class="hide-mobile"><?php echo e($r->check_in_at?->format('H:i') ?? '-'); ?></td>
+              <td class="hide-mobile"><?php echo e($r->check_out_at?->format('H:i') ?? '-'); ?></td>
 
-              {{-- عمود الاستراحة --}}
+              
               <td class="hide-mobile">
-                @if($r->is_on_break)
+                <?php if($r->is_on_break): ?>
                   <span class="break-badge on-break">
                     <i class="bi bi-cup-hot"></i>
-                    في استراحة منذ {{ $r->break_start_at->format('H:i') }}
+                    في استراحة منذ <?php echo e($r->break_start_at->format('H:i')); ?>
+
                   </span>
-                @elseif($r->break_start_at)
+                <?php elseif($r->break_start_at): ?>
                   <span class="break-badge break-done">
                     <i class="bi bi-cup"></i>
-                    {{ $r->break_start_at->format('H:i') }} — {{ $r->break_end_at?->format('H:i') ?? '...' }}
+                    <?php echo e($r->break_start_at->format('H:i')); ?> — <?php echo e($r->break_end_at?->format('H:i') ?? '...'); ?>
+
                   </span>
-                @else
+                <?php else: ?>
                   <span class="text-muted">—</span>
-                @endif
+                <?php endif; ?>
               </td>
 
               <td class="hide-mobile">
-                <span class="badge bg-warning text-dark">{{ $r->late_minutes }} د</span>
+                <span class="badge bg-warning text-dark"><?php echo e($r->late_minutes); ?> د</span>
               </td>
               <td class="hide-mobile">
-                <span class="badge bg-info text-dark">{{ round($r->worked_minutes / 60, 2) }} س</span>
+                <span class="badge bg-info text-dark"><?php echo e(round($r->worked_minutes / 60, 2)); ?> س</span>
               </td>
 
-              {{-- صافي الساعات --}}
+              
               <td class="hide-mobile">
-                @if($r->worked_minutes > 0)
-                  <span class="badge bg-success">{{ $r->net_worked_formatted }}</span>
-                @else
+                <?php if($r->worked_minutes > 0): ?>
+                  <span class="badge bg-success"><?php echo e($r->net_worked_formatted); ?></span>
+                <?php else: ?>
                   <span class="text-muted">—</span>
-                @endif
+                <?php endif; ?>
               </td>
 
-              {{-- الموقع --}}
+              
               <td class="hide-mobile">
-                @if($empLocation)
+                <?php if($empLocation): ?>
                   <span class="text-muted small">
-                    <i class="bi bi-geo-alt-fill text-danger"></i> {{ $empLocation }}
+                    <i class="bi bi-geo-alt-fill text-danger"></i> <?php echo e($empLocation); ?>
+
                   </span>
-                @else
+                <?php else: ?>
                   <span class="text-muted">—</span>
-                @endif
+                <?php endif; ?>
               </td>
 
               <td>
-                <span class="badge bg-{{ $r->status_color }}">{{ $r->status_label }}</span>
+                <span class="badge bg-<?php echo e($r->status_color); ?>"><?php echo e($r->status_label); ?></span>
               </td>
 
               <td class="text-end">
                 <div class="d-flex gap-1 justify-content-end flex-wrap">
 
-                  @if(auth()->user()?->hasPermission('mark_attendance'))
+                  <?php if(auth()->user()?->hasPermission('mark_attendance')): ?>
 
-                    {{-- زر الدخول --}}
-                    @if(!$r->check_in_at && $r->status != 'off')
-                      <form method="POST" action="{{ route('attendance.checkin', $r) }}">
-                        @csrf
+                    
+                    <?php if(!$r->check_in_at && $r->status != 'off'): ?>
+                      <form method="POST" action="<?php echo e(route('attendance.checkin', $r)); ?>">
+                        <?php echo csrf_field(); ?>
                         <button class="btn btn-sm btn-outline-success">
                           <i class="bi bi-box-arrow-in-right"></i> دخول
                         </button>
                       </form>
-                    @endif
+                    <?php endif; ?>
 
-                    {{-- زر بدء الاستراحة --}}
-                    @if($r->can_start_break)
-                      <form method="POST" action="{{ route('attendance.break.start', $r) }}">
-                        @csrf
+                    
+                    <?php if($r->can_start_break): ?>
+                      <form method="POST" action="<?php echo e(route('attendance.break.start', $r)); ?>">
+                        <?php echo csrf_field(); ?>
                         <button class="btn btn-sm btn-break-start">
                           <i class="bi bi-cup-hot"></i> استراحة
                         </button>
                       </form>
-                    @endif
+                    <?php endif; ?>
 
-                    {{-- زر إنهاء الاستراحة --}}
-                    @if($r->can_end_break)
-                      <form method="POST" action="{{ route('attendance.break.end', $r) }}">
-                        @csrf
+                    
+                    <?php if($r->can_end_break): ?>
+                      <form method="POST" action="<?php echo e(route('attendance.break.end', $r)); ?>">
+                        <?php echo csrf_field(); ?>
                         <button class="btn btn-sm btn-break-end">
                           <i class="bi bi-play-circle"></i> إنهاء الاستراحة
                         </button>
                       </form>
-                    @endif
+                    <?php endif; ?>
 
-                    {{-- زر الخروج --}}
-                    @if($r->check_in_at && !$r->check_out_at && !$r->is_on_break)
-                      <form method="POST" action="{{ route('attendance.checkout', $r) }}">
-                        @csrf
+                    
+                    <?php if($r->check_in_at && !$r->check_out_at && !$r->is_on_break): ?>
+                      <form method="POST" action="<?php echo e(route('attendance.checkout', $r)); ?>">
+                        <?php echo csrf_field(); ?>
                         <button class="btn btn-sm btn-outline-primary">
                           <i class="bi bi-box-arrow-left"></i> خروج
                         </button>
                       </form>
-                    @endif
+                    <?php endif; ?>
 
-                  @endif
+                  <?php endif; ?>
 
                 </div>
               </td>
 
               <td>
-                <button class="btn btn-sm btn-outline-dark view-details" data-id="{{ $r->id }}"
-                  data-employee="{{ $r->employee->full_name }}" data-date="{{ $r->work_date->format('Y-m-d') }}"
-                  data-day="{{ $dayName }}"
-                  data-checkin="{{ $r->check_in_at?->format('H:i') }}"
-                  data-checkout="{{ $r->check_out_at?->format('H:i') }}" data-break="{{ $r->break_formatted }}"
-                  data-late="{{ $r->late_minutes }}" data-worked="{{ $r->net_worked_formatted }}"
-                  data-status="{{ $r->status_label }}" data-notes='@json($r->notes, JSON_UNESCAPED_UNICODE)'>
+                <button class="btn btn-sm btn-outline-dark view-details" data-id="<?php echo e($r->id); ?>"
+                  data-employee="<?php echo e($r->employee->full_name); ?>" data-date="<?php echo e($r->work_date->format('Y-m-d')); ?>"
+                  data-day="<?php echo e($dayName); ?>"
+                  data-checkin="<?php echo e($r->check_in_at?->format('H:i')); ?>"
+                  data-checkout="<?php echo e($r->check_out_at?->format('H:i')); ?>" data-break="<?php echo e($r->break_formatted); ?>"
+                  data-late="<?php echo e($r->late_minutes); ?>" data-worked="<?php echo e($r->net_worked_formatted); ?>"
+                  data-status="<?php echo e($r->status_label); ?>" data-notes='<?php echo json_encode($r->notes, JSON_UNESCAPED_UNICODE, 512) ?>'>
                   <i class="bi bi-eye"></i>
                 </button>
               </td>
 
             </tr>
-          @empty
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <tr>
               <td colspan="14" class="text-center text-muted py-4">لا يوجد سجلات</td>
             </tr>
-          @endforelse
+          <?php endif; ?>
         </tbody>
        </table>
     </div>
   </div>
 
   <div class="mt-3">
-    {{ $records->links() }}
+    <?php echo e($records->links()); ?>
+
   </div>
 
   <div class="modal fade" id="attendanceModal">
@@ -535,7 +541,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
             'Accept': 'application/json'
           },
           body: JSON.stringify({
@@ -598,4 +604,5 @@
   });
   </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/attendance/index.blade.php ENDPATH**/ ?>

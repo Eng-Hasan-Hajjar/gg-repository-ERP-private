@@ -10,7 +10,9 @@
       <div class="text-muted fw-semibold">إدارة الصناديق حسب الفرع والعملة + سجل الحركات</div>
     </div>
 
-
+<a href="{{ route('debts.index') }}" class="btn btn-outline-danger fw-bold">
+  <i class="bi bi-wallet2"></i> الذمم المالية
+</a>
     
 
       <a href="{{ route('finance.dashboard') }}" class="btn btn-warning fw-bold">

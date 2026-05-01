@@ -30,6 +30,8 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StudentDebtController;
+use App\Http\Controllers\AccountStatementController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -663,5 +665,19 @@ Route::get(
 Route::get('/admin/reports/attendance/monthly/excel', [AttendanceReportController2::class, 'exportExcel'])
     ->name('reports.attendance.monthly.excel');
 
+// ── الذمم المالية ──
+Route::prefix('debts')->name('debts.')->group(function () {
+    Route::get('/',                    [StudentDebtController::class, 'index'])->name('index');
+    Route::get('/export-excel',        [StudentDebtController::class, 'exportExcel'])->name('excel');
+    Route::get('/{student}',           [StudentDebtController::class, 'show'])->name('show');
+});
+
+// كشف الحسابات الشامل
+Route::prefix('accounts/statement')->name('accounts.statement.')->group(function () {
+    Route::get('/',              [AccountStatementController::class, 'index'])->name('index');
+    Route::get('/export-excel', [AccountStatementController::class, 'exportExcel'])->name('excel');
+});
+
+Route::get('reports/tasks/export-excel', [TaskReportController::class, 'exportExcel'])->name('reports.task.excel');
 
 require __DIR__ . '/auth.php';

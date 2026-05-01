@@ -34,13 +34,20 @@ class Cashbox extends Model
     }
 
     // رصيد محسوب (اختياري للاستخدام في الواجهات)
-    public function getCurrentBalanceAttribute(): float
-    {
-        $in = (float) $this->transactions()->where('status', 'posted')->where('type', 'in')->sum('amount');
-        $out = (float) $this->transactions()->where('status', 'posted')->where('type', 'out')->sum('amount');
-        return (float) $this->opening_balance + $in - $out;
-    }
+  public function getCurrentBalanceAttribute(): float
+{
+    $in = (float) $this->transactions()
+                ->where('status', 'posted')
+                ->where('type', 'in')
+                ->sum('amount');
 
+    $out = (float) $this->transactions()
+                ->where('status', 'posted')
+                ->whereIn('type', ['out', 'exchange']) // ← المهم
+                ->sum('amount');
+
+    return (float) $this->opening_balance + $in - $out;
+}
 
 
 
