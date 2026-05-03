@@ -680,4 +680,7 @@ Route::prefix('accounts/statement')->name('accounts.statement.')->group(function
 
 Route::get('reports/tasks/export-excel', [TaskReportController::class, 'exportExcel'])->name('reports.task.excel');
 
+Route::get('/debts/{student}/export-excel', [StudentDebtController::class, 'exportStudentExcel'])
+    ->name('debts.student.excel');
+    
 require __DIR__ . '/auth.php';

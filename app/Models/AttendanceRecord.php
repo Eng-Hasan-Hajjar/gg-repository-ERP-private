@@ -110,6 +110,7 @@ class AttendanceRecord extends Model
         return "{$h} س {$m} د";
     }
 
+    
     // ───── Scopes ─────
 
     public function scopeReport(Builder $query, $from, $to, $branchId = null)

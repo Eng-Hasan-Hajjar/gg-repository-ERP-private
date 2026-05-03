@@ -521,9 +521,9 @@
     ═══════════════════════════════════════════════ --}}
   @if(auth()->user()?->hasPermission('manage_student_payment_plan') || auth()->user()?->hasRole('super_admin') )
 
-    <div class="section-header"><i class="bi bi-wallet2"></i> إنشاء خطة دفع</div>
+    <div class="section-header" hidden><i class="bi bi-wallet2"></i> إنشاء خطة دفع</div>
 
-    <div class="glass-card p-3">
+    <div class="glass-card p-3" hidden>
       <form method="POST" action="{{ route('payment.plan.store') }}" id="plan-form">
         @csrf
         <input type="hidden" name="student_id" value="{{ $student->id }}">
