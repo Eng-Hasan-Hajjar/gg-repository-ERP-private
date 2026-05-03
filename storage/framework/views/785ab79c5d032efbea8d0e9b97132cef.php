@@ -91,7 +91,7 @@
   
   <div class="col-12 col-md-3">
     <label class="form-label fw-bold">التصنيف الرئيسي</label>
-    <select name="category" class="form-select" id="category-select">
+    <select name="category" class="form-select" id="category-select" required>
       <option value="">— اختر التصنيف —</option>
       <?php $__currentLoopData = \App\Models\CashboxTransaction::$CATEGORIES; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <option value="<?php echo e($key); ?>" <?php if(old('category', $transaction->category ?? '') == $key): echo 'selected'; endif; ?>>

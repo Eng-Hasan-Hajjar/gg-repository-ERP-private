@@ -77,37 +77,37 @@
     <table class="table align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
-          <th>الرقم الجامعي</th>
+          <th class="hide-mobile">#</th>
+          <th class="hide-mobile">الرقم الجامعي</th>
           <th>اسم الطالب</th>
-          <th>الهاتف</th>
-          <th class="text-center">الدبلومات</th>
-          <th class="text-center">إجمالي المستحق</th>
-          <th class="text-center">المدفوع</th>
+          <th class="hide-mobile">الهاتف</th>
+          <th class="text-center hide-mobile">الدبلومات</th>
+          <th class="text-center hide-mobile">إجمالي المستحق</th>
+          <th class="text-center hide-mobile">المدفوع</th>
           <th class="text-center">المتبقي</th>
-          <th class="text-center">الحالة</th>
+          <th class="text-center hide-mobile">الحالة</th>
           <th class="text-end">إجراءات</th>
         </tr>
       </thead>
       <tbody>
         @forelse($paginated as $idx => $d)
           <tr>
-            <td class="text-muted small">{{ $paginated->firstItem() + $idx }}</td>
-            <td><code class="small">{{ $d['university_id'] }}</code></td>
+            <td class="text-muted small hide-mobile">{{ $paginated->firstItem() + $idx }}</td>
+            <td><code class="small hide-mobile">{{ $d['university_id'] }}</code></td>
             <td class="fw-semibold">{{ $d['name'] }}</td>
-            <td class="small text-muted">{{ $d['phone'] }}</td>
-            <td class="text-center">
+            <td class="small text-muted hide-mobile">{{ $d['phone'] }}</td>
+            <td class="text-center hide-mobile">
               <span class="badge bg-secondary rounded-pill">{{ $d['diplomas_count'] }}</span>
             </td>
-            <td class="text-center fw-bold">{{ number_format($d['total'], 2) }}</td>
-            <td class="text-center fw-bold text-primary">{{ number_format($d['paid'], 2) }}</td>
+            <td class="text-center fw-bold hide-mobile hide-mobile">{{ number_format($d['total'], 2) }}</td>
+            <td class="text-center fw-bold text-primary hide-mobile">{{ number_format($d['paid'], 2) }}</td>
             <td class="text-center fw-bold text-{{ $d['rem_class'] }}">
               {{ number_format(abs($d['remaining']), 2) }}
               @if($d['remaining'] < 0)
                 <small class="d-block fw-normal text-muted">(زيادة)</small>
               @endif
             </td>
-            <td class="text-center">
+            <td class="text-center hide-mobile">
               <span class="badge bg-{{ $d['status_class'] }} rounded-pill px-3">
                 {{ $d['status_label'] }}
               </span>

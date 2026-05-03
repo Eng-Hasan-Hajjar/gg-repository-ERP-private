@@ -175,17 +175,17 @@
     <table class="table align-middle mb-0" style="font-size:13px;">
       <thead class="table-light">
         <tr>
-          <th>#</th>
-          <th>التاريخ</th>
-          <th>الصندوق</th>
-          <th>الفرع</th>
-          <th>النوع</th>
+          <th class="hide-mobile">#</th>
+          <th class="hide-mobile">التاريخ</th>
+          <th class="hide-mobile">الصندوق</th>
+          <th class="hide-mobile">الفرع</th>
+          <th class="hide-mobile">النوع</th>
           <th>الشخص</th>
-          <th>الدبلومة</th>
-          <th>التصنيف</th>
+          <th class="hide-mobile">الدبلومة</th>
+          <th class="hide-mobile">التصنيف</th>
           <th class="text-center">المبلغ</th>
-          <th>العملة</th>
-          <th>مرجع</th>
+          <th >العملة</th>
+          <th class="hide-mobile">مرجع</th>
           <th class="text-center">الحالة</th>
           <th class="text-end">إجراءات</th>
         </tr>
@@ -193,20 +193,20 @@
       <tbody>
         <?php $__empty_1 = true; $__currentLoopData = $transactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
           <tr>
-            <td class="text-muted small"><?php echo e($t->id); ?></td>
-            <td class="small"><?php echo e($t->trx_date->format('Y-m-d')); ?></td>
-            <td class="small fw-semibold"><?php echo e(optional($t->cashbox)->name ?? '-'); ?></td>
-            <td class="small text-muted"><?php echo e(optional(optional($t->cashbox)->branch)->name ?? '-'); ?></td>
-            <td>
+            <td class="text-muted small hide-mobile"><?php echo e($t->id); ?></td>
+            <td class="small hide-mobile"><?php echo e($t->trx_date->format('Y-m-d')); ?></td>
+            <td class="small fw-semibold hide-mobile"><?php echo e(optional($t->cashbox)->name ?? '-'); ?></td>
+            <td class="small text-muted hide-mobile"><?php echo e(optional(optional($t->cashbox)->branch)->name ?? '-'); ?></td>
+            <td class="hide-mobile">
               <span class="badge bg-<?php echo e($typeMeta[$t->type]['color'] ?? 'secondary'); ?>">
                 <?php echo e($typeMeta[$t->type]['label'] ?? $t->type); ?>
 
               </span>
             </td>
             <td class="small"><?php echo e(optional(optional($t->account)->accountable)->full_name ?? '-'); ?></td>
-            <td class="small text-muted"><?php echo e(optional($t->diploma)->name ?? '-'); ?></td>
-            <td class="small text-muted"><?php echo e($t->category ?? '-'); ?></td>
-            <td class="text-center fw-bold <?php echo e(in_array($t->type,['in']) ? 'text-success' : 'text-danger'); ?>">
+            <td class="small text-muted hide-mobile"><?php echo e(optional($t->diploma)->name ?? '-'); ?></td>
+            <td class="small text-muted hide-mobile"><?php echo e($t->category ?? '-'); ?></td>
+            <td class="text-center fw-bold <?php echo e(in_array($t->type,['in']) ? 'text-success' : 'text-danger'); ?> ">
               <?php echo e(number_format($t->amount, 2)); ?>
 
               <?php if($t->foreign_amount && $t->foreign_currency): ?>
@@ -216,7 +216,7 @@
               <?php endif; ?>
             </td>
             <td><span class="badge bg-light text-dark border small"><?php echo e($t->currency); ?></span></td>
-            <td class="small text-muted"><?php echo e($t->reference ?? '-'); ?></td>
+            <td class="small text-muted hide-mobile"><?php echo e($t->reference ?? '-'); ?></td>
             <td class="text-center">
               <span class="badge bg-<?php echo e($t->status === 'posted' ? 'primary' : 'secondary'); ?>">
                 <?php echo e($t->status === 'posted' ? 'مُرحّل' : 'معلّق'); ?>

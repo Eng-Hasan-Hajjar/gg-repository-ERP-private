@@ -90,7 +90,7 @@
   {{-- ── التصنيف الرئيسي (منسدل) ── --}}
   <div class="col-12 col-md-3">
     <label class="form-label fw-bold">التصنيف الرئيسي</label>
-    <select name="category" class="form-select" id="category-select">
+    <select name="category" class="form-select" id="category-select" required>
       <option value="">— اختر التصنيف —</option>
       @foreach(\App\Models\CashboxTransaction::$CATEGORIES as $key => $label)
         <option value="{{ $key }}" @selected(old('category', $transaction->category ?? '') == $key)>

@@ -77,15 +77,15 @@
     <table class="table align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>#</th>
-          <th>الرقم الجامعي</th>
+          <th class="hide-mobile">#</th>
+          <th class="hide-mobile">الرقم الجامعي</th>
           <th>اسم الطالب</th>
-          <th>الهاتف</th>
-          <th class="text-center">الدبلومات</th>
-          <th class="text-center">إجمالي المستحق</th>
-          <th class="text-center">المدفوع</th>
+          <th class="hide-mobile">الهاتف</th>
+          <th class="text-center hide-mobile">الدبلومات</th>
+          <th class="text-center hide-mobile">إجمالي المستحق</th>
+          <th class="text-center hide-mobile">المدفوع</th>
           <th class="text-center">المتبقي</th>
-          <th class="text-center">الحالة</th>
+          <th class="text-center hide-mobile">الحالة</th>
           <th class="text-end">إجراءات</th>
         </tr>
       </thead>
