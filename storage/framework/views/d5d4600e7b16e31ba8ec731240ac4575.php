@@ -19,6 +19,26 @@
         </a>
       <?php endif; ?>
 
+
+ 
+<?php if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin')): ?>
+  <a href="<?php echo e(route('asset-requests.index')); ?>" class="btn btn-outline-warning rounded-pill fw-bold px-4">
+    <i class="bi bi-inbox"></i> إدارة الطلبات
+    <?php
+      $pendingCount = \App\Models\AssetRequest::where('status', 'pending')->count();
+    ?>
+    <?php if($pendingCount > 0): ?>
+      <span class="badge bg-danger ms-1"><?php echo e($pendingCount); ?></span>
+    <?php endif; ?>
+  </a>
+<?php endif; ?>
+
+<?php if(auth()->user()?->hasPermission('submit_asset_request')): ?>
+  <a href="<?php echo e(route('asset-requests.create')); ?>" class="btn btn-warning rounded-pill fw-bold px-4">
+    <i class="bi bi-send-plus"></i> تقديم طلب
+  </a>
+<?php endif; ?>
+
       <a href="<?php echo e(route('assets.export.excel') . '?' . http_build_query(request()->all())); ?>"
         class="btn btn-success rounded-pill fw-bold px-4">
         <i class="bi bi-file-earmark-excel"></i> تصدير Excel

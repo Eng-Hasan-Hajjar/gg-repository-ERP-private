@@ -963,6 +963,66 @@
       </div>
     <?php endif; ?>
 
+
+    
+<?php if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasPermission('manage_roles')): ?>
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="module-card">
+      <div class="module-head">
+        <div class="module-icon grad-teal"><i class="bi bi-diagram-2-fill fs-3"></i></div>
+        <div>
+          <p class="module-title">مجموعات الرؤية</p>
+          <p class="module-sub">تحكم بمن يرى مهام وتقارير من</p>
+        </div>
+      </div>
+      <div class="module-body">
+        <p class="section-note">
+          تحديد صلاحيات الرؤية بشكل دقيق — كل مدير يرى فقط تقارير ومهام الموظفين المضافين لمجموعته.
+        </p>
+      </div>
+      <div class="stats-mini">
+        <div class="sm-item">
+          <div class="sm-val text-primary"><?php echo e(\App\Models\VisibilityGroup::count()); ?></div>
+          <div class="sm-label"><i class="bi bi-diagram-2"></i> مجموعة</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-success">
+            <?php echo e(\DB::table('visibility_group_employee')->where('role_in_group','manager')->count()); ?>
+
+          </div>
+          <div class="sm-label"><i class="bi bi-person-check"></i> مدير</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-info">
+            <?php echo e(\DB::table('visibility_group_employee')->where('role_in_group','member')->count()); ?>
+
+          </div>
+          <div class="sm-label"><i class="bi bi-people"></i> عضو</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-warning">
+            <?php echo e(\DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id')); ?>
+
+          </div>
+          <div class="sm-label"><i class="bi bi-person-badge"></i> موظف مُدار</div>
+        </div>
+      </div>
+      <div class="module-actions">
+        <a href="<?php echo e(route('admin.visibility-groups.index')); ?>"
+           class="btn btn-namaa w-100 w-sm-auto">
+          <i class="bi bi-diagram-2-fill"></i> إدارة المجموعات
+        </a>
+        <a href="<?php echo e(route('admin.visibility-groups.create')); ?>"
+           class="btn btn-soft w-100 w-sm-auto">
+          <i class="bi bi-plus-circle"></i> مجموعة جديدة
+        </a>
+      </div>
+    </div>
+  </div>
+<?php endif; ?>
+
+
+
     
     <?php if(auth()->user()?->hasPermission('view_employees')): ?>
       <div class="col-12 col-md-6 col-xl-4">
@@ -1104,6 +1164,75 @@
         </div>
       </div>
     <?php endif; ?>
+
+
+
+    
+<?php if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasPermission('submit_asset_request')): ?>
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="module-card">
+      <div class="module-head">
+        <div class="module-icon grad-yellow"><i class="bi bi-send-plus fs-3"></i></div>
+        <div>
+          <p class="module-title">طلبات اللوجستيات</p>
+          <p class="module-sub">طلبات الشراء والإصلاح — مراجعة المدير</p>
+        </div>
+      </div>
+      <div class="module-body">
+        <p class="section-note">
+          تقديم طلبات شراء أصول جديدة أو إصلاح أصول موجودة، ومتابعة حالة الطلب.
+        </p>
+      </div>
+      <div class="stats-mini">
+        <div class="sm-item">
+          <div class="sm-val text-warning"><?php echo e($assetRequestStats['pending']); ?></div>
+          <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد المراجعة</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-success"><?php echo e($assetRequestStats['approved']); ?></div>
+          <div class="sm-label"><i class="bi bi-check-circle"></i> مقبول</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-danger"><?php echo e($assetRequestStats['rejected']); ?></div>
+          <div class="sm-label"><i class="bi bi-x-circle"></i> مرفوض</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-primary"><?php echo e($assetRequestStats['total']); ?></div>
+          <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
+        </div>
+      </div>
+      <div class="module-actions grid-2">
+
+        
+        <?php if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin')): ?>
+          <a href="<?php echo e(route('asset-requests.index')); ?>"
+             class="btn btn-namaa w-100 w-sm-auto position-relative">
+            <i class="bi bi-inbox"></i> إدارة الطلبات
+            <?php if($assetRequestStats['pending'] > 0): ?>
+              <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size:10px;">
+                <?php echo e($assetRequestStats['pending']); ?>
+
+              </span>
+            <?php endif; ?>
+          </a>
+        <?php endif; ?>
+
+        
+        <?php if(auth()->user()?->hasPermission('submit_asset_request')): ?>
+          <a href="<?php echo e(route('asset-requests.create')); ?>"
+             class="btn btn-soft w-100 w-sm-auto">
+            <i class="bi bi-send-plus"></i> تقديم طلب
+          </a>
+        <?php endif; ?>
+
+      </div>
+    </div>
+  </div>
+<?php endif; ?>
+
+
+
 
     
     <?php if(auth()->user()?->hasPermission('view_branches')): ?>
@@ -1279,6 +1408,28 @@
     <?php endif; ?>
 
   </div>
+
+
+
+
+  
+<?php if(session('asset_request_success')): ?>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      Swal.fire({
+        icon: 'success',
+        title: 'تم إرسال الطلب',
+        text: '<?php echo e(session('asset_request_success')); ?>',
+        confirmButtonText: 'ممتاز',
+        confirmButtonColor: '#0ea5e9',
+        timer: 4000,
+        timerProgressBar: true,
+      });
+    });
+  </script>
+<?php endif; ?>
+
+
 
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/dashboard.blade.php ENDPATH**/ ?>

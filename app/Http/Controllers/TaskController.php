@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+
+/*
     public function index(Request $request)
     {
         $q = Task::query()->with(['assignee.branch', 'branch', 'creator']);
@@ -95,8 +97,80 @@ class TaskController extends Controller
             'employees' => $employees,
         ]);
     }
+*/
 
 
+public function index(Request $request)
+{
+    $q = Task::query()->with(['assignee.branch', 'branch', 'creator']);
+
+    $user     = auth()->user();
+    $employee = $user->employee;
+
+    // ── صلاحيات الرؤية ──
+    if ($user->hasRole('super_admin')) {
+        // يرى الكل بدون قيد
+    } elseif ($user->hasPermission('manage_tasks')) {
+        // يرى مهام نفسه + أعضاء مجموعاته
+        $visibleIds = $employee ? $employee->getVisibleEmployeeIds() : [];
+        $q->whereIn('assigned_to', $visibleIds);
+    } else {
+        // موظف عادي — يرى مهامه فقط
+        $q->where('assigned_to', $employee?->id);
+    }
+
+    // ── فلاتر ──
+    if ($request->filled('branch_id')) {
+        $q->where('branch_id', $request->branch_id);
+    }
+
+    if ($request->filled('assigned_to')) {
+        $q->where('assigned_to', $request->assigned_to);
+    }
+
+    if ($request->filled('status')) {
+        $q->where('status', $request->status);
+    }
+
+    if ($request->filled('priority')) {
+        $q->where('priority', $request->priority);
+    }
+
+    if ($request->filled('due')) {
+        $q->whereDate('due_date', $request->due);
+    }
+
+    if ($request->filled('search')) {
+        $s = trim($request->search);
+        $q->where(function ($query) use ($s) {
+            $query->where('title', 'like', "%$s%")
+                  ->orWhere('description', 'like', "%$s%");
+        });
+    }
+
+    if ($request->filled('late')) {
+        $q->whereDate('due_date', '<', now())
+          ->where('status', '!=', 'done');
+    }
+
+    // ── قائمة الموظفين في الفلتر ──
+    if ($user->hasRole('super_admin')) {
+        $employees = Employee::orderBy('full_name')->get();
+    } elseif ($user->hasPermission('manage_tasks')) {
+        $visibleIds = $employee ? $employee->getVisibleEmployeeIds() : [];
+        $employees  = Employee::whereIn('id', $visibleIds)
+                        ->orderBy('full_name')
+                        ->get();
+    } else {
+        $employees = Employee::where('id', $employee?->id)->get();
+    }
+
+    return view('tasks.index', [
+        'tasks'     => $q->latest()->paginate(20)->withQueryString(),
+        'branches'  => Branch::orderBy('name')->get(),
+        'employees' => $employees,
+    ]);
+}
 
     public function create()
     {

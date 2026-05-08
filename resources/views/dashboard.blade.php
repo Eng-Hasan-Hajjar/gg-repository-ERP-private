@@ -961,6 +961,63 @@
       </div>
     @endif
 
+
+    {{-- مجموعات الرؤية --}}
+@if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasPermission('manage_roles'))
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="module-card">
+      <div class="module-head">
+        <div class="module-icon grad-teal"><i class="bi bi-diagram-2-fill fs-3"></i></div>
+        <div>
+          <p class="module-title">مجموعات الرؤية</p>
+          <p class="module-sub">تحكم بمن يرى مهام وتقارير من</p>
+        </div>
+      </div>
+      <div class="module-body">
+        <p class="section-note">
+          تحديد صلاحيات الرؤية بشكل دقيق — كل مدير يرى فقط تقارير ومهام الموظفين المضافين لمجموعته.
+        </p>
+      </div>
+      <div class="stats-mini">
+        <div class="sm-item">
+          <div class="sm-val text-primary">{{ \App\Models\VisibilityGroup::count() }}</div>
+          <div class="sm-label"><i class="bi bi-diagram-2"></i> مجموعة</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-success">
+            {{ \DB::table('visibility_group_employee')->where('role_in_group','manager')->count() }}
+          </div>
+          <div class="sm-label"><i class="bi bi-person-check"></i> مدير</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-info">
+            {{ \DB::table('visibility_group_employee')->where('role_in_group','member')->count() }}
+          </div>
+          <div class="sm-label"><i class="bi bi-people"></i> عضو</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-warning">
+            {{ \DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id') }}
+          </div>
+          <div class="sm-label"><i class="bi bi-person-badge"></i> موظف مُدار</div>
+        </div>
+      </div>
+      <div class="module-actions">
+        <a href="{{ route('admin.visibility-groups.index') }}"
+           class="btn btn-namaa w-100 w-sm-auto">
+          <i class="bi bi-diagram-2-fill"></i> إدارة المجموعات
+        </a>
+        <a href="{{ route('admin.visibility-groups.create') }}"
+           class="btn btn-soft w-100 w-sm-auto">
+          <i class="bi bi-plus-circle"></i> مجموعة جديدة
+        </a>
+      </div>
+    </div>
+  </div>
+@endif
+
+
+
     {{-- المدربين والموظفين --}}
     @if(auth()->user()?->hasPermission('view_employees'))
       <div class="col-12 col-md-6 col-xl-4">
@@ -1102,6 +1159,74 @@
         </div>
       </div>
     @endif
+
+
+
+    {{-- طلبات اللوجستيات --}}
+@if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasPermission('submit_asset_request'))
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="module-card">
+      <div class="module-head">
+        <div class="module-icon grad-yellow"><i class="bi bi-send-plus fs-3"></i></div>
+        <div>
+          <p class="module-title">طلبات اللوجستيات</p>
+          <p class="module-sub">طلبات الشراء والإصلاح — مراجعة المدير</p>
+        </div>
+      </div>
+      <div class="module-body">
+        <p class="section-note">
+          تقديم طلبات شراء أصول جديدة أو إصلاح أصول موجودة، ومتابعة حالة الطلب.
+        </p>
+      </div>
+      <div class="stats-mini">
+        <div class="sm-item">
+          <div class="sm-val text-warning">{{ $assetRequestStats['pending'] }}</div>
+          <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد المراجعة</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-success">{{ $assetRequestStats['approved'] }}</div>
+          <div class="sm-label"><i class="bi bi-check-circle"></i> مقبول</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-danger">{{ $assetRequestStats['rejected'] }}</div>
+          <div class="sm-label"><i class="bi bi-x-circle"></i> مرفوض</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-val text-primary">{{ $assetRequestStats['total'] }}</div>
+          <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
+        </div>
+      </div>
+      <div class="module-actions grid-2">
+
+        {{-- زر إدارة الطلبات — للمدير فقط --}}
+        @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
+          <a href="{{ route('asset-requests.index') }}"
+             class="btn btn-namaa w-100 w-sm-auto position-relative">
+            <i class="bi bi-inbox"></i> إدارة الطلبات
+            @if($assetRequestStats['pending'] > 0)
+              <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size:10px;">
+                {{ $assetRequestStats['pending'] }}
+              </span>
+            @endif
+          </a>
+        @endif
+
+        {{-- زر تقديم طلب — لمن لديه صلاحية submit_asset_request --}}
+        @if(auth()->user()?->hasPermission('submit_asset_request'))
+          <a href="{{ route('asset-requests.create') }}"
+             class="btn btn-soft w-100 w-sm-auto">
+            <i class="bi bi-send-plus"></i> تقديم طلب
+          </a>
+        @endif
+
+      </div>
+    </div>
+  </div>
+@endif
+
+
+
 
     {{-- الفروع --}}
     @if(auth()->user()?->hasPermission('view_branches'))
@@ -1277,5 +1402,27 @@
     @endif
 
   </div>
+
+
+
+
+  {{-- رسالة نجاح طلب اللوجستيات --}}
+@if(session('asset_request_success'))
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      Swal.fire({
+        icon: 'success',
+        title: 'تم إرسال الطلب',
+        text: '{{ session('asset_request_success') }}',
+        confirmButtonText: 'ممتاز',
+        confirmButtonColor: '#0ea5e9',
+        timer: 4000,
+        timerProgressBar: true,
+      });
+    });
+  </script>
+@endif
+
+
 
 @endsection

@@ -19,6 +19,26 @@
         </a>
       @endif
 
+
+ {{-- في قسم d-flex gap-2 flex-wrap --}}
+@if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
+  <a href="{{ route('asset-requests.index') }}" class="btn btn-outline-warning rounded-pill fw-bold px-4">
+    <i class="bi bi-inbox"></i> إدارة الطلبات
+    @php
+      $pendingCount = \App\Models\AssetRequest::where('status', 'pending')->count();
+    @endphp
+    @if($pendingCount > 0)
+      <span class="badge bg-danger ms-1">{{ $pendingCount }}</span>
+    @endif
+  </a>
+@endif
+
+@if(auth()->user()?->hasPermission('submit_asset_request'))
+  <a href="{{ route('asset-requests.create') }}" class="btn btn-warning rounded-pill fw-bold px-4">
+    <i class="bi bi-send-plus"></i> تقديم طلب
+  </a>
+@endif
+
       <a href="{{ route('assets.export.excel') . '?' . http_build_query(request()->all()) }}"
         class="btn btn-success rounded-pill fw-bold px-4">
         <i class="bi bi-file-earmark-excel"></i> تصدير Excel

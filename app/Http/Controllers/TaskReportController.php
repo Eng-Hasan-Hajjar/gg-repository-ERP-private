@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class TaskReportController extends Controller
 {
 
-
+/*
     public function index(Request $request)
     {
 
@@ -107,6 +107,89 @@ class TaskReportController extends Controller
         ]);
 
     }
+*/
+
+public function index(Request $request)
+{
+    $query = TaskReport::with(['employee', 'task']);
+
+    $user     = auth()->user();
+    $employee = $user->employee;
+
+    // ── صلاحيات الرؤية ──
+    if ($user->hasRole('super_admin')) {
+        // يرى الكل بدون قيد
+    } elseif ($user->hasPermission('manage_tasks_reports')) {
+        // يرى نفسه + أعضاء المجموعات التي هو مدير فيها
+        $visibleIds = $employee ? $employee->getVisibleEmployeeIds() : [];
+        $query->whereIn('employee_id', $visibleIds);
+    } else {
+        // موظف عادي — يرى تقاريره فقط
+        $query->where('employee_id', $employee?->id);
+    }
+
+    // ── فلاتر ──
+    if ($request->filled('employee_id')) {
+        $query->where('employee_id', $request->employee_id);
+    }
+
+    if ($request->filled('report_type')) {
+        $query->where('report_type', $request->report_type);
+    }
+
+    if ($request->filled('task_id')) {
+        $query->where('task_id', $request->task_id);
+    }
+
+    if ($request->filled('from')) {
+        $query->whereDate('report_date', '>=', $request->from);
+    }
+
+    if ($request->filled('to')) {
+        $query->whereDate('report_date', '<=', $request->to);
+    }
+
+    if ($request->filled('search')) {
+        $s = $request->search;
+        $query->where(function ($q) use ($s) {
+            $q->where('title', 'like', "%$s%")
+              ->orWhere('notes', 'like', "%$s%");
+        });
+    }
+
+    if ($request->filled('quick')) {
+        match ($request->quick) {
+            'today' => $query->whereDate('report_date', now()),
+            'week'  => $query->whereBetween('report_date', [
+                            now()->startOfWeek(),
+                            now()->endOfWeek()
+                        ]),
+            'month' => $query->whereMonth('report_date', now()->month),
+            default => null,
+        };
+    }
+
+    // ── قائمة الموظفين في الفلتر ──
+    if ($user->hasRole('super_admin')) {
+        $employees = Employee::orderBy('full_name')->get();
+    } elseif ($user->hasPermission('manage_tasks_reports')) {
+        $visibleIds = $employee ? $employee->getVisibleEmployeeIds() : [];
+        $employees  = Employee::whereIn('id', $visibleIds)
+                        ->orderBy('full_name')
+                        ->get();
+    } else {
+        $employees = Employee::where('id', $employee?->id)->get();
+    }
+
+    $reports = $query->latest()->paginate(20)->withQueryString();
+
+    return view('task_reports.index', [
+        'reports'   => $reports,
+        'employees' => $employees,
+        'tasks'     => Task::orderBy('title')->get(),
+    ]);
+}
+
 
     public function create()
     {

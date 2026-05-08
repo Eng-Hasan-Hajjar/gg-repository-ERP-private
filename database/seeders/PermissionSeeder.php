@@ -81,9 +81,9 @@ class PermissionSeeder extends Seeder
             |--------------------------------------------------------------------------
             */
             ['name' => 'view_debts', 'label' => 'عرض الذمم المالية للطلاب', 'module' => 'finance'],
-            
+
             ['name' => 'view_account_statement', 'label' => 'عرض كشف الحسابات الشامل', 'module' => 'finance'],
-          
+
 
 
             /*
@@ -174,6 +174,9 @@ class PermissionSeeder extends Seeder
             ['name' => 'edit_assets', 'label' => 'تعديل أصل', 'module' => 'assets'],
             ['name' => 'delete_assets', 'label' => 'حذف أصل', 'module' => 'assets'],
 
+
+            ['name' => 'submit_asset_request', 'label' => 'تقديم طلب أصل', 'module' => 'assets'],
+            ['name' => 'manage_asset_requests', 'label' => 'إدارة طلبات الأصول ', 'module' => 'assets'],
 
 
 

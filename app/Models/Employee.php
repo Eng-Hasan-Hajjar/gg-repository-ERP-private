@@ -113,6 +113,44 @@ class Employee extends Model
     });
 }
 */
+
+
+
+// في App\Models\Employee — أضف هذا التابع
+
+public function visibilityGroups()
+{
+    return $this->belongsToMany(VisibilityGroup::class, 'visibility_group_employee')
+        ->withPivot('role_in_group')
+        ->withTimestamps();
+}
+
+/**
+ * جلب IDs الموظفين الذين يستطيع هذا الموظف رؤيتهم
+ * (نفسه + أعضاء المجموعات التي هو مدير فيها)
+ */
+public function getVisibleEmployeeIds(): array
+{
+    $ids = collect([$this->id]); // ✅ يرى نفسه دائماً
+
+    // ✅ المجموعات التي هو مدير فيها — يرى كل أعضائها (مديرين + أعضاء)
+    $managedGroups = $this->visibilityGroups()
+        ->wherePivot('role_in_group', 'manager')
+        ->with('employees')
+        ->get();
+
+    foreach ($managedGroups as $group) {
+        // يرى كل أعضاء المجموعة بدون استثناء
+        $ids = $ids->merge($group->employees->pluck('id'));
+    }
+
+    // ✅ المجموعات التي هو عضو فيها — يرى فقط نفسه (مضاف أعلاه)
+    // لكن إذا كان عضواً ومديراً في نفس الوقت لا تكرار
+
+    return $ids->unique()->values()->all();
+}
+
+
 protected static function booted()
 {
     static::addGlobalScope('branch', function ($query) {

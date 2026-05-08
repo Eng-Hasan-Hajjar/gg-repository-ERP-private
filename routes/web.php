@@ -32,6 +32,7 @@ use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentDebtController;
 use App\Http\Controllers\AccountStatementController;
+use App\Http\Controllers\AssetRequestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -683,4 +684,25 @@ Route::get('reports/tasks/export-excel', [TaskReportController::class, 'exportEx
 Route::get('/debts/{student}/export-excel', [StudentDebtController::class, 'exportStudentExcel'])
     ->name('debts.student.excel');
     
+
+    // في routes/web.php داخل middleware auth
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('visibility-groups', \App\Http\Controllers\Admin\VisibilityGroupController::class)
+        ->parameters(['visibility-groups' => 'visibilityGroup']);
+});
+
+
+// في routes/web.php
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/asset-requests',          [AssetRequestController::class, 'index'])->name('asset-requests.index');
+    Route::get('/asset-requests/create',   [AssetRequestController::class, 'create'])->name('asset-requests.create');
+    Route::post('/asset-requests',         [AssetRequestController::class, 'store'])->name('asset-requests.store');
+    Route::post('/asset-requests/{assetRequest}/approve', [AssetRequestController::class, 'approve'])->name('asset-requests.approve');
+    Route::post('/asset-requests/{assetRequest}/reject',  [AssetRequestController::class, 'reject'])->name('asset-requests.reject');
+    Route::delete('/asset-requests/{assetRequest}',       [AssetRequestController::class, 'destroy'])->name('asset-requests.destroy');
+
+});
+
+
 require __DIR__ . '/auth.php';

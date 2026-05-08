@@ -216,6 +216,16 @@ class DashboardController extends Controller
             ? round(($taskStats['done'] / $taskStats['total']) * 100) : 0;
 
 
+// ── إحصائيات مجموعات الرؤية ──
+$vgTableExists = \Illuminate\Support\Facades\Schema::hasTable('visibility_groups');
+
+$visibilityGroupStats = [
+    'total'    => $vgTableExists ? \App\Models\VisibilityGroup::count() : 0,
+    'managers' => $vgTableExists ? \DB::table('visibility_group_employee')->where('role_in_group', 'manager')->count() : 0,
+    'members'  => $vgTableExists ? \DB::table('visibility_group_employee')->where('role_in_group', 'member')->count() : 0,
+    'managed'  => $vgTableExists ? \DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id') : 0,
+];
+
 
         // ── إحصائيات الذمم ──
         $studentsWithPlans = Student::whereHas('paymentPlans')->with([
@@ -246,6 +256,26 @@ class DashboardController extends Controller
             }
         }
 
+
+
+        // ── إحصائيات طلبات اللوجستيات ──
+$user = auth()->user();
+$assetRequestQuery = \App\Models\AssetRequest::query();
+
+// الموظف العادي يرى طلباته فقط في الكارد
+if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_assets')) {
+    $assetRequestQuery->where('user_id', $user->id);
+}
+
+$assetRequestStats = [
+    'total'    => (clone $assetRequestQuery)->count(),
+    'pending'  => (clone $assetRequestQuery)->where('status', 'pending')->count(),
+    'approved' => (clone $assetRequestQuery)->where('status', 'approved')->count(),
+    'rejected' => (clone $assetRequestQuery)->where('status', 'rejected')->count(),
+];
+
+
+
         return view('dashboard', [
             'highlights' => $highlights,
             'todayStats' => $todayStats,
@@ -273,7 +303,8 @@ class DashboardController extends Controller
             'confRate' => $confRate,
             'doneRate' => $doneRate,
              'debtStats' => $debtStats,
-
+             'visibilityGroupStats' => $visibilityGroupStats,
+'assetRequestStats' => $assetRequestStats,
 
         ]);
     }
