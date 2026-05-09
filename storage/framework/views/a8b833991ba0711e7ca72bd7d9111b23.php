@@ -202,12 +202,12 @@
 </div>
 
 
-<div class="namaa-fab-wrapper" id="namaaFabWrapper">
+<div class="namaa-fab-wrapper " id="namaaFabWrapper">
   <span class="namaa-fab-ripple"></span>
   <span class="namaa-fab-ripple"></span>
   <span class="namaa-fab-ripple"></span>
 
-  <button class="namaa-fab-main" onclick="namaaFabToggle()"
+  <button class="namaa-fab-main " onclick="namaaFabToggle()"
           aria-label="قائمة الصناديق المالية" title="الصناديق المالية">
     <svg viewBox="0 0 24 24">
       <path d="M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .89-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28A2 2 0 0 0 22 15V9a2 2 0 0 0-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z"/>

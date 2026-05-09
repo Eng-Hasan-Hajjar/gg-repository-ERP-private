@@ -22,4 +22,11 @@ class LeaveRequest extends Model
 
     public function employee(): BelongsTo { return $this->belongsTo(Employee::class); }
     public function approver(): BelongsTo { return $this->belongsTo(User::class,'approved_by'); }
+
+
+
+    
+
+
+
 }

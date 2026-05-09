@@ -108,7 +108,7 @@ public function index(Request $request)
     $employee = $user->employee;
 
     // ── صلاحيات الرؤية ──
-    if ($user->hasRole('super_admin')) {
+    if ($user->hasRole('super_admin') || $user->hasRole('manager_attendance') ) {
         // يرى الكل بدون قيد
     } elseif ($user->hasPermission('manage_tasks')) {
         // يرى مهام نفسه + أعضاء مجموعاته

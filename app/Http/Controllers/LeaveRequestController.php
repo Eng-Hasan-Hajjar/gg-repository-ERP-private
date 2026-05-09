@@ -18,69 +18,61 @@ class LeaveRequestController extends Controller
 
         $user = auth()->user();
 
-        // جلب الموظف المرتبط بالمستخدم
         $employee = Employee::withoutGlobalScopes()
             ->where('user_id', $user->id)
             ->first();
 
-        // ================================
-        // 🔐 التحكم بالصلاحيات
-        // ================================
-        if (!$user->hasRole('super_admin')) {
+        $isSuperAdmin = $user->hasRole('super_admin') || $user->hasRole('manager_attendance');
+        $isManager = $user->hasRole('manager_attendance')
+            || $user->hasPermission('manage_leaves');
 
+        if ($isSuperAdmin) {
+            // يرى الكل
+        } elseif ($isManager) {
+            // مدير → يرى طلبات فرعه
+            if ($employee) {
+                $branchIds = array_filter([
+                    $employee->branch_id,
+                    $employee->secondary_branch_id,
+                ]);
+                $q->whereHas('employee', function ($x) use ($branchIds) {
+                    $x->withoutGlobalScopes()
+                        ->whereIn('branch_id', $branchIds);
+                });
+            }
+        } else {
             // موظف عادي → يرى طلباته فقط
-            if (!$user->hasPermission('manage_leaves')) {
-
-                if ($employee) {
-                    $q->where('employee_id', $employee->id);
-                }
-
+            if ($employee) {
+                $q->where('employee_id', $employee->id);
             } else {
-
-                // مدير → يرى طلبات الفرع
-                if ($employee) {
-                    $q->whereHas('employee', function ($x) use ($employee) {
-                        $x->where('branch_id', $employee->branch_id);
-                    });
-                }
-
+                $q->whereRaw('1 = 0');
             }
         }
 
-        // ================================
-        // 🔍 الفلاتر
-        // ================================
-        if ($request->filled('status')) {
+        if ($request->filled('status'))
             $q->where('status', $request->status);
-        }
-
-        if ($request->filled('type')) {
+        if ($request->filled('type'))
             $q->where('type', $request->type);
-        }
-
-        if ($request->filled('employee_id')) {
+        if ($request->filled('employee_id'))
             $q->where('employee_id', $request->employee_id);
-        }
-
-        if ($request->filled('from')) {
+        if ($request->filled('from'))
             $q->whereDate('start_date', '>=', $request->from);
-        }
-
-        if ($request->filled('to')) {
+        if ($request->filled('to'))
             $q->whereDate('start_date', '<=', $request->to);
-        }
 
-        // ================================
-        // 👥 قائمة الموظفين (للفلتر)
-        // ================================
-        if ($user->hasRole('super_admin') || $user->hasPermission('manage_leaves')) {
-
-            // المدير يرى الكل
-            $employees = Employee::orderBy('full_name')->get();
-
+        if ($isSuperAdmin) {
+            $employees = Employee::withoutGlobalScopes()->orderBy('full_name')->get();
+        } elseif ($isManager) {
+            $branchIds = $employee ? array_filter([
+                $employee->branch_id,
+                $employee->secondary_branch_id,
+            ]) : [];
+            $employees = !empty($branchIds)
+                ? Employee::withoutGlobalScopes()
+                    ->whereIn('branch_id', $branchIds)
+                    ->orderBy('full_name')->get()
+                : Employee::withoutGlobalScopes()->orderBy('full_name')->get();
         } else {
-
-            // الموظف يرى نفسه فقط
             $employees = $employee ? collect([$employee]) : collect();
         }
 

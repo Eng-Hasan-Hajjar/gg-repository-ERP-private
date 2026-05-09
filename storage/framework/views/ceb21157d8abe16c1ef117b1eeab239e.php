@@ -1276,15 +1276,15 @@ ERP Notifications Style
         <?php if(auth()->guard()->check()): ?>
           <?php if(auth()->user()->hasRole('super_admin')): ?>
 
-            <aside class="iconbar" aria-label="Module icons">
-              <a href="<?php echo e(route('dashboard')); ?>" class="grad-indigo <?php echo e($activeModule === 'dashboard' ? 'active' : ''); ?>"
+            <aside class="iconbar hide-mobile" aria-label="Module icons">
+              <a href="<?php echo e(route('dashboard')); ?>" class="grad-indigo hide-mobile <?php echo e($activeModule === 'dashboard' ? 'active' : ''); ?>"
                 data-title="لوحة التحكم">
                 <i class="bi bi-grid-fill fs-6"></i>
               </a>
 
               <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
 
-                <a href="<?php echo e(route('admin.audit.index')); ?>" class="grad-rose <?php echo e($activeModule === 'audit' ? 'active' : ''); ?>"
+                <a href="<?php echo e(route('admin.audit.index')); ?>" class="grad-rose hide-mobile <?php echo e($activeModule === 'audit' ? 'active' : ''); ?>"
                   data-title="سجل التدقيق">
                   <i class="bi bi-journal-text fs-6"></i>
                 </a>
@@ -1336,7 +1336,7 @@ ERP Notifications Style
               </a>
 
               <a href="<?php echo e(route('employees.index')); ?>"
-                class="grad-primary <?php echo e($activeModule === 'employees' ? 'active' : ''); ?>" data-title="الموارد البشرية">
+                class="grad-primary hide-mobile <?php echo e($activeModule === 'employees' ? 'active' : ''); ?>" data-title="الموارد البشرية">
                 <i class="bi bi-person-badge-fill fs-6"></i>
               </a>
 
@@ -1365,19 +1365,19 @@ ERP Notifications Style
 
 
 
-              <a href="<?php echo e(route('cashboxes.index')); ?>" class="grad-amber <?php echo e($activeModule === 'finance' ? 'active' : ''); ?>"
+              <a href="<?php echo e(route('cashboxes.index')); ?>" class="grad-amber  hide-mobile <?php echo e($activeModule === 'finance' ? 'active' : ''); ?>"
                 data-title="المالية ">
                 <i class="bi bi-cash-coin fs-6"></i>
               </a>
 
 
 
-              <a href="<?php echo e(route('attendance.index')); ?>" class="grad-rose <?php echo e($activeModule === 'attendance' ? 'active' : ''); ?>"
+              <a href="<?php echo e(route('attendance.index')); ?>" class="grad-rose hide-mobile <?php echo e($activeModule === 'attendance' ? 'active' : ''); ?>"
                 data-title="الدوام">
                 <i class="bi bi-calendar2-week fs-6"></i>
               </a>
 
-              <a href="<?php echo e(route('tasks.index')); ?>" class="grad-slate <?php echo e($activeModule === 'tasks' ? 'active' : ''); ?>"
+              <a href="<?php echo e(route('tasks.index')); ?>" class="grad-slate hide-mobile <?php echo e($activeModule === 'tasks' ? 'active' : ''); ?>"
                 data-title="المهام">
                 <i class="bi bi-check2-square fs-6"></i>
               </a>
@@ -1406,13 +1406,13 @@ ERP Notifications Style
 
 
               <a href="<?php echo e(route('programs.management.index')); ?>"
-                class="grad-indigo <?php echo e($activeModule === 'programs' ? 'active' : ''); ?>" data-title="إدارة البرامج">
+                class="grad-indigo hide-mobile <?php echo e($activeModule === 'programs' ? 'active' : ''); ?>" data-title="إدارة البرامج">
                 <i class="bi bi-kanban-fill fs-5"></i>
               </a>
 
 
 
-              <a href="<?php echo e(route('media.index')); ?>" class="grad-amber <?php echo e($activeModule === 'media' ? 'active' : ''); ?>"
+              <a href="<?php echo e(route('media.index')); ?>" class="grad-amber hide-mobile <?php echo e($activeModule === 'media' ? 'active' : ''); ?>"
                 data-title="قسم الميديا">
                 <i class="bi bi-megaphone-fill fs-5"></i>
               </a>

@@ -1275,15 +1275,15 @@ ERP Notifications Style
         @auth
           @if(auth()->user()->hasRole('super_admin'))
 
-            <aside class="iconbar" aria-label="Module icons">
-              <a href="{{ route('dashboard') }}" class="grad-indigo {{ $activeModule === 'dashboard' ? 'active' : '' }}"
+            <aside class="iconbar hide-mobile" aria-label="Module icons">
+              <a href="{{ route('dashboard') }}" class="grad-indigo hide-mobile {{ $activeModule === 'dashboard' ? 'active' : '' }}"
                 data-title="لوحة التحكم">
                 <i class="bi bi-grid-fill fs-6"></i>
               </a>
 
               @if(auth()->user()?->hasPermission('manage_roles'))
 
-                <a href="{{ route('admin.audit.index') }}" class="grad-rose {{ $activeModule === 'audit' ? 'active' : '' }}"
+                <a href="{{ route('admin.audit.index') }}" class="grad-rose hide-mobile {{ $activeModule === 'audit' ? 'active' : '' }}"
                   data-title="سجل التدقيق">
                   <i class="bi bi-journal-text fs-6"></i>
                 </a>
@@ -1335,7 +1335,7 @@ ERP Notifications Style
               </a>
 
               <a href="{{ route('employees.index') }}"
-                class="grad-primary {{ $activeModule === 'employees' ? 'active' : '' }}" data-title="الموارد البشرية">
+                class="grad-primary hide-mobile {{ $activeModule === 'employees' ? 'active' : '' }}" data-title="الموارد البشرية">
                 <i class="bi bi-person-badge-fill fs-6"></i>
               </a>
 
@@ -1364,19 +1364,19 @@ ERP Notifications Style
 
 
 
-              <a href="{{ route('cashboxes.index') }}" class="grad-amber {{ $activeModule === 'finance' ? 'active' : '' }}"
+              <a href="{{ route('cashboxes.index') }}" class="grad-amber  hide-mobile {{ $activeModule === 'finance' ? 'active' : '' }}"
                 data-title="المالية ">
                 <i class="bi bi-cash-coin fs-6"></i>
               </a>
 
 
 
-              <a href="{{ route('attendance.index') }}" class="grad-rose {{ $activeModule === 'attendance' ? 'active' : '' }}"
+              <a href="{{ route('attendance.index') }}" class="grad-rose hide-mobile {{ $activeModule === 'attendance' ? 'active' : '' }}"
                 data-title="الدوام">
                 <i class="bi bi-calendar2-week fs-6"></i>
               </a>
 
-              <a href="{{ route('tasks.index') }}" class="grad-slate {{ $activeModule === 'tasks' ? 'active' : '' }}"
+              <a href="{{ route('tasks.index') }}" class="grad-slate hide-mobile {{ $activeModule === 'tasks' ? 'active' : '' }}"
                 data-title="المهام">
                 <i class="bi bi-check2-square fs-6"></i>
               </a>
@@ -1405,13 +1405,13 @@ ERP Notifications Style
 
 
               <a href="{{ route('programs.management.index') }}"
-                class="grad-indigo {{ $activeModule === 'programs' ? 'active' : '' }}" data-title="إدارة البرامج">
+                class="grad-indigo hide-mobile {{ $activeModule === 'programs' ? 'active' : '' }}" data-title="إدارة البرامج">
                 <i class="bi bi-kanban-fill fs-5"></i>
               </a>
 
 
 
-              <a href="{{ route('media.index') }}" class="grad-amber {{ $activeModule === 'media' ? 'active' : '' }}"
+              <a href="{{ route('media.index') }}" class="grad-amber hide-mobile {{ $activeModule === 'media' ? 'active' : '' }}"
                 data-title="قسم الميديا">
                 <i class="bi bi-megaphone-fill fs-5"></i>
               </a>

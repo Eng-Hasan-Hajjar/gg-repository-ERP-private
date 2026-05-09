@@ -65,7 +65,7 @@ class Task extends Model
             $user = auth()->user();
 
             // السوبر أدمن يرى كل العملاء
-            if ($user->hasRole('super_admin')) {
+            if ($user->hasRole('super_admin') &&  $user->hasRole('manager_attendance')) {
                 return;
             }
 
