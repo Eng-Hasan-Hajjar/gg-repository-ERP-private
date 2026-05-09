@@ -1466,335 +1466,196 @@ ERP Notifications Style
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-  @auth
+@auth
+<script>
 
-    <script>
+// ═══════════════════════════════════════
+// Location Logic
+// ═══════════════════════════════════════
+@if(!session('location_captured'))
+(function () {
+    var STORE_URL = '{{ route("location.store") }}';
+    var SKIP_URL  = '{{ route("location.skip") }}';
+    var CSRF      = '{{ csrf_token() }}';
 
+    var modal    = document.getElementById('location-modal');
+    var btnAllow = document.getElementById('btn-allow-loc');
+    var btnSkip  = document.getElementById('btn-skip-loc');
+    var status   = document.getElementById('loc-status');
 
+    if (!modal || !btnAllow || !btnSkip) return;
 
+    function doSkip() {
+        fetch(SKIP_URL, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF }
+        }).catch(function () {});
+        location.reload();
+    }
 
+    function doStore(lat, lng) {
+        fetch(STORE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF
+            },
+            body: JSON.stringify({ latitude: lat, longitude: lng })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function() { location.reload(); })
+        .catch(function() { location.reload(); });
+    }
 
+    btnAllow.addEventListener('click', function () {
+        if (!navigator.geolocation) { doSkip(); return; }
+        btnAllow.disabled = true;
+        btnAllow.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري...';
+        if (status) status.style.display = 'block';
+        navigator.geolocation.getCurrentPosition(
+            function(pos) { doStore(pos.coords.latitude, pos.coords.longitude); },
+            function()    { doSkip(); },
+            { timeout: 15000, maximumAge: 60000, enableHighAccuracy: false }
+        );
+    });
 
-
-
-
-      // ===== Location Logic =====
-      @auth
-        @if(!session('location_captured'))
-          (function () {
-            var STORE_URL = '{{ route("location.store") }}';
-            var SKIP_URL = '{{ route("location.skip") }}';
-            var CSRF = '{{ csrf_token() }}';
-
-            var modal = document.getElementById('location-modal');
-            var btnAllow = document.getElementById('btn-allow-loc');
-            var btnSkip = document.getElementById('btn-skip-loc');
-            var status = document.getElementById('loc-status');
-
-            // إذا العناصر غير موجودة لا تكمل
-            if (!modal || !btnAllow || !btnSkip) return;
-
-            function closeModal() {
-              modal.style.display = 'none';
-            }
-
-            function doSkip() {
-              fetch(SKIP_URL, {
+    btnSkip.addEventListener('click', function () {
+        @if(auth()->user()?->hasPermission('skip_location'))
+            fetch('{{ route("location.skip") }}', {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': CSRF }
-              }).catch(function () { });
-              location.reload();
-            }
-
-            function doStore(lat, lng) {
-              fetch(STORE_URL, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-CSRF-TOKEN': CSRF
-                },
-                body: JSON.stringify({ latitude: lat, longitude: lng })
-              })
-                .then(function (res) {
-                  return res.json();
-                })
-                .then(function (data) {
-                  console.log('Location saved:', data);
-                  location.reload(); // ← بدل closeModal()
-
-                })
-                .catch(function (err) {
-                  console.warn('Location store failed:', err);
-                  location.reload(); // ← بدل closeModal()
-
-                });
-            }
-
-            btnAllow.addEventListener('click', function () {
-              if (!navigator.geolocation) {
-                doSkip();
-                return;
-              }
-
-              btnAllow.disabled = true;
-              btnAllow.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري...';
-              if (status) status.style.display = 'block';
-
-              navigator.geolocation.getCurrentPosition(
-                function (pos) {
-                  doStore(pos.coords.latitude, pos.coords.longitude);
-                },
-                function (err) {
-                  console.warn('Geolocation error code:', err.code, err.message);
-                  doSkip();
-                },
-                {
-                  timeout: 15000,
-                  maximumAge: 60000,
-                  enableHighAccuracy: false
+            }).catch(function () {});
+            location.reload();
+        @else
+            Swal.fire({
+                icon: 'warning',
+                title: 'تنبيه',
+                text: 'يجب تحديد الموقع الجغرافي للدخول إلى النظام.',
+                confirmButtonText: 'تسجيل خروج',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                zIndex: 99999,
+                didOpen: function () {
+                    document.getElementById('location-modal').style.zIndex = '1';
                 }
-              );
+            }).then(function () {
+                document.querySelector('form[action="{{ route('logout') }}"]').submit();
             });
-
-         btnSkip.addEventListener('click', function () {
-
-  @if(auth()->user()?->hasPermission('skip_location'))
-    // ← يملك السماحية: تخطي مباشر بدون logout
-    fetch('{{ route("location.skip") }}', {
-      method: 'POST',
-      headers: { 'X-CSRF-TOKEN': CSRF }
-    }).catch(function () {});
-    location.reload();
-
-  @else
-    // ← لا يملك السماحية: إجباره على الخروج
-    Swal.fire({
-      icon: 'warning',
-      title: 'تنبيه',
-      text: 'يجب تحديد الموقع الجغرافي للدخول إلى النظام.',
-      confirmButtonText: 'تسجيل خروج',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      zIndex: 99999,
-      didOpen: function () {
-        document.getElementById('location-modal').style.zIndex = '1';
-      }
-    }).then(function () {
-      document.querySelector('form[action="{{ route('logout') }}"]').submit();
-    });
-  @endif
-
-});
-
-
-
-          })();
         @endif
-      @endauth
+    });
+})();
+@endif
 
+// ═══════════════════════════════════════
+// Alerts System
+// ═══════════════════════════════════════
+function formatTime(time) {
+    if (!time) return 'الآن';
+    const date = new Date(time);
+    const now  = new Date();
+    let diff   = Math.floor((now - date) / 60000) - 180;
+    if (diff <= 0) return 'الآن';
+    if (diff < 60) return diff + ' دقيقة';
+    const hours = Math.floor(diff / 60);
+    if (hours < 24) return hours + ' ساعة';
+    return Math.floor(hours / 24) + ' يوم';
+}
 
+function buildAlertHTML(alerts) {
+    if (!alerts || alerts.length === 0) {
+        return '<div class="text-success text-center p-4"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>لا توجد تنبيهات</div>';
+    }
 
+    const sorted = [...alerts].sort(function(a, b) {
+        const order = { danger: 0, warning: 1, info: 2, success: 3 };
+        return (order[a.type] ?? 9) - (order[b.type] ?? 9);
+    });
 
+    return sorted.map(function(a) {
+        const extraClass = a.type === 'danger'  ? 'alert-danger-item'
+                         : a.type === 'warning' ? 'alert-warning-item'
+                         : '';
+        return '<a href="' + (a.url || '#') + '" class="alert-item ' + extraClass + '">'
+            + '<div class="alert-icon ' + a.type + '"><i class="bi ' + a.icon + '"></i></div>'
+            + '<div class="alert-content">'
+            + '<div class="alert-title">' + a.message + '</div>'
+            + '<div class="alert-time">' + formatTime(a.time) + '</div>'
+            + '</div></a>';
+    }).join('');
+}
 
-
-
-
-
-
-
-
-
-
-
-
-        function formatTime(time) {
-
-          if (!time) return 'الآن';
-
-          const date = new Date(time);
-          const now = new Date();
-
-          let diff = Math.floor((now - date) / 60000) - 180;
-
-          if (diff <= 0) return "الآن";
-
-          if (diff < 60) return diff + " دقيقة";
-
-          const hours = Math.floor(diff / 60);
-
-          if (hours < 24) return hours + " ساعة";
-
-          const days = Math.floor(hours / 24);
-
-          return days + " يوم";
-
-        }
-
-
-      // تحميل الإشعارات
-      function loadAlerts() {
-
-        fetch("{{ route('alerts.navbar') }}")
-          .then(res => res.json())
-          .then(data => {
-
-            const count = document.getElementById('alertCount');
-            const container = document.getElementById('alertsContainer');
-
+function loadAlerts() {
+    fetch('{{ route("alerts.navbar") }}', { credentials: 'same-origin' })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var count     = document.getElementById('alertCount');
+            var container = document.getElementById('alertsContainer');
             if (!count || !container) return;
 
             if (data.count > 0) {
-              count.style.display = 'inline-block';
-              count.innerText = data.count;
+                count.style.display = 'inline-block';
+                count.innerText = data.count > 99 ? '99+' : data.count;
             } else {
-              count.style.display = 'none';
+                count.style.display = 'none';
             }
 
-            if (!data.alerts || data.alerts.length === 0) {
-              container.innerHTML = `
-                      <div class="text-success text-center p-3">
-                          لا توجد تنبيهات
-                      </div>`;
-              return;
-            }
-
-            // ترتيب: danger أولاً ثم warning ثم بقية
-            const sorted = [...data.alerts].sort((a, b) => {
-              const order = { danger: 0, warning: 1, success: 2, info: 3 };
-              return (order[a.type] ?? 9) - (order[b.type] ?? 9);
-            });
-
-            // أول 8 فقط في الـ dropdown
-            const preview = sorted.slice(0, 8);
-
-            let html = '';
-            preview.forEach(a => {
-              const extraClass = a.type === 'danger' ? 'alert-danger-item'
-                : a.type === 'warning' ? 'alert-warning-item'
-                  : '';
-
-              html += `
-                      <a href="${a.url}" class="alert-item ${extraClass}">
-                          <div class="alert-icon ${a.type}">
-                              <i class="bi ${a.icon}"></i>
-                          </div>
-                          <div class="alert-content">
-                              <div class="alert-title">${a.message}</div>
-                              <div class="alert-time">${formatTime(a.time)}</div>
-                          </div>
-                      </a>`;
-            });
-
-            container.innerHTML = html;
-          })
-          .catch(err => {
-            const container = document.getElementById('alertsContainer');
-            if (container) {
-              container.innerHTML = `
-                      <div class="text-danger text-center p-3">
-                          خطأ في تحميل الإشعارات
-                      </div>`;
-            }
-            console.error(err);
-          });
-      }
-
-      // عند تحميل الصفحة
-      document.addEventListener('DOMContentLoaded', function () {
-
-        loadAlerts();
-
-        // تحديث الإشعارات كل 10 ثواني
-        setInterval(loadAlerts, 10000);
-
-      });
-
-
-
-
-
-
-
-      const showAllAlertsBtn = document.getElementById('showAllAlerts');
-
-      if (showAllAlertsBtn) {
-
-        showAllAlertsBtn.addEventListener('click', function (e) {
-
-          e.preventDefault();
-
-          fetch("{{ route('alerts.navbar') }}?all=1")
-
-            .then(res => res.json())
-
-            .then(data => {
-
-              const container = document.getElementById('allAlertsContainer');
-
-              let html = '';
-
-              data.alerts.forEach(a => {
-
-                html += `
-                            <a href="${a.url}" class="alert-item">
-                            <div class="alert-icon ${a.type}">
-                            <i class="bi ${a.icon}"></i>
-                            </div>
-                            <div class="alert-content">
-                            <div class="alert-title">${a.message}</div>
-                            <div class="alert-time">${formatTime(a.time)}</div>
-                            </div>
-                            </a>
-                            `;
-
-              });
-
-              container.innerHTML = html;
-
-              new bootstrap.Modal(document.getElementById('alertsModal')).show();
-
-            });
-
+            var preview = (data.alerts || []).slice(0, 8);
+            container.innerHTML = buildAlertHTML(preview);
+        })
+        .catch(function() {
+            var container = document.getElementById('alertsContainer');
+            if (container) container.innerHTML = '<div class="text-muted text-center small p-3">تعذّر تحميل الإشعارات</div>';
         });
+}
 
-      }
+document.addEventListener('DOMContentLoaded', function () {
+    loadAlerts();
+    setInterval(loadAlerts, 60000);
+});
 
+// ═══════════════════════════════════════
+// زر "عرض كل الإشعارات"
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function () {
+    var showAllBtn = document.getElementById('showAllAlerts');
+    if (!showAllBtn) return;
 
+    showAllBtn.addEventListener('click', function (e) {
+        e.preventDefault();
 
+        var allContainer = document.getElementById('allAlertsContainer');
 
-
-
-
-      function checkSession() {
-
-        // لا تفحص الجلسة في صفحة تسجيل الدخول
-        if (window.location.pathname === '/login') {
-          return;
+        // ✅ افتح المودال أولاً
+        var modalEl = document.getElementById('alertsModal');
+        if (modalEl) {
+            var bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            bsModal.show();
         }
 
-        fetch('/session/check')
+        // ✅ loading
+        if (allContainer) {
+            allContainer.innerHTML = '<div class="text-center p-4"><div class="spinner-border spinner-border-sm text-primary"></div><div class="mt-2 small text-muted">جاري التحميل...</div></div>';
+        }
 
-          .then(res => res.json())
+        // ✅ حمّل كل الإشعارات
+        fetch('{{ route("alerts.navbar") }}?all=1', { credentials: 'same-origin' })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (allContainer) {
+                    allContainer.innerHTML = buildAlertHTML(data.alerts || []);
+                }
+            })
+            .catch(function() {
+                if (allContainer) {
+                    allContainer.innerHTML = '<div class="text-danger text-center p-3">خطأ في التحميل</div>';
+                }
+            });
+    });
+});
 
-          .then(data => {
-
-            if (data.logout) {
-              window.location.href = "/login";
-            }
-
-          });
-
-      }
-
-      // الفحص كل 5 ثواني
-      setInterval(checkSession, 5000);
-
-
-
-
-
-     
-// ✅ CSRF refresh — كل 20 دقيقة لمنع 419
+// ═══════════════════════════════════════
+// CSRF Refresh — كل 20 دقيقة
+// ═══════════════════════════════════════
 setInterval(function () {
     fetch('/csrf-refresh', {
         method: 'GET',
@@ -1810,58 +1671,49 @@ setInterval(function () {
                 .forEach(function(el) { el.value = data.token; });
         }
     })
-    .catch(function() {}); // صامت
+    .catch(function() {});
 }, 20 * 60 * 1000);
 
-// ✅ إعادة تحميل عند العودة بعد غياب طويل (بدل 419)
-var lastActiveTime = Date.now();
+// ═══════════════════════════════════════
+// Reload عند العودة بعد غياب طويل
+// ═══════════════════════════════════════
+var _lastActiveTime = Date.now();
 document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
-        var diff = Date.now() - lastActiveTime;
-        // إذا غاب أكثر من ساعة → reload لتجديد CSRF
-        if (diff > 60 * 60 * 1000) {
+        if (Date.now() - _lastActiveTime > 60 * 60 * 1000) {
             window.location.reload();
         }
     } else {
-        lastActiveTime = Date.now();
+        _lastActiveTime = Date.now();
     }
 });
 
-// ✅ checkSession — معدّل: تسامح أكثر + لا يخرج فوراً
-var sessionFailCount = 0;
+// ═══════════════════════════════════════
+// checkSession — 3 فشلات ثم logout
+// ═══════════════════════════════════════
+var _sessionFailCount = 0;
 function checkSession() {
     if (window.location.pathname === '/login') return;
-
     fetch('/session/check', { credentials: 'same-origin' })
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data.logout) {
-                sessionFailCount++;
-                // فقط بعد 3 فشلات متتالية → logout
-                if (sessionFailCount >= 3) {
-                    window.location.href = '/login';
-                }
+                _sessionFailCount++;
+                if (_sessionFailCount >= 3) window.location.href = '/login';
             } else {
-                sessionFailCount = 0; // reset عند النجاح
+                _sessionFailCount = 0;
             }
         })
-        .catch(function() {
-            // لا تفعل شيئاً عند انقطاع الشبكة
-        });
+        .catch(function() {});
 }
-
-// كل 30 ثانية بدل 5 ثواني
 setInterval(checkSession, 30000);
 
+</script>
 
+@stack('scripts')
+@endauth
 
-
-
-    </script>
-
-    @stack('scripts')
-
-  @endauth
+ 
 </body>
 
 </html>

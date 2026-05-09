@@ -1,54 +1,30 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Services\Reports\ReportsService;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class AlertController extends Controller
 {
-    /*
-    public function navbar(ReportsService $service)
-    {
-        return response()->json(
-            $service->navbarAlerts()
-        );
-    }
-*/
     public function navbar(Request $request, ReportsService $service)
     {
+        $isAll = $request->boolean('all');
 
-        if ($request->get('all')) {
-
-            $alerts = $service->systemAlerts(); // كل الإشعارات
-
-            $alerts = collect($alerts)
-                ->filter(function ($a) {
-
-                    if (!isset($a['time']))
-                        return false;
-
-                    return Carbon::parse($a['time'])->isToday();
-                })
-                ->values()
-                ->toArray();
-
+        if ($isAll) {
+            // ✅ كل الإشعارات بدون limit ولا فلتر تاريخ
+            $alerts = $service->systemAlerts();
         } else {
-
-            $alerts = $service->systemAlerts(5); // القائمة
-
+            // ✅ القائمة المنسدلة — أول 8 فقط
+            $alerts = $service->systemAlerts(8);
         }
 
+        // العدد الكلي دائماً بدون limit
         $total = count($service->systemAlerts());
 
         return response()->json([
-            'count' => $total,
-            'alerts' => $alerts
+            'count'  => $total,
+            'alerts' => $alerts,
         ]);
-
     }
-
-
 }

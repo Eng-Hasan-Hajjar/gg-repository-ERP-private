@@ -467,321 +467,324 @@ class ReportsRepository
 
 
 
-    public function systemAlerts(?int $limit = null): array
-    {
+public function systemAlerts(?int $limit = null): array
+{
+    $alerts = [];
 
-        $alerts = [];
+    // =============================
+    // ⏰ عملاء معلّقون — 48 ساعة بدون متابعة
+    // =============================
+    if ($this->has('leads')) {
 
+        $now      = now();
+        $cutoff48 = $now->copy()->subHours(48)->toDateTimeString();
+        $cutoff24 = $now->copy()->subHours(24)->toDateTimeString();
 
-        // =============================
-// ⏰ عملاء معلّقون — 48 ساعة بدون متابعة
-// =============================
-        if ($this->has('leads')) {
+        $urgentLeads = DB::table('leads')
+            ->leftJoin('lead_followups', 'lead_followups.lead_id', '=', 'leads.id')
+            ->select(
+                'leads.id',
+                'leads.full_name',
+                'leads.first_contact_date',
+                'leads.created_at as lead_created',
+                DB::raw('MAX(lead_followups.created_at) as last_followup_at')
+            )
+            ->where('leads.registration_status', 'pending')
+            ->whereNotIn('leads.stage', ['rejected', 'registered', 'postponed'])
+            ->groupBy('leads.id', 'leads.full_name', 'leads.first_contact_date', 'leads.created_at')
+            ->havingRaw('
+                (last_followup_at IS NULL AND COALESCE(leads.first_contact_date, leads.created_at) <= ?)
+                OR
+                (last_followup_at IS NOT NULL AND last_followup_at <= ?)
+            ', [$cutoff48, $cutoff48])
+            ->orderBy('leads.created_at')
+            ->get();
 
-            $now = now();
-            $cutoff48 = $now->copy()->subHours(48)->toDateTimeString();
-            $cutoff24 = $now->copy()->subHours(24)->toDateTimeString();
+        foreach ($urgentLeads as $lead) {
+            $sinceDate = $lead->last_followup_at
+                ? \Carbon\Carbon::parse($lead->last_followup_at)
+                : \Carbon\Carbon::parse($lead->first_contact_date ?? $lead->lead_created);
 
-            // عملاء تجاوزوا 48 ساعة (urgent)
-            $urgentLeads = DB::table('leads')
-                ->leftJoin('lead_followups', 'lead_followups.lead_id', '=', 'leads.id')
-                ->select(
-                    'leads.id',
-                    'leads.full_name',
-                    'leads.first_contact_date',
-                    'leads.created_at as lead_created',
-                    DB::raw('MAX(lead_followups.created_at) as last_followup_at')
-                )
-                ->where('leads.registration_status', 'pending')
-                ->whereNotIn('leads.stage', ['rejected', 'registered', 'postponed'])
-                ->groupBy('leads.id', 'leads.full_name', 'leads.first_contact_date', 'leads.created_at')
-                ->havingRaw('
-                            (last_followup_at IS NULL AND COALESCE(leads.first_contact_date, leads.created_at) <= ?)
-                            OR
-                            (last_followup_at IS NOT NULL AND last_followup_at <= ?)
-                        ', [$cutoff48, $cutoff48])
-                ->orderBy('leads.created_at')
-                ->get();
+            $daysDiff  = (int) $sinceDate->diffInDays($now);
+            $hoursDiff = (int) $sinceDate->diffInHours($now);
+            $timeLabel = $daysDiff >= 1
+                ? "منذ {$daysDiff} " . ($daysDiff == 1 ? 'يوم' : 'أيام')
+                : "منذ {$hoursDiff} ساعة";
 
-            foreach ($urgentLeads as $lead) {
-                // الجديد — يأخذ first_contact_date أولاً
-                $sinceDate = $lead->last_followup_at
-                    ? \Carbon\Carbon::parse($lead->last_followup_at)
-                    : \Carbon\Carbon::parse($lead->first_contact_date ?? $lead->lead_created);
-
-                $daysDiff = (int) $sinceDate->diffInDays($now);
-                $hoursDiff = (int) $sinceDate->diffInHours($now);
-
-                $timeLabel = $daysDiff >= 1
-                    ? "منذ {$daysDiff} " . ($daysDiff == 1 ? 'يوم' : 'أيام')
-                    : "منذ {$hoursDiff} ساعة";
-
-                $alerts[] = [
-                    'type' => 'danger',
-                    'icon' => 'bi-exclamation-triangle-fill',
-                    'message' => "{$lead->full_name} — لم تتم المتابعة ({$timeLabel})",
-                    'time' => $lead->last_followup_at ?? $lead->lead_created,
-                    'url' => route('leads.show', $lead->id),
-                    'roles' => ['super_admin', 'manager_crm_sales', 'staff_crm'],
-                ];
-            }
-
-            // عملاء بين 24 و48 ساعة (warning)
-            $warningLeads = DB::table('leads')
-                ->leftJoin('lead_followups', 'lead_followups.lead_id', '=', 'leads.id')
-                ->select(
-                    'leads.id',
-                    'leads.full_name',
-                    'leads.first_contact_date',
-                    'leads.created_at as lead_created',
-                    DB::raw('MAX(lead_followups.created_at) as last_followup_at')
-                )
-                ->where('leads.registration_status', 'pending')
-                ->whereNotIn('leads.stage', ['rejected', 'registered', 'postponed'])
-                ->groupBy('leads.id', 'leads.full_name', 'leads.first_contact_date', 'leads.created_at')
-                ->havingRaw('
-    (last_followup_at IS NULL AND COALESCE(leads.first_contact_date, leads.created_at) BETWEEN ? AND ?)
-    OR
-    (last_followup_at IS NOT NULL AND last_followup_at BETWEEN ? AND ?)
-', [$cutoff48, $cutoff24, $cutoff48, $cutoff24])
-                ->orderBy('leads.created_at')
-                ->get();
-
-            foreach ($warningLeads as $lead) {
-                // الجديد — يأخذ first_contact_date أولاً
-                $sinceDate = $lead->last_followup_at
-                    ? \Carbon\Carbon::parse($lead->last_followup_at)
-                    : \Carbon\Carbon::parse($lead->first_contact_date ?? $lead->lead_created);
-
-                $hoursDiff = (int) $sinceDate->diffInHours($now);
-
-                $alerts[] = [
-                    'type' => 'warning',
-                    'icon' => 'bi-clock-history',
-                    'message' => "{$lead->full_name} — يحتاج متابعة قريباً ({$hoursDiff} ساعة)",
-                    'time' => $lead->last_followup_at ?? $lead->lead_created,
-                    'url' => route('leads.show', $lead->id),
-                    'roles' => ['super_admin', 'manager_crm_sales', 'staff_crm'],
-                ];
-            }
+            $alerts[] = [
+                'type'    => 'danger',
+                'icon'    => 'bi-exclamation-triangle-fill',
+                'message' => "{$lead->full_name} — لم تتم المتابعة ({$timeLabel})",
+                'time'    => $lead->last_followup_at ?? $lead->lead_created,
+                'url'     => route('leads.show', $lead->id),
+                'roles'   => ['super_admin', 'manager_crm_sales', 'staff_crm'],
+                'permissions' => [],
+            ];
         }
 
+        $warningLeads = DB::table('leads')
+            ->leftJoin('lead_followups', 'lead_followups.lead_id', '=', 'leads.id')
+            ->select(
+                'leads.id',
+                'leads.full_name',
+                'leads.first_contact_date',
+                'leads.created_at as lead_created',
+                DB::raw('MAX(lead_followups.created_at) as last_followup_at')
+            )
+            ->where('leads.registration_status', 'pending')
+            ->whereNotIn('leads.stage', ['rejected', 'registered', 'postponed'])
+            ->groupBy('leads.id', 'leads.full_name', 'leads.first_contact_date', 'leads.created_at')
+            ->havingRaw('
+                (last_followup_at IS NULL AND COALESCE(leads.first_contact_date, leads.created_at) BETWEEN ? AND ?)
+                OR
+                (last_followup_at IS NOT NULL AND last_followup_at BETWEEN ? AND ?)
+            ', [$cutoff48, $cutoff24, $cutoff48, $cutoff24])
+            ->orderBy('leads.created_at')
+            ->get();
 
+        foreach ($warningLeads as $lead) {
+            $sinceDate = $lead->last_followup_at
+                ? \Carbon\Carbon::parse($lead->last_followup_at)
+                : \Carbon\Carbon::parse($lead->first_contact_date ?? $lead->lead_created);
 
+            $hoursDiff = (int) $sinceDate->diffInHours($now);
 
-
-
-
-        // =============================
-        // مهام متأخرة
-        // =============================
-        if ($this->has('tasks')) {
-
-            $lateTasks = DB::table('tasks')
-                ->whereDate('due_date', '<', now())
-                ->where('status', '!=', 'done')
-                ->count();
-
-            if ($lateTasks > 0) {
-
-                $alerts[] = [
-                    'type' => 'warning',
-                    'icon' => 'bi-list-check',
-                    'message' => "يوجد {$lateTasks} مهام متأخرة",
-                    'url' => route('tasks.index', ['late' => 1]),
-
-                    'roles' => [
-                        'super_admin',
-                        'manager_hr'
-                    ]
-
-                ];
-            }
+            $alerts[] = [
+                'type'        => 'warning',
+                'icon'        => 'bi-clock-history',
+                'message'     => "{$lead->full_name} — يحتاج متابعة قريباً ({$hoursDiff} ساعة)",
+                'time'        => $lead->last_followup_at ?? $lead->lead_created,
+                'url'         => route('leads.show', $lead->id),
+                'roles'       => ['super_admin', 'manager_crm_sales', 'staff_crm'],
+                'permissions' => [],
+            ];
         }
-
-        // =============================
-        // لا يوجد تسجيل طلاب اليوم
-        // =============================
-        if ($this->has('students')) {
-
-            $todayStudents = DB::table('students')
-                ->whereDate('created_at', now())
-                ->count();
-
-            if ($todayStudents == 0) {
-
-                $alerts[] = [
-                    'type' => 'info',
-                    'icon' => 'bi-people',
-                    'message' => 'لا يوجد تسجيل طلاب اليوم',
-                    'url' => route('students.index'),
-
-                    'roles' => [
-                        'super_admin',
-                        'manager_student_affairs'
-                    ]
-
-                ];
-            }
-        }
-
-
-
-
-        // =============================
-// تسجيل طلاب اليوم
-// =============================
-        if ($this->has('students')) {
-
-            $todayStudents = DB::table('students')
-                ->whereDate('created_at', now())
-                ->orderByDesc('id')
-
-                ->get();
-
-            foreach ($todayStudents as $s) {
-
-                $alerts[] = [
-
-                    'type' => 'info',
-                    'icon' => 'bi-person-check',
-                    'message' => "تم تسجيل طالب جديد  {$s->full_name}",
-
-                    'time' => $s->created_at,
-
-                    'url' => route('students.show', $s->id),
-
-                    'roles' => [
-                        'super_admin',
-                        'manager_student_affairs'
-                    ]
-
-                ];
-
-            }
-
-        }
-
-
-
-
-
-        // =============================
-// تحويل Lead إلى Student
-// =============================
-        if ($this->has('students')) {
-
-            $convertedStudents = DB::table('students')
-                ->whereNotNull('confirmed_at')
-                ->whereDate('confirmed_at', now())
-                ->orderByDesc('id')
-
-                ->get();
-
-            foreach ($convertedStudents as $s) {
-
-                $alerts[] = [
-
-                    'type' => 'success',
-                    'icon' => 'bi-mortarboard',
-                    'message' => "تم تثبيت الطالب بنجاح {$s->full_name}",
-                    'time' => $s->confirmed_at,
-                    'url' => route('students.show', $s->id),
-
-                    'roles' => [
-                        'super_admin',
-                        'manager_crm_sales',
-                        'staff_crm'
-                    ]
-
-                ];
-
-            }
-
-        }
-
-
-
-
-        // =============================
-        // حركات مالية
-        // =============================
-        if ($this->has('cashbox_transactions')) {
-
-            $trx = DB::table('cashbox_transactions')
-                ->whereDate(
-                    DB::raw('COALESCE(trx_date, created_at)'),
-                    now()->toDateString()
-                )
-                ->orderByDesc('id')
-
-                ->get();
-
-            foreach ($trx as $t) {
-
-                $alerts[] = [
-
-                    'type' => 'success',
-                    'icon' => 'bi-cash-coin',
-                    'message' => "تم تسجيل حركة مالية بقيمة {$t->amount}",
-                    'time' => $t->created_at,
-                    'url' => route('cashboxes.show', $t->cashbox_id),
-
-                    'roles' => [
-                        'super_admin',
-                        'manager_finance'
-                    ]
-
-                ];
-            }
-        }
-
-        // =============================
-        // فلترة حسب الدور
-        // =============================
-
-        $user = auth()->user();
-
-        $alerts = array_filter($alerts, function ($alert) use ($user) {
-
-            if (!isset($alert['roles']))
-                return true;
-
-            foreach ($alert['roles'] as $role) {
-
-                if ($user->hasRole($role)) {
-                    return true;
-                }
-
-            }
-
-            return false;
-
-        });
-
-
-
-
-        // ترتيب الإشعارات حسب الوقت
-        usort($alerts, function ($a, $b) {
-
-            return strtotime($b['time'] ?? now()) - strtotime($a['time'] ?? now());
-
-        });
-
-        // إعادة ترتيب المفاتيح
-        $alerts = array_values($alerts);
-
-        // تطبيق limit إن وجد
-        if ($limit) {
-            $alerts = array_slice($alerts, 0, $limit);
-        }
-
-        return $alerts;
-
-
-
     }
+
+    // =============================
+    // مهام متأخرة
+    // =============================
+    if ($this->has('tasks')) {
+        $lateTasks = DB::table('tasks')
+            ->whereDate('due_date', '<', now())
+            ->where('status', '!=', 'done')
+            ->count();
+
+        if ($lateTasks > 0) {
+            $alerts[] = [
+                'type'        => 'warning',
+                'icon'        => 'bi-list-check',
+                'message'     => "يوجد {$lateTasks} مهام متأخرة",
+                'time'        => now()->toDateTimeString(),
+                'url'         => route('tasks.index', ['late' => 1]),
+                'roles'       => ['super_admin', 'manager_hr'],
+                'permissions' => [],
+            ];
+        }
+    }
+
+    // =============================
+    // تسجيل طلاب اليوم
+    // =============================
+    if ($this->has('students')) {
+        $todayStudents = DB::table('students')
+            ->whereDate('created_at', now())
+            ->orderByDesc('id')
+            ->get();
+
+        foreach ($todayStudents as $s) {
+            $alerts[] = [
+                'type'        => 'info',
+                'icon'        => 'bi-person-check',
+                'message'     => "تم تسجيل طالب جديد {$s->full_name}",
+                'time'        => $s->created_at,
+                'url'         => route('students.show', $s->id),
+                'roles'       => ['super_admin', 'manager_student_affairs'],
+                'permissions' => [],
+            ];
+        }
+    }
+
+    // =============================
+    // تثبيت طالب
+    // =============================
+    if ($this->has('students')) {
+        $convertedStudents = DB::table('students')
+            ->whereNotNull('confirmed_at')
+            ->whereDate('confirmed_at', now())
+            ->orderByDesc('id')
+            ->get();
+
+        foreach ($convertedStudents as $s) {
+            $alerts[] = [
+                'type'        => 'success',
+                'icon'        => 'bi-mortarboard',
+                'message'     => "تم تثبيت الطالب بنجاح {$s->full_name}",
+                'time'        => $s->confirmed_at,
+                'url'         => route('students.show', $s->id),
+                'roles'       => ['super_admin', 'manager_crm_sales', 'staff_crm'],
+                'permissions' => [],
+            ];
+        }
+    }
+
+    // =============================
+    // حركات مالية
+    // =============================
+    if ($this->has('cashbox_transactions')) {
+        $trx = DB::table('cashbox_transactions')
+            ->whereDate(DB::raw('COALESCE(trx_date, created_at)'), now()->toDateString())
+            ->orderByDesc('id')
+            ->get();
+
+        foreach ($trx as $t) {
+            $alerts[] = [
+                'type'        => 'success',
+                'icon'        => 'bi-cash-coin',
+                'message'     => "تم تسجيل حركة مالية بقيمة {$t->amount}",
+                'time'        => $t->created_at,
+                'url'         => route('cashboxes.show', $t->cashbox_id),
+                'roles'       => ['super_admin', 'manager_finance'],
+                'permissions' => [],
+            ];
+        }
+    }
+
+    // =============================
+    // ✅ طلبات اللوجستيات الجديدة
+    // =============================
+    if ($this->has('asset_requests')) {
+
+        // طلبات عاجلة pending
+        $urgentAssetRequests = DB::table('asset_requests')
+            ->join('users', 'users.id', '=', 'asset_requests.user_id')
+            ->leftJoin('branches', 'branches.id', '=', 'asset_requests.branch_id')
+            ->select(
+                'asset_requests.id',
+                'asset_requests.title',
+                'asset_requests.type',
+                'asset_requests.priority',
+                'asset_requests.created_at',
+                'users.name as user_name',
+                'branches.name as branch_name'
+            )
+            ->where('asset_requests.status', 'pending')
+            ->where('asset_requests.priority', 'urgent')
+            ->orderByDesc('asset_requests.created_at')
+            ->get();
+
+        foreach ($urgentAssetRequests as $req) {
+            $typeLabel  = $req->type === 'purchase' ? 'شراء' : 'إصلاح';
+            $branchText = $req->branch_name ? " ({$req->branch_name})" : '';
+
+            $alerts[] = [
+                'type'        => 'danger',
+                'icon'        => 'bi-exclamation-circle-fill',
+                'message'     => "🔴 طلب {$typeLabel} عاجل: {$req->title}{$branchText} — {$req->user_name}",
+                'time'        => $req->created_at,
+                'url'         => route('asset-requests.index'),
+                'roles'       => ['super_admin'],
+                'permissions' => ['manage_assets'],
+            ];
+        }
+
+        // طلبات عادية pending (آخر 24 ساعة)
+        $normalAssetRequests = DB::table('asset_requests')
+            ->join('users', 'users.id', '=', 'asset_requests.user_id')
+            ->leftJoin('branches', 'branches.id', '=', 'asset_requests.branch_id')
+            ->select(
+                'asset_requests.id',
+                'asset_requests.title',
+                'asset_requests.type',
+                'asset_requests.priority',
+                'asset_requests.created_at',
+                'users.name as user_name',
+                'branches.name as branch_name'
+            )
+            ->where('asset_requests.status', 'pending')
+            ->where('asset_requests.priority', '!=', 'urgent')
+            ->where('asset_requests.created_at', '>=', now()->subHours(24))
+            ->orderByDesc('asset_requests.created_at')
+            ->get();
+
+        foreach ($normalAssetRequests as $req) {
+            $typeLabel  = $req->type === 'purchase' ? 'شراء' : 'إصلاح';
+            $branchText = $req->branch_name ? " ({$req->branch_name})" : '';
+
+            $alerts[] = [
+                'type'        => 'warning',
+                'icon'        => 'bi-box-seam',
+                'message'     => "طلب {$typeLabel} جديد: {$req->title}{$branchText} — {$req->user_name}",
+                'time'        => $req->created_at,
+                'url'         => route('asset-requests.index'),
+                'roles'       => ['super_admin'],
+                'permissions' => ['manage_assets'],
+            ];
+        }
+
+        // إجمالي الطلبات المعلقة
+        $totalPending = DB::table('asset_requests')
+            ->where('status', 'pending')
+            ->count();
+
+        if ($totalPending > 0) {
+            $alerts[] = [
+                'type'        => 'info',
+                'icon'        => 'bi-inbox-fill',
+                'message'     => "يوجد {$totalPending} طلب لوجستي بانتظار المراجعة",
+                'time'        => now()->toDateTimeString(),
+                'url'         => route('asset-requests.index'),
+                'roles'       => ['super_admin'],
+                'permissions' => ['manage_assets'],
+            ];
+        }
+    }
+
+    // =============================
+    // فلترة حسب الدور والصلاحية
+    // =============================
+    $user = auth()->user();
+
+    $alerts = array_filter($alerts, function ($alert) use ($user) {
+        // التحقق من الأدوار
+        $hasRole = empty($alert['roles']);
+        if (!$hasRole) {
+            foreach ($alert['roles'] as $role) {
+                if ($user->hasRole($role)) {
+                    $hasRole = true;
+                    break;
+                }
+            }
+        }
+
+        // التحقق من الصلاحيات
+        $hasPermission = empty($alert['permissions']);
+        if (!$hasPermission) {
+            foreach ($alert['permissions'] as $perm) {
+                if ($user->hasPermission($perm)) {
+                    $hasPermission = true;
+                    break;
+                }
+            }
+        }
+
+        // يظهر إذا كان لديه دور أو صلاحية
+        return $hasRole || $hasPermission;
+    });
+
+    // ترتيب حسب الوقت
+    usort($alerts, function ($a, $b) {
+        return strtotime($b['time'] ?? now()) - strtotime($a['time'] ?? now());
+    });
+
+    $alerts = array_values($alerts);
+
+    if ($limit) {
+        $alerts = array_slice($alerts, 0, $limit);
+    }
+
+    return $alerts;
+}
 
     /*
         public function navbarAlerts(): array

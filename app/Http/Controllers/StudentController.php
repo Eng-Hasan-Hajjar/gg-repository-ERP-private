@@ -277,30 +277,33 @@ class StudentController extends Controller
             }
 
 
-            // crm
-            /*
-            $crmData = $request->input('crm', []);
-            if (!empty(array_filter($crmData))) {
-                $student->crmInfo()->updateOrCreate(
-                    ['student_id' => $student->id],
-                    $crmData + ['converted_at' => now()]
-                );
-            }
-*/
+  
 
-            $crmData = $request->input('crm', []);
-            if (!empty(array_filter($crmData))) {
-                // قيم افتراضية للحقول الإجبارية في DB
-                $crmData['source'] = $crmData['source'] ?? 'other';
-                $crmData['stage'] = $crmData['stage'] ?? 'registered';
+         $crmData = $request->input('crm', []);
+$crmData = $request->input('crm', []);
 
-                $student->crmInfo()->updateOrCreate(
-                    ['student_id' => $student->id],
-                    $crmData + ['converted_at' => now()]
-                );
-            }
+// احذف القيم الفارغة
+$crmData = array_filter($crmData, fn($v) => $v !== null && $v !== '');
 
+if (!empty($crmData)) {
 
+    // احفظ تاريخ أول تواصل القديم إذا لم يُرسل
+    if (!isset($crmData['first_contact_date'])) {
+        $existing = optional($student->crmInfo)->first_contact_date;
+        if ($existing) {
+            $crmData['first_contact_date'] = $existing;
+        }
+    }
+
+    // ✅ دائماً أضف قيم افتراضية للـ enum — سواء insert أو update
+    $crmData['source'] = $crmData['source'] ?? $student->crmInfo?->source ?? 'other';
+    $crmData['stage']  = $crmData['stage']  ?? $student->crmInfo?->stage  ?? 'registered';
+
+    $student->crmInfo()->updateOrCreate(
+        ['student_id' => $student->id],
+        $crmData
+    );
+}
 
             // diplomas multi
             $diplomaIds = $request->input('diploma_ids', []);
@@ -792,18 +795,30 @@ public function show(Student $student)
                 $student->profile()->updateOrCreate(['student_id' => $student->id], $profileData);
             }
 
-            $crmData = $request->input('crm', []);
-            if (!empty($crmData)) {
+      $crmData = $request->input('crm', []);
 
-                // لا تمسح تاريخ أول تواصل إذا لم يتم إرساله
-                if (!isset($crmData['first_contact_date'])) {
-                    $crmData['first_contact_date'] = optional($student->crmInfo)->first_contact_date;
-                }
+// ✅ احذف القيم الفارغة
+$crmData = array_filter($crmData, fn($v) => $v !== null && $v !== '');
+
+if (!empty($crmData)) {
+
+    // ✅ احفظ تاريخ أول تواصل القديم
+    if (!isset($crmData['first_contact_date'])) {
+        $existing = optional($student->crmInfo)->first_contact_date;
+        if ($existing) $crmData['first_contact_date'] = $existing;
+    }
+
+    // ✅ قيم افتراضية للـ enum دائماً
+    $crmData['source'] = $crmData['source'] ?? $student->crmInfo?->source ?? 'other';
+    $crmData['stage']  = $crmData['stage']  ?? $student->crmInfo?->stage  ?? 'registered';
+
+    $student->crmInfo()->updateOrCreate(
+        ['student_id' => $student->id],
+        $crmData
+    );
+}
 
 
-
-                $student->crmInfo()->updateOrCreate(['student_id' => $student->id], $crmData);
-            }
 
             $diplomaIds = $request->input('diploma_ids', null);
             if (is_array($diplomaIds)) {
