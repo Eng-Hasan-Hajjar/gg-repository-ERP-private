@@ -705,4 +705,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+
+// CSRF Refresh — لمنع 419
+Route::get('/csrf-refresh', function () {
+    return response()->json(['token' => csrf_token()]);
+})->middleware('web')->name('csrf.refresh');
+
+
 require __DIR__ . '/auth.php';

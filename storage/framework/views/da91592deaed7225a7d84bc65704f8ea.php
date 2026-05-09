@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
   <div>
     <h4 class="fw-bold mb-0">طلبات اللوجستيات</h4>
-    <div class="text-muted small">طلبات الشراء والإصلاح</div>
+    <div class="text-muted small">طلبات الشراء والإصلاح — مرتبة حسب الأولوية</div>
   </div>
   <?php if(auth()->user()?->hasPermission('submit_asset_request')): ?>
     <a href="<?php echo e(route('asset-requests.create')); ?>" class="btn btn-namaa rounded-pill px-4 fw-bold">
@@ -34,11 +34,20 @@
           <option value="repair"   <?php if(request('type')=='repair'): echo 'selected'; endif; ?>>إصلاح</option>
         </select>
       </div>
-      <div class="col-md-2 d-grid">
+      
+      <div class="col-6 col-md-3">
+        <select name="priority" class="form-select">
+          <option value="">الأولوية (الكل)</option>
+          <option value="urgent" <?php if(request('priority')=='urgent'): echo 'selected'; endif; ?>>🔴 عاجل</option>
+          <option value="normal" <?php if(request('priority')=='normal'): echo 'selected'; endif; ?>>➖ عادية</option>
+          <option value="low"    <?php if(request('priority')=='low'): echo 'selected'; endif; ?>>🔽 منخفضة</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-2 d-grid">
         <button class="btn btn-namaa fw-bold">تصفية</button>
       </div>
-      <?php if(request()->hasAny(['status','type'])): ?>
-        <div class="col-md-2 d-grid">
+      <?php if(request()->hasAny(['status','type','priority'])): ?>
+        <div class="col-md-1 d-grid">
           <a href="<?php echo e(route('asset-requests.index')); ?>" class="btn btn-outline-secondary">مسح</a>
         </div>
       <?php endif; ?>
@@ -54,6 +63,7 @@
           <th>#</th>
           <th>العنوان</th>
           <th>النوع</th>
+          <th>الأولوية</th>  
           <th>مقدم الطلب</th>
           <th>الفرع</th>
           <th>الأصل المرتبط</th>
@@ -64,10 +74,16 @@
       </thead>
       <tbody>
         <?php $__empty_1 = true; $__currentLoopData = $requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-          <tr>
+          <tr class="<?php echo e($r->priority === 'urgent' && $r->status === 'pending' ? 'table-danger' : ''); ?>">
             <td class="text-muted small"><?php echo e($r->id); ?></td>
             <td>
-              <div class="fw-bold"><?php echo e($r->title); ?></div>
+              <div class="fw-bold">
+                <?php if($r->priority === 'urgent'): ?>
+                  <i class="bi bi-exclamation-circle-fill text-danger me-1"></i>
+                <?php endif; ?>
+                <?php echo e($r->title); ?>
+
+              </div>
               <?php if($r->description): ?>
                 <div class="text-muted small"><?php echo e(Str::limit($r->description, 60)); ?></div>
               <?php endif; ?>
@@ -78,6 +94,16 @@
 
               </span>
             </td>
+
+            
+            <td>
+              <span class="badge bg-<?php echo e($r->priority_color); ?>">
+                <i class="bi <?php echo e($r->priority_icon); ?> me-1"></i>
+                <?php echo e($r->priority_label); ?>
+
+              </span>
+            </td>
+
             <td class="small"><?php echo e($r->user->name ?? '-'); ?></td>
             <td class="small"><?php echo e($r->branch->name ?? '-'); ?></td>
             <td class="small text-muted"><?php echo e($r->asset->name ?? '—'); ?></td>
@@ -88,7 +114,6 @@
             <td class="text-end">
               <div class="d-flex gap-1 justify-content-end flex-wrap">
 
-                
                 <?php if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending'): ?>
                   <form method="POST" action="<?php echo e(route('asset-requests.approve', $r)); ?>">
                     <?php echo csrf_field(); ?>
@@ -97,7 +122,6 @@
                     </button>
                   </form>
 
-                  
                   <button class="btn btn-sm btn-outline-danger"
                     data-bs-toggle="modal"
                     data-bs-target="#rejectModal<?php echo e($r->id); ?>">
@@ -105,7 +129,6 @@
                   </button>
                 <?php endif; ?>
 
-                
                 <?php if($r->user_id === auth()->id() && $r->status === 'pending'): ?>
                   <form method="POST" action="<?php echo e(route('asset-requests.destroy', $r)); ?>"
                         onsubmit="return confirm('حذف الطلب؟')">
@@ -116,7 +139,6 @@
                   </form>
                 <?php endif; ?>
 
-                
                 <?php if($r->status === 'rejected' && $r->manager_notes): ?>
                   <button class="btn btn-sm btn-outline-dark"
                     data-bs-toggle="tooltip"
@@ -129,7 +151,6 @@
             </td>
           </tr>
 
-          
           <?php if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending'): ?>
             <div class="modal fade" id="rejectModal<?php echo e($r->id); ?>" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
@@ -157,7 +178,7 @@
 
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
           <tr>
-            <td colspan="9" class="text-center text-muted py-4">
+            <td colspan="10" class="text-center text-muted py-4">
               <i class="bi bi-inbox fs-2 d-block mb-2"></i>
               لا توجد طلبات
             </td>
@@ -169,6 +190,14 @@
 </div>
 
 <div class="mt-3"><?php echo e($requests->links()); ?></div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        .forEach(function(el) { new bootstrap.Tooltip(el); });
+});
+</script>
 
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/asset_requests/index.blade.php ENDPATH**/ ?>

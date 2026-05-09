@@ -31,6 +31,7 @@ class AuthorizeByRoute
             'media.public.form',
             'media.public.store',
             'media.public.thanks',
+            'csrf.refresh',
         ];
 
         if (in_array($routeName, $publicRoutes)) {
@@ -90,6 +91,34 @@ class AuthorizeByRoute
             'programs.management.edit' => 'view_program_management',
             'programs.management.update' => 'view_program_management',
             'programs.management.show' => 'view_program_management',
+
+            // طلبات الأصول اللوجستية
+            'asset-requests.index' => 'submit_asset_request',
+            'asset-requests.create' => 'submit_asset_request',
+            'asset-requests.store' => 'submit_asset_request',
+            'asset-requests.approve' => 'manage_assets',
+            'asset-requests.reject' => 'manage_assets',
+            'asset-requests.destroy' => 'submit_asset_request',
+
+            // مجموعات الرؤية
+            'admin.visibility-groups.index' => 'manage_roles',
+            'admin.visibility-groups.create' => 'manage_roles',
+            'admin.visibility-groups.store' => 'manage_roles',
+            'admin.visibility-groups.edit' => 'manage_roles',
+            'admin.visibility-groups.update' => 'manage_roles',
+            'admin.visibility-groups.destroy' => 'manage_roles',
+
+            // الذمم المالية
+            'debts.index' => 'view_debts',
+            'debts.show' => 'view_debts',
+            'debts.excel' => 'view_debts',
+            'debts.student.excel' => 'view_debts',
+
+            // كشف الحسابات
+            'accounts.statement.index' => 'view_account_statement',
+            'accounts.statement.excel' => 'view_account_statement',
+
+
         ];
 
         if (isset($customMap[$routeName])) {

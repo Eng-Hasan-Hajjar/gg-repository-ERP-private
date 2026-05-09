@@ -15,6 +15,7 @@
 
       <div class="row g-3">
 
+        
         <div class="col-md-6">
           <label class="fw-bold">نوع الطلب <span class="text-danger">*</span></label>
           <select name="type" class="form-select <?php $__errorArgs = ['type'];
@@ -38,6 +39,38 @@ endif;
 unset($__errorArgs, $__bag); ?>
         </div>
 
+        
+        <div class="col-md-6">
+          <label class="fw-bold">الأولوية <span class="text-danger">*</span></label>
+          <select name="priority" class="form-select <?php $__errorArgs = ['priority'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
+            <option value="normal"  <?php if(old('priority', 'normal') == 'normal'): echo 'selected'; endif; ?>>
+              ➖ عادية
+            </option>
+            <option value="low"     <?php if(old('priority') == 'low'): echo 'selected'; endif; ?>>
+              🔽 منخفضة
+            </option>
+            <option value="urgent"  <?php if(old('priority') == 'urgent'): echo 'selected'; endif; ?>>
+              🔴 عاجل
+            </option>
+          </select>
+          <?php $__errorArgs = ['priority'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        
         <div class="col-md-6">
           <label class="fw-bold">الفرع</label>
           <select name="branch_id" class="form-select">
@@ -48,7 +81,8 @@ unset($__errorArgs, $__bag); ?>
           </select>
         </div>
 
-        <div class="col-12">
+        
+        <div class="col-md-6">
           <label class="fw-bold">عنوان الطلب <span class="text-danger">*</span></label>
           <input type="text" name="title" value="<?php echo e(old('title')); ?>"
                  class="form-control <?php $__errorArgs = ['title'];
@@ -59,7 +93,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                 placeholder="مثال: شراء طابعة للفرع / إصلاح جهاز العرض" required>
+                 placeholder="مثال: شراء طابعة / إصلاح جهاز العرض" required>
           <?php $__errorArgs = ['title'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -70,6 +104,7 @@ endif;
 unset($__errorArgs, $__bag); ?>
         </div>
 
+        
         <div class="col-12">
           <label class="fw-bold">الأصل المرتبط (اختياري)</label>
           <select name="asset_id" class="form-select">
@@ -84,10 +119,19 @@ unset($__errorArgs, $__bag); ?>
           <small class="text-muted">للطلبات المتعلقة بأصل موجود مسبقاً</small>
         </div>
 
+        
         <div class="col-12">
           <label class="fw-bold">التفاصيل</label>
           <textarea name="description" rows="4" class="form-control"
             placeholder="اشرح تفاصيل الطلب، المواصفات، أو سبب الإصلاح..."><?php echo e(old('description')); ?></textarea>
+        </div>
+
+        
+        <div class="col-12" id="urgentAlert" style="display:none;">
+          <div class="alert alert-danger py-2 mb-0">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <strong>تنبيه:</strong> الطلبات العاجلة تُرسل إشعاراً فورياً لمدير اللوجستيات.
+          </div>
         </div>
 
       </div>
@@ -108,6 +152,20 @@ unset($__errorArgs, $__bag); ?>
     </form>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const prioritySelect = document.querySelector('select[name="priority"]');
+    const urgentAlert    = document.getElementById('urgentAlert');
+
+    function toggleAlert() {
+        urgentAlert.style.display = prioritySelect.value === 'urgent' ? 'block' : 'none';
+    }
+
+    prioritySelect.addEventListener('change', toggleAlert);
+    toggleAlert(); // عند التحميل
+});
+</script>
 
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/asset_requests/create.blade.php ENDPATH**/ ?>

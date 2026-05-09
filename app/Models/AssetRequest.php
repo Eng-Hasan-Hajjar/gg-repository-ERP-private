@@ -1,5 +1,4 @@
 <?php
-// app/Models/AssetRequest.php
 
 namespace App\Models;
 
@@ -10,7 +9,7 @@ class AssetRequest extends Model
 {
     protected $fillable = [
         'user_id', 'branch_id', 'asset_id',
-        'type', 'title', 'description',
+        'type', 'priority', 'title', 'description',
         'status', 'manager_notes', 'reviewed_by', 'reviewed_at',
     ];
 
@@ -64,6 +63,36 @@ class AssetRequest extends Model
             'purchase' => 'شراء',
             'repair'   => 'إصلاح',
             default    => $this->type,
+        };
+    }
+
+    public function getPriorityLabelAttribute(): string
+    {
+        return match ($this->priority) {
+            'low'    => 'منخفضة',
+            'normal' => 'عادية',
+            'urgent' => 'عاجل',
+            default  => $this->priority,
+        };
+    }
+
+    public function getPriorityColorAttribute(): string
+    {
+        return match ($this->priority) {
+            'low'    => 'secondary',
+            'normal' => 'info',
+            'urgent' => 'danger',
+            default  => 'secondary',
+        };
+    }
+
+    public function getPriorityIconAttribute(): string
+    {
+        return match ($this->priority) {
+            'low'    => 'bi-arrow-down-circle',
+            'normal' => 'bi-dash-circle',
+            'urgent' => 'bi-exclamation-circle-fill',
+            default  => 'bi-dash-circle',
         };
     }
 }

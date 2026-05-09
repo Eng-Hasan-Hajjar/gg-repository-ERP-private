@@ -15,6 +15,7 @@
 
       <div class="row g-3">
 
+        {{-- نوع الطلب --}}
         <div class="col-md-6">
           <label class="fw-bold">نوع الطلب <span class="text-danger">*</span></label>
           <select name="type" class="form-select @error('type') is-invalid @enderror" required>
@@ -24,6 +25,24 @@
           @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        {{-- ✅ الأولوية --}}
+        <div class="col-md-6">
+          <label class="fw-bold">الأولوية <span class="text-danger">*</span></label>
+          <select name="priority" class="form-select @error('priority') is-invalid @enderror" required>
+            <option value="normal"  @selected(old('priority', 'normal') == 'normal')>
+              ➖ عادية
+            </option>
+            <option value="low"     @selected(old('priority') == 'low')>
+              🔽 منخفضة
+            </option>
+            <option value="urgent"  @selected(old('priority') == 'urgent')>
+              🔴 عاجل
+            </option>
+          </select>
+          @error('priority') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        {{-- الفرع --}}
         <div class="col-md-6">
           <label class="fw-bold">الفرع</label>
           <select name="branch_id" class="form-select">
@@ -34,14 +53,16 @@
           </select>
         </div>
 
-        <div class="col-12">
+        {{-- عنوان الطلب --}}
+        <div class="col-md-6">
           <label class="fw-bold">عنوان الطلب <span class="text-danger">*</span></label>
           <input type="text" name="title" value="{{ old('title') }}"
                  class="form-control @error('title') is-invalid @enderror"
-                 placeholder="مثال: شراء طابعة للفرع / إصلاح جهاز العرض" required>
+                 placeholder="مثال: شراء طابعة / إصلاح جهاز العرض" required>
           @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        {{-- الأصل المرتبط --}}
         <div class="col-12">
           <label class="fw-bold">الأصل المرتبط (اختياري)</label>
           <select name="asset_id" class="form-select">
@@ -55,10 +76,19 @@
           <small class="text-muted">للطلبات المتعلقة بأصل موجود مسبقاً</small>
         </div>
 
+        {{-- التفاصيل --}}
         <div class="col-12">
           <label class="fw-bold">التفاصيل</label>
           <textarea name="description" rows="4" class="form-control"
             placeholder="اشرح تفاصيل الطلب، المواصفات، أو سبب الإصلاح...">{{ old('description') }}</textarea>
+        </div>
+
+        {{-- تنبيه للطلبات العاجلة --}}
+        <div class="col-12" id="urgentAlert" style="display:none;">
+          <div class="alert alert-danger py-2 mb-0">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <strong>تنبيه:</strong> الطلبات العاجلة تُرسل إشعاراً فورياً لمدير اللوجستيات.
+          </div>
         </div>
 
       </div>
@@ -79,5 +109,19 @@
     </form>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const prioritySelect = document.querySelector('select[name="priority"]');
+    const urgentAlert    = document.getElementById('urgentAlert');
+
+    function toggleAlert() {
+        urgentAlert.style.display = prioritySelect.value === 'urgent' ? 'block' : 'none';
+    }
+
+    prioritySelect.addEventListener('change', toggleAlert);
+    toggleAlert(); // عند التحميل
+});
+</script>
 
 @endsection

@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
   <div>
     <h4 class="fw-bold mb-0">طلبات اللوجستيات</h4>
-    <div class="text-muted small">طلبات الشراء والإصلاح</div>
+    <div class="text-muted small">طلبات الشراء والإصلاح — مرتبة حسب الأولوية</div>
   </div>
   @if(auth()->user()?->hasPermission('submit_asset_request'))
     <a href="{{ route('asset-requests.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
@@ -34,11 +34,20 @@
           <option value="repair"   @selected(request('type')=='repair')>إصلاح</option>
         </select>
       </div>
-      <div class="col-md-2 d-grid">
+      {{-- ✅ فلتر الأولوية --}}
+      <div class="col-6 col-md-3">
+        <select name="priority" class="form-select">
+          <option value="">الأولوية (الكل)</option>
+          <option value="urgent" @selected(request('priority')=='urgent')>🔴 عاجل</option>
+          <option value="normal" @selected(request('priority')=='normal')>➖ عادية</option>
+          <option value="low"    @selected(request('priority')=='low')>🔽 منخفضة</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-2 d-grid">
         <button class="btn btn-namaa fw-bold">تصفية</button>
       </div>
-      @if(request()->hasAny(['status','type']))
-        <div class="col-md-2 d-grid">
+      @if(request()->hasAny(['status','type','priority']))
+        <div class="col-md-1 d-grid">
           <a href="{{ route('asset-requests.index') }}" class="btn btn-outline-secondary">مسح</a>
         </div>
       @endif
@@ -54,6 +63,7 @@
           <th>#</th>
           <th>العنوان</th>
           <th>النوع</th>
+          <th>الأولوية</th>  {{-- ✅ عمود جديد --}}
           <th>مقدم الطلب</th>
           <th>الفرع</th>
           <th>الأصل المرتبط</th>
@@ -64,10 +74,15 @@
       </thead>
       <tbody>
         @forelse($requests as $r)
-          <tr>
+          <tr class="{{ $r->priority === 'urgent' && $r->status === 'pending' ? 'table-danger' : '' }}">
             <td class="text-muted small">{{ $r->id }}</td>
             <td>
-              <div class="fw-bold">{{ $r->title }}</div>
+              <div class="fw-bold">
+                @if($r->priority === 'urgent')
+                  <i class="bi bi-exclamation-circle-fill text-danger me-1"></i>
+                @endif
+                {{ $r->title }}
+              </div>
               @if($r->description)
                 <div class="text-muted small">{{ Str::limit($r->description, 60) }}</div>
               @endif
@@ -77,6 +92,15 @@
                 {{ $r->type_label }}
               </span>
             </td>
+
+            {{-- ✅ عمود الأولوية --}}
+            <td>
+              <span class="badge bg-{{ $r->priority_color }}">
+                <i class="bi {{ $r->priority_icon }} me-1"></i>
+                {{ $r->priority_label }}
+              </span>
+            </td>
+
             <td class="small">{{ $r->user->name ?? '-' }}</td>
             <td class="small">{{ $r->branch->name ?? '-' }}</td>
             <td class="small text-muted">{{ $r->asset->name ?? '—' }}</td>
@@ -87,7 +111,6 @@
             <td class="text-end">
               <div class="d-flex gap-1 justify-content-end flex-wrap">
 
-                {{-- مدير اللوجستيات يقبل أو يرفض --}}
                 @if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending')
                   <form method="POST" action="{{ route('asset-requests.approve', $r) }}">
                     @csrf
@@ -96,7 +119,6 @@
                     </button>
                   </form>
 
-                  {{-- زر الرفض مع ملاحظة --}}
                   <button class="btn btn-sm btn-outline-danger"
                     data-bs-toggle="modal"
                     data-bs-target="#rejectModal{{ $r->id }}">
@@ -104,7 +126,6 @@
                   </button>
                 @endif
 
-                {{-- حذف للمالك إذا كان pending --}}
                 @if($r->user_id === auth()->id() && $r->status === 'pending')
                   <form method="POST" action="{{ route('asset-requests.destroy', $r) }}"
                         onsubmit="return confirm('حذف الطلب؟')">
@@ -115,7 +136,6 @@
                   </form>
                 @endif
 
-                {{-- ملاحظات الرفض --}}
                 @if($r->status === 'rejected' && $r->manager_notes)
                   <button class="btn btn-sm btn-outline-dark"
                     data-bs-toggle="tooltip"
@@ -128,7 +148,6 @@
             </td>
           </tr>
 
-          {{-- Modal الرفض --}}
           @if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending')
             <div class="modal fade" id="rejectModal{{ $r->id }}" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
@@ -156,7 +175,7 @@
 
         @empty
           <tr>
-            <td colspan="9" class="text-center text-muted py-4">
+            <td colspan="10" class="text-center text-muted py-4">
               <i class="bi bi-inbox fs-2 d-block mb-2"></i>
               لا توجد طلبات
             </td>
@@ -168,5 +187,13 @@
 </div>
 
 <div class="mt-3">{{ $requests->links() }}</div>
+
+{{-- تفعيل Tooltips --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        .forEach(function(el) { new bootstrap.Tooltip(el); });
+});
+</script>
 
 @endsection

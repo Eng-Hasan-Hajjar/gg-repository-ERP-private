@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="icon" href="{{ asset('images/namaa-logo.png') }}">
   <title>@yield('title', 'Namaa ERP')</title>
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/namaa-logo.png') }}">
@@ -1787,6 +1788,70 @@ ERP Notifications Style
 
       // الفحص كل 5 ثواني
       setInterval(checkSession, 5000);
+
+
+
+
+
+     
+// ✅ CSRF refresh — كل 20 دقيقة لمنع 419
+setInterval(function () {
+    fetch('/csrf-refresh', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.token) {
+            var meta = document.querySelector('meta[name="csrf-token"]');
+            if (meta) meta.setAttribute('content', data.token);
+            document.querySelectorAll('input[name="_token"]')
+                .forEach(function(el) { el.value = data.token; });
+        }
+    })
+    .catch(function() {}); // صامت
+}, 20 * 60 * 1000);
+
+// ✅ إعادة تحميل عند العودة بعد غياب طويل (بدل 419)
+var lastActiveTime = Date.now();
+document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+        var diff = Date.now() - lastActiveTime;
+        // إذا غاب أكثر من ساعة → reload لتجديد CSRF
+        if (diff > 60 * 60 * 1000) {
+            window.location.reload();
+        }
+    } else {
+        lastActiveTime = Date.now();
+    }
+});
+
+// ✅ checkSession — معدّل: تسامح أكثر + لا يخرج فوراً
+var sessionFailCount = 0;
+function checkSession() {
+    if (window.location.pathname === '/login') return;
+
+    fetch('/session/check', { credentials: 'same-origin' })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.logout) {
+                sessionFailCount++;
+                // فقط بعد 3 فشلات متتالية → logout
+                if (sessionFailCount >= 3) {
+                    window.location.href = '/login';
+                }
+            } else {
+                sessionFailCount = 0; // reset عند النجاح
+            }
+        })
+        .catch(function() {
+            // لا تفعل شيئاً عند انقطاع الشبكة
+        });
+}
+
+// كل 30 ثانية بدل 5 ثواني
+setInterval(checkSession, 30000);
 
 
 

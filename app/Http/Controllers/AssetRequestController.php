@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class AssetRequestController extends Controller
 {
     // ── قائمة الطلبات ──
+    /*
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -32,7 +33,7 @@ class AssetRequestController extends Controller
             'requests' => $q->latest()->paginate(20)->withQueryString(),
         ]);
     }
-
+*/
     // ── نموذج الطلب الجديد ──
     public function create()
     {
@@ -50,10 +51,41 @@ class AssetRequestController extends Controller
     }
 
     // ── حفظ الطلب ──
+// ── قائمة الطلبات ──
+public function index(Request $request)
+{
+    $user = auth()->user();
+    $q    = AssetRequest::query()->with(['user', 'branch', 'asset', 'reviewer']);
+
+    if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_assets')) {
+        $q->where('user_id', $user->id);
+    }
+
+    if ($request->filled('status')) {
+        $q->where('status', $request->status);
+    }
+    if ($request->filled('type')) {
+        $q->where('type', $request->type);
+    }
+    if ($request->filled('priority')) {
+        $q->where('priority', $request->priority);
+    }
+
+    // ترتيب: العاجل أولاً ثم الأحدث
+    $q->orderByRaw("FIELD(priority, 'urgent', 'normal', 'low')")
+      ->orderByDesc('created_at');
+
+    return view('asset_requests.index', [
+        'requests' => $q->paginate(20)->withQueryString(),
+    ]);
+}
+
+// ── حفظ الطلب ──
 public function store(Request $request)
 {
     $data = $request->validate([
         'type'        => ['required', 'in:purchase,repair'],
+        'priority'    => ['required', 'in:low,normal,urgent'],
         'title'       => ['required', 'string', 'max:255'],
         'description' => ['nullable', 'string', 'max:2000'],
         'branch_id'   => ['nullable', 'exists:branches,id'],
@@ -65,8 +97,6 @@ public function store(Request $request)
 
     AssetRequest::create($data);
 
-    // ✅ إذا كان مديراً يُعاد توجيهه لإدارة الطلبات
-    // وإذا كان موظفاً عادياً يُعاد توجيهه للداشبورد
     $user = auth()->user();
 
     if ($user->hasRole('super_admin') || $user->hasPermission('manage_assets')) {
@@ -74,7 +104,6 @@ public function store(Request $request)
             ->with('success', 'تم تقديم الطلب بنجاح.');
     }
 
-    // ✅ موظف عادي → داشبورد مع رسالة JavaScript
     return redirect()->route('dashboard')
         ->with('asset_request_success', 'تم تقديم طلبك بنجاح، في انتظار موافقة المدير.');
 }
