@@ -119,6 +119,9 @@ class AuthorizeByRoute
             'accounts.statement.excel' => 'view_account_statement',
 
 
+            'admin.settings.index'  => 'manage_roles',
+'admin.settings.update' => 'manage_roles'
+
         ];
 
         if (isset($customMap[$routeName])) {

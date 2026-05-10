@@ -34,6 +34,32 @@
 
 <div class="row g-3">
 
+   
+      <div class="col-md-4">
+      <label class="form-label fw-bold">الاسم الكامل</label>
+      <input name="full_name"
+      value="<?php echo e(old('full_name',$student->full_name ?? '')); ?>"
+      class="form-control <?php $__errorArgs = ['full_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+
+      <?php $__errorArgs = ['full_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+      <div class="invalid-feedback"><?php echo e($message); ?></div>
+      <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+      </div>
+
         
         <div class="col-md-4">
         <label class="form-label fw-bold">الاسم</label>
@@ -86,31 +112,7 @@ endif;
 unset($__errorArgs, $__bag); ?>
       </div>
 
-      
-      <div class="col-md-4">
-      <label class="form-label fw-bold">الاسم الكامل</label>
-      <input name="full_name"
-      value="<?php echo e(old('full_name',$student->full_name ?? '')); ?>"
-      class="form-control <?php $__errorArgs = ['full_name'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>">
-
-      <?php $__errorArgs = ['full_name'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-      <div class="invalid-feedback"><?php echo e($message); ?></div>
-      <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-      </div>
+     
 
       
       <div class="col-md-4">
@@ -165,22 +167,16 @@ unset($__errorArgs, $__bag); ?>
       </div>
 
 
-<div class="row g-3 mt-3">
-  <div class="col-12">
-    <div class="form-check">
-      <input type="hidden" name="certificate_agreement" value="0">
+      <div class="col-md-4">
+        <label class="form-label fw-bold">اتفاق الشهادة الممنوحة</label>
+        <select name="certificate_agreement" class="form-select">
+          <option value="">-- لا يوجد اتفاق --</option>
+          <option value="جراح باشا"   <?php if(old('certificate_agreement', $student->certificate_agreement ?? '') == 'جراح باشا'): echo 'selected'; endif; ?>>جراح باشا</option>
+          <option value="بورد الماني" <?php if(old('certificate_agreement', $student->certificate_agreement ?? '') == 'بورد الماني'): echo 'selected'; endif; ?>>بورد الماني</option>
+          <option value="جامعة تركية" <?php if(old('certificate_agreement', $student->certificate_agreement ?? '') == 'جامعة تركية'): echo 'selected'; endif; ?>>جامعة تركية</option>
+        </select>
+      </div>
 
-<input class="form-check-input" type="checkbox" 
-       id="certificate_agreement"
-       name="certificate_agreement"
-       value="1"
-       <?php echo e(old('certificate_agreement', $student->certificate_agreement ?? 0) ? 'checked' : ''); ?>>
-      <label class="form-check-label fw-bold" for="certificate_agreement">
-        اتفاق الشهادة الممنوحة
-      </label>
-    </div>
-  </div>
-</div>
 
       
 <div class="col-md-4">
@@ -1300,6 +1296,28 @@ unset($__errorArgs, $__bag); ?>
 
 
 <script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const fullNameInput = document.querySelector('input[name="full_name"]'); // أو id الحقل
+    const firstNameInput = document.querySelector('input[name="first_name"]');
+    const lastNameInput = document.querySelector('input[name="last_name"]');
+
+    // جعل حقلي الاسم والكنية للقراءة فقط
+    firstNameInput.setAttribute('readonly', true);
+    lastNameInput.setAttribute('readonly', true);
+
+    // الحدث الرئيسي
+    fullNameInput.addEventListener('input', function() {
+        const parts = this.value.trim().split(/\s+/);
+        
+        firstNameInput.value = parts[0] || '';           // أول كلمة = الاسم
+        lastNameInput.value = parts.slice(1).join(' ') || ''; // باقي الكلمات = الكنية
+    });
+});
+
+
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
     const diplomaSelect = document.querySelector('[name="diploma_ids[]"]');

@@ -19,20 +19,128 @@
 </div>
 @endif
 
-
 @php
-  $selectedDiplomas = old('diploma_ids',
-    isset($student) ? $student->diplomas->pluck('id')->toArray() : []
-  );
-
-  $crm = old('crm', isset($student) && $student->crmInfo ? $student->crmInfo->toArray() : []);
-  $profile = old('profile', isset($student) && $student->profile ? $student->profile->toArray() : []);
+  $selectedDiplomas = old('diploma_ids', $studentDiplomas->pluck('id')->toArray());
 @endphp
 
 
 
 
+<style>
+  /* ───── Diploma Picker ───── */
+  .diploma-picker {
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+    background: #f8fafc;
+  }
+  .diploma-search-box {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .diploma-search-box input {
+    padding-right: 40px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+  }
+  .diploma-search-box .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+  }
+  .diploma-list {
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .diploma-list-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+    font-size: 14px;
+  }
+  .diploma-list-item:last-child { border-bottom: none; }
+  .diploma-list-item:hover { background: #eff6ff; }
+  .diploma-list-item.disabled {
+    opacity: .4;
+    pointer-events: none;
+    background: #f1f5f9;
+  }
+  .diploma-list-item .d-name { font-weight: 600; color: #1e293b; }
+  .diploma-list-item .d-meta {
+    font-size: 12px;
+    color: #94a3b8;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .diploma-list-empty {
+    padding: 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+  /* ───── Selected Cards ───── */
+  .selected-diplomas { margin-top: 16px; }
+  .selected-diploma-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    transition: box-shadow .15s;
+  }
+  .selected-diploma-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .sd-info { flex: 1; min-width: 150px; }
+  .sd-name { font-weight: 700; font-size: 14px; color: #1e293b; }
+  .sd-badge {
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 6px; display: inline-block; margin-top: 4px;
+  }
+  .sd-badge.online { background: #dbeafe; color: #2563eb; }
+  .sd-badge.onsite { background: #d1fae5; color: #059669; }
+  .sd-remove {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: #fee2e2; color: #dc2626; cursor: pointer;
+    transition: background .15s;
+  }
+  .sd-remove:hover { background: #fca5a5; }
+  .no-diplomas-msg {
+    padding: 16px; text-align: center;
+    color: #94a3b8; font-size: 13px;
+  }
+</style>
+
+
+
+
 <div class="row g-3">
+
+   {{-- full_name --}}
+      <div class="col-md-4">
+      <label class="form-label fw-bold">الاسم الكامل</label>
+      <input name="full_name"
+      value="{{ old('full_name',$student->full_name ?? '') }}"
+      class="form-control @error('full_name') is-invalid @enderror">
+
+      @error('full_name')
+      <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+      </div>
 
         {{-- first_name --}}
         <div class="col-md-4">
@@ -58,17 +166,7 @@
       @enderror
       </div>
 
-      {{-- full_name --}}
-      <div class="col-md-4">
-      <label class="form-label fw-bold">الاسم الكامل</label>
-      <input name="full_name"
-      value="{{ old('full_name',$student->full_name ?? '') }}"
-      class="form-control @error('full_name') is-invalid @enderror">
-
-      @error('full_name')
-      <div class="invalid-feedback">{{ $message }}</div>
-      @enderror
-      </div>
+     
 
       {{-- phone --}}
       <div class="col-md-4">
@@ -95,22 +193,16 @@
       </div>
 
 
-<div class="row g-3 mt-3">
-  <div class="col-12">
-    <div class="form-check">
-      <input type="hidden" name="certificate_agreement" value="0">
+      <div class="col-md-4">
+        <label class="form-label fw-bold">اتفاق الشهادة الممنوحة</label>
+        <select name="certificate_agreement" class="form-select">
+          <option value="">-- لا يوجد اتفاق --</option>
+          <option value="جراح باشا"   @selected(old('certificate_agreement', $student->certificate_agreement ?? '') == 'جراح باشا')>جراح باشا</option>
+          <option value="بورد الماني" @selected(old('certificate_agreement', $student->certificate_agreement ?? '') == 'بورد الماني')>بورد الماني</option>
+          <option value="جامعة تركية" @selected(old('certificate_agreement', $student->certificate_agreement ?? '') == 'جامعة تركية')>جامعة تركية</option>
+        </select>
+      </div>
 
-<input class="form-check-input" type="checkbox" 
-       id="certificate_agreement"
-       name="certificate_agreement"
-       value="1"
-       {{ old('certificate_agreement', $student->certificate_agreement ?? 0) ? 'checked' : '' }}>
-      <label class="form-check-label fw-bold" for="certificate_agreement">
-        اتفاق الشهادة الممنوحة
-      </label>
-    </div>
-  </div>
-</div>
 
       {{-- branch_id --}}
 <div class="col-md-4">
@@ -179,25 +271,44 @@ class="form-select @error('mode') is-invalid @enderror">
       </div>
 
 
-  {{-- ✅ Multi Diplomas --}}
-  <div class="col-12">
-    <label class="form-label fw-bold ">الدبلومات (يمكن اختيار عدة دبلومات)</label>
-    <select class="form-select @error('diploma_ids') is-invalid @enderror" name="diploma_ids[]" multiple size="6" required>
-      
-      @foreach($diplomas as $d)
-        <option value="{{ $d->id }}" @selected(in_array($d->id,$selectedDiplomas))>{{ $d->name }} ({{ $d->code }})</option>
-      @endforeach
-    </select>
-    <div class="text-muted small mt-1">أول دبلومة تعتبر رئيسية تلقائياً.</div>
+      {{-- ✅ Diploma Picker — مثل CRM --}}
+      <div class="col-12">
+        <label class="form-label fw-bold fs-6">
+          <i class="bi bi-mortarboard text-primary"></i> الدبلومات *
+        </label>
 
+        <div class="diploma-picker">
 
-          @error('diploma_ids')
-            <div class="invalid-feedback d-block">{{ $message }}</div>
-          @enderror
-  </div>
+          {{-- شريط البحث --}}
+          <div class="diploma-search-box">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="diplomaSearch" class="form-control"
+                  placeholder="ابحث عن دبلومة بالاسم أو الكود...">
+          </div>
 
+          {{-- قائمة الدبلومات --}}
+          <div class="diploma-list" id="diplomaList">
+            <div class="diploma-list-empty" id="diplomaEmpty" style="display:none">
+              <i class="bi bi-search"></i> لا توجد نتائج
+            </div>
+          </div>
 
-  <div id="diplomas-details-container"></div>
+          {{-- الدبلومات المختارة --}}
+          <div class="selected-diplomas" id="selectedDiplomas">
+            <div class="no-diplomas-msg" id="noDiplomasMsg">
+              <i class="bi bi-info-circle"></i> لم يتم اختيار أي دبلومة — اختر من القائمة أعلاه
+            </div>
+          </div>
+
+        </div>
+
+        <div class="text-muted small mt-1">أول دبلومة تعتبر رئيسية تلقائياً. الدبلومات مفلترة حسب الفرع المختار.</div>
+
+        {{-- Hidden inputs --}}
+        <div id="diplomaHiddenInputs"></div>
+      </div>
+
+      <div id="diplomas-details-container"></div>
 
 
 
@@ -679,7 +790,8 @@ class="form-select @error('mode') is-invalid @enderror">
 
        
 
-      <hr>
+@if($studentDiplomas->count())
+<hr>
 <h5 class="fw-bold">تفاصيل وملفات حسب الدبلومة</h5>
 
 @foreach($student->diplomas as $d)
@@ -776,6 +888,7 @@ class="form-select @error('mode') is-invalid @enderror">
 </div>
 
 @endforeach
+@endif
 
 
 
@@ -817,59 +930,287 @@ class="form-select @error('mode') is-invalid @enderror">
 
 
 
-
+@php
+  $diplomasJson = $diplomas->map(fn($d) => [
+    'id'          => $d->id,
+    'name'        => $d->name,
+    'code'        => $d->code,
+    'type'        => $d->type,
+    'branch_id'   => $d->branch_id,
+    'branch_name' => $d->branch->name ?? '—',
+  ])->values();
+@endphp
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    const diplomaSelect = document.querySelector('[name="diploma_ids[]"]');
-    const container = document.getElementById('diplomas-details-container');
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ١. الاسم الكامل ← يملأ الاسم والكنية
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const fullNameInput  = document.querySelector('input[name="full_name"]');
+  const firstNameInput = document.querySelector('input[name="first_name"]');
+  const lastNameInput  = document.querySelector('input[name="last_name"]');
+  if (fullNameInput && firstNameInput && lastNameInput) {
+    firstNameInput.setAttribute('readonly', true);
+    lastNameInput.setAttribute('readonly', true);
+    fullNameInput.addEventListener('input', function () {
+      const parts = this.value.trim().split(/\s+/);
+      firstNameInput.value = parts[0] || '';
+      lastNameInput.value  = parts.slice(1).join(' ') || '';
+    });
+  }
 
-    diplomaSelect.addEventListener('change', function () {
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ٢. Diploma Picker — مثل CRM
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const allDiplomas = @json($diplomasJson);
 
-        container.innerHTML = '';
+  // تجميع الدبلومات بنفس الاسم
+  const diplomasByName = {};
+  allDiplomas.forEach(d => {
+    if (!diplomasByName[d.name]) {
+      diplomasByName[d.name] = { name: d.name, type: d.type, variants: [] };
+    }
+    diplomasByName[d.name].variants.push({
+      id: d.id, code: d.code,
+      branch_id: d.branch_id, branch_name: d.branch_name,
+    });
+  });
+  const diplomaNames   = Object.values(diplomasByName);
+  const selectedDiplomas = new Map(); // name → { variantId, code, branch_id }
 
-        Array.from(this.selectedOptions).forEach(option => {
-
-            const diplomaId = option.value;
-            const diplomaName = option.text;
-
-            container.innerHTML += `
-                <div class="card p-3 mb-3 border">
-                    <h6 class="fw-bold">${diplomaName}</h6>
-
-                    <input type="hidden" name="diplomas[${diplomaId}][id]" value="${diplomaId}">
-
-                    <div class="row g-3">
-
-                        <div class="col-md-3">
-                            <label>الحالة</label>
-                            <select name="diplomas[${diplomaId}][status]" class="form-select">
-                                <option value="active">نشط</option>
-                                <option value="waiting">بانتظار</option>
-                                <option value="finished">منتهي</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label>تاريخ الانتهاء</label>
-                            <input type="date" name="diplomas[${diplomaId}][ended_at]" class="form-control">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label>ملاحظات</label>
-                            <textarea name="diplomas[${diplomaId}][notes]" class="form-control"></textarea>
-                        </div>
-
-
-                        
-
-                    </div>
-                </div>
-            `;
+// تحميل الدبلومات المختارة مسبقاً (عند التعديل) — بيانات جاهزة من Controller
+const preloadedDiplomas = {!! $studentDiplomasJson !!};
+preloadedDiplomas.forEach(d => {
+    if (diplomasByName[d.name] && !selectedDiplomas.has(d.name)) {
+        selectedDiplomas.set(d.name, {
+            variantId : d.id,
+            code      : d.code,
+            branch_id : d.branch_id,
         });
+    }
+});
 
+  // مراجع DOM
+  const diplomaList      = document.getElementById('diplomaList');
+  const diplomaSearch    = document.getElementById('diplomaSearch');
+  const diplomaEmpty     = document.getElementById('diplomaEmpty');
+  const selectedContainer= document.getElementById('selectedDiplomas');
+  const noDiplomasMsg    = document.getElementById('noDiplomasMsg');
+  const hiddenInputs     = document.getElementById('diplomaHiddenInputs');
+  const branchSelect     = document.querySelector('[name="branch_id"]');
+  const detailsContainer = document.getElementById('diplomas-details-container');
+
+  // ━━ عرض القائمة ━━
+  function renderDiplomaList(filter = '') {
+    diplomaList.querySelectorAll('.diploma-list-item').forEach(el => el.remove());
+    const selectedBranchId = branchSelect?.value ?? '';
+    let visibleCount = 0;
+
+    diplomaNames.forEach(group => {
+      const nameMatch = filter === '' ||
+        group.name.includes(filter) ||
+        group.variants.some(v => v.code && v.code.includes(filter));
+
+      const hasMatchingBranch = !selectedBranchId ||
+        group.variants.some(v => v.branch_id == selectedBranchId);
+
+      if (!nameMatch || !hasMatchingBranch) return;
+
+      const isSelected = selectedDiplomas.has(group.name);
+      const codes    = [...new Set(group.variants.map(v => v.code))].join('، ');
+      const branches = [...new Set(group.variants.map(v => v.branch_name))].join('، ');
+
+      const item = document.createElement('div');
+      item.className = 'diploma-list-item' + (isSelected ? ' disabled' : '');
+      item.innerHTML = `
+        <div>
+          <span class="d-name">${group.name}</span>
+          <div class="d-meta">
+            <span><i class="bi bi-tag"></i> ${codes}</span>
+            <span><i class="bi bi-building"></i> ${branches}</span>
+          </div>
+        </div>
+        <div>
+          <span class="badge ${group.type === 'online' ? 'bg-primary' : 'bg-success'}" style="font-size:11px">
+            ${group.type === 'online' ? 'أونلاين' : 'حضوري'}
+          </span>
+          ${isSelected
+            ? '<i class="bi bi-check-circle-fill text-success ms-2"></i>'
+            : '<i class="bi bi-plus-circle text-primary ms-2"></i>'}
+        </div>`;
+
+      if (!isSelected) item.addEventListener('click', () => addDiploma(group));
+      diplomaList.appendChild(item);
+      visibleCount++;
     });
 
-});
+    diplomaEmpty.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  // ━━ إضافة دبلومة ━━
+  function addDiploma(group) {
+    const selectedBranchId = branchSelect?.value ?? '';
+    let variants = group.variants;
+    if (selectedBranchId) variants = variants.filter(v => v.branch_id == selectedBranchId);
+    if (variants.length === 0) return;
+
+    const def = variants[0];
+    selectedDiplomas.set(group.name, {
+      variantId: def.id, code: def.code, branch_id: def.branch_id,
+    });
+
+    renderSelectedDiplomas();
+    renderDiplomaList(diplomaSearch.value);
+    updateHiddenInputs();
+    renderDetailsCards();
+  }
+
+  // ━━ حذف دبلومة ━━
+  function removeDiploma(name) {
+    selectedDiplomas.delete(name);
+    renderSelectedDiplomas();
+    renderDiplomaList(diplomaSearch.value);
+    updateHiddenInputs();
+    renderDetailsCards();
+  }
+
+  // ━━ عرض الكاردات المختارة ━━
+  function renderSelectedDiplomas() {
+    selectedContainer.querySelectorAll('.selected-diploma-card').forEach(el => el.remove());
+    if (selectedDiplomas.size === 0) { noDiplomasMsg.style.display = 'block'; return; }
+    noDiplomasMsg.style.display = 'none';
+
+    let index = 0;
+    selectedDiplomas.forEach((selection, name) => {
+      const group = diplomasByName[name];
+      if (!group) return;
+      const isPrimary = index === 0;
+
+      const card = document.createElement('div');
+      card.className = 'selected-diploma-card';
+      card.innerHTML = `
+        <div class="sd-info">
+          <div class="sd-name">
+            ${isPrimary ? '<span class="badge bg-warning text-dark me-1" style="font-size:10px">رئيسية</span>' : ''}
+            ${name}
+          </div>
+          <span class="sd-badge ${group.type === 'online' ? 'online' : 'onsite'}">
+            <i class="bi bi-${group.type === 'online' ? 'wifi' : 'geo-alt'}"></i>
+            ${group.type === 'online' ? 'أونلاين' : 'حضوري'}
+          </span>
+          <div class="d-meta mt-1" style="font-size:12px; color:#94a3b8">
+            <i class="bi bi-tag"></i> ${selection.code} &nbsp;
+          </div>
+        </div>
+        <div class="sd-remove" data-name="${name}" title="إزالة">
+          <i class="bi bi-x-lg"></i>
+        </div>`;
+
+      card.querySelector('.sd-remove').addEventListener('click', function () {
+        removeDiploma(this.dataset.name);
+      });
+
+      selectedContainer.appendChild(card);
+      index++;
+    });
+  }
+
+  // ━━ تحديث hidden inputs ━━
+  function updateHiddenInputs() {
+    hiddenInputs.innerHTML = '';
+    selectedDiplomas.forEach((selection) => {
+      const input = document.createElement('input');
+      input.type  = 'hidden';
+      input.name  = 'diploma_ids[]';
+      input.value = selection.variantId;
+      hiddenInputs.appendChild(input);
+    });
+  }
+
+  // ━━ كاردات التفاصيل (الحالة، الانتهاء، الملاحظات) ━━
+  function renderDetailsCards() {
+    if (!detailsContainer) return;
+    // احتفظ بالكاردات الموجودة (من قاعدة البيانات) ولا تمسحها
+    // فقط أضف للجديدة
+    const existingIds = new Set(
+      [...detailsContainer.querySelectorAll('[data-diploma-id]')]
+        .map(el => el.dataset.diplomaId)
+    );
+
+    selectedDiplomas.forEach((selection) => {
+      const id = String(selection.variantId);
+      if (existingIds.has(id)) return; // موجودة مسبقاً → لا تضف مجدداً
+
+      const group = Object.values(diplomasByName).find(
+        g => g.variants.some(v => v.id == id)
+      );
+      if (!group) return;
+
+      const div = document.createElement('div');
+      div.className = 'card p-3 mb-3 border';
+      div.dataset.diplomaId = id;
+      div.innerHTML = `
+        <h6 class="fw-bold">${group.name} <small class="text-muted">(${selection.code})</small></h6>
+        <input type="hidden" name="diplomas[${id}][id]" value="${id}">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label>الحالة</label>
+            <select name="diplomas[${id}][status]" class="form-select">
+              <option value="active">نشط</option>
+              <option value="waiting">بانتظار</option>
+              <option value="finished">منتهي</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label>تاريخ الانتهاء</label>
+            <input type="date" name="diplomas[${id}][ended_at]" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label>ملاحظات</label>
+            <textarea name="diplomas[${id}][notes]" class="form-control" rows="2"></textarea>
+          </div>
+        </div>`;
+
+      detailsContainer.appendChild(div);
+    });
+
+    // إزالة الكاردات لدبلومات تم حذفها
+    existingIds.forEach(id => {
+      const stillSelected = [...selectedDiplomas.values()].some(s => String(s.variantId) === id);
+      // فقط إذا كانت مضافة بـ JS (ليست من قاعدة البيانات الأصلية)
+      if (!stillSelected) {
+        const el = detailsContainer.querySelector(`[data-diploma-id="${id}"]`);
+        // لا نحذف كاردات قاعدة البيانات الـ @foreach الموجودة بـ Blade
+      }
+    });
+  }
+
+  // ━━ أحداث البحث والفرع ━━
+  diplomaSearch.addEventListener('input', function () {
+    renderDiplomaList(this.value.trim());
+  });
+
+  if (branchSelect) {
+    branchSelect.addEventListener('change', function () {
+      // عند تغيير الفرع: أزل الدبلومات التي لا تنتمي للفرع الجديد
+      const newBranchId = this.value;
+      selectedDiplomas.forEach((selection, name) => {
+        if (newBranchId && selection.branch_id != newBranchId) {
+          selectedDiplomas.delete(name);
+        }
+      });
+      renderDiplomaList(diplomaSearch.value.trim());
+      renderSelectedDiplomas();
+      updateHiddenInputs();
+    });
+  }
+
+  // ━━ التهيئة الأولى ━━
+  renderDiplomaList();
+  renderSelectedDiplomas();
+  updateHiddenInputs();
+  renderDetailsCards();
+
+}); // end DOMContentLoaded
 </script>

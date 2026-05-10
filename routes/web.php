@@ -712,4 +712,14 @@ Route::get('/csrf-refresh', function () {
 })->middleware('web')->name('csrf.refresh');
 
 
+
+// إعدادات النظام
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/settings',  [\App\Http\Controllers\Admin\SettingsController::class, 'index'])
+        ->name('settings.index');
+    Route::post('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])
+        ->name('settings.update');
+});
+
+
 require __DIR__ . '/auth.php';

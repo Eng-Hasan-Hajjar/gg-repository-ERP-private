@@ -101,8 +101,8 @@
 </div>
 
 {{-- ═══ Stats ═══ --}}
-<div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:18px;">
-    <div class="audit-stat">
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;">
+  <div class="audit-stat">
     <div class="audit-stat-icon" style="background:rgba(14,165,233,.1); color:#0369a1;">
       <i class="bi bi-journal-text"></i>
     </div>

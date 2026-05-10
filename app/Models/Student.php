@@ -29,7 +29,7 @@ class Student extends Model
   protected $casts = [
     'is_confirmed' => 'boolean',
     'confirmed_at' => 'datetime',
-     'certificate_agreement' => 'boolean',
+   
   ];
 
   public function branch()

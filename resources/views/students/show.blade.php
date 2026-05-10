@@ -244,17 +244,9 @@
           <div class="kv"><div class="k">حالة الطالب</div><div class="v">{{ $status_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">حالة التسجيل</div><div class="v">{{ $registration_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">الرقم الجامعي</div><div class="v"><code>{{ $student->university_id }}</code></div></div>
-          <div class="row g-3 mt-3">
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="cert_agree" 
-                      {{ $student->certificate_agreement ? 'checked' : '' }}
-                      disabled>
-                <label class="form-check-label fw-bold" for="cert_agree">
-                  اتفاق الشهادة الممنوحة
-                </label>
-              </div>
-            </div>
+          <div class="kv">
+            <div class="k">اتفاق الشهادة الممنوحة</div>
+            <div class="v">{{ $student->certificate_agreement ?? 'لا يوجد' }}</div>
           </div>
         
         </div>

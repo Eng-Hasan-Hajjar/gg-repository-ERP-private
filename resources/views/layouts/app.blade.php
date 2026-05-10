@@ -14,8 +14,70 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+
+  @php
+    $themeMode = \App\Models\SystemSetting::get('theme_mode', 'light');
+    $primaryColor = \App\Models\SystemSetting::get('primary_color', '#0ea5e9');
+    $secondaryColor = \App\Models\SystemSetting::get('secondary_color', '#10b981');
+  @endphp
+
+
+
   <style>
-    @font-face {
+    :root {
+      --namaa-blue:
+        {{ $primaryColor }}
+      ;
+      --namaa-green:
+        {{ $secondaryColor }}
+      ;
+    }
+
+    @if($themeMode === 'dark')
+      body {
+        background: #0f172a !important;
+        color: #e2e8f0 !important;
+      }
+
+      .card,
+      .content-surface,
+      .module-card,
+      .namaa-hero {
+        background: rgba(30, 41, 59, .95) !important;
+        border-color: rgba(71, 85, 105, .5) !important;
+        color: #e2e8f0 !important;
+      }
+
+      .table {
+        color: #e2e8f0 !important;
+      }
+
+      .table-light {
+        background: rgba(30, 41, 59, .8) !important;
+      }
+
+      .form-control,
+      .form-select {
+        background: #1e293b !important;
+        border-color: #475569 !important;
+        color: #e2e8f0 !important;
+      }
+
+      .text-muted {
+        color: #94a3b8 !important;
+      }
+
+      .dropdown-menu {
+        background: #1e293b !important;
+        border-color: #475569 !important;
+      }
+
+      .modal-content {
+        background: #1e293b !important;
+        color: #e2e8f0 !important;
+      }
+
+    @endif @font-face {
       font-family: 'Hacen Tunisia';
       src: url('{{ asset('fonts/hacen-tunisia/Hacen-Tunisia-Bd.ttf') }}') format('truetype');
       font-weight: normal;
@@ -1108,8 +1170,8 @@ ERP Notifications Style
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 </head>
@@ -1276,15 +1338,15 @@ ERP Notifications Style
           @if(auth()->user()->hasRole('super_admin'))
 
             <aside class="iconbar hide-mobile" aria-label="Module icons">
-              <a href="{{ route('dashboard') }}" class="grad-indigo hide-mobile {{ $activeModule === 'dashboard' ? 'active' : '' }}"
-                data-title="لوحة التحكم">
+              <a href="{{ route('dashboard') }}"
+                class="grad-indigo hide-mobile {{ $activeModule === 'dashboard' ? 'active' : '' }}" data-title="لوحة التحكم">
                 <i class="bi bi-grid-fill fs-6"></i>
               </a>
 
               @if(auth()->user()?->hasPermission('manage_roles'))
 
-                <a href="{{ route('admin.audit.index') }}" class="grad-rose hide-mobile {{ $activeModule === 'audit' ? 'active' : '' }}"
-                  data-title="سجل التدقيق">
+                <a href="{{ route('admin.audit.index') }}"
+                  class="grad-rose hide-mobile {{ $activeModule === 'audit' ? 'active' : '' }}" data-title="سجل التدقيق">
                   <i class="bi bi-journal-text fs-6"></i>
                 </a>
               @endif
@@ -1335,7 +1397,8 @@ ERP Notifications Style
               </a>
 
               <a href="{{ route('employees.index') }}"
-                class="grad-primary hide-mobile {{ $activeModule === 'employees' ? 'active' : '' }}" data-title="الموارد البشرية">
+                class="grad-primary hide-mobile {{ $activeModule === 'employees' ? 'active' : '' }}"
+                data-title="الموارد البشرية">
                 <i class="bi bi-person-badge-fill fs-6"></i>
               </a>
 
@@ -1364,20 +1427,20 @@ ERP Notifications Style
 
 
 
-              <a href="{{ route('cashboxes.index') }}" class="grad-amber  hide-mobile {{ $activeModule === 'finance' ? 'active' : '' }}"
-                data-title="المالية ">
+              <a href="{{ route('cashboxes.index') }}"
+                class="grad-amber  hide-mobile {{ $activeModule === 'finance' ? 'active' : '' }}" data-title="المالية ">
                 <i class="bi bi-cash-coin fs-6"></i>
               </a>
 
 
 
-              <a href="{{ route('attendance.index') }}" class="grad-rose hide-mobile {{ $activeModule === 'attendance' ? 'active' : '' }}"
-                data-title="الدوام">
+              <a href="{{ route('attendance.index') }}"
+                class="grad-rose hide-mobile {{ $activeModule === 'attendance' ? 'active' : '' }}" data-title="الدوام">
                 <i class="bi bi-calendar2-week fs-6"></i>
               </a>
 
-              <a href="{{ route('tasks.index') }}" class="grad-slate hide-mobile {{ $activeModule === 'tasks' ? 'active' : '' }}"
-                data-title="المهام">
+              <a href="{{ route('tasks.index') }}"
+                class="grad-slate hide-mobile {{ $activeModule === 'tasks' ? 'active' : '' }}" data-title="المهام">
                 <i class="bi bi-check2-square fs-6"></i>
               </a>
 
@@ -1411,11 +1474,19 @@ ERP Notifications Style
 
 
 
-              <a href="{{ route('media.index') }}" class="grad-amber hide-mobile {{ $activeModule === 'media' ? 'active' : '' }}"
-                data-title="قسم الميديا">
+              <a href="{{ route('media.index') }}"
+                class="grad-amber hide-mobile {{ $activeModule === 'media' ? 'active' : '' }}" data-title="قسم الميديا">
                 <i class="bi bi-megaphone-fill fs-5"></i>
               </a>
 
+
+
+              @if(auth()->user()?->hasPermission('manage_roles'))
+                <a href="{{ route('admin.settings.index') }}"
+                  class="grad-slate {{ $activeModule === 'settings' ? 'active' : '' }}" data-title="إعدادات النظام">
+                  <i class="bi bi-gear-fill fs-6"></i>
+                </a>
+              @endif
 
             </aside>
 
@@ -1466,68 +1537,68 @@ ERP Notifications Style
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-@auth
-<script>
+  @auth
+    <script>
 
-// ═══════════════════════════════════════
-// Location Logic
-// ═══════════════════════════════════════
-@if(!session('location_captured'))
-(function () {
-    var STORE_URL = '{{ route("location.store") }}';
-    var SKIP_URL  = '{{ route("location.skip") }}';
-    var CSRF      = '{{ csrf_token() }}';
+      // ═══════════════════════════════════════
+      // Location Logic
+      // ═══════════════════════════════════════
+      @if(!session('location_captured'))
+        (function () {
+          var STORE_URL = '{{ route("location.store") }}';
+          var SKIP_URL = '{{ route("location.skip") }}';
+          var CSRF = '{{ csrf_token() }}';
 
-    var modal    = document.getElementById('location-modal');
-    var btnAllow = document.getElementById('btn-allow-loc');
-    var btnSkip  = document.getElementById('btn-skip-loc');
-    var status   = document.getElementById('loc-status');
+          var modal = document.getElementById('location-modal');
+          var btnAllow = document.getElementById('btn-allow-loc');
+          var btnSkip = document.getElementById('btn-skip-loc');
+          var status = document.getElementById('loc-status');
 
-    if (!modal || !btnAllow || !btnSkip) return;
+          if (!modal || !btnAllow || !btnSkip) return;
 
-    function doSkip() {
-        fetch(SKIP_URL, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF }
-        }).catch(function () {});
-        location.reload();
-    }
+          function doSkip() {
+            fetch(SKIP_URL, {
+              method: 'POST',
+              headers: { 'X-CSRF-TOKEN': CSRF }
+            }).catch(function () { });
+            location.reload();
+          }
 
-    function doStore(lat, lng) {
-        fetch(STORE_URL, {
-            method: 'POST',
-            headers: {
+          function doStore(lat, lng) {
+            fetch(STORE_URL, {
+              method: 'POST',
+              headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': CSRF
-            },
-            body: JSON.stringify({ latitude: lat, longitude: lng })
-        })
-        .then(function(res) { return res.json(); })
-        .then(function() { location.reload(); })
-        .catch(function() { location.reload(); });
-    }
+              },
+              body: JSON.stringify({ latitude: lat, longitude: lng })
+            })
+              .then(function (res) { return res.json(); })
+              .then(function () { location.reload(); })
+              .catch(function () { location.reload(); });
+          }
 
-    btnAllow.addEventListener('click', function () {
-        if (!navigator.geolocation) { doSkip(); return; }
-        btnAllow.disabled = true;
-        btnAllow.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري...';
-        if (status) status.style.display = 'block';
-        navigator.geolocation.getCurrentPosition(
-            function(pos) { doStore(pos.coords.latitude, pos.coords.longitude); },
-            function()    { doSkip(); },
-            { timeout: 15000, maximumAge: 60000, enableHighAccuracy: false }
-        );
-    });
+          btnAllow.addEventListener('click', function () {
+            if (!navigator.geolocation) { doSkip(); return; }
+            btnAllow.disabled = true;
+            btnAllow.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري...';
+            if (status) status.style.display = 'block';
+            navigator.geolocation.getCurrentPosition(
+              function (pos) { doStore(pos.coords.latitude, pos.coords.longitude); },
+              function () { doSkip(); },
+              { timeout: 15000, maximumAge: 60000, enableHighAccuracy: false }
+            );
+          });
 
-    btnSkip.addEventListener('click', function () {
-        @if(auth()->user()?->hasPermission('skip_location'))
-            fetch('{{ route("location.skip") }}', {
+          btnSkip.addEventListener('click', function () {
+            @if(auth()->user()?->hasPermission('skip_location'))
+              fetch('{{ route("location.skip") }}', {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': CSRF }
-            }).catch(function () {});
-            location.reload();
-        @else
-            Swal.fire({
+              }).catch(function () { });
+              location.reload();
+            @else
+              Swal.fire({
                 icon: 'warning',
                 title: 'تنبيه',
                 text: 'يجب تحديد الموقع الجغرافي للدخول إلى النظام.',
@@ -1536,184 +1607,184 @@ ERP Notifications Style
                 allowEscapeKey: false,
                 zIndex: 99999,
                 didOpen: function () {
-                    document.getElementById('location-modal').style.zIndex = '1';
+                  document.getElementById('location-modal').style.zIndex = '1';
                 }
-            }).then(function () {
+              }).then(function () {
                 document.querySelector('form[action="{{ route('logout') }}"]').submit();
-            });
-        @endif
-    });
-})();
-@endif
+              });
+            @endif
+          });
+        })();
+      @endif
 
-// ═══════════════════════════════════════
-// Alerts System
-// ═══════════════════════════════════════
-function formatTime(time) {
-    if (!time) return 'الآن';
-    const date = new Date(time);
-    const now  = new Date();
-    let diff   = Math.floor((now - date) / 60000) - 180;
-    if (diff <= 0) return 'الآن';
-    if (diff < 60) return diff + ' دقيقة';
-    const hours = Math.floor(diff / 60);
-    if (hours < 24) return hours + ' ساعة';
-    return Math.floor(hours / 24) + ' يوم';
-}
+        // ═══════════════════════════════════════
+        // Alerts System
+        // ═══════════════════════════════════════
+        function formatTime(time) {
+          if (!time) return 'الآن';
+          const date = new Date(time);
+          const now = new Date();
+          let diff = Math.floor((now - date) / 60000) - 180;
+          if (diff <= 0) return 'الآن';
+          if (diff < 60) return diff + ' دقيقة';
+          const hours = Math.floor(diff / 60);
+          if (hours < 24) return hours + ' ساعة';
+          return Math.floor(hours / 24) + ' يوم';
+        }
 
-function buildAlertHTML(alerts) {
-    if (!alerts || alerts.length === 0) {
-        return '<div class="text-success text-center p-4"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>لا توجد تنبيهات</div>';
-    }
+      function buildAlertHTML(alerts) {
+        if (!alerts || alerts.length === 0) {
+          return '<div class="text-success text-center p-4"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>لا توجد تنبيهات</div>';
+        }
 
-    const sorted = [...alerts].sort(function(a, b) {
-        const order = { danger: 0, warning: 1, info: 2, success: 3 };
-        return (order[a.type] ?? 9) - (order[b.type] ?? 9);
-    });
+        const sorted = [...alerts].sort(function (a, b) {
+          const order = { danger: 0, warning: 1, info: 2, success: 3 };
+          return (order[a.type] ?? 9) - (order[b.type] ?? 9);
+        });
 
-    return sorted.map(function(a) {
-        const extraClass = a.type === 'danger'  ? 'alert-danger-item'
-                         : a.type === 'warning' ? 'alert-warning-item'
-                         : '';
-        return '<a href="' + (a.url || '#') + '" class="alert-item ' + extraClass + '">'
+        return sorted.map(function (a) {
+          const extraClass = a.type === 'danger' ? 'alert-danger-item'
+            : a.type === 'warning' ? 'alert-warning-item'
+              : '';
+          return '<a href="' + (a.url || '#') + '" class="alert-item ' + extraClass + '">'
             + '<div class="alert-icon ' + a.type + '"><i class="bi ' + a.icon + '"></i></div>'
             + '<div class="alert-content">'
             + '<div class="alert-title">' + a.message + '</div>'
             + '<div class="alert-time">' + formatTime(a.time) + '</div>'
             + '</div></a>';
-    }).join('');
-}
+        }).join('');
+      }
 
-function loadAlerts() {
-    fetch('{{ route("alerts.navbar") }}', { credentials: 'same-origin' })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            var count     = document.getElementById('alertCount');
+      function loadAlerts() {
+        fetch('{{ route("alerts.navbar") }}', { credentials: 'same-origin' })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            var count = document.getElementById('alertCount');
             var container = document.getElementById('alertsContainer');
             if (!count || !container) return;
 
             if (data.count > 0) {
-                count.style.display = 'inline-block';
-                count.innerText = data.count > 99 ? '99+' : data.count;
+              count.style.display = 'inline-block';
+              count.innerText = data.count > 99 ? '99+' : data.count;
             } else {
-                count.style.display = 'none';
+              count.style.display = 'none';
             }
 
             var preview = (data.alerts || []).slice(0, 8);
             container.innerHTML = buildAlertHTML(preview);
-        })
-        .catch(function() {
+          })
+          .catch(function () {
             var container = document.getElementById('alertsContainer');
             if (container) container.innerHTML = '<div class="text-muted text-center small p-3">تعذّر تحميل الإشعارات</div>';
-        });
-}
+          });
+      }
 
-document.addEventListener('DOMContentLoaded', function () {
-    loadAlerts();
-    setInterval(loadAlerts, 60000);
-});
+      document.addEventListener('DOMContentLoaded', function () {
+        loadAlerts();
+        setInterval(loadAlerts, 60000);
+      });
 
-// ═══════════════════════════════════════
-// زر "عرض كل الإشعارات"
-// ═══════════════════════════════════════
-document.addEventListener('DOMContentLoaded', function () {
-    var showAllBtn = document.getElementById('showAllAlerts');
-    if (!showAllBtn) return;
+      // ═══════════════════════════════════════
+      // زر "عرض كل الإشعارات"
+      // ═══════════════════════════════════════
+      document.addEventListener('DOMContentLoaded', function () {
+        var showAllBtn = document.getElementById('showAllAlerts');
+        if (!showAllBtn) return;
 
-    showAllBtn.addEventListener('click', function (e) {
-        e.preventDefault();
+        showAllBtn.addEventListener('click', function (e) {
+          e.preventDefault();
 
-        var allContainer = document.getElementById('allAlertsContainer');
+          var allContainer = document.getElementById('allAlertsContainer');
 
-        // ✅ افتح المودال أولاً
-        var modalEl = document.getElementById('alertsModal');
-        if (modalEl) {
+          // ✅ افتح المودال أولاً
+          var modalEl = document.getElementById('alertsModal');
+          if (modalEl) {
             var bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
             bsModal.show();
-        }
+          }
 
-        // ✅ loading
-        if (allContainer) {
+          // ✅ loading
+          if (allContainer) {
             allContainer.innerHTML = '<div class="text-center p-4"><div class="spinner-border spinner-border-sm text-primary"></div><div class="mt-2 small text-muted">جاري التحميل...</div></div>';
-        }
+          }
 
-        // ✅ حمّل كل الإشعارات
-        fetch('{{ route("alerts.navbar") }}?all=1', { credentials: 'same-origin' })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                if (allContainer) {
-                    allContainer.innerHTML = buildAlertHTML(data.alerts || []);
-                }
+          // ✅ حمّل كل الإشعارات
+          fetch('{{ route("alerts.navbar") }}?all=1', { credentials: 'same-origin' })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+              if (allContainer) {
+                allContainer.innerHTML = buildAlertHTML(data.alerts || []);
+              }
             })
-            .catch(function() {
-                if (allContainer) {
-                    allContainer.innerHTML = '<div class="text-danger text-center p-3">خطأ في التحميل</div>';
-                }
+            .catch(function () {
+              if (allContainer) {
+                allContainer.innerHTML = '<div class="text-danger text-center p-3">خطأ في التحميل</div>';
+              }
             });
-    });
-});
+        });
+      });
 
-// ═══════════════════════════════════════
-// CSRF Refresh — كل 20 دقيقة
-// ═══════════════════════════════════════
-setInterval(function () {
-    fetch('/csrf-refresh', {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' },
-        credentials: 'same-origin'
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-        if (data.token) {
-            var meta = document.querySelector('meta[name="csrf-token"]');
-            if (meta) meta.setAttribute('content', data.token);
-            document.querySelectorAll('input[name="_token"]')
-                .forEach(function(el) { el.value = data.token; });
-        }
-    })
-    .catch(function() {});
-}, 20 * 60 * 1000);
-
-// ═══════════════════════════════════════
-// Reload عند العودة بعد غياب طويل
-// ═══════════════════════════════════════
-var _lastActiveTime = Date.now();
-document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) {
-        if (Date.now() - _lastActiveTime > 60 * 60 * 1000) {
-            window.location.reload();
-        }
-    } else {
-        _lastActiveTime = Date.now();
-    }
-});
-
-// ═══════════════════════════════════════
-// checkSession — 3 فشلات ثم logout
-// ═══════════════════════════════════════
-var _sessionFailCount = 0;
-function checkSession() {
-    if (window.location.pathname === '/login') return;
-    fetch('/session/check', { credentials: 'same-origin' })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data.logout) {
-                _sessionFailCount++;
-                if (_sessionFailCount >= 3) window.location.href = '/login';
-            } else {
-                _sessionFailCount = 0;
-            }
+      // ═══════════════════════════════════════
+      // CSRF Refresh — كل 20 دقيقة
+      // ═══════════════════════════════════════
+      setInterval(function () {
+        fetch('/csrf-refresh', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          credentials: 'same-origin'
         })
-        .catch(function() {});
-}
-setInterval(checkSession, 30000);
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data.token) {
+              var meta = document.querySelector('meta[name="csrf-token"]');
+              if (meta) meta.setAttribute('content', data.token);
+              document.querySelectorAll('input[name="_token"]')
+                .forEach(function (el) { el.value = data.token; });
+            }
+          })
+          .catch(function () { });
+      }, 20 * 60 * 1000);
 
-</script>
+      // ═══════════════════════════════════════
+      // Reload عند العودة بعد غياب طويل
+      // ═══════════════════════════════════════
+      var _lastActiveTime = Date.now();
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+          if (Date.now() - _lastActiveTime > 60 * 60 * 1000) {
+            window.location.reload();
+          }
+        } else {
+          _lastActiveTime = Date.now();
+        }
+      });
 
-@stack('scripts')
-@endauth
+      // ═══════════════════════════════════════
+      // checkSession — 3 فشلات ثم logout
+      // ═══════════════════════════════════════
+      var _sessionFailCount = 0;
+      function checkSession() {
+        if (window.location.pathname === '/login') return;
+        fetch('/session/check', { credentials: 'same-origin' })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data.logout) {
+              _sessionFailCount++;
+              if (_sessionFailCount >= 3) window.location.href = '/login';
+            } else {
+              _sessionFailCount = 0;
+            }
+          })
+          .catch(function () { });
+      }
+      setInterval(checkSession, 30000);
 
- 
+    </script>
+
+    @stack('scripts')
+  @endauth
+
+
 </body>
 
 </html>

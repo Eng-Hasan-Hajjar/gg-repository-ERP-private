@@ -491,7 +491,7 @@
 
   {{-- ══════════ QUICK STATS (8 كاردات منفصلة) ══════════ --}}
   @if(auth()->user()?->hasPermission('view_dashboard'))
-    <div class="quick-stats" >
+    <div class="quick-stats">
 
       <div class="qs-card qs-blue">
         <div class="qs-icon blue"><i class="bi bi-mortarboard-fill"></i></div>
@@ -796,57 +796,57 @@
 
 
     {{-- الذمم المالية وكشف الحسابات --}}
-@if(auth()->user()?->hasPermission('view_debts'))
-  <div class="col-12 col-md-6 col-xl-4">
-    <div class="module-card">
-      <div class="module-head">
-        <div class="module-icon" style="background:linear-gradient(135deg,#fde68a,#f59e0b); color:#92400e;">
-          <i class="bi bi-wallet2 fs-3"></i>
-        </div>
-        <div>
-          <p class="module-title">الذمم وكشف الحسابات</p>
-          <p class="module-sub">ذمم الطلاب — كشف حساب شامل لكل الحركات</p>
+    @if(auth()->user()?->hasPermission('view_debts'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon" style="background:linear-gradient(135deg,#fde68a,#f59e0b); color:#92400e;">
+              <i class="bi bi-wallet2 fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">الذمم وكشف الحسابات</p>
+              <p class="module-sub">ذمم الطلاب — كشف حساب شامل لكل الحركات</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">
+              متابعة الذمم المالية للطلاب، وكشف حساب تفصيلي لكل شخص أو حركة في أي صندوق مع تصدير Excel.
+            </p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-danger">{{ $debtStats['has_debt'] }}</div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> عليهم ذمة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $debtStats['paid'] }}</div>
+              <div class="sm-label"><i class="bi bi-check-circle"></i> مسدّد</div>
+            </div>
+
+
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ number_format($debtStats['total_remaining'], 0) }}</div>
+              <div class="sm-label"><i class="bi bi-currency-dollar"></i> إجمالي الذمم</div>
+            </div>
+
+            <div class="sm-item">
+              <div class="sm-val text-info">{{ $debtStats['total_students'] }}</div>
+              <div class="sm-label"><i class="bi bi-people"></i> إجمالي</div>
+            </div>
+          </div>
+          <div class="module-actions grid-2">
+            <a href="{{ route('debts.index') }}" class="btn btn-namaa w-100 w-sm-auto">
+              <i class="bi bi-wallet2"></i> الذمم المالية
+            </a>
+            @if(auth()->user()?->hasPermission('view_account_statement'))
+              <a href="{{ route('accounts.statement.index') }}" class="btn btn-soft w-100 w-sm-auto">
+                <i class="bi bi-receipt-cutoff"></i> كشف الحسابات
+              </a>
+            @endif
+          </div>
         </div>
       </div>
-      <div class="module-body">
-        <p class="section-note">
-          متابعة الذمم المالية للطلاب، وكشف حساب تفصيلي لكل شخص أو حركة في أي صندوق مع تصدير Excel.
-        </p>
-      </div>
-      <div class="stats-mini">
-        <div class="sm-item">
-          <div class="sm-val text-danger">{{ $debtStats['has_debt'] }}</div>
-          <div class="sm-label"><i class="bi bi-exclamation-circle"></i> عليهم ذمة</div>
-        </div>
-        <div class="sm-item">
-          <div class="sm-val text-success">{{ $debtStats['paid'] }}</div>
-          <div class="sm-label"><i class="bi bi-check-circle"></i> مسدّد</div>
-        </div>
-       
-        
-        <div class="sm-item">
-          <div class="sm-val text-warning">{{ number_format($debtStats['total_remaining'], 0) }}</div>
-          <div class="sm-label"><i class="bi bi-currency-dollar"></i> إجمالي الذمم</div>
-        </div>
-      
-        <div class="sm-item">
-          <div class="sm-val text-info">{{ $debtStats['total_students'] }}</div>
-          <div class="sm-label"><i class="bi bi-people"></i> إجمالي</div>
-        </div>
-      </div>
-      <div class="module-actions grid-2">
-        <a href="{{ route('debts.index') }}" class="btn btn-namaa w-100 w-sm-auto">
-          <i class="bi bi-wallet2"></i> الذمم المالية
-        </a>
-         @if(auth()->user()?->hasPermission('view_account_statement'))
-        <a href="{{ route('accounts.statement.index') }}" class="btn btn-soft w-100 w-sm-auto">
-          <i class="bi bi-receipt-cutoff"></i> كشف الحسابات
-        </a>
-          @endif
-      </div>
-    </div>
-  </div>
-@endif
+    @endif
 
 
     {{-- الدوام والإجازات --}}
@@ -963,58 +963,56 @@
 
 
     {{-- مجموعات الرؤية --}}
-@if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasPermission('manage_roles'))
-  <div class="col-12 col-md-6 col-xl-4">
-    <div class="module-card">
-      <div class="module-head">
-        <div class="module-icon grad-teal"><i class="bi bi-diagram-2-fill fs-3"></i></div>
-        <div>
-          <p class="module-title">مجموعات الرؤية</p>
-          <p class="module-sub">تحكم بمن يرى مهام وتقارير من</p>
-        </div>
-      </div>
-      <div class="module-body">
-        <p class="section-note">
-          تحديد صلاحيات الرؤية بشكل دقيق — كل مدير يرى فقط تقارير ومهام الموظفين المضافين لمجموعته.
-        </p>
-      </div>
-      <div class="stats-mini">
-        <div class="sm-item">
-          <div class="sm-val text-primary">{{ \App\Models\VisibilityGroup::count() }}</div>
-          <div class="sm-label"><i class="bi bi-diagram-2"></i> مجموعة</div>
-        </div>
-        <div class="sm-item">
-          <div class="sm-val text-success">
-            {{ \DB::table('visibility_group_employee')->where('role_in_group','manager')->count() }}
+    @if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasPermission('manage_roles'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-teal"><i class="bi bi-diagram-2-fill fs-3"></i></div>
+            <div>
+              <p class="module-title">مجموعات الرؤية</p>
+              <p class="module-sub">تحكم بمن يرى مهام وتقارير من</p>
+            </div>
           </div>
-          <div class="sm-label"><i class="bi bi-person-check"></i> مدير</div>
-        </div>
-        <div class="sm-item">
-          <div class="sm-val text-info">
-            {{ \DB::table('visibility_group_employee')->where('role_in_group','member')->count() }}
+          <div class="module-body">
+            <p class="section-note">
+              تحديد صلاحيات الرؤية بشكل دقيق — كل مدير يرى فقط تقارير ومهام الموظفين المضافين لمجموعته.
+            </p>
           </div>
-          <div class="sm-label"><i class="bi bi-people"></i> عضو</div>
-        </div>
-        <div class="sm-item">
-          <div class="sm-val text-warning">
-            {{ \DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id') }}
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ \App\Models\VisibilityGroup::count() }}</div>
+              <div class="sm-label"><i class="bi bi-diagram-2"></i> مجموعة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">
+                {{ \DB::table('visibility_group_employee')->where('role_in_group', 'manager')->count() }}
+              </div>
+              <div class="sm-label"><i class="bi bi-person-check"></i> مدير</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info">
+                {{ \DB::table('visibility_group_employee')->where('role_in_group', 'member')->count() }}
+              </div>
+              <div class="sm-label"><i class="bi bi-people"></i> عضو</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning">
+                {{ \DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id') }}
+              </div>
+              <div class="sm-label"><i class="bi bi-person-badge"></i> موظف مُدار</div>
+            </div>
           </div>
-          <div class="sm-label"><i class="bi bi-person-badge"></i> موظف مُدار</div>
+          <div class="module-actions">
+            <a href="{{ route('admin.visibility-groups.index') }}" class="btn btn-namaa w-100 w-sm-auto">
+              <i class="bi bi-diagram-2-fill"></i> إدارة المجموعات
+            </a>
+            <a href="{{ route('admin.visibility-groups.create') }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-plus-circle"></i> مجموعة جديدة
+            </a>
+          </div>
         </div>
       </div>
-      <div class="module-actions">
-        <a href="{{ route('admin.visibility-groups.index') }}"
-           class="btn btn-namaa w-100 w-sm-auto">
-          <i class="bi bi-diagram-2-fill"></i> إدارة المجموعات
-        </a>
-        <a href="{{ route('admin.visibility-groups.create') }}"
-           class="btn btn-soft w-100 w-sm-auto">
-          <i class="bi bi-plus-circle"></i> مجموعة جديدة
-        </a>
-      </div>
-    </div>
-  </div>
-@endif
+    @endif
 
 
 
@@ -1163,67 +1161,65 @@
 
 
     {{-- طلبات اللوجستيات --}}
-@if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasPermission('submit_asset_request'))
-  <div class="col-12 col-md-6 col-xl-4">
-    <div class="module-card">
-      <div class="module-head">
-        <div class="module-icon grad-yellow"><i class="bi bi-send-plus fs-3"></i></div>
-        <div>
-          <p class="module-title">طلبات اللوجستيات</p>
-          <p class="module-sub">طلبات الشراء والإصلاح — مراجعة المدير</p>
-        </div>
-      </div>
-      <div class="module-body">
-        <p class="section-note">
-          تقديم طلبات شراء أصول جديدة أو إصلاح أصول موجودة، ومتابعة حالة الطلب.
-        </p>
-      </div>
-      <div class="stats-mini">
-        <div class="sm-item">
-          <div class="sm-val text-warning">{{ $assetRequestStats['pending'] }}</div>
-          <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد المراجعة</div>
-        </div>
-        <div class="sm-item">
-          <div class="sm-val text-success">{{ $assetRequestStats['approved'] }}</div>
-          <div class="sm-label"><i class="bi bi-check-circle"></i> مقبول</div>
-        </div>
-        <div class="sm-item">
-          <div class="sm-val text-danger">{{ $assetRequestStats['rejected'] }}</div>
-          <div class="sm-label"><i class="bi bi-x-circle"></i> مرفوض</div>
-        </div>
-        <div class="sm-item">
-          <div class="sm-val text-primary">{{ $assetRequestStats['total'] }}</div>
-          <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
-        </div>
-      </div>
-      <div class="module-actions grid-2">
+    @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasPermission('submit_asset_request'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-yellow"><i class="bi bi-send-plus fs-3"></i></div>
+            <div>
+              <p class="module-title">طلبات اللوجستيات</p>
+              <p class="module-sub">طلبات الشراء والإصلاح — مراجعة المدير</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">
+              تقديم طلبات شراء أصول جديدة أو إصلاح أصول موجودة، ومتابعة حالة الطلب.
+            </p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ $assetRequestStats['pending'] }}</div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد المراجعة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $assetRequestStats['approved'] }}</div>
+              <div class="sm-label"><i class="bi bi-check-circle"></i> مقبول</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger">{{ $assetRequestStats['rejected'] }}</div>
+              <div class="sm-label"><i class="bi bi-x-circle"></i> مرفوض</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ $assetRequestStats['total'] }}</div>
+              <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
+            </div>
+          </div>
+          <div class="module-actions grid-2">
 
-        {{-- زر إدارة الطلبات — للمدير فقط --}}
-        @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
-          <a href="{{ route('asset-requests.index') }}"
-             class="btn btn-namaa w-100 w-sm-auto position-relative">
-            <i class="bi bi-inbox"></i> إدارة الطلبات
-            @if($assetRequestStats['pending'] > 0)
-              <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+            {{-- زر إدارة الطلبات — للمدير فقط --}}
+            @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
+              <a href="{{ route('asset-requests.index') }}" class="btn btn-namaa w-100 w-sm-auto position-relative">
+                <i class="bi bi-inbox"></i> إدارة الطلبات
+                @if($assetRequestStats['pending'] > 0)
+                  <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
                     style="font-size:10px;">
-                {{ $assetRequestStats['pending'] }}
-              </span>
+                    {{ $assetRequestStats['pending'] }}
+                  </span>
+                @endif
+              </a>
             @endif
-          </a>
-        @endif
 
-        {{-- زر تقديم طلب — لمن لديه صلاحية submit_asset_request --}}
-        @if(auth()->user()?->hasPermission('submit_asset_request'))
-          <a href="{{ route('asset-requests.create') }}"
-             class="btn btn-soft w-100 w-sm-auto">
-            <i class="bi bi-send-plus"></i> تقديم طلب
-          </a>
-        @endif
+            {{-- زر تقديم طلب — لمن لديه صلاحية submit_asset_request --}}
+            @if(auth()->user()?->hasPermission('submit_asset_request'))
+              <a href="{{ route('asset-requests.create') }}" class="btn btn-soft w-100 w-sm-auto">
+                <i class="bi bi-send-plus"></i> تقديم طلب
+              </a>
+            @endif
 
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-@endif
+    @endif
 
 
 
@@ -1401,27 +1397,88 @@
       </div>
     @endif
 
+
+
+
+
+    {{-- ── إعدادات النظام — super_admin فقط ── --}}
+    @if(auth()->user()?->hasRole('super_admin'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-slate">
+              <i class="bi bi-gear-fill fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">إعدادات النظام</p>
+              <p class="module-sub">المظهر، الألوان، وضبط الإشعارات</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">
+              تخصيص مظهر النظام بين الوضع الفاتح والداكن، ضبط الألوان، وتحديد مدد تنبيهات متابعة العملاء.
+            </p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val">
+                <i class="bi bi-{{ \App\Models\SystemSetting::get('theme_mode', 'light') === 'dark' ? 'moon-stars-fill text-primary' : 'sun-fill text-warning' }}"
+                  style="font-size:1.4rem;"></i>
+              </div>
+              <div class="sm-label">وضع العرض</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val">
+                <span
+                  style="display:inline-block;width:28px;height:28px;border-radius:50%;background:{{ \App\Models\SystemSetting::get('primary_color', '#0ea5e9') }};"></span>
+              </div>
+              <div class="sm-label">اللون الرئيسي</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger fw-bold">
+                {{ \App\Models\SystemSetting::get('alert_followup_hours', 48) }}س
+              </div>
+              <div class="sm-label">تنبيه عاجل</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning fw-bold">
+                {{ \App\Models\SystemSetting::get('alert_warning_hours', 24) }}س
+              </div>
+              <div class="sm-label">تنبيه تحذيري</div>
+            </div>
+          </div>
+          <div class="module-actions">
+            <a href="{{ route('admin.settings.index') }}" class="btn btn-namaa w-100 fw-bold">
+              <i class="bi bi-sliders"></i> فتح الإعدادات
+            </a>
+          </div>
+        </div>
+      </div>
+    @endif
+
+
+
   </div>
 
 
 
 
   {{-- رسالة نجاح طلب اللوجستيات --}}
-@if(session('asset_request_success'))
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      Swal.fire({
-        icon: 'success',
-        title: 'تم إرسال الطلب',
-        text: '{{ session('asset_request_success') }}',
-        confirmButtonText: 'ممتاز',
-        confirmButtonColor: '#0ea5e9',
-        timer: 4000,
-        timerProgressBar: true,
+  @if(session('asset_request_success'))
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+          icon: 'success',
+          title: 'تم إرسال الطلب',
+          text: '{{ session('asset_request_success') }}',
+          confirmButtonText: 'ممتاز',
+          confirmButtonColor: '#0ea5e9',
+          timer: 4000,
+          timerProgressBar: true,
+        });
       });
-    });
-  </script>
-@endif
+    </script>
+  @endif
 
 
 
