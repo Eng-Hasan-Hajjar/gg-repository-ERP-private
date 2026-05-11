@@ -1,10 +1,13 @@
 @extends('layouts.app')
 @php($activeModule = 'students')
+
 @section('title', 'الطلاب')
 
+
+
+
 @section('content')
-{{-- ✅ عرّف هنا في أعلى الصفحة --}}
-@php $myOnly = request()->boolean('my_only'); @endphp
+
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
   <div>
@@ -25,14 +28,15 @@
 <form class="card card-body border-0 shadow-sm mb-3" method="GET" action="{{ route('students.index') }}">
   <div class="row g-2">
 
-    <div class="col-auto">
-        <a href="{{ request()->fullUrlWithQuery(['my_only' => $myOnly ? 0 : 1, 'page' => null]) }}"
-          class="btn fw-bold {{ $myOnly ? 'btn-primary' : 'btn-outline-secondary' }}">
-            <i class="bi bi-person-fill"></i>
-            {{ $myOnly ? 'طلابي فقط ✓' : 'كل الطلاب' }}
+    @if(!auth()->user()->hasRole('super_admin'))
+      <div class="col-auto">
+        <a href="{{ request()->fullUrlWithQuery(['my_only' => request()->boolean('my_only') ? 0 : 1, 'page' => null]) }}"
+          class="btn fw-bold {{ request()->boolean('my_only') ? 'btn-primary' : 'btn-outline-secondary' }}">
+          <i class="bi bi-person-fill"></i>
+          {{ request()->boolean('my_only') ? 'طلابي فقط ✓' : 'كل الطلاب' }}
         </a>
-    </div>
-
+      </div>
+    @endif
 
     <div class="col-6 col-md-4">
       <input name="search" value="{{ request('search') }}" class="form-control"
@@ -147,40 +151,38 @@
           <td class="text-end">
 
 
-      
 
-              {{-- ✅ زران جديدان --}}
-              @if(auth()->user()?->hasPermission('view_student_financials'))
-                  <button class="btn btn-sm btn-outline-success"
-                          onclick="showFinancial({{ $s->id }}, '{{ addslashes($s->full_name) }}')"
-                          title="التفاصيل المالية">
-                      <i class="bi bi-cash-coin"></i>
-                  </button>
-              @endif
-              <button class="btn btn-sm btn-outline-info"
-                      onclick="showExams({{ $s->id }}, '{{ addslashes($s->full_name) }}')"
-                      title="نتائج الامتحانات">
-                  <i class="bi bi-journal-check"></i>
+
+            {{-- ✅ زران جديدان --}}
+            @if(auth()->user()?->hasPermission('view_student_financials') && !$s->is_readonly)
+              <button class="btn btn-sm btn-outline-success"
+                onclick="showFinancial({{ $s->id }}, '{{ addslashes($s->full_name) }}')" title="التفاصيل المالية">
+                <i class="bi bi-cash-coin"></i>
               </button>
+            @endif
+            <button class="btn btn-sm btn-outline-info"
+              onclick="showExams({{ $s->id }}, '{{ addslashes($s->full_name) }}')" title="نتائج الامتحانات">
+              <i class="bi bi-journal-check"></i>
+            </button>
 
-              {{-- باقي الأزرار --}}
+            {{-- باقي الأزرار --}}
 
 
 
 
 
-            @if(auth()->user()?->hasPermission('edit_students'))
+            @if(auth()->user()?->hasPermission('edit_students') && !$s->is_readonly)
               <a class="btn btn-sm btn-outline-primary" href="{{ route('students.show', $s) }}">
                 <i class="bi bi-eye"></i> عرض
               </a>
             @endif
 
-            @if(auth()->user()?->hasPermission('edit_students'))
+            @if(auth()->user()?->hasPermission('edit_students') && !$s->is_readonly)
               <a class="btn btn-sm btn-outline-dark" href="{{ route('students.edit', $s) }}">
                 <i class="bi bi-pencil"></i> تعديل
               </a>
             @endif
-            @if(auth()->user()?->hasPermission('delete_students'))
+            @if(auth()->user()?->hasPermission('delete_students') && !$s->is_readonly)
               <form method="POST" action="{{ route('students.destroy', $s) }}" class="d-inline"
                 onsubmit="return confirm('هل أنت متأكد من حذف الطالب؟')">
                 @csrf
@@ -193,7 +195,7 @@
             @endif
 
 
-            @if(!$s->is_confirmed)
+            @if(!$s->is_confirmed && !$s->is_readonly)
 
               <form method="POST" action="{{ route('students.confirm', $s) }}" class="d-inline">
                 @csrf
@@ -232,48 +234,48 @@
 
 {{-- Modal المالي والامتحاني --}}
 <div class="modal fade" id="studentInfoModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="modalTitle">تفاصيل الطالب</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary"></div>
-                    <div class="mt-2 text-muted">جاري التحميل...</div>
-                </div>
-            </div>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalTitle">تفاصيل الطالب</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary"></div>
+          <div class="mt-2 text-muted">جاري التحميل...</div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-function showFinancial(id, name) {
+  function showFinancial(id, name) {
     document.getElementById('modalTitle').innerHTML = '<i class="bi bi-cash-coin text-success me-2"></i> التفاصيل المالية — ' + name;
     document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success"></div></div>';
     var modal = new bootstrap.Modal(document.getElementById('studentInfoModal'));
     modal.show();
 
     fetch('/students/' + id + '/modal/financial')
-        .then(function(r) { return r.text(); })
-        .then(function(html) {
-            document.getElementById('modalBody').innerHTML = html;
-        });
-}
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        document.getElementById('modalBody').innerHTML = html;
+      });
+  }
 
-function showExams(id, name) {
+  function showExams(id, name) {
     document.getElementById('modalTitle').innerHTML = '<i class="bi bi-journal-check text-info me-2"></i> نتائج الامتحانات — ' + name;
     document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
     var modal = new bootstrap.Modal(document.getElementById('studentInfoModal'));
     modal.show();
 
     fetch('/students/' + id + '/modal/exams')
-        .then(function(r) { return r.text(); })
-        .then(function(html) {
-            document.getElementById('modalBody').innerHTML = html;
-        });
-}
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        document.getElementById('modalBody').innerHTML = html;
+      });
+  }
 </script>
 
 

@@ -191,4 +191,20 @@ class MediaRequestController extends Controller
     {
         return view('media.thanks');
     }
+
+
+    public function destroy(MediaRequest $media)
+{
+    // حذف الملفات المرتبطة
+    if ($media->details_file) {
+        \Storage::disk('public')->delete($media->details_file);
+    }
+    if ($media->trainer_image) {
+        \Storage::disk('public')->delete($media->trainer_image);
+    }
+
+    $media->delete();
+
+    return back()->with('success', 'تم حذف طلب الميديا بنجاح.');
+}
 }

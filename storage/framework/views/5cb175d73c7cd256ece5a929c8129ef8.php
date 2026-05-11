@@ -1,22 +1,22 @@
-@extends('layouts.app')
-@section('title', 'طلبات الميديا')
 
-@section('content')
+<?php $__env->startSection('title', 'طلبات الميديا'); ?>
+
+<?php $__env->startSection('content'); ?>
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <h4 class="fw-bold mb-0">طلبات الميديا</h4>
 
         <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ route('media.publish.index') }}" class="btn btn-soft-purple">
+            <a href="<?php echo e(route('media.publish.index')); ?>" class="btn btn-soft-purple">
                 <i class="bi bi-calendar2-week"></i> قائمة النشر
             </a>
-            <a href="{{ route('media.create') }}" class="btn btn-namaa">
+            <a href="<?php echo e(route('media.create')); ?>" class="btn btn-namaa">
                 <i class="bi bi-plus-lg"></i> طلب جديد
             </a>
         </div>
     </div>
 
-    {{-- رابط الفورم العام --}}
+    
     <div class="card shadow-sm mb-3 border-primary" hidden>
         <div class="card-body">
             <h6 class="fw-bold text-primary mb-2">
@@ -24,12 +24,12 @@
                 رابط فورم طلب الميديا (عام)
             </h6>
             <div class="input-group mb-2">
-                <input type="text" class="form-control" id="publicMediaLink" value="{{ route('media.public.form') }}"
+                <input type="text" class="form-control" id="publicMediaLink" value="<?php echo e(route('media.public.form')); ?>"
                     readonly>
                 <button class="btn btn-outline-secondary" onclick="copyMediaLink()">
                     <i class="bi bi-clipboard"></i> نسخ
                 </button>
-                <a href="{{ route('media.public.form') }}" target="_blank" class="btn btn-namaa">
+                <a href="<?php echo e(route('media.public.form')); ?>" target="_blank" class="btn btn-namaa">
                     <i class="bi bi-box-arrow-up-left"></i> فتح الفورم
                 </a>
             </div>
@@ -39,19 +39,19 @@
         </div>
     </div>
 
-    {{-- زر تنظيف المسودات --}}
+    
     <div class="d-flex justify-content-end mb-3">
-        <form method="POST" action="{{ route('media.cleanup') }}"
+        <form method="POST" action="<?php echo e(route('media.cleanup')); ?>"
             onsubmit="return confirm('هل أنت متأكد؟ سيتم حذف جميع المسودات والإدخالات التجريبية.')">
-            @csrf
-            @method('DELETE')
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('DELETE'); ?>
             <button type="submit" class="btn btn-soft-warning btn-sm">
                 <i class="bi bi-trash3"></i> حذف المسودات التجريبية
             </button>
         </form>
     </div>
 
-    {{-- جدول الطلبات --}}
+    
     <div class="card shadow-sm">
         <div class="table-responsive">
             <table class="table align-middle mb-0">
@@ -68,19 +68,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($requests as $r)
+                    <?php $__empty_1 = true; $__currentLoopData = $requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
-                            <td>{{ $r->id }}</td>
-                            <td>{{ $r->requester_name }}</td>
-                            <td>{{ $r->diploma_name }}</td>
-                            <td>{{ $r->trainer_name }}</td>
+                            <td><?php echo e($r->id); ?></td>
+                            <td><?php echo e($r->requester_name); ?></td>
+                            <td><?php echo e($r->diploma_name); ?></td>
+                            <td><?php echo e($r->trainer_name); ?></td>
 
-                            {{-- رابط المحتوى --}}
+                            
                             <td class="hide-mobile">
-                                <form method="POST" action="{{ route('media.update', $r) }}"
+                                <form method="POST" action="<?php echo e(route('media.update', $r)); ?>"
                                     class="d-flex gap-1 align-items-center">
-                                    @csrf
-                                    <input type="text" name="content_link" value="{{ $r->content_link }}"
+                                    <?php echo csrf_field(); ?>
+                                    <input type="text" name="content_link" value="<?php echo e($r->content_link); ?>"
                                         class="form-control form-control-sm" placeholder="أدخل الرابط" style="min-width:140px;">
                                     <button type="submit" class="btn btn-sm btn-outline-success" title="حفظ">
                                         <i class="bi bi-check-lg"></i>
@@ -89,55 +89,56 @@
                             </td>
 
                             <td class="hide-mobile">
-                                @if($r->editing_deadline)
-                                    <span class="badge {{ $r->editing_deadline->isPast() ? 'bg-danger' : 'bg-info' }}">
-                                        {{ $r->editing_deadline->format('Y-m-d') }}
+                                <?php if($r->editing_deadline): ?>
+                                    <span class="badge <?php echo e($r->editing_deadline->isPast() ? 'bg-danger' : 'bg-info'); ?>">
+                                        <?php echo e($r->editing_deadline->format('Y-m-d')); ?>
+
                                     </span>
-                                @else
+                                <?php else: ?>
                                     <span class="text-muted">—</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
 
-                            <td>{{ $r->created_at->format('Y-m-d') }}</td>
+                            <td><?php echo e($r->created_at->format('Y-m-d')); ?></td>
                             <td>
                                 <button type="button" class="btn btn-sm btn-outline-primary btn-show-media"
                                     data-bs-toggle="modal" data-bs-target="#mediaModal" title="عرض التفاصيل"
-                                    data-id="{{ $r->id }}" data-requester="{{ $r->requester_name }}"
-                                    data-phone="{{ $r->requester_phone ?? '—' }}" data-diploma="{{ $r->diploma_name ?? '—' }}"
-                                    data-code="{{ $r->diploma_code ?? '—' }}" data-trainer="{{ $r->trainer_name ?? '—' }}"
-                                    data-trainer-loc="{{ $r->trainer_location ?? '—' }}"
-                                    data-photo="{{ $r->trainer_photography_available ? '1' : '0' }}"
-                                    data-accred="{{ $r->certificate_accreditation ?? '—' }}"
-                                    data-cs="{{ $r->customer_service_responsible ?? '—' }}"
-                                    data-diploma-loc="{{ $r->diploma_location ?? '—' }}"
-                                    data-file="{{ $r->details_file ? asset('storage/' . $r->details_file) : '' }}"
-                                    data-image="{{ $r->trainer_image ? asset('storage/' . $r->trainer_image) : '' }}"
-                                    data-content-link="{{ $r->content_link ?? '' }}"
-                                    data-deadline="{{ $r->editing_deadline?->format('Y-m-d') ?? '—' }}"
-                                    data-need-ad="{{ $r->need_ad ? '1' : '0' }}"
-                                    data-need-invitation="{{ $r->need_invitation ? '1' : '0' }}"
-                                    data-need-review="{{ $r->need_review_video ? '1' : '0' }}"
-                                    data-need-content="{{ $r->need_content ? '1' : '0' }}"
-                                    data-need-podcast="{{ $r->need_podcast ? '1' : '0' }}"
-                                    data-need-carousel="{{ $r->need_carousel ? '1' : '0' }}"
-                                    data-need-other="{{ $r->need_other ?? '' }}"
-                                    data-design-done="{{ $r->design_done ? '1' : '0' }}"
-                                    data-ad-done="{{ $r->ad_done ? '1' : '0' }}"
-                                    data-invitation-done="{{ $r->invitation_done ? '1' : '0' }}"
-                                    data-content-done="{{ $r->content_done ? '1' : '0' }}"
-                                    data-podcast-done="{{ $r->podcast_done ? '1' : '0' }}"
-                                    data-reviews-done="{{ $r->reviews_done ? '1' : '0' }}" data-notes="{{ $r->notes ?? '—' }}"
-                                    data-created="{{ $r->created_at->format('Y-m-d H:i') }}">
+                                    data-id="<?php echo e($r->id); ?>" data-requester="<?php echo e($r->requester_name); ?>"
+                                    data-phone="<?php echo e($r->requester_phone ?? '—'); ?>" data-diploma="<?php echo e($r->diploma_name ?? '—'); ?>"
+                                    data-code="<?php echo e($r->diploma_code ?? '—'); ?>" data-trainer="<?php echo e($r->trainer_name ?? '—'); ?>"
+                                    data-trainer-loc="<?php echo e($r->trainer_location ?? '—'); ?>"
+                                    data-photo="<?php echo e($r->trainer_photography_available ? '1' : '0'); ?>"
+                                    data-accred="<?php echo e($r->certificate_accreditation ?? '—'); ?>"
+                                    data-cs="<?php echo e($r->customer_service_responsible ?? '—'); ?>"
+                                    data-diploma-loc="<?php echo e($r->diploma_location ?? '—'); ?>"
+                                    data-file="<?php echo e($r->details_file ? asset('storage/' . $r->details_file) : ''); ?>"
+                                    data-image="<?php echo e($r->trainer_image ? asset('storage/' . $r->trainer_image) : ''); ?>"
+                                    data-content-link="<?php echo e($r->content_link ?? ''); ?>"
+                                    data-deadline="<?php echo e($r->editing_deadline?->format('Y-m-d') ?? '—'); ?>"
+                                    data-need-ad="<?php echo e($r->need_ad ? '1' : '0'); ?>"
+                                    data-need-invitation="<?php echo e($r->need_invitation ? '1' : '0'); ?>"
+                                    data-need-review="<?php echo e($r->need_review_video ? '1' : '0'); ?>"
+                                    data-need-content="<?php echo e($r->need_content ? '1' : '0'); ?>"
+                                    data-need-podcast="<?php echo e($r->need_podcast ? '1' : '0'); ?>"
+                                    data-need-carousel="<?php echo e($r->need_carousel ? '1' : '0'); ?>"
+                                    data-need-other="<?php echo e($r->need_other ?? ''); ?>"
+                                    data-design-done="<?php echo e($r->design_done ? '1' : '0'); ?>"
+                                    data-ad-done="<?php echo e($r->ad_done ? '1' : '0'); ?>"
+                                    data-invitation-done="<?php echo e($r->invitation_done ? '1' : '0'); ?>"
+                                    data-content-done="<?php echo e($r->content_done ? '1' : '0'); ?>"
+                                    data-podcast-done="<?php echo e($r->podcast_done ? '1' : '0'); ?>"
+                                    data-reviews-done="<?php echo e($r->reviews_done ? '1' : '0'); ?>" data-notes="<?php echo e($r->notes ?? '—'); ?>"
+                                    data-created="<?php echo e($r->created_at->format('Y-m-d H:i')); ?>">
                                     <i class="bi bi-eye"></i> عرض
                                 </button>
 
 
 
-                                {{-- ✅ زر الحذف الجديد --}}
-                                <form method="POST" action="{{ route('media.destroy', $r) }}" class="d-inline"
-                                    onsubmit="return confirmDelete('{{ addslashes($r->requester_name) }}', '{{ addslashes($r->diploma_name) }}')">
-                                    @csrf
-                                    @method('DELETE')
+                                
+                                <form method="POST" action="<?php echo e(route('media.destroy', $r)); ?>" class="d-inline"
+                                    onsubmit="return confirmDelete('<?php echo e(addslashes($r->requester_name)); ?>', '<?php echo e(addslashes($r->diploma_name)); ?>')">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
                                     <button type="submit" class="btn btn-sm btn-outline-danger">
                                         <i class="bi bi-trash"></i> حذف
                                     </button>
@@ -146,34 +147,35 @@
 
                             </td>
                         </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="8" class="text-center text-muted py-4">
                                 لا توجد طلبات حالياً
                             </td>
                         </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
-        @if($requests->hasPages())
+        <?php if($requests->hasPages()): ?>
             <div class="card-footer">
-                {{ $requests->links() }}
+                <?php echo e($requests->links()); ?>
+
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 
 
-    {{-- ============================================= --}}
-    {{-- Modal تفاصيل طلب الميديا --}}
-    {{-- ============================================= --}}
+    
+    
+    
     <div class="modal fade" id="mediaModal" tabindex="-1" aria-labelledby="mediaModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0"
                 style="border-radius:22px; overflow:hidden; box-shadow: 0 30px 80px rgba(2,6,23,.18);">
 
-                {{-- Header --}}
+                
                 <div class="modal-header border-0 text-white px-4 py-3"
                     style="background: linear-gradient(90deg, #0ea5e9 0%, #10b981 100%);">
                     <h5 class="modal-title fw-bold" id="mediaModalLabel">
@@ -185,10 +187,10 @@
                         aria-label="إغلاق"></button>
                 </div>
 
-                {{-- Body --}}
+                
                 <div class="modal-body p-4">
 
-                    {{-- ===== القسم 1: بيانات مقدم الطلب ===== --}}
+                    
                     <div class="media-section-title">
                         <i class="bi bi-person-badge-fill"></i> بيانات مقدم الطلب
                     </div>
@@ -213,7 +215,7 @@
                         </div>
                     </div>
 
-                    {{-- ===== القسم 2: بيانات الدبلومة ===== --}}
+                    
                     <div class="media-section-title">
                         <i class="bi bi-mortarboard-fill"></i> بيانات الدبلومة
                     </div>
@@ -252,7 +254,7 @@
                         </div>
                     </div>
 
-                    {{-- ===== القسم 3: بيانات المدرب ===== --}}
+                    
                     <div class="media-section-title">
                         <i class="bi bi-person-workspace"></i> بيانات المدرب
                     </div>
@@ -278,7 +280,7 @@
                         </div>
                     </div>
 
-                    {{-- صورة المدرب + ملف التفاصيل --}}
+                    
                     <div class="row g-3 mb-4">
                         <div class="col-md-6" id="mImageWrap" style="display:none;">
                             <div class="m-detail-box text-center">
@@ -298,19 +300,19 @@
                         </div>
                     </div>
 
-                    {{-- ===== القسم 4: المواد المطلوبة ===== --}}
+                    
                     <div class="media-section-title">
                         <i class="bi bi-list-check"></i> المواد المطلوبة
                     </div>
                     <div class="d-flex flex-wrap gap-2 mb-4" id="mNeeds"></div>
 
-                    {{-- ===== القسم 5: حالة التنفيذ ===== --}}
+                    
                     <div class="media-section-title">
                         <i class="bi bi-clipboard-check-fill"></i> حالة التنفيذ
                     </div>
                     <div class="d-flex flex-wrap gap-3 mb-4" id="mStatus"></div>
 
-                    {{-- ===== القسم 6: رابط المحتوى + الموعد + الملاحظات ===== --}}
+                    
                     <div class="media-section-title">
                         <i class="bi bi-info-circle-fill"></i> معلومات إضافية
                     </div>
@@ -337,7 +339,7 @@
 
                 </div>
 
-                {{-- Footer --}}
+                
                 <div class="modal-footer border-0 px-4 pb-4 pt-2">
                     <a href="#" class="btn btn-namaa btn-sm" id="mEditBtn">
                         <i class="bi bi-pencil-square"></i> تعديل الطلب
@@ -351,10 +353,10 @@
         </div>
     </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         /* ===== Section Title ===== */
         .media-section-title {
@@ -449,10 +451,10 @@
             color: #dc2626;
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
@@ -590,4 +592,5 @@
             );
         }
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views/media/index.blade.php ENDPATH**/ ?>

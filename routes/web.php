@@ -565,6 +565,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/media-requests/{media}', [MediaRequestController::class, 'update'])
         ->name('media.update');
 
+
+        Route::delete('/media-requests/{media}', [MediaRequestController::class, 'destroy'])
+    ->name('media.destroy');
     // حذف المسودات التجريبية
     Route::delete('/media-requests/cleanup-drafts', [MediaRequestController::class, 'cleanupDrafts'])
         ->name('media.cleanup');
