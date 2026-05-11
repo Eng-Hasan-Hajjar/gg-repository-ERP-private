@@ -14,6 +14,18 @@
 
   <form class="card card-body shadow-sm border-0 mb-3" method="GET" action="{{ route('leads.index') }}">
     <div class="row g-2">
+
+      {{-- في شريط الفلاتر الموجود --}}
+      <div class="col-auto">
+        @php $myOnly = request()->boolean('my_only'); @endphp
+        <a href="{{ request()->fullUrlWithQuery(['my_only' => $myOnly ? 0 : 1, 'page' => null]) }}"
+          class="btn fw-bold {{ $myOnly ? 'btn-primary' : 'btn-outline-secondary' }}">
+          <i class="bi bi-person-fill"></i>
+          {{ $myOnly ? 'عملائي فقط ✓' : 'كل العملاء' }}
+        </a>
+      </div>
+
+
       <div class="col-md-4">
         <input class="form-control" name="search" value="{{ request('search') }}"
           placeholder="بحث: الاسم / الهاتف / واتساب">
@@ -103,9 +115,9 @@
               </td>
 
               <td class="text-end">
-                @if(auth()->user()?->hasPermission('view_leads'))
+                
                   <a class="btn btn-sm btn-outline-primary" href="{{ route('leads.show', $l) }}">عرض</a>
-                @endif
+               
 
                 @if(auth()->user()?->hasPermission('edit_leads'))
                   <a class="btn btn-sm btn-outline-dark" href="{{ route('leads.edit', $l) }}">تعديل</a>

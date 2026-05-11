@@ -14,6 +14,19 @@
 
   <form class="card card-body shadow-sm border-0 mb-3" method="GET" action="<?php echo e(route('leads.index')); ?>">
     <div class="row g-2">
+
+      
+      <div class="col-auto">
+        <?php $myOnly = request()->boolean('my_only'); ?>
+        <a href="<?php echo e(request()->fullUrlWithQuery(['my_only' => $myOnly ? 0 : 1, 'page' => null])); ?>"
+          class="btn fw-bold <?php echo e($myOnly ? 'btn-primary' : 'btn-outline-secondary'); ?>">
+          <i class="bi bi-person-fill"></i>
+          <?php echo e($myOnly ? 'عملائي فقط ✓' : 'كل العملاء'); ?>
+
+        </a>
+      </div>
+
+
       <div class="col-md-4">
         <input class="form-control" name="search" value="<?php echo e(request('search')); ?>"
           placeholder="بحث: الاسم / الهاتف / واتساب">

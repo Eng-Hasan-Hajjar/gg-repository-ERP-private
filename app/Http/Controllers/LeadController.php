@@ -36,6 +36,15 @@ class LeadController extends Controller
     }
 
     // 🔎 فلاتر
+
+
+        // ✅ جديد: فلتر "عملائي فقط"
+    $myOnly = $request->boolean('my_only');
+    if ($myOnly) {
+        $q->where('created_by', auth()->id());
+    }
+
+    
     if ($request->filled('branch_id')) {
       $q->where('branch_id', $request->branch_id);
     }

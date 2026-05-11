@@ -38,6 +38,11 @@ class StudentController extends Controller
         }
 
         // 🔎 فلاتر
+        // ✅ جديد: فلتر "طلابي فقط"
+        if ($request->boolean('my_only')) {
+            $q->where('created_by', auth()->id());
+        }
+
         if ($request->filled('branch_id')) {
             $q->where('branch_id', $request->branch_id);
         }
@@ -64,6 +69,20 @@ class StudentController extends Controller
             });
         }
 
+        // فلتر رسائل معلقة
+        if ($request->filled('has_message')) {
+            $q->whereHas('profile', function ($p) {
+                $p->whereNotNull('message_to_send')
+                    ->where('message_to_send', '!=', '');
+            });
+        }
+
+        // فلتر طلاب يحتاجون تحديث
+        if ($request->filled('needs_update')) {
+            $q->where('updated_at', '<=', now()->subDays(7))
+                ->where('status', 'active');
+        }
+
         $students = $q->latest()->paginate(15)->withQueryString();
 
         // 🧠 تعريب
@@ -85,6 +104,9 @@ class StudentController extends Controller
             'statusOptions' => $labels['student_status'],
             'registrationOptions' => $labels['registration_status'],
             'modeOptions' => $labels['mode'],
+          
+             
+            
         ]);
     }
     /*
@@ -196,18 +218,18 @@ class StudentController extends Controller
                 ->orderBy('name')
                 ->get();
         }
-      return view('students.create', [
-    'student'             => new Student(),
-    'branches'            => $branches,
-    'diplomas'            => Diploma::with('branch')->orderBy('name')->get(),
-    'studentDiplomas'     => collect(),
-    'studentDiplomasJson' => '[]',
-    'crm'                 => [],        // ✅ أضف هذا
-    'profile'             => [],        // ✅ أضف هذا
-    'statusOptions'       => $labels['student_status'],
-    'registrationOptions' => $labels['registration_status'],
-    'modeOptions'         => $labels['mode'],
-]);
+        return view('students.create', [
+            'student' => new Student(),
+            'branches' => $branches,
+            'diplomas' => Diploma::with('branch')->orderBy('name')->get(),
+            'studentDiplomas' => collect(),
+            'studentDiplomasJson' => '[]',
+            'crm' => [],        // ✅ أضف هذا
+            'profile' => [],        // ✅ أضف هذا
+            'statusOptions' => $labels['student_status'],
+            'registrationOptions' => $labels['registration_status'],
+            'modeOptions' => $labels['mode'],
+        ]);
         /*
                   return view('students.create', [
                       'student' => new Student(),   // ✅ مهم جدًا
@@ -225,6 +247,7 @@ class StudentController extends Controller
     {
         $data = $request->validated();
         $user = auth()->user();
+        $data['created_by'] = auth()->id();
 
         if (!$user->hasRole('super_admin')) {
 
@@ -572,17 +595,17 @@ class StudentController extends Controller
         ])->toJson();
 
         return view('students.edit', [
-    'student'             => $student,
-    'branches'            => $branches,
-    'diplomas'            => Diploma::with('branch')->orderBy('name')->get(),
-    'studentDiplomas'     => $student->diplomas,
-    'studentDiplomasJson' => $studentDiplomasJson,
-    'crm'     => old('crm', $student->crmInfo?->toArray() ?? []),    // ✅
-    'profile' => old('profile', $student->profile?->toArray() ?? []), // ✅
-    'statusOptions'       => $labels['student_status'],
-    'registrationOptions' => $labels['registration_status'],
-    'modeOptions'         => $labels['mode'],
-]);
+            'student' => $student,
+            'branches' => $branches,
+            'diplomas' => Diploma::with('branch')->orderBy('name')->get(),
+            'studentDiplomas' => $student->diplomas,
+            'studentDiplomasJson' => $studentDiplomasJson,
+            'crm' => old('crm', $student->crmInfo?->toArray() ?? []),    // ✅
+            'profile' => old('profile', $student->profile?->toArray() ?? []), // ✅
+            'statusOptions' => $labels['student_status'],
+            'registrationOptions' => $labels['registration_status'],
+            'modeOptions' => $labels['mode'],
+        ]);
 
 
     }
@@ -842,6 +865,55 @@ class StudentController extends Controller
 
 
 
+
+
+
+    public function modalFinancial(Student $student)
+    {
+        $student->load(['diplomas']);
+
+        $financial = $student->financialAccount?->load('transactions.cashbox');
+
+        // ✅ نفس الاستعلام الموجود في show()
+        $paymentPlans = \App\Models\PaymentPlan::where(function ($q) use ($student) {
+            $q->where('student_id', $student->id)
+                ->orWhere(function ($q2) use ($student) {
+                    $q2->whereHas(
+                        'lead',
+                        fn($lq) =>
+                        $lq->where('student_id', $student->id)
+                    );
+                });
+        })
+            ->with(['installments', 'diploma'])
+            ->get();
+
+        foreach ($paymentPlans as $plan) {
+            $paid = $financial
+                ? $financial->transactions()
+                    ->where('diploma_id', $plan->diploma_id)
+                    ->where('type', 'in')
+                    ->whereHas('cashbox', function ($q) use ($plan) {
+                        $q->where('currency', $plan->currency);
+                    })
+                    ->sum('amount')
+                : 0;
+            $plan->paid = $paid;
+            $plan->remaining = $plan->total_amount - $paid;
+        }
+
+        return view('students.modals.financial', compact('student', 'paymentPlans', 'financial'));
+    }
+
+    public function modalExams(Student $student)
+    {
+        $results = \App\Models\ExamResult::with(['exam.diploma'])
+            ->where('student_id', $student->id)
+            ->latest()
+            ->get();
+
+        return view('students.modals.exams', compact('student', 'results'));
+    }
 
 
 }

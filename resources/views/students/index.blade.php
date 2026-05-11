@@ -3,6 +3,9 @@
 @section('title', 'الطلاب')
 
 @section('content')
+{{-- ✅ عرّف هنا في أعلى الصفحة --}}
+@php $myOnly = request()->boolean('my_only'); @endphp
+
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
   <div>
     <h4 class="mb-0 fw-bold">إدارة الطلاب</h4>
@@ -14,14 +17,38 @@
     <i class="bi bi-person-plus"></i> طالب جديد
   </a>
 
+  <a class="btn btn-outline-success rounded-pill px-4 fw-bold" href="{{ route('students.reports.index') }}">
+    <i class="bi bi-file-earmark-excel"></i> التقارير
+  </a>
 </div>
 
 <form class="card card-body border-0 shadow-sm mb-3" method="GET" action="{{ route('students.index') }}">
   <div class="row g-2">
-    <div class="col-12 col-md-4">
+
+    <div class="col-auto">
+        <a href="{{ request()->fullUrlWithQuery(['my_only' => $myOnly ? 0 : 1, 'page' => null]) }}"
+          class="btn fw-bold {{ $myOnly ? 'btn-primary' : 'btn-outline-secondary' }}">
+            <i class="bi bi-person-fill"></i>
+            {{ $myOnly ? 'طلابي فقط ✓' : 'كل الطلاب' }}
+        </a>
+    </div>
+
+
+    <div class="col-6 col-md-4">
       <input name="search" value="{{ request('search') }}" class="form-control"
         placeholder="بحث: الاسم / الرقم الجامعي / الهاتف / رمز الدبلومة">
     </div>
+
+
+    <div class="col-6 col-md-2">
+      <select name="diploma_id" class="form-select">
+        <option value="">كل الدبلومات</option>
+        @foreach($diplomas as $d)
+          <option value="{{ $d->id }}" @selected(request('diploma_id') == $d->id)>{{ $d->name }}</option>
+        @endforeach
+      </select>
+    </div>
+
 
     <div class="col-6 col-md-2">
       <select name="branch_id" class="form-select">
@@ -32,7 +59,7 @@
       </select>
     </div>
 
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-md-2">
       <select name="status" class="form-select">
         <option value="">كل حالات الطالب</option>
         @foreach($statusOptions as $key => $label)
@@ -42,7 +69,7 @@
       </select>
     </div>
 
-    <div class="col-12 col-md-2">
+    <div class="col-6 col-md-1">
       <select name="registration_status" class="form-select">
         <option value="">حالة التسجيل</option>
         @foreach($registrationOptions as $key => $label)
@@ -52,7 +79,7 @@
       </select>
     </div>
 
-    <div class="col-12 col-md-1 d-grid">
+    <div class="col-6 col-md-1 d-grid">
       <button class="btn btn-namaa fw-bold">تطبيق</button>
     </div>
   </div>
@@ -85,10 +112,20 @@
       <tbody>
         @forelse($students as $s)
         <tr>
-          
+
           <td class="hide-mobile">{{ $s->id }}</td>
           <td><code>{{ $s->university_id }}</code></td>
-          <td class="fw-semibold">{{ $s->full_name }}</td>
+          <td class="fw-semibold">{{ $s->full_name }}
+
+
+            @if(!empty($s->profile?->message_to_send))
+              <span class="badge bg-warning text-dark ms-1" title="{{ $s->profile->message_to_send }}"
+                data-bs-toggle="tooltip">
+                📩
+              </span>
+            @endif
+
+          </td>
 
           <td class="hide-mobile">{{ $s->branch->name ?? '-' }}</td>
 
@@ -108,6 +145,30 @@
 
           </td>
           <td class="text-end">
+
+
+      
+
+              {{-- ✅ زران جديدان --}}
+              @if(auth()->user()?->hasPermission('view_student_financials'))
+                  <button class="btn btn-sm btn-outline-success"
+                          onclick="showFinancial({{ $s->id }}, '{{ addslashes($s->full_name) }}')"
+                          title="التفاصيل المالية">
+                      <i class="bi bi-cash-coin"></i>
+                  </button>
+              @endif
+              <button class="btn btn-sm btn-outline-info"
+                      onclick="showExams({{ $s->id }}, '{{ addslashes($s->full_name) }}')"
+                      title="نتائج الامتحانات">
+                  <i class="bi bi-journal-check"></i>
+              </button>
+
+              {{-- باقي الأزرار --}}
+
+
+
+
+
             @if(auth()->user()?->hasPermission('edit_students'))
               <a class="btn btn-sm btn-outline-primary" href="{{ route('students.show', $s) }}">
                 <i class="bi bi-eye"></i> عرض
@@ -152,7 +213,7 @@
     </table>
 
 
-  
+
 
 
 
@@ -164,7 +225,57 @@
 <div class="mt-3">
   {{ $students->links() }}
 </div>
+
+
+
+
+
+{{-- Modal المالي والامتحاني --}}
+<div class="modal fade" id="studentInfoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modalTitle">تفاصيل الطالب</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary"></div>
+                    <div class="mt-2 text-muted">جاري التحميل...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showFinancial(id, name) {
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-cash-coin text-success me-2"></i> التفاصيل المالية — ' + name;
+    document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success"></div></div>';
+    var modal = new bootstrap.Modal(document.getElementById('studentInfoModal'));
+    modal.show();
+
+    fetch('/students/' + id + '/modal/financial')
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            document.getElementById('modalBody').innerHTML = html;
+        });
+}
+
+function showExams(id, name) {
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-journal-check text-info me-2"></i> نتائج الامتحانات — ' + name;
+    document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
+    var modal = new bootstrap.Modal(document.getElementById('studentInfoModal'));
+    modal.show();
+
+    fetch('/students/' + id + '/modal/exams')
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            document.getElementById('modalBody').innerHTML = html;
+        });
+}
+</script>
+
+
+
 @endsection
-
-
-

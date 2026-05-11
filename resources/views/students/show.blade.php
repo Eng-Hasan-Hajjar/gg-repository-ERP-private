@@ -240,7 +240,7 @@
             </div>
           </div>
           <div class="kv"><div class="k">الفرع</div><div class="v">{{ $student->branch->name ?? '-' }}</div></div>
-          <div class="kv"><div class="k">نوع الطالب</div><div class="v">{{ $mode_ar ?? '-' }}</div></div>
+          <div class="kv" hidden><div class="k">نوع الطالب</div><div class="v">{{ $mode_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">حالة الطالب</div><div class="v">{{ $status_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">حالة التسجيل</div><div class="v">{{ $registration_ar ?? '-' }}</div></div>
           <div class="kv"><div class="k">الرقم الجامعي</div><div class="v"><code>{{ $student->university_id }}</code></div></div>

@@ -22,14 +22,14 @@ class StudentStoreRequest extends FormRequest
 
 
       'branch_id' => 'required|exists:branches,id',
-      'mode' => 'required|in:onsite,online',
+      'mode' => 'nullable|in:onsite,online',
       'status' => 'required|string',
 
       'diploma_ids' => 'required|array',
       'diploma_ids.*' => 'exists:diplomas,id',
 
 
-       'certificate_agreement' => ['sometimes', 'boolean'], 
+      'certificate_agreement' => 'nullable', 
 
 
       // nested arrays

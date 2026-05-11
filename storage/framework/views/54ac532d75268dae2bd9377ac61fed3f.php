@@ -1,0 +1,1 @@
+<link rel="icon" href="<?php echo e(asset('images/namaa-logo.png')); ?>"><?php /**PATH C:\Users\engya\Desktop\namaa\laravel11-auth\resources\views\components\application-logo.blade.php ENDPATH**/ ?>

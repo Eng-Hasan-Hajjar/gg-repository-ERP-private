@@ -736,9 +736,15 @@
             <div class="info-item">
               <div class="lbl">رقم الطالب</div>
               <div class="val">
-                <a href="<?php echo e(route('students.show', $lead->student_id)); ?>" style="color:#0369a1;">
-                  <i class="bi bi-mortarboard-fill" style="font-size:12px"></i> عرض ملف الطالب
+                <a href="<?php echo e(route('students.show', $lead->student_id)); ?>" class="btn btn-success fw-bold">
+                  <i class="bi bi-mortarboard-fill"></i> عرض ملف الطالب
                 </a>
+
+                <button class="btn btn-outline-success fw-bold"
+                  onclick="showFinancial(<?php echo e($lead->student_id); ?>, '<?php echo e(addslashes($lead->full_name)); ?>')"
+                  title="المعلومات المالية">
+                  <i class="bi bi-cash-coin"></i> المعلومات المالية
+                </button>
               </div>
             </div>
           <?php endif; ?>
@@ -1159,6 +1165,63 @@
     <?php endif; ?>
   </div>
 
+
+
+
+
+
+  
+<div class="modal fade" id="financialModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="financialModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="financialModalBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-success"></div>
+                    <div class="mt-2 text-muted">جاري التحميل...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="financialModalLink" href="#" class="btn btn-success fw-bold" target="_blank">
+                    <i class="bi bi-box-arrow-up-left"></i> فتح الملف الكامل
+                </a>
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+function showFinancial(id, name) {
+    document.getElementById('financialModalTitle').innerHTML =
+        '<i class="bi bi-cash-coin text-success me-2"></i> المعلومات المالية — ' + name;
+    document.getElementById('financialModalBody').innerHTML =
+        '<div class="text-center py-4"><div class="spinner-border text-success"></div><div class="mt-2 text-muted">جاري التحميل...</div></div>';
+    document.getElementById('financialModalLink').href = '/students/' + id;
+
+    var modal = new bootstrap.Modal(document.getElementById('financialModal'));
+    modal.show();
+
+    fetch('/students/' + id + '/modal/financial')
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            document.getElementById('financialModalBody').innerHTML = html;
+        })
+        .catch(function() {
+            document.getElementById('financialModalBody').innerHTML =
+                '<div class="alert alert-danger">حدث خطأ أثناء التحميل</div>';
+        });
+}
+</script>
+
+
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
@@ -1177,22 +1240,22 @@
 
       function buildInstallmentRow(index) {
         return `
-        <div class="row g-3 mt-1">
-          <div class="col-md-6">
-            <label class="fw-bold">قيمة الدفعة ${index}</label>
-            <input type="number" step="0.01" min="0.01"
-                   name="installments[${index}][amount]"
-                   class="form-control installment-input"
-                   data-index="${index}"
-                   placeholder="0.00" required>
-            <div class="inst-error-msg" data-error="${index}"></div>
-          </div>
-          <div class="col-md-6">
-            <label class="fw-bold">تاريخ الدفعة ${index}</label>
-            <input type="date" name="installments[${index}][due_date]"
-                   class="form-control" required>
-          </div>
-        </div>`;
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <label class="fw-bold">قيمة الدفعة ${index}</label>
+              <input type="number" step="0.01" min="0.01"
+                     name="installments[${index}][amount]"
+                     class="form-control installment-input"
+                     data-index="${index}"
+                     placeholder="0.00" required>
+              <div class="inst-error-msg" data-error="${index}"></div>
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold">تاريخ الدفعة ${index}</label>
+              <input type="date" name="installments[${index}][due_date]"
+                     class="form-control" required>
+            </div>
+          </div>`;
       }
 
       function runValidation() {
@@ -1233,15 +1296,15 @@
         const boxClass = (overLimit || hasError) ? 'bad' : 'ok';
 
         $summary.innerHTML = `
-        <div class="summary-box ${boxClass}">
-          <div class="summary-row">
-            <div class="item"><small>الإجمالي</small><strong>${total.toFixed(2)}</strong></div>
-            <div class="item"><small>مجموع الدفعات</small><strong class="${overLimit ? 'text-danger' : ''}">${sum.toFixed(2)}</strong></div>
-            <div class="item"><small>المتبقي</small><strong class="${remaining < 0 ? 'text-danger' : 'text-success'}">${remaining.toFixed(2)}</strong></div>
-          </div>
-          ${overLimit ? '<div class="warning-msg">⚠️ مجموع الدفعات يتجاوز المبلغ الإجمالي!</div>' : ''}
-          ${hasError && !overLimit ? '<div class="warning-msg">⚠️ يوجد أخطاء في القيم المدخلة</div>' : ''}
-        </div>`;
+          <div class="summary-box ${boxClass}">
+            <div class="summary-row">
+              <div class="item"><small>الإجمالي</small><strong>${total.toFixed(2)}</strong></div>
+              <div class="item"><small>مجموع الدفعات</small><strong class="${overLimit ? 'text-danger' : ''}">${sum.toFixed(2)}</strong></div>
+              <div class="item"><small>المتبقي</small><strong class="${remaining < 0 ? 'text-danger' : 'text-success'}">${remaining.toFixed(2)}</strong></div>
+            </div>
+            ${overLimit ? '<div class="warning-msg">⚠️ مجموع الدفعات يتجاوز المبلغ الإجمالي!</div>' : ''}
+            ${hasError && !overLimit ? '<div class="warning-msg">⚠️ يوجد أخطاء في القيم المدخلة</div>' : ''}
+          </div>`;
 
         const isValid = !hasError && !overLimit;
         btns.forEach(btn => {

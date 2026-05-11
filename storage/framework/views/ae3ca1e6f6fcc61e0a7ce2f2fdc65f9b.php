@@ -562,6 +562,50 @@
     </div>
   <?php endif; ?>
 
+
+
+
+  
+  <?php if($pendingMessages > 0 || $studentsNeedUpdate > 0): ?>
+    <div class="row g-3 mb-4">
+
+      <?php if($pendingMessages > 0): ?>
+        <div class="col-12 col-md-6">
+          <a href="<?php echo e(route('students.index', ['has_message' => 1])); ?>" class="text-decoration-none">
+            <div class="alert alert-warning d-flex align-items-center gap-3 mb-0 shadow-sm"
+              style="border-radius:12px; border-right: 5px solid #f59e0b;">
+              <div style="font-size:2rem;">📩</div>
+              <div>
+                <div class="fw-bold"><?php echo e($pendingMessages); ?> طالب لديه رسالة معلقة</div>
+                <div class="small text-muted">اضغط لعرض قائمة الطلاب ذوي الرسائل المعلقة</div>
+              </div>
+              <i class="bi bi-chevron-left ms-auto"></i>
+            </div>
+          </a>
+        </div>
+      <?php endif; ?>
+
+      <?php if($studentsNeedUpdate > 0): ?>
+        <div class="col-12 col-md-6">
+          <a href="<?php echo e(route('students.index', ['needs_update' => 1])); ?>" class="text-decoration-none">
+            <div class="alert alert-info d-flex align-items-center gap-3 mb-0 shadow-sm"
+              style="border-radius:12px; border-right: 5px solid #3b82f6;">
+              <div style="font-size:2rem;">🔔</div>
+              <div>
+                <div class="fw-bold"><?php echo e($studentsNeedUpdate); ?> طالب لم يتم تحديث بياناتهم منذ 7 أيام</div>
+                <div class="small text-muted">اضغط لعرض الطلاب الذين يحتاجون متابعة</div>
+              </div>
+              <i class="bi bi-chevron-left ms-auto"></i>
+            </div>
+          </a>
+        </div>
+      <?php endif; ?>
+
+    </div>
+  <?php endif; ?>
+
+
+
   
 
   <div class="section-divider">

@@ -46,6 +46,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'view_student_financials', 'label' => 'عرض الوضع المالي للطالب', 'module' => 'students'],
             ['name' => 'delete_students', 'label' => 'حذف طالب', 'module' => 'students'],
 
+            ['name' => 'edit_crm_in_student', 'label' => 'تعديل  معلومات crm في ملف الطالب', 'module' => 'students'],
+            
+
+
             /*
             |--------------------------------------------------------------------------
             | الامتحانات

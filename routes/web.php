@@ -33,6 +33,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentDebtController;
 use App\Http\Controllers\AccountStatementController;
 use App\Http\Controllers\AssetRequestController;
+use App\Http\Controllers\StudentReportController;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,6 +64,23 @@ Route::middleware('auth')->group(function () {
 
 
 Route::middleware(['auth'])->group(function () {
+
+
+    // تقارير الطلاب
+    // ✅ يجب أن تكون قبل resource
+    Route::prefix('students')->name('students.')->group(function () {
+        Route::get('/reports', [StudentReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/excel/list', [StudentReportController::class, 'exportList'])->name('reports.excel.list');
+        Route::get('/reports/excel/detail', [StudentReportController::class, 'exportDetail'])->name('reports.excel.detail');
+        Route::get('/reports/excel/diplomas', [StudentReportController::class, 'exportDiplomas'])->name('reports.excel.diplomas');
+        Route::get('/reports/excel/crm', [StudentReportController::class, 'exportCrm'])->name('reports.excel.crm');
+    });
+
+    Route::get('/students/{student}/modal/financial', [StudentController::class, 'modalFinancial'])->name('students.modal.financial');
+    Route::get('/students/{student}/modal/exams', [StudentController::class, 'modalExams'])->name('students.modal.exams');
+
+
+
     Route::resource('students', StudentController::class);
 
     Route::post('/students/{student}/confirm', [StudentConfirmationController::class, 'confirm'])
@@ -668,14 +688,14 @@ Route::get('/admin/reports/attendance/monthly/excel', [AttendanceReportControlle
 
 // ── الذمم المالية ──
 Route::prefix('debts')->name('debts.')->group(function () {
-    Route::get('/',                    [StudentDebtController::class, 'index'])->name('index');
-    Route::get('/export-excel',        [StudentDebtController::class, 'exportExcel'])->name('excel');
-    Route::get('/{student}',           [StudentDebtController::class, 'show'])->name('show');
+    Route::get('/', [StudentDebtController::class, 'index'])->name('index');
+    Route::get('/export-excel', [StudentDebtController::class, 'exportExcel'])->name('excel');
+    Route::get('/{student}', [StudentDebtController::class, 'show'])->name('show');
 });
 
 // كشف الحسابات الشامل
 Route::prefix('accounts/statement')->name('accounts.statement.')->group(function () {
-    Route::get('/',              [AccountStatementController::class, 'index'])->name('index');
+    Route::get('/', [AccountStatementController::class, 'index'])->name('index');
     Route::get('/export-excel', [AccountStatementController::class, 'exportExcel'])->name('excel');
 });
 
@@ -683,9 +703,9 @@ Route::get('reports/tasks/export-excel', [TaskReportController::class, 'exportEx
 
 Route::get('/debts/{student}/export-excel', [StudentDebtController::class, 'exportStudentExcel'])
     ->name('debts.student.excel');
-    
 
-    // في routes/web.php داخل middleware auth
+
+// في routes/web.php داخل middleware auth
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('visibility-groups', \App\Http\Controllers\Admin\VisibilityGroupController::class)
         ->parameters(['visibility-groups' => 'visibilityGroup']);
@@ -695,12 +715,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 // في routes/web.php
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/asset-requests',          [AssetRequestController::class, 'index'])->name('asset-requests.index');
-    Route::get('/asset-requests/create',   [AssetRequestController::class, 'create'])->name('asset-requests.create');
-    Route::post('/asset-requests',         [AssetRequestController::class, 'store'])->name('asset-requests.store');
+    Route::get('/asset-requests', [AssetRequestController::class, 'index'])->name('asset-requests.index');
+    Route::get('/asset-requests/create', [AssetRequestController::class, 'create'])->name('asset-requests.create');
+    Route::post('/asset-requests', [AssetRequestController::class, 'store'])->name('asset-requests.store');
     Route::post('/asset-requests/{assetRequest}/approve', [AssetRequestController::class, 'approve'])->name('asset-requests.approve');
-    Route::post('/asset-requests/{assetRequest}/reject',  [AssetRequestController::class, 'reject'])->name('asset-requests.reject');
-    Route::delete('/asset-requests/{assetRequest}',       [AssetRequestController::class, 'destroy'])->name('asset-requests.destroy');
+    Route::post('/asset-requests/{assetRequest}/reject', [AssetRequestController::class, 'reject'])->name('asset-requests.reject');
+    Route::delete('/asset-requests/{assetRequest}', [AssetRequestController::class, 'destroy'])->name('asset-requests.destroy');
 
 });
 
@@ -715,11 +735,14 @@ Route::get('/csrf-refresh', function () {
 
 // إعدادات النظام
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/settings',  [\App\Http\Controllers\Admin\SettingsController::class, 'index'])
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])
         ->name('settings.index');
     Route::post('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])
         ->name('settings.update');
 });
+
+
+
 
 
 require __DIR__ . '/auth.php';

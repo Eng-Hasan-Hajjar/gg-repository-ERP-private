@@ -216,15 +216,15 @@ class DashboardController extends Controller
             ? round(($taskStats['done'] / $taskStats['total']) * 100) : 0;
 
 
-// ── إحصائيات مجموعات الرؤية ──
-$vgTableExists = \Illuminate\Support\Facades\Schema::hasTable('visibility_groups');
+        // ── إحصائيات مجموعات الرؤية ──
+        $vgTableExists = \Illuminate\Support\Facades\Schema::hasTable('visibility_groups');
 
-$visibilityGroupStats = [
-    'total'    => $vgTableExists ? \App\Models\VisibilityGroup::count() : 0,
-    'managers' => $vgTableExists ? \DB::table('visibility_group_employee')->where('role_in_group', 'manager')->count() : 0,
-    'members'  => $vgTableExists ? \DB::table('visibility_group_employee')->where('role_in_group', 'member')->count() : 0,
-    'managed'  => $vgTableExists ? \DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id') : 0,
-];
+        $visibilityGroupStats = [
+            'total' => $vgTableExists ? \App\Models\VisibilityGroup::count() : 0,
+            'managers' => $vgTableExists ? \DB::table('visibility_group_employee')->where('role_in_group', 'manager')->count() : 0,
+            'members' => $vgTableExists ? \DB::table('visibility_group_employee')->where('role_in_group', 'member')->count() : 0,
+            'managed' => $vgTableExists ? \DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id') : 0,
+        ];
 
 
         // ── إحصائيات الذمم ──
@@ -259,22 +259,33 @@ $visibilityGroupStats = [
 
 
         // ── إحصائيات طلبات اللوجستيات ──
-$user = auth()->user();
-$assetRequestQuery = \App\Models\AssetRequest::query();
+        $user = auth()->user();
+        $assetRequestQuery = \App\Models\AssetRequest::query();
 
-// الموظف العادي يرى طلباته فقط في الكارد
-if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_assets')) {
-    $assetRequestQuery->where('user_id', $user->id);
-}
+        // الموظف العادي يرى طلباته فقط في الكارد
+        if (!$user->hasRole('super_admin') && !$user->hasPermission('manage_assets')) {
+            $assetRequestQuery->where('user_id', $user->id);
+        }
 
-$assetRequestStats = [
-    'total'    => (clone $assetRequestQuery)->count(),
-    'pending'  => (clone $assetRequestQuery)->where('status', 'pending')->count(),
-    'approved' => (clone $assetRequestQuery)->where('status', 'approved')->count(),
-    'rejected' => (clone $assetRequestQuery)->where('status', 'rejected')->count(),
-];
+        $assetRequestStats = [
+            'total' => (clone $assetRequestQuery)->count(),
+            'pending' => (clone $assetRequestQuery)->where('status', 'pending')->count(),
+            'approved' => (clone $assetRequestQuery)->where('status', 'approved')->count(),
+            'rejected' => (clone $assetRequestQuery)->where('status', 'rejected')->count(),
+        ];
 
 
+
+        // ── رسائل معلقة للطلاب ──
+        $pendingMessages = \App\Models\Student::whereHas('profile', function ($q) {
+            $q->whereNotNull('message_to_send')
+                ->where('message_to_send', '!=', '');
+        })->count();
+
+        // ── طلاب لم يتم تحديث بياناتهم منذ 7 أيام ──
+        $studentsNeedUpdate = \App\Models\Student::where('updated_at', '<=', now()->subDays(7))
+            ->where('status', 'active')
+            ->count();
 
         return view('dashboard', [
             'highlights' => $highlights,
@@ -302,9 +313,11 @@ $assetRequestStats = [
             'convRate' => $convRate,
             'confRate' => $confRate,
             'doneRate' => $doneRate,
-             'debtStats' => $debtStats,
-             'visibilityGroupStats' => $visibilityGroupStats,
-'assetRequestStats' => $assetRequestStats,
+            'debtStats' => $debtStats,
+            'visibilityGroupStats' => $visibilityGroupStats,
+            'assetRequestStats' => $assetRequestStats,
+            'pendingMessages' => $pendingMessages,
+            'studentsNeedUpdate' => $studentsNeedUpdate,
 
         ]);
     }

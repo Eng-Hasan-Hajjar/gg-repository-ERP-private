@@ -241,22 +241,13 @@
             </div>
           </div>
           <div class="kv"><div class="k">الفرع</div><div class="v"><?php echo e($student->branch->name ?? '-'); ?></div></div>
-          <div class="kv"><div class="k">نوع الطالب</div><div class="v"><?php echo e($mode_ar ?? '-'); ?></div></div>
+          <div class="kv" hidden><div class="k">نوع الطالب</div><div class="v"><?php echo e($mode_ar ?? '-'); ?></div></div>
           <div class="kv"><div class="k">حالة الطالب</div><div class="v"><?php echo e($status_ar ?? '-'); ?></div></div>
           <div class="kv"><div class="k">حالة التسجيل</div><div class="v"><?php echo e($registration_ar ?? '-'); ?></div></div>
           <div class="kv"><div class="k">الرقم الجامعي</div><div class="v"><code><?php echo e($student->university_id); ?></code></div></div>
-          <div class="row g-3 mt-3">
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="cert_agree" 
-                      <?php echo e($student->certificate_agreement ? 'checked' : ''); ?>
-
-                      disabled>
-                <label class="form-check-label fw-bold" for="cert_agree">
-                  اتفاق الشهادة الممنوحة
-                </label>
-              </div>
-            </div>
+          <div class="kv">
+            <div class="k">اتفاق الشهادة الممنوحة</div>
+            <div class="v"><?php echo e($student->certificate_agreement ?? 'لا يوجد'); ?></div>
           </div>
         
         </div>
