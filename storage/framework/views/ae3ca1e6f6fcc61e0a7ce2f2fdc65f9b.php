@@ -1,10 +1,10 @@
 
-<?php($isDashboard = true)
-@php $next = $upcomingEvents2->first(); ?>
+<?php ($isDashboard = true); ?>
+
+
 <?php $__env->startSection('title', 'لوحة التحكم'); ?>
 
 <?php $__env->startSection('dashboard'); ?>
-
   <style>
     .dash-hero {
       background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);

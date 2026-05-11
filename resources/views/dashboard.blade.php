@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @php($isDashboard = true)
-@php $next = $upcomingEvents2->first(); @endphp
+
+
 @section('title', 'لوحة التحكم')
 
 @section('dashboard')
-
   <style>
     .dash-hero {
       background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);

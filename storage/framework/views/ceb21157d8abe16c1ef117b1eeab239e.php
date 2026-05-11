@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -15,12 +14,29 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+
+
+
   <?php
     $themeMode = \App\Models\SystemSetting::get('theme_mode', 'light');
     $primaryColor = \App\Models\SystemSetting::get('primary_color', '#0ea5e9');
     $secondaryColor = \App\Models\SystemSetting::get('secondary_color', '#10b981');
   ?>
 
+
+  <?php
+    // هل الصفحة Dashboard؟
+    $isDashboard = $isDashboard ?? false;
+    // لتفعيل تمييز الأيقونة الحالية
+    $activeModule = $activeModule ?? '';
+  ?>
 
 
   <style>
@@ -1169,21 +1185,9 @@ ERP Notifications Style
   <?php echo $__env->yieldPushContent('styles'); ?>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 
 </head>
 
-<?php
-  // هل الصفحة Dashboard؟
-  $isDashboard = $isDashboard ?? false;
-  // لتفعيل تمييز الأيقونة الحالية
-  $activeModule = $activeModule ?? '';
-?>
 
 
 
@@ -1209,7 +1213,6 @@ ERP Notifications Style
 
 
 
-<?php echo $__env->make('finance._fab', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <body class="bg-light">
 
@@ -1278,6 +1281,11 @@ ERP Notifications Style
       </div>
     </div>
   </nav>
+
+
+  <?php echo $__env->make('finance._fab', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+
 
   <main class="container py-4">
 
@@ -1483,9 +1491,9 @@ ERP Notifications Style
               </a>
 
 
-              <a href="<?php echo e(route('calendar.index')); ?>" class="nav-link <?php echo e(request()->routeIs('calendar.*') ? 'active' : ''); ?>">
-                <i class="bi bi-calendar3"></i>
-                <span>التقويم</span>
+              <a href="<?php echo e(route('calendar.index')); ?>"
+                class="grad-indigo hide-mobile <?php echo e($activeModule === 'calendar' ? 'active' : ''); ?>" data-title="التقويم">
+                <i class="bi bi-calendar3 fs-6"></i>
               </a>
 
               <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
@@ -1620,7 +1628,7 @@ ERP Notifications Style
                 document.querySelector('form[action="<?php echo e(route('logout')); ?>"]').submit();
               });
             <?php endif; ?>
-            });
+                });
         })();
       <?php endif; ?>
 
