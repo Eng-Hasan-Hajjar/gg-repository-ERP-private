@@ -1480,6 +1480,10 @@ ERP Notifications Style
               </a>
 
 
+              <a href="{{ route('calendar.index') }}" class="nav-link {{ request()->routeIs('calendar.*') ? 'active' : '' }}">
+                <i class="bi bi-calendar3"></i>
+                <span>التقويم</span>
+              </a>
 
               @if(auth()->user()?->hasPermission('manage_roles'))
                 <a href="{{ route('admin.settings.index') }}"
@@ -1613,7 +1617,7 @@ ERP Notifications Style
                 document.querySelector('form[action="{{ route('logout') }}"]').submit();
               });
             @endif
-          });
+            });
         })();
       @endif
 

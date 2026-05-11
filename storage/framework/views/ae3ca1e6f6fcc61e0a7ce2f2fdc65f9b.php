@@ -1,5 +1,6 @@
 
-<?php ($isDashboard = true); ?>
+<?php($isDashboard = true)
+@php $next = $upcomingEvents2->first(); ?>
 <?php $__env->startSection('title', 'لوحة التحكم'); ?>
 
 <?php $__env->startSection('dashboard'); ?>
@@ -607,6 +608,43 @@
 
 
   
+  <?php if($upcomingEvents->count()): ?>
+    <div class="row g-3 mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white fw-bold border-0 d-flex justify-content-between align-items-center pt-3">
+            <span><i class="bi bi-calendar-event text-primary"></i> أحداث الأسبوع القادم</span>
+            <a href="<?php echo e(route('calendar.index')); ?>" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-calendar3"></i> عرض التقويم
+            </a>
+          </div>
+          <div class="card-body p-0">
+            <?php $__currentLoopData = $upcomingEvents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ev): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <div class="d-flex align-items-center gap-3 px-3 py-2 border-bottom">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                  style="width:34px; height:34px; background:<?php echo e($ev->color); ?>22;">
+                  <i class="bi <?php echo e($eventTypes[$ev->type]['icon']); ?>" style="color:<?php echo e($ev->color); ?>; font-size:14px;"></i>
+                </div>
+                <div>
+                  <div class="fw-bold" style="font-size:13px;"><?php echo e($ev->title); ?></div>
+                  <div class="text-muted" style="font-size:11px;">
+                    <?php echo e($ev->start_date->format('d/m/Y')); ?>
+
+                    <?php if($ev->start_time): ?> — <?php echo e($ev->start_time); ?> <?php endif; ?>
+                    • <?php echo e($eventTypes[$ev->type]['label']); ?>
+
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+
+
+  
 
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-grid-3x3-gap me-1"></i> العمليات الأساسية</span>
@@ -940,6 +978,87 @@
         </div>
       </div>
     <?php endif; ?>
+
+
+
+
+    
+    <?php if(auth()->user()?->hasPermission('view_calendar')): ?>
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;">
+              <i class="bi bi-calendar3 fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">التقويم والأحداث</p>
+              <p class="module-sub">جلسات — حملات — أعياد ميلاد — تذكيرات</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">إدارة الأحداث والمواعيد المهمة مع تنبيهات تلقائية.</p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary"><?php echo e($calendarStats['total'] ?? 0); ?></div>
+              <div class="sm-label"><i class="bi bi-calendar3"></i> هذا الشهر</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success"><?php echo e($calendarStats['upcoming'] ?? 0); ?></div>
+              <div class="sm-label"><i class="bi bi-calendar-check"></i> قادمة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning"><?php echo e($calendarStats['today'] ?? 0); ?></div>
+              <div class="sm-label"><i class="bi bi-calendar-day"></i> اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-secondary"><?php echo e($calendarStats['passed'] ?? 0); ?></div>
+              <div class="sm-label"><i class="bi bi-calendar-x"></i> منتهية</div>
+            </div>
+          </div>
+
+          
+          <?php if(isset($upcomingEvents2) && $upcomingEvents2->count()): ?>
+            <div style="padding:0 16px 12px;">
+              <div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:6px;">
+                <i class="bi bi-clock"></i> أقرب حدث
+              </div>
+              
+
+
+
+              <div class="d-flex align-items-center gap-2 p-2 rounded"
+                style="background:<?php echo e($next->color); ?>15; border-right:3px solid <?php echo e($next->color); ?>;">
+                <i class="bi <?php echo e($eventTypes2[$next->type]['icon'] ?? 'bi-calendar'); ?>"
+                  style="color:<?php echo e($next->color); ?>; font-size:16px;"></i>
+                <div>
+                  <div style="font-size:12px; font-weight:800; color:#1e293b;"><?php echo e($next->title); ?></div>
+                  <div style="font-size:11px; color:#94a3b8;">
+                    <?php echo e($next->start_date->format('d/m/Y')); ?>
+
+                    <?php echo e($next->start_time ? '— ' . $next->start_time : ''); ?>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          <?php endif; ?>
+
+          <div class="module-actions">
+            <a href="<?php echo e(route('calendar.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">
+              <i class="bi bi-calendar3"></i> فتح التقويم
+            </a>
+            <?php if(auth()->user()?->hasPermission('create_events')): ?>
+              <a href="<?php echo e(route('calendar.index')); ?>" class="btn btn-soft w-100 w-sm-auto">
+                <i class="bi bi-plus-circle"></i> إضافة حدث
+              </a>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+
+
 
   </div>
 

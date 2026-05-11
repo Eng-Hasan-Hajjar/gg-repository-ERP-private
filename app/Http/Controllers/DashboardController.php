@@ -287,6 +287,37 @@ class DashboardController extends Controller
             ->where('status', 'active')
             ->count();
 
+
+        // ── أحداث الأسبوع القادم ──
+        $upcomingEvents = \App\Models\CalendarEvent::where('start_date', '>=', now()->toDateString())
+            ->where('start_date', '<=', now()->addDays(7)->toDateString())
+            ->orderBy('start_date')
+            ->get();
+
+        $eventTypes = \App\Models\CalendarEvent::types();
+
+
+
+        // ── إحصائيات التقويم ──
+        $calendarStats = [];
+        if (auth()->user()?->hasPermission('view_calendar')) {
+            $calendarStats = [
+                'total' => \App\Models\CalendarEvent::whereMonth('start_date', now()->month)->count(),
+                'upcoming' => \App\Models\CalendarEvent::where('start_date', '>=', now()->toDateString())->count(),
+                'passed' => \App\Models\CalendarEvent::where('start_date', '<', now()->toDateString())->count(),
+                'today' => \App\Models\CalendarEvent::whereDate('start_date', now()->toDateString())->count(),
+            ];
+
+            $upcomingEvents2 = \App\Models\CalendarEvent::where('start_date', '>=', now()->toDateString())
+                ->where('start_date', '<=', now()->addDays(7)->toDateString())
+                ->orderBy('start_date')
+                ->get();
+
+            $eventTypes2 = \App\Models\CalendarEvent::types();
+        }
+
+
+
         return view('dashboard', [
             'highlights' => $highlights,
             'todayStats' => $todayStats,
@@ -318,6 +349,11 @@ class DashboardController extends Controller
             'assetRequestStats' => $assetRequestStats,
             'pendingMessages' => $pendingMessages,
             'studentsNeedUpdate' => $studentsNeedUpdate,
+            'upcomingEvents' => $upcomingEvents,
+            'eventTypes' => $eventTypes,
+            'calendarStats' => $calendarStats,
+            'upcomingEvents2' => $upcomingEvents2 ?? collect(),
+            'eventTypes2' => $eventTypes2 ?? [],
 
         ]);
     }

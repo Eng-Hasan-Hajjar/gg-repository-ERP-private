@@ -747,5 +747,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 
 
+use App\Http\Controllers\CalendarEventController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/calendar',          [CalendarEventController::class, 'index'])->name('calendar.index');
+    Route::post('/calendar',         [CalendarEventController::class, 'store'])->name('calendar.store');
+    Route::delete('/calendar/{event}', [CalendarEventController::class, 'destroy'])->name('calendar.destroy');
+    Route::get('/calendar/upcoming', [CalendarEventController::class, 'upcoming'])->name('calendar.upcoming');
+});
+
+
+
 
 require __DIR__ . '/auth.php';

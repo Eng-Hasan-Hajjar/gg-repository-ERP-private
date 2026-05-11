@@ -47,7 +47,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'delete_students', 'label' => 'حذف طالب', 'module' => 'students'],
 
             ['name' => 'edit_crm_in_student', 'label' => 'تعديل  معلومات crm في ملف الطالب', 'module' => 'students'],
-            
+
 
 
             /*
@@ -214,6 +214,21 @@ class PermissionSeeder extends Seeder
             ['name' => 'view_media_requests', 'label' => ' إدارة طلبات الميديا ', 'module' => 'medias'],
 
 
+
+
+
+            /*
+                |--------------------------------------------------------------------------
+                | التقويم والأحداث
+                |--------------------------------------------------------------------------
+                */
+            ['name' => 'view_calendar', 'label' => 'عرض التقويم والأحداث', 'module' => 'calendar'],
+            ['name' => 'create_events', 'label' => 'إضافة حدث في التقويم', 'module' => 'calendar'],
+            ['name' => 'delete_events', 'label' => 'حذف حدث من التقويم', 'module' => 'calendar'],
+            ['name' => 'manage_calendar', 'label' => 'إدارة التقويم كاملاً', 'module' => 'calendar'],
+
+
+            
         ];
 
         foreach ($permissions as $permission) {

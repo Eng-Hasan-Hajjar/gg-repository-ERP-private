@@ -1483,6 +1483,10 @@ ERP Notifications Style
               </a>
 
 
+              <a href="<?php echo e(route('calendar.index')); ?>" class="nav-link <?php echo e(request()->routeIs('calendar.*') ? 'active' : ''); ?>">
+                <i class="bi bi-calendar3"></i>
+                <span>التقويم</span>
+              </a>
 
               <?php if(auth()->user()?->hasPermission('manage_roles')): ?>
                 <a href="<?php echo e(route('admin.settings.index')); ?>"
@@ -1616,7 +1620,7 @@ ERP Notifications Style
                 document.querySelector('form[action="<?php echo e(route('logout')); ?>"]').submit();
               });
             <?php endif; ?>
-          });
+            });
         })();
       <?php endif; ?>
 
