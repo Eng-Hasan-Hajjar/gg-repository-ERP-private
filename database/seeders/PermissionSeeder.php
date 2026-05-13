@@ -50,6 +50,10 @@ class PermissionSeeder extends Seeder
 
 
 
+                // في قسم الطلاب
+            ['name' => 'view_all_students', 'label' => 'عرض جميع الطلاب من كل الفروع', 'module' => 'students'],
+            ['name' => 'view_branch_students', 'label' => 'عرض طلاب الفرع كاملاً', 'module' => 'students'],
+
             /*
             |--------------------------------------------------------------------------
             | الامتحانات
@@ -228,7 +232,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'manage_calendar', 'label' => 'إدارة التقويم كاملاً', 'module' => 'calendar'],
 
 
-            
+
         ];
 
         foreach ($permissions as $permission) {

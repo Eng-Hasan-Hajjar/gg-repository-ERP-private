@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
 
 
 
-      
+        StudentSeeder::class
            
     ]);
         // User::factory(10)->create();

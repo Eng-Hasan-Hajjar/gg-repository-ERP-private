@@ -2,91 +2,175 @@
 
 namespace Database\Seeders;
 
-use App\Models\{
-    Student, Branch, Diploma,
-    StudentProfile, StudentCrmInfo
-};
+use App\Models\Student;
+use App\Models\StudentProfile;
+use App\Models\Branch;
+use App\Models\Diploma;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 class StudentSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
+        $branch1 = Branch::first();
+        $branch2 = Branch::skip(1)->first() ?? $branch1;
+        $diploma1 = Diploma::first();
+        $diploma2 = Diploma::skip(1)->first() ?? $diploma1;
 
-    /*
-        $branches = Branch::all();
-        $diplomas = Diploma::all();
+        // المستخدم الأول (super_admin) والثاني (موظف عادي)
+        $user1 = User::first();
+        $user2 = User::skip(1)->first() ?? $user1;
 
-        if ($branches->isEmpty()) {
-            $this->command->warn('⚠️ لا يوجد فروع، تم تخطي الطلاب');
-            return;
-        }
-
-        for ($i = 1; $i <= 50; $i++) {
-
-            $firstNames = ['أحمد','محمد','سارة','نور','علي','ريم','ياسر','لينا'];
-            $lastNames  = ['الخطيب','العلي','حسن','عبدالله','المصري','الحموي'];
-
-            $first = collect($firstNames)->random();
-            $last  = collect($lastNames)->random();
-
-            $student = Student::create([
-                'university_id' => 'NMA-' . now()->format('Y') . '-' . Str::upper(Str::random(6)),
-                'first_name' => $first,
-                'last_name'  => $last,
-                'full_name'  => "$first $last",
-              
-                'phone'      => '0096399' . rand(1000000, 9999999),
-                'whatsapp'   => '0096399' . rand(1000000, 9999999),
-                'branch_id'  => $branches->random()->id,
-                'mode'       => rand(0,1) ? 'onsite' : 'online',
-                'status'     => 'waiting',
+        $students = [
+            [
+                'first_name' => 'أحمد',
+                'last_name' => 'محمد الحسن',
+                'full_name' => 'أحمد محمد الحسن',
+                'phone' => '0501111001',
+                'branch_id' => $branch1?->id,
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'mode' => 'onsite',
+                'created_by' => $user1?->id,
+                'diploma_id' => $diploma1?->id,
+            ],
+            [
+                'first_name' => 'سارة',
+                'last_name' => 'عبدالله الزهراني',
+                'full_name' => 'سارة عبدالله الزهراني',
+                'phone' => '0501111002',
+                'branch_id' => $branch1?->id,
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'mode' => 'online',
+                'created_by' => $user1?->id,
+                'diploma_id' => $diploma1?->id,
+            ],
+            [
+                'first_name' => 'محمد',
+                'last_name' => 'علي الغامدي',
+                'full_name' => 'محمد علي الغامدي',
+                'phone' => '0501111003',
+                'branch_id' => $branch1?->id,
+                'status' => 'waiting',
                 'registration_status' => 'pending',
-                'is_confirmed' => true,
-            ]);
+                'mode' => 'onsite',
+                'created_by' => $user1?->id,
+                'diploma_id' => $diploma2?->id,
+            ],
+            [
+                'first_name' => 'فاطمة',
+                'last_name' => 'يوسف العمري',
+                'full_name' => 'فاطمة يوسف العمري',
+                'phone' => '0501111004',
+                'branch_id' => $branch1?->id,
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'mode' => 'online',
+                'created_by' => $user1?->id,
+                'diploma_id' => $diploma2?->id,
+            ],
+            [
+                'first_name' => 'خالد',
+                'last_name' => 'إبراهيم السعدي',
+                'full_name' => 'خالد إبراهيم السعدي',
+                'phone' => '0501111005',
+                'branch_id' => $branch2?->id,
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'mode' => 'onsite',
+                'created_by' => $user1?->id,
+                'diploma_id' => $diploma1?->id,
+            ],
+            [
+                'first_name' => 'نورة',
+                'last_name' => 'سعد القحطاني',
+                'full_name' => 'نورة سعد القحطاني',
+                'phone' => '0501111006',
+                'branch_id' => $branch1?->id,
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'mode' => 'onsite',
+                'created_by' => $user2?->id,
+                'diploma_id' => $diploma1?->id,
+            ],
+            [
+                'first_name' => 'عمر',
+                'last_name' => 'عبدالرحمن الدوسري',
+                'full_name' => 'عمر عبدالرحمن الدوسري',
+                'phone' => '0501111007',
+                'branch_id' => $branch1?->id,
+                'status' => 'withdrawn',
+                'registration_status' => 'confirmed',
+                'mode' => 'online',
+                'created_by' => $user2?->id,
+                'diploma_id' => $diploma2?->id,
+            ],
+            [
+                'first_name' => 'ريم',
+                'last_name' => 'عبدالعزيز الشهري',
+                'full_name' => 'ريم عبدالعزيز الشهري',
+                'phone' => '0501111008',
+                'branch_id' => $branch2?->id,
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'mode' => 'onsite',
+                'created_by' => $user2?->id,
+                'diploma_id' => $diploma1?->id,
+            ],
+            [
+                'first_name' => 'يوسف',
+                'last_name' => 'ناصر المطيري',
+                'full_name' => 'يوسف ناصر المطيري',
+                'phone' => '0501111009',
+                'branch_id' => $branch2?->id,
+                'status' => 'active',
+                'registration_status' => 'confirmed',
+                'mode' => 'online',
+                'created_by' => $user2?->id,
+                'diploma_id' => $diploma2?->id,
+            ],
+            [
+                'first_name' => 'هند',
+                'last_name' => 'سلطان الرشيدي',
+                'full_name' => 'هند سلطان الرشيدي',
+                'phone' => '0501111010',
+                'branch_id' => $branch2?->id,
+                'status' => 'waiting',
+                'registration_status' => 'pending',
+                'mode' => 'onsite',
+                'created_by' => $user2?->id,
+                'diploma_id' => $diploma1?->id,
+            ],
+        ];
+        
 
-            // Profile
-            StudentProfile::create([
+        foreach ($students as $data) {
+            $diplomaId = $data['diploma_id'];
+            unset($data['diploma_id']);
+
+            $data['university_id'] = 'NMA-' . now()->format('Y') . '-' . strtoupper(Str::random(6));
+            $data['is_confirmed'] = $data['registration_status'] === 'confirmed';
+            $data['confirmed_at'] = $data['is_confirmed'] ? now() : null;
+
+            $student = Student::create($data);
+
+            // ربط الدبلومة
+            if ($diplomaId) {
+                $student->diplomas()->attach($diplomaId, [
+                    'is_primary' => true,
+                    'enrolled_at' => now()->toDateString(),
+                    'status' => 'active',
+                ]);
+            }
+
+            // إنشاء Profile
+            $student->profile()->create([
                 'student_id' => $student->id,
                 'arabic_full_name' => $student->full_name,
-                'nationality' => 'Syrian',
-                'birth_date' => now()->subYears(rand(18,30)),
-                'address' => 'حلب',
-                'exam_score' => rand(50, 100),
-                'notes' => 'طالب افتراضي للاختبار',
             ]);
-// CRM
-$sources = ['ad','referral','social','website','expo','other'];
-$stages  = ['new','follow_up','interested','registered','rejected','postponed'];
-
-StudentCrmInfo::create([
-    'student_id' => $student->id,
-    'first_contact_date' => now()->subDays(rand(1,30))->toDateString(), // لأن الحقل date
-    'residence' => 'حلب',
-    'age' => rand(18,30),
-    'organization' => 'Nama Academy',
-    'source' => $sources[array_rand($sources)],     // ✅ قيم enum
-    'stage'  => $stages[array_rand($stages)],       // ✅ قيم enum
-    'need'   => 'يريد التسجيل في دبلومة مناسبة.',  // اختياري (عندك حقل need)
-    'notes'  => 'CRM Auto Seed',
-]);
-
-
-            // Diplomas (pivot)
-            if ($diplomas->isNotEmpty()) {
-                $student->diplomas()->attach(
-                    $diplomas->random()->id,
-                    [
-                        'is_primary' => true,
-                        'enrolled_at' => now(),
-                        'status' => 'active',
-                        'notes' => 'Auto seeded'
-                    ]
-                );
-            }
         }
-
-        $this->command->info('✅ تم إنشاء 50 طالب مع Profile و CRM و Diplomas');*/
     }
 }

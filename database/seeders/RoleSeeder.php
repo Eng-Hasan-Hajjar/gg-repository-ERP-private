@@ -49,5 +49,18 @@ class RoleSeeder extends Seeder
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role['name']], $role);
         }
+
+
+        // دور مدير شؤون الطلاب الكامل
+        Role::firstOrCreate(['name' => 'manager_student_affairs'], [
+            'label' => 'مدير شؤون الطلاب',
+            'description' => 'يرى جميع الطلاب من كل الفروع',
+        ]);
+
+        // دور مدير شؤون طلاب فرع
+        Role::firstOrCreate(['name' => 'manager_branch_students'], [
+            'label' => 'مدير شؤون طلاب الفرع',
+            'description' => 'يرى طلاب فرعه فقط',
+        ]);
     }
 }

@@ -28,15 +28,19 @@
 <form class="card card-body border-0 shadow-sm mb-3" method="GET" action="{{ route('students.index') }}">
   <div class="row g-2">
 
-    @if(!auth()->user()->hasRole('super_admin'))
-      <div class="col-auto">
-        <a href="{{ request()->fullUrlWithQuery(['my_only' => request()->boolean('my_only') ? 0 : 1, 'page' => null]) }}"
-          class="btn fw-bold {{ request()->boolean('my_only') ? 'btn-primary' : 'btn-outline-secondary' }}">
-          <i class="bi bi-person-fill"></i>
-          {{ request()->boolean('my_only') ? 'طلابي فقط ✓' : 'كل الطلاب' }}
-        </a>
-      </div>
-    @endif
+  {{-- يظهر فقط للموظف العادي --}}
+
+@if( !auth()->user()->hasRole('super_admin')
+               && !auth()->user()->hasRole('manager_student_affairs')
+               && !auth()->user()->hasPermission('view_all_students'))
+<div class="col-auto">
+    <a href="{{ request()->fullUrlWithQuery(['my_only' => request()->boolean('my_only') ? 0 : 1, 'page' => null]) }}"
+       class="btn fw-bold {{ request()->boolean('my_only') ? 'btn-primary' : 'btn-outline-secondary' }}">
+        <i class="bi bi-person-fill"></i>
+        {{ request()->boolean('my_only') ? 'طلابي فقط ✓' : 'كل الطلاب' }}
+    </a>
+</div>
+@endif
 
     <div class="col-6 col-md-4">
       <input name="search" value="{{ request('search') }}" class="form-control"

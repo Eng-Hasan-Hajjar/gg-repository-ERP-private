@@ -23,13 +23,13 @@ class Student extends Model
     'registration_status',
     'is_confirmed',
     'confirmed_at',
-    'certificate_agreement',  
+    'certificate_agreement',
   ];
 
   protected $casts = [
     'is_confirmed' => 'boolean',
     'confirmed_at' => 'datetime',
-   
+
   ];
 
   public function branch()
@@ -108,7 +108,7 @@ class Student extends Model
 
   public function paymentPlans()
   {
-      return $this->hasMany(\App\Models\PaymentPlan::class);
+    return $this->hasMany(\App\Models\PaymentPlan::class);
   }
 
 
@@ -119,39 +119,44 @@ class Student extends Model
 protected static function booted()
 {
     static::addGlobalScope('branch', function ($query) {
-
-        if (!auth()->check()) {
-            return;
-        }
+        if (!auth()->check()) return;
 
         $user = auth()->user();
 
-        // السوبر أدمن يرى كل العملاء
-        if ($user->hasRole('super_admin')) {
+        // ✅ يرى الكل
+        if ($user->hasRole('super_admin')
+            || $user->hasRole('manager_student_affairs')
+            || $user->hasPermission('view_all_students')) {
             return;
         }
 
+        // ✅ ابحث عن employee مرتبط بهذا المستخدم تحديداً
         $employee = \App\Models\Employee::withoutGlobalScopes()
-            ->where('user_id', $user->id)
+            ->where('user_id', $user->id)  // يجب أن يكون user_id = id المستخدم
+            ->whereNotNull('user_id')       // تأكد أنه مرتبط فعلاً
             ->first();
 
-        if (!$employee) {
+        $branchIds = collect([
+            $employee?->branch_id,
+            $employee?->secondary_branch_id,
+        ])->filter()->unique()->values()->all();
+
+        // ✅ يرى فرعه فقط
+        if ($user->hasRole('manager_branch_students')
+            || $user->hasPermission('view_branch_students')) {
+            if (!empty($branchIds)) {
+                $query->whereIn('branch_id', $branchIds);
+            } else {
+                $query->whereRaw('1 = 0'); // لا يرى أحداً إذا لم يكن مرتبطاً
+            }
             return;
         }
 
-        $branchIds = collect([
-            $employee->branch_id,
-            $employee->secondary_branch_id
-        ])
-        ->filter()
-        ->unique()
-        ->values()
-        ->all();
-
+        // ✅ موظف عادي — فرعه + طلابه هو فقط
         if (!empty($branchIds)) {
             $query->whereIn('branch_id', $branchIds);
         }
-
+        $query->where('created_by', $user->id);
     });
 }
 
