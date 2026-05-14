@@ -182,7 +182,7 @@
           </td>
           <td class="text-end">
 
-            @if(auth()->user()?->hasPermission('view_student_financials') && !$s->is_readonly)
+            @if(auth()->user()?->hasPermission('view_student_financials'))
               <button class="btn btn-sm btn-outline-success"
                 onclick="showFinancial({{ $s->id }}, '{{ addslashes($s->full_name) }}')" title="التفاصيل المالية">
                 <i class="bi bi-cash-coin"></i>
@@ -194,7 +194,7 @@
               <i class="bi bi-journal-check"></i>
             </button>
 
-            @if(auth()->user()?->hasPermission('edit_students') && !$s->is_readonly)
+            @if(auth()->user()?->hasPermission('edit_students') )
               <a class="btn btn-sm btn-outline-primary" href="{{ route('students.show', $s) }}">
                 <i class="bi bi-eye"></i>
               </a>

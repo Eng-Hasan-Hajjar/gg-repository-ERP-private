@@ -186,7 +186,7 @@
           </td>
           <td class="text-end">
 
-            <?php if(auth()->user()?->hasPermission('view_student_financials') && !$s->is_readonly): ?>
+            <?php if(auth()->user()?->hasPermission('view_student_financials')): ?>
               <button class="btn btn-sm btn-outline-success"
                 onclick="showFinancial(<?php echo e($s->id); ?>, '<?php echo e(addslashes($s->full_name)); ?>')" title="التفاصيل المالية">
                 <i class="bi bi-cash-coin"></i>
@@ -198,7 +198,7 @@
               <i class="bi bi-journal-check"></i>
             </button>
 
-            <?php if(auth()->user()?->hasPermission('edit_students') && !$s->is_readonly): ?>
+            <?php if(auth()->user()?->hasPermission('edit_students') ): ?>
               <a class="btn btn-sm btn-outline-primary" href="<?php echo e(route('students.show', $s)); ?>">
                 <i class="bi bi-eye"></i>
               </a>

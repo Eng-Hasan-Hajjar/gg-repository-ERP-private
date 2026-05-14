@@ -24,6 +24,7 @@ class Student extends Model
     'is_confirmed',
     'confirmed_at',
     'certificate_agreement',
+    'created_by',
   ];
 
   protected $casts = [
