@@ -17,11 +17,14 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
-        // ✅ الـ GlobalScope يُطبَّق تلقائياً — لا تكرر فلتر الفرع هنا
         $q = Student::query()->with(['branch', 'diplomas', 'profile', 'crmInfo']);
         $user = auth()->user();
 
-        // فقط فلاتر المستخدم الإضافية
+        // ✅ فلتر "طلابي فقط" — يُضاف فوق الـ GlobalScope
+        if ($request->boolean('my_only')) {
+            $q->where('created_by', $user->id);
+        }
+
         if ($request->filled('branch_id')) {
             $q->where('branch_id', $request->branch_id);
         }
@@ -54,6 +57,13 @@ class StudentController extends Controller
             $q->where('updated_at', '<=', now()->subDays(7))->where('status', 'active');
         }
 
+        // ✅ إحصائيات سريعة — نفس الـ query بدون pagination
+        $statsQuery = clone $q;
+        $totalCount = (clone $statsQuery)->count();
+        $confirmedCount = (clone $statsQuery)->where('registration_status', 'confirmed')->count();
+        $pendingCount = (clone $statsQuery)->where('registration_status', 'pending')->count();
+        $myCount = (clone $statsQuery)->where('created_by', $user->id)->count();
+
         $students = $q->latest()->paginate(15)->withQueryString();
 
         $labels = $this->studentArabicLabels();
@@ -70,112 +80,30 @@ class StudentController extends Controller
             return $s;
         });
 
+
+        $showMyOnly = !$user->hasRole('super_admin')
+           && !$user->hasRole('manager_student_affairs')
+           && !$user->hasPermission('view_all_students');
+
+
+
         return view('students.index', [
             'students' => $students,
-            'branches' => Branch::orderBy('name')->get(),
-            'diplomas' => Diploma::orderBy('name')->get(),
+            'branches' => \App\Models\Branch::orderBy('name')->get(),
+            'diplomas' => \App\Models\Diploma::orderBy('name')->get(),
             'labels' => $labels,
             'statusOptions' => $labels['student_status'],
             'registrationOptions' => $labels['registration_status'],
             'modeOptions' => $labels['mode'],
+            // ✅ إحصائيات
+            'totalCount' => $totalCount,
+            'confirmedCount' => $confirmedCount,
+            'pendingCount' => $pendingCount,
+            'myCount' => $myCount,
+              'showMyOnly'          => $showMyOnly,
         ]);
     }
-    /*
-        public function index(Request $request)
-        {
-            $q = Student::query()->with(['branch', 'diplomas', 'profile', 'crmInfo']);
 
-            $user = auth()->user();
-
-            // 🔒 تحديد الفروع المسموحة
-            if (!$user->hasRole('super_admin')) {
-
-                $employee = $user->employee;
-
-                $branchIds = collect([
-                    $employee?->branch_id,
-                    $employee?->secondary_branch_id
-                ])->filter()->unique()->values()->all();
-
-                if (!empty($branchIds)) {
-                    $q->whereIn('branch_id', $branchIds);
-                }
-            }
-
-            // 🔎 فلاتر
-            // ✅ جديد: فلتر "طلابي فقط"
-            if ($request->boolean('my_only')) {
-                $q->where('created_by', auth()->id());
-            }
-
-            if ($request->filled('branch_id')) {
-                $q->where('branch_id', $request->branch_id);
-            }
-
-            if ($request->filled('diploma_id')) {
-                $did = $request->diploma_id;
-                $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $did));
-            }
-
-            if ($request->filled('status')) {
-                $q->where('status', $request->status);
-            }
-
-            if ($request->filled('registration_status')) {
-                $q->where('registration_status', $request->registration_status);
-            }
-
-            if ($request->filled('search')) {
-                $s = trim($request->search);
-                $q->where(function ($x) use ($s) {
-                    $x->where('full_name', 'like', "%$s%")
-                        ->orWhere('university_id', 'like', "%$s%")
-                        ->orWhere('phone', 'like', "%$s%");
-                });
-            }
-
-            // فلتر رسائل معلقة
-            if ($request->filled('has_message')) {
-                $q->whereHas('profile', function ($p) {
-                    $p->whereNotNull('message_to_send')
-                        ->where('message_to_send', '!=', '');
-                });
-            }
-
-            // فلتر طلاب يحتاجون تحديث
-            if ($request->filled('needs_update')) {
-                $q->where('updated_at', '<=', now()->subDays(7))
-                    ->where('status', 'active');
-            }
-
-            $students = $q->latest()->paginate(15)->withQueryString();
-
-            // 🧠 تعريب
-            $labels = $this->studentArabicLabels();
-
-            $students->getCollection()->transform(function ($s) use ($labels) {
-                $s->status_ar = $labels['student_status'][$s->status] ?? '-';
-                $s->registration_ar = $labels['registration_status'][$s->registration_status] ?? '-';
-                $s->mode_ar = $labels['mode'][$s->mode] ?? '-';
-                return $s;
-            });
-
-            return view('students.index', [
-                'students' => $students,
-                'branches' => Branch::orderBy('name')->get(),
-                'diplomas' => Diploma::orderBy('name')->get(),
-
-                'labels' => $labels,
-                'statusOptions' => $labels['student_status'],
-                'registrationOptions' => $labels['registration_status'],
-                'modeOptions' => $labels['mode'],
-
-
-
-            ]);
-        }
-
-        */
     public function create()
     {
         $labels = $this->studentArabicLabels();
