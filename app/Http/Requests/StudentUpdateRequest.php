@@ -24,8 +24,7 @@ class StudentUpdateRequest extends FormRequest
             'mode'        => 'required|in:onsite,online',
             'status'      => 'required|string',
 
-            'certificate_agreement' => 'sometimes|boolean',
-
+            'certificate_agreement' => 'nullable', 
             // ── الدبلومات ──
             'diploma_ids'   => 'nullable|array',
             'diploma_ids.*' => 'exists:diplomas,id',
