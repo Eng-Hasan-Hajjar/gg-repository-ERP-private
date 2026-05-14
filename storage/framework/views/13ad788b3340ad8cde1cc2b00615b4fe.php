@@ -324,11 +324,7 @@
                 <div class="row g-2 p-3">
                   <?php $__currentLoopData = [
                     ['info',             'ملف المعلومات',   'btn-outline-primary',  'bi-file-earmark-text'],
-                    ['identity',         'ملف الهوية',      'btn-outline-dark',     'bi-person-badge'],
-                    ['attendance',       'شهادة الحضور',    'btn-outline-success',  'bi-file-earmark-check'],
-                    ['certificate_pdf',  'الشهادة PDF',     'btn-outline-danger',   'bi-file-earmark-pdf'],
-                    ['certificate_card', 'الشهادة (كرتون)', 'btn-outline-primary',  'bi-file-earmark-image'],
-                  ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$key, $label, $btnClass, $icon]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$key, $label, $btnClass, $icon]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-12 col-md-4">
                       <div class="kv">
                         <div class="k"><?php echo e($label); ?></div>

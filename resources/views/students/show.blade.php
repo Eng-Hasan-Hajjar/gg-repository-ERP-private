@@ -323,11 +323,7 @@
                 <div class="row g-2 p-3">
                   @foreach([
                     ['info',             'ملف المعلومات',   'btn-outline-primary',  'bi-file-earmark-text'],
-                    ['identity',         'ملف الهوية',      'btn-outline-dark',     'bi-person-badge'],
-                    ['attendance',       'شهادة الحضور',    'btn-outline-success',  'bi-file-earmark-check'],
-                    ['certificate_pdf',  'الشهادة PDF',     'btn-outline-danger',   'bi-file-earmark-pdf'],
-                    ['certificate_card', 'الشهادة (كرتون)', 'btn-outline-primary',  'bi-file-earmark-image'],
-                  ] as [$key, $label, $btnClass, $icon])
+                    ] as [$key, $label, $btnClass, $icon])
                     <div class="col-12 col-md-4">
                       <div class="kv">
                         <div class="k">{{ $label }}</div>
