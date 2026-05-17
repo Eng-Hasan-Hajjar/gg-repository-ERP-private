@@ -36,6 +36,9 @@ use App\Http\Controllers\AssetRequestController;
 use App\Http\Controllers\StudentReportController;
 
 
+use App\Http\Controllers\AssetReportController;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -148,6 +151,27 @@ Route::middleware(['auth'])->group(function () {
     // Assets
     Route::get('assets/export-excel', [AssetController::class, 'exportExcel'])
         ->name('assets.export.excel');
+
+
+
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('assets/report', [AssetReportController::class, 'index'])->name('assets.report');
+        Route::get('assets/report/export', [AssetReportController::class, 'export'])->name('assets.report.export');
+    });
+
+
+    // ✅ هذا الترتيب مهم جداً
+    Route::get('assets/export-excel', [AssetController::class, 'exportExcel'])
+        ->name('assets.export.excel');
+
+    Route::get('assets/report', [AssetReportController::class, 'index'])
+        ->name('assets.report');
+
+    Route::get('assets/report/export', [AssetReportController::class, 'export'])
+        ->name('assets.report.export');
+
+
 
     Route::resource('assets', AssetController::class);
 
@@ -566,8 +590,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('media.update');
 
 
-        Route::delete('/media-requests/{media}', [MediaRequestController::class, 'destroy'])
-    ->name('media.destroy');
+    Route::delete('/media-requests/{media}', [MediaRequestController::class, 'destroy'])
+        ->name('media.destroy');
     // حذف المسودات التجريبية
     Route::delete('/media-requests/cleanup-drafts', [MediaRequestController::class, 'cleanupDrafts'])
         ->name('media.cleanup');
@@ -718,6 +742,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 // في routes/web.php
 Route::middleware(['auth'])->group(function () {
 
+    Route::post(
+        'asset-requests/{assetRequest}/transfer',
+        [AssetRequestController::class, 'transferToAsset']
+    )->name('asset-requests.transfer');
+
+
     Route::get('/asset-requests', [AssetRequestController::class, 'index'])->name('asset-requests.index');
     Route::get('/asset-requests/create', [AssetRequestController::class, 'create'])->name('asset-requests.create');
     Route::post('/asset-requests', [AssetRequestController::class, 'store'])->name('asset-requests.store');
@@ -750,11 +780,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 use App\Http\Controllers\CalendarEventController;
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/calendar',          [CalendarEventController::class, 'index'])->name('calendar.index');
-    Route::post('/calendar',         [CalendarEventController::class, 'store'])->name('calendar.store');
+    Route::get('/calendar', [CalendarEventController::class, 'index'])->name('calendar.index');
+    Route::post('/calendar', [CalendarEventController::class, 'store'])->name('calendar.store');
     Route::delete('/calendar/{event}', [CalendarEventController::class, 'destroy'])->name('calendar.destroy');
     Route::get('/calendar/upcoming', [CalendarEventController::class, 'upcoming'])->name('calendar.upcoming');
 });
+
 
 
 

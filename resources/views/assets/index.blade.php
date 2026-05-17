@@ -20,24 +20,31 @@
       @endif
 
 
- {{-- في قسم d-flex gap-2 flex-wrap --}}
-@if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
-  <a href="{{ route('asset-requests.index') }}" class="btn btn-outline-warning rounded-pill fw-bold px-4">
-    <i class="bi bi-inbox"></i> إدارة الطلبات
-    @php
-      $pendingCount = \App\Models\AssetRequest::where('status', 'pending')->count();
-    @endphp
-    @if($pendingCount > 0)
-      <span class="badge bg-danger ms-1">{{ $pendingCount }}</span>
-    @endif
-  </a>
-@endif
+      {{-- في قسم d-flex gap-2 flex-wrap --}}
+      @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
+        <a href="{{ route('asset-requests.index') }}" class="btn btn-outline-warning rounded-pill fw-bold px-4">
+          <i class="bi bi-inbox"></i> إدارة الطلبات
+          @php
+            $pendingCount = \App\Models\AssetRequest::where('status', 'pending')->count();
+          @endphp
+          @if($pendingCount > 0)
+            <span class="badge bg-danger ms-1">{{ $pendingCount }}</span>
+          @endif
+        </a>
+      @endif
 
-@if(auth()->user()?->hasPermission('submit_asset_request'))
-  <a href="{{ route('asset-requests.create') }}" class="btn btn-warning rounded-pill fw-bold px-4">
-    <i class="bi bi-send-plus"></i> تقديم طلب
-  </a>
-@endif
+      {{-- في قسم d-flex gap-2 flex-wrap في الـ header --}}
+      @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
+        <a href="{{ route('assets.report') }}" class="btn btn-outline-primary rounded-pill fw-bold px-4">
+          <i class="bi bi-bar-chart-line"></i> التقرير المالي
+        </a>
+      @endif
+
+      @if(auth()->user()?->hasPermission('submit_asset_request'))
+        <a href="{{ route('asset-requests.create') }}" class="btn btn-warning rounded-pill fw-bold px-4">
+          <i class="bi bi-send-plus"></i> تقديم طلب
+        </a>
+      @endif
 
       <a href="{{ route('assets.export.excel') . '?' . http_build_query(request()->all()) }}"
         class="btn btn-success rounded-pill fw-bold px-4">
@@ -49,36 +56,36 @@
   </div>
 
 
-  
+
 
   <div class="row g-2 mb-3">
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-0">إجمالي الأصول (القطع)</h6>
-                        <h3 class="mb-0 mt-1">{{ $assets->sum('quantity') }}</h3>
-                    </div>
-                    <i class="bi bi-box-seam fs-1 opacity-50"></i>
-                </div>
+      <div class="card border-0 shadow-sm bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-0">إجمالي الأصول (القطع)</h6>
+              <h3 class="mb-0 mt-1">{{ $assets->sum('quantity') }}</h3>
             </div>
+            <i class="bi bi-box-seam fs-1 opacity-50"></i>
+          </div>
         </div>
+      </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-0">إجمالي الأصول (الأنواع)</h6>
-                        <h3 class="mb-0 mt-1">{{ $assets->count() }}</h3>
-                    </div>
-                    <i class="bi bi-grid-3x3-gap-fill fs-1 opacity-50"></i>
-                </div>
+      <div class="card border-0 shadow-sm bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-0">إجمالي الأصول (الأنواع)</h6>
+              <h3 class="mb-0 mt-1">{{ $assets->count() }}</h3>
             </div>
+            <i class="bi bi-grid-3x3-gap-fill fs-1 opacity-50"></i>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
 
 

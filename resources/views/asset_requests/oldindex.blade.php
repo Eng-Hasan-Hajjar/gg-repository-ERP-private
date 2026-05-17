@@ -8,6 +8,8 @@
       <h4 class="fw-bold mb-0">طلبات اللوجستيات</h4>
       <div class="text-muted small">طلبات الشراء والإصلاح — مرتبة حسب الأولوية</div>
     </div>
+
+
     @if(auth()->user()?->hasPermission('submit_asset_request'))
       <a href="{{ route('asset-requests.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
         <i class="bi bi-plus-circle"></i> تقديم طلب
@@ -16,7 +18,7 @@
   </div>
 
   {{-- فلاتر --}}
-  <form class="card border-0 shadow-sm mb-3" method="GET">
+  <form class="card border-0 shadow-sm mb-3">
     <div class="card-body">
       <div class="row g-2">
         <div class="col-6 col-md-3">
@@ -25,7 +27,6 @@
             <option value="pending" @selected(request('status') == 'pending')>قيد المراجعة</option>
             <option value="approved" @selected(request('status') == 'approved')>مقبول</option>
             <option value="rejected" @selected(request('status') == 'rejected')>مرفوض</option>
-            <option value="transferred" @selected(request('status') == 'transferred')>مُرحَّل</option>
           </select>
         </div>
         <div class="col-6 col-md-3">
@@ -35,6 +36,7 @@
             <option value="repair" @selected(request('type') == 'repair')>إصلاح</option>
           </select>
         </div>
+        {{-- ✅ فلتر الأولوية --}}
         <div class="col-6 col-md-3">
           <select name="priority" class="form-select">
             <option value="">الأولوية (الكل)</option>
@@ -63,7 +65,7 @@
             <th>#</th>
             <th>العنوان</th>
             <th>النوع</th>
-            <th>الأولوية</th>
+            <th>الأولوية</th> {{-- ✅ عمود جديد --}}
             <th>مقدم الطلب</th>
             <th>الفرع</th>
             <th>الأصل المرتبط</th>
@@ -92,12 +94,15 @@
                   {{ $r->type_label }}
                 </span>
               </td>
+
+              {{-- ✅ عمود الأولوية --}}
               <td>
                 <span class="badge bg-{{ $r->priority_color }}">
                   <i class="bi {{ $r->priority_icon }} me-1"></i>
                   {{ $r->priority_label }}
                 </span>
               </td>
+
               <td class="small">{{ $r->user->name ?? '-' }}</td>
               <td class="small">{{ $r->branch->name ?? '-' }}</td>
               <td class="small text-muted">{{ $r->asset->name ?? '—' }}</td>
@@ -108,7 +113,6 @@
               <td class="text-end">
                 <div class="d-flex gap-1 justify-content-end flex-wrap">
 
-                  {{-- ✅ قبول الطلب --}}
                   @if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending')
                     <form method="POST" action="{{ route('asset-requests.approve', $r) }}">
                       @csrf
@@ -123,46 +127,93 @@
                     </button>
                   @endif
 
-                  {{-- ✅ ترحيل إلى أصل — يظهر فقط للمقبول --}}
-                  @if($r->status === 'approved' && auth()->user()?->hasPermission('manage_assets'))
-                    <button class="btn btn-sm btn-namaa" data-bs-toggle="modal" data-bs-target="#transferModal{{ $r->id }}">
-                      <i class="bi bi-box-arrow-in-down"></i> ترحيل
-                    </button>
-                  @endif
-
-                  {{-- ✅ حذف الطلب --}}
-                  @if(
-                      $r->status !== 'transferred' &&
-                      (auth()->user()?->hasPermission('manage_assets') || $r->created_by === auth()->id())
-                    )
+                  @if($r->status !== 'transferred' && (auth()->user()->hasPermission('manage_assets') || $r->created_by === auth()->id()))
                     <form method="POST" action="{{ route('asset-requests.destroy', $r) }}" class="d-inline"
                       onsubmit="return confirm('هل أنت متأكد من حذف هذا الطلب؟')">
                       @csrf @method('DELETE')
                       <button class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i> حذف
+                      </button>
+                    </form>
+                  @endif
+
+                  @if($r->user_id === auth()->id() && $r->status === 'pending')
+                    <form method="POST" action="{{ route('asset-requests.destroy', $r) }}"
+                      onsubmit="return confirm('حذف الطلب؟')">
+                      @csrf @method('DELETE')
+                      <button class="btn btn-sm btn-outline-secondary">
                         <i class="bi bi-trash"></i>
                       </button>
                     </form>
                   @endif
 
-                  {{-- ✅ ملاحظة الرفض --}}
                   @if($r->status === 'rejected' && $r->manager_notes)
                     <button class="btn btn-sm btn-outline-dark" data-bs-toggle="tooltip" title="{{ $r->manager_notes }}">
                       <i class="bi bi-chat-text"></i>
                     </button>
                   @endif
 
-                  {{-- ✅ عرض الأصل بعد الترحيل --}}
-                  @if($r->status === 'transferred' && $r->transferred_to)
-                    <a href="{{ route('assets.show', $r->transferred_to) }}" class="btn btn-sm btn-outline-success">
-                      <i class="bi bi-box-seam"></i> عرض الأصل
-                    </a>
-                  @endif
+
+                  
+    @if($r->status === 'approved' && auth()->user()->hasPermission('manage_assets'))
+      <button class="btn btn-sm btn-namaa" data-bs-toggle="modal" data-bs-target="#transferModal{{ $r->id }}">
+        <i class="bi bi-box-arrow-in-down"></i> ترحيل إلى أصل
+      </button>
+
+      {{-- Modal الترحيل --}}
+      <div class="modal fade" id="transferModal{{ $r->id }}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold">
+                <i class="bi bi-box-seam"></i> ترحيل إلى أصل — {{ $r->title }}
+              </h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ route('asset-requests.transfer', $r) }}">
+              @csrf
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">اسم الأصل <span class="text-danger">*</span></label>
+                  <input name="asset_name" class="form-control" value="{{ $r->title }}" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">الرقم التسلسلي</label>
+                  <input name="serial_number" class="form-control" placeholder="اختياري">
+                </div>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label fw-bold">تاريخ الشراء</label>
+                    <input name="purchase_date" type="date" class="form-control">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-bold">سعر الشراء</label>
+                    <input name="purchase_price" type="number" step="0.01" class="form-control" placeholder="0.00">
+                  </div>
+                </div>
+                <div class="mb-3 mt-2">
+                  <label class="form-label fw-bold">ملاحظات</label>
+                  <textarea name="notes" class="form-control" rows="2"></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" class="btn btn-namaa fw-bold">
+                  <i class="bi bi-check2-circle"></i> تأكيد الترحيل
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    @endif
+
+
 
                 </div>
               </td>
             </tr>
 
-            {{-- ✅ Modal الرفض --}}
             @if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending')
               <div class="modal fade" id="rejectModal{{ $r->id }}" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
@@ -188,69 +239,6 @@
               </div>
             @endif
 
-            {{-- ✅ Modal الترحيل --}}
-            @if($r->status === 'approved' && auth()->user()?->hasPermission('manage_assets'))
-              <div class="modal fade" id="transferModal{{ $r->id }}" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title fw-bold">
-                        <i class="bi bi-box-seam"></i> ترحيل إلى أصل — {{ $r->title }}
-                      </h5>
-                      <button class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form method="POST" action="{{ route('asset-requests.transfer', $r) }}">
-                      @csrf
-                      <div class="modal-body">
-                        <div class="mb-3">
-                          <label class="form-label fw-bold">
-                            اسم الأصل <span class="text-danger">*</span>
-                          </label>
-                          <input name="asset_name" class="form-control" value="{{ $r->title }}" required>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label fw-bold">الرقم التسلسلي</label>
-                          <input name="serial_number" class="form-control" placeholder="اختياري">
-                        </div>
-                        <div class="row g-2">
-                          <div class="col-6">
-                            <label class="form-label fw-bold">تاريخ الشراء</label>
-                            <input name="purchase_date" type="date" class="form-control">
-                          </div>
-                          <div class="col-4">
-                            <label class="form-label fw-bold">سعر الشراء</label>
-                            <input name="purchase_cost" type="number" step="0.01" class="form-control" placeholder="0.00">
-                          </div>
-                          <div class="col-2">
-                            <label class="form-label fw-bold">العملة</label>
-                            <select name="currency" class="form-select">
-                              <option value="USD">USD</option>
-                              <option value="EUR">EUR</option>
-                              <option value="TRY">TRY</option>
-                              <option value="GBP">GBP</option>
-                              <option value="SAR">SAR</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        
-                        <div class="mb-3 mt-2">
-                          <label class="form-label fw-bold">ملاحظات</label>
-                          <textarea name="notes" class="form-control" rows="2"></textarea>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                        <button type="submit" class="btn btn-namaa fw-bold">
-                          <i class="bi bi-check2-circle"></i> تأكيد الترحيل
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            @endif
-
           @empty
             <tr>
               <td colspan="10" class="text-center text-muted py-4">
@@ -266,6 +254,7 @@
 
   <div class="mt-3">{{ $requests->links() }}</div>
 
+  {{-- تفعيل Tooltips --}}
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       document.querySelectorAll('[data-bs-toggle="tooltip"]')

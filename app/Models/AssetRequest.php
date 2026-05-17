@@ -8,13 +8,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AssetRequest extends Model
 {
     protected $fillable = [
-        'user_id', 'branch_id', 'asset_id',
-        'type', 'priority', 'title', 'description',
-        'status', 'manager_notes', 'reviewed_by', 'reviewed_at',
+        'user_id',
+        'branch_id',
+        'asset_id',
+        'type',
+        'priority',
+        'title',
+        'description',
+        'status',
+        'manager_notes',
+        'reviewed_by',
+        'reviewed_at',
+
+        'transferred_to',
+        'transferred_by',
+        'transferred_at',
+        'approved_by',
+        'approved_at',
+
     ];
+
 
     protected $casts = [
         'reviewed_at' => 'datetime',
+        'transferred_at' => 'datetime', // ✅
+        'approved_at' => 'datetime', // ✅
     ];
 
     public function user(): BelongsTo
@@ -40,20 +58,22 @@ class AssetRequest extends Model
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
-            'pending'  => 'قيد المراجعة',
+            'pending' => 'قيد المراجعة',
             'approved' => 'مقبول',
             'rejected' => 'مرفوض',
-            default    => $this->status,
+             'transferred' => 'مُرحَّل',
+            default => $this->status,
         };
     }
 
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'pending'  => 'warning',
+            'pending' => 'warning',
             'approved' => 'success',
             'rejected' => 'danger',
-            default    => 'secondary',
+            'transferred' => 'primary',
+            default => 'secondary',
         };
     }
 
@@ -61,38 +81,38 @@ class AssetRequest extends Model
     {
         return match ($this->type) {
             'purchase' => 'شراء',
-            'repair'   => 'إصلاح',
-            default    => $this->type,
+            'repair' => 'إصلاح',
+            default => $this->type,
         };
     }
 
     public function getPriorityLabelAttribute(): string
     {
         return match ($this->priority) {
-            'low'    => 'منخفضة',
+            'low' => 'منخفضة',
             'normal' => 'عادية',
             'urgent' => 'عاجل',
-            default  => $this->priority,
+            default => $this->priority,
         };
     }
 
     public function getPriorityColorAttribute(): string
     {
         return match ($this->priority) {
-            'low'    => 'secondary',
+            'low' => 'secondary',
             'normal' => 'info',
             'urgent' => 'danger',
-            default  => 'secondary',
+            default => 'secondary',
         };
     }
 
     public function getPriorityIconAttribute(): string
     {
         return match ($this->priority) {
-            'low'    => 'bi-arrow-down-circle',
+            'low' => 'bi-arrow-down-circle',
             'normal' => 'bi-dash-circle',
             'urgent' => 'bi-exclamation-circle-fill',
-            default  => 'bi-dash-circle',
+            default => 'bi-dash-circle',
         };
     }
 }

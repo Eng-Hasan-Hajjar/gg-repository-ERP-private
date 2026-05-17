@@ -56,12 +56,19 @@
         <div class="card-body">
           <h6 class="fw-bold mb-3">صورة الأصل</h6>
 
-          @if($asset->photo_path)
-            <img src="{{ asset('storage/' . $asset->photo_path) }}" class="w-100 border"
-              style="border-radius:16px;object-fit:cover;max-height:320px">
+          {{-- ✅ photo_path وليس image_path --}}
+          @if($asset->photo_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($asset->photo_path))
+            <img src="{{ Storage::url($asset->photo_path) }}" class="img-fluid rounded"
+              style="max-height:250px; object-fit:cover; width:100%;">
           @else
-            <div class="text-muted">لا يوجد صورة.</div>
+            <div class="bg-light rounded d-flex flex-column align-items-center justify-content-center"
+              style="height:150px;">
+              <i class="bi bi-image text-muted fs-1"></i>
+              <span class="text-muted small mt-2">لا توجد صورة</span>
+            </div>
           @endif
+
+          
         </div>
       </div>
     </div>
