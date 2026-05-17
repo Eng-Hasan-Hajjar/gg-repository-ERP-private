@@ -50,7 +50,7 @@ class PermissionSeeder extends Seeder
 
 
 
-                // في قسم الطلاب
+            // في قسم الطلاب
             ['name' => 'view_all_students', 'label' => 'عرض جميع الطلاب من كل الفروع', 'module' => 'students'],
             ['name' => 'view_branch_students', 'label' => 'عرض طلاب الفرع كاملاً', 'module' => 'students'],
 
@@ -211,6 +211,9 @@ class PermissionSeeder extends Seeder
 
 
 
+                // في قسم الدبلومات
+            ['name' => 'view_all_diplomas', 'label' => 'عرض جميع الدبلومات من كل الفروع', 'module' => 'diplomas'],
+            ['name' => 'view_branch_diplomas', 'label' => 'عرض دبلومات الفرع فقط', 'module' => 'diplomas'],
 
             ['name' => 'view_program_management', 'label' => ' إدارة البرامج ', 'module' => 'programs'],
 

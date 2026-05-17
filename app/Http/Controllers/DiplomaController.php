@@ -13,14 +13,15 @@ class DiplomaController extends Controller
 {
     public function index(Request $request)
     {
+        // ✅ GlobalScope يُطبَّق تلقائياً
         $q = Diploma::with('branch');
 
         if ($request->filled('search')) {
             $s = $request->search;
             $q->where(function ($x) use ($s) {
                 $x->where('name', 'like', "%$s%")
-                  ->orWhere('code', 'like', "%$s%")
-                  ->orWhere('field', 'like', "%$s%");
+                    ->orWhere('code', 'like', "%$s%")
+                    ->orWhere('field', 'like', "%$s%");
             });
         }
 
@@ -36,7 +37,23 @@ class DiplomaController extends Controller
             $q->where('branch_id', $request->branch_id);
         }
 
-        $branches = Branch::orderBy('name')->get();
+        // ✅ فروع الفلتر — فقط الفروع التي يملك صلاحية رؤيتها
+        $user = auth()->user();
+        if ($user->hasRole('super_admin') || $user->hasPermission('view_all_diplomas')) {
+            $branches = Branch::orderBy('name')->get();
+        } else {
+            $employee = \App\Models\Employee::withoutGlobalScopes()
+                ->where('user_id', $user->id)
+                ->whereNotNull('user_id')
+                ->first();
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id,
+            ])->filter()->unique()->values()->all();
+
+            $branches = Branch::whereIn('id', $branchIds)->orderBy('name')->get();
+        }
 
         return view('diplomas.index', [
             'diplomas' => $q->latest()->paginate(15)->withQueryString(),
@@ -44,11 +61,11 @@ class DiplomaController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        $branches = Branch::orderBy('name')->get();
-        return view('diplomas.create', compact('branches'));
-    }
+ public function create()
+{
+    $branches = $this->getAllowedBranches();
+    return view('diplomas.create', compact('branches'));
+}
 
     public function store(DiplomaStoreRequest $request)
     {
@@ -70,11 +87,11 @@ class DiplomaController extends Controller
         return view('diplomas.show', compact('diploma'));
     }
 
-    public function edit(Diploma $diploma)
-    {
-        $branches = Branch::orderBy('name')->get();
-        return view('diplomas.edit', compact('diploma', 'branches'));
-    }
+   public function edit(Diploma $diploma)
+{
+    $branches = $this->getAllowedBranches();
+    return view('diplomas.edit', compact('diploma', 'branches'));
+}
 
     public function update(DiplomaUpdateRequest $request, Diploma $diploma)
     {
@@ -120,4 +137,30 @@ class DiplomaController extends Controller
         $diploma->update(['is_active' => !$diploma->is_active]);
         return back()->with('success', 'تم تحديث حالة الدبلومة.');
     }
+
+
+
+// ✅ helper خاص
+private function getAllowedBranches()
+{
+    $user = auth()->user();
+
+    if ($user->hasRole('super_admin') || $user->hasPermission('view_all_diplomas')) {
+        return Branch::orderBy('name')->get();
+    }
+
+    $employee = \App\Models\Employee::withoutGlobalScopes()
+        ->where('user_id', $user->id)
+        ->whereNotNull('user_id')
+        ->first();
+
+    $branchIds = collect([
+        $employee?->branch_id,
+        $employee?->secondary_branch_id,
+    ])->filter()->unique()->values()->all();
+
+    return Branch::whereIn('id', $branchIds)->orderBy('name')->get();
+}
+
+
 }

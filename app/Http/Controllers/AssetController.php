@@ -13,32 +13,33 @@ use Illuminate\Support\Str;
 
 class AssetController extends Controller
 {
-    public function index(Request $request)
-    {
-        $q = Asset::query()->with(['branch', 'category']);
+public function index(Request $request)
+{
+    $q = Asset::query()->with(['branch', 'category']);
 
-        if ($request->filled('branch_id'))
-            $q->where('branch_id', $request->branch_id);
-        if ($request->filled('condition'))
-            $q->where('condition', $request->condition);
-        if ($request->filled('asset_category_id'))
-            $q->where('asset_category_id', $request->asset_category_id);
+    if ($request->filled('branch_id'))
+        $q->where('branch_id', $request->branch_id);
+    if ($request->filled('condition'))
+        $q->where('condition', $request->condition);
+    if ($request->filled('asset_category_id'))
+        $q->where('asset_category_id', $request->asset_category_id);
 
-        if ($request->filled('search')) {
-            $s = trim($request->search);
-            $q->where(function ($x) use ($s) {
-                $x->where('name', 'like', "%$s%")
-                    ->orWhere('asset_tag', 'like', "%$s%")
-                    ->orWhere('serial_number', 'like', "%$s%");
-            });
-        }
-
-        return view('assets.index', [
-            'assets' => $q->latest()->paginate(15)->withQueryString(),
-            'branches' => Branch::orderBy('name')->get(),
-            'categories' => AssetCategory::orderBy('name')->get(),
-        ]);
+    if ($request->filled('search')) {
+        $s = trim($request->search);
+        $q->where(function ($x) use ($s) {
+            $x->where('name', 'like', "%$s%")
+              ->orWhere('asset_tag', 'like', "%$s%")
+              ->orWhere('serial_number', 'like', "%$s%");
+        });
     }
+
+    return view('assets.index', [
+        'assets'       => $q->latest()->paginate(15)->withQueryString(),
+        'branches'     => Branch::orderBy('name')->get(),
+        'categories'   => AssetCategory::orderBy('name')->get(),
+        'pendingCount' => \App\Models\AssetRequest::where('status', 'pending')->count(), // ✅
+    ]);
+}
     /*
         public function create()
         {

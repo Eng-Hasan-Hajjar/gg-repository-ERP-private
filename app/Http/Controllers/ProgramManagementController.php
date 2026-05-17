@@ -13,6 +13,7 @@ class ProgramManagementController extends Controller
     // ══════════════════════════════════════════
     // قائمة البرامج — سجل واحد لكل دبلومة فقط
     // ══════════════════════════════════════════
+    /*
     public function index(Request $request)
     {
         $query = ProgramManagement::with('diploma')
@@ -36,6 +37,56 @@ class ProgramManagementController extends Controller
 
         return view('programs_management.index', compact('records'));
     }
+*/
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+
+        $query = ProgramManagement::with('diploma.branch')
+            ->whereIn('id', function ($sub) {
+                $sub->selectRaw('MIN(id)')
+                    ->from('program_managements')
+                    ->groupBy('diploma_id');
+            });
+
+        // ✅ فلتر الفرع — نفس منطق Diploma GlobalScope
+        if (!$user->hasRole('super_admin') && !$user->hasPermission('view_all_diplomas')) {
+
+            $employee = \App\Models\Employee::withoutGlobalScopes()
+                ->where('user_id', $user->id)
+                ->whereNotNull('user_id')
+                ->first();
+
+            $branchIds = collect([
+                $employee?->branch_id,
+                $employee?->secondary_branch_id,
+            ])->filter()->unique()->values()->all();
+
+            if (!empty($branchIds)) {
+                // فلتر عبر الدبلومة المرتبطة
+                $query->whereHas(
+                    'diploma',
+                    fn($q) =>
+                    $q->whereIn('branch_id', $branchIds)
+                );
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        if ($request->filled('type')) {
+            $query->whereHas(
+                'diploma',
+                fn($q) =>
+                $q->where('type', $request->type)
+            );
+        }
+
+        $records = $query->latest()->paginate(15);
+
+        return view('programs_management.index', compact('records'));
+    }
+
 
     // ══════════════════════════════════════════
     // صفحة التعديل — ينشئ سجلاً واحداً فقط

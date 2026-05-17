@@ -79,5 +79,22 @@ class RolePermissionSeeder extends Seeder
         if ($admin) {
             $admin->permissions()->sync(Permission::all()->pluck('id'));
         }
+
+
+        // manager_student_affairs أو أي مدير يرى الكل
+        $managerAll = Role::where('name', 'manager_student_affairs')->first();
+        if ($managerAll) {
+            $managerAll->permissions()->syncWithoutDetaching(
+                Permission::whereIn('name', ['view_all_diplomas'])->pluck('id')
+            );
+        }
+
+        // branch_manager → يرى فرعه فقط
+        $branchManager = Role::where('name', 'branch_manager')->first();
+        if ($branchManager) {
+            $branchManager->permissions()->syncWithoutDetaching(
+                Permission::whereIn('name', ['view_branch_diplomas', 'view_diplomas'])->pluck('id')
+            );
+        }
     }
 }
