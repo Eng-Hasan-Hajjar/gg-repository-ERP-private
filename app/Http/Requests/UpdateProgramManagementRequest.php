@@ -42,6 +42,11 @@ class UpdateProgramManagementRequest extends FormRequest
             'admin_session_2_link' => 'nullable|url|max:500',
             'admin_session_3_link' => 'nullable|url|max:500',
             'evaluations_done_link' => 'nullable|url|max:500',
+
+                'stories_done'  => 'nullable|integer|min:0',
+        'stories_total' => 'nullable|integer|min:0',
+
+        
         ];
     }
 

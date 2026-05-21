@@ -7,15 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class ProgramManagement extends Model
 {
     protected $table = 'program_managements';
-    
+
     protected $fillable = [
         'diploma_id',
         'manager_id',
-
-            'trainer_id',
+        'trainer_id',
         'communication_manager',
-
-
         'market_study',
         'trainer_assigned',
         'contracts_ready',
@@ -25,16 +22,27 @@ class ProgramManagement extends Model
         'details_file',
         'price',
         'media_form_sent',
+        'media_form_sent_link',
         'direct_ads',
+        'direct_ads_link',
         'content_ready',
+        'content_ready_link',
         'opening_invitation',
+        'opening_invitation_link',
         'opening_snippets',
+        'opening_snippets_link',
         'carousel',
+        'carousel_link',
         'designs',
+        'designs_link',
         'stories',
+        'stories_link',
+        'stories_done',   // ✅
+        'stories_total',  // ✅
         'campaign_start',
         'campaign_end',
         'campaign_budget',
+        'campaign_spent',
         'confirmed_students',
         'duration_months',
         'hours',
@@ -47,15 +55,15 @@ class ProgramManagement extends Model
         'university_certificate',
         'cards_ready',
         'admin_session_1',
+        'admin_session_1_link',
         'admin_session_2',
+        'admin_session_2_link',
         'admin_session_3',
+        'admin_session_3_link',
         'evaluations_done',
+        'evaluations_done_link',
         'graduates_count',
         'notes',
-         'admin_session_1_link',
-    'admin_session_2_link',
-    'admin_session_3_link',
-    'evaluations_done_link'
     ];
 
     protected $casts = [
@@ -89,15 +97,15 @@ class ProgramManagement extends Model
 
     public function manager()
     {
-        return $this->belongsTo(User::class,'manager_id');
+        return $this->belongsTo(User::class, 'manager_id');
     }
 
-  
+
 
     public function trainer()
     {
-        return $this->belongsTo(Employee::class,'trainer_id');
+        return $this->belongsTo(Employee::class, 'trainer_id');
     }
 
-    
+
 }

@@ -91,9 +91,9 @@ class ProgramManagementController extends Controller
     // ══════════════════════════════════════════
     // صفحة التعديل — ينشئ سجلاً واحداً فقط
     // ══════════════════════════════════════════
+
     public function edit(Diploma $diploma)
     {
-        // ✅ البحث بـ diploma_id فقط، لكن عند الإنشاء يضع manager_id
         $record = ProgramManagement::where('diploma_id', $diploma->id)->first();
 
         if (!$record) {
@@ -105,23 +105,43 @@ class ProgramManagementController extends Controller
 
         $trainers = Employee::where('type', 'trainer')->get();
 
-        return view('programs_management.edit', compact('record', 'diploma', 'trainers'));
-    }
+        // ✅ جلب عدد الطلاب المثبتين تلقائياً من قاعدة البيانات
+        $confirmedStudents = \App\Models\Student::withoutGlobalScopes()
+            ->whereHas('diplomas', fn($q) => $q->where('diplomas.id', $diploma->id))
+            ->where('registration_status', 'confirmed')
+            ->count();
 
+        return view('programs_management.edit', compact('record', 'diploma', 'trainers', 'confirmedStudents'));
+    }/*
+      public function edit(Diploma $diploma)
+      {
+          // ✅ البحث بـ diploma_id فقط، لكن عند الإنشاء يضع manager_id
+          $record = ProgramManagement::where('diploma_id', $diploma->id)->first();
+
+          if (!$record) {
+              $record = ProgramManagement::create([
+                  'diploma_id' => $diploma->id,
+                  'manager_id' => auth()->id(),
+              ]);
+          }
+
+          $trainers = Employee::where('type', 'trainer')->get();
+
+          return view('programs_management.edit', compact('record', 'diploma', 'trainers'));
+      }
+  */
     // ══════════════════════════════════════════
     // حفظ التعديلات
     // ══════════════════════════════════════════
     public function update(UpdateProgramManagementRequest $request, Diploma $diploma)
     {
-        $record = ProgramManagement::where('diploma_id', $diploma->id)
-            ->firstOrFail();
+        $record = ProgramManagement::where('diploma_id', $diploma->id)->firstOrFail();
 
         $data = $request->validated();
 
         if ($request->hasFile('details_file')) {
-            $path = $request->file('details_file')
+            $data['details_file'] = $request->file('details_file')
                 ->store('program_files', 'public');
-            $data['details_file'] = $path;
         }
 
         $booleanFields = [
@@ -151,6 +171,40 @@ class ProgramManagementController extends Controller
         foreach ($booleanFields as $field) {
             $data[$field] = $request->has($field) ? 1 : 0;
         }
+
+        // ✅ حقول الروابط — إذا أُلغي الـ checkbox تُمسح الرابط
+        $linkFields = [
+            'media_form_sent_link',
+            'direct_ads_link',
+            'content_ready_link',
+            'opening_invitation_link',
+            'opening_snippets_link',
+            'carousel_link',
+            'designs_link',
+            'stories_link',
+            'admin_session_1_link',
+            'admin_session_2_link',
+            'admin_session_3_link',
+            'evaluations_done_link',
+        ];
+
+        foreach ($linkFields as $link) {
+            $checkboxField = str_replace('_link', '', $link);
+            // إذا الـ checkbox غير محدد → امسح الرابط
+            if (!$request->has($checkboxField)) {
+                $data[$link] = null;
+            } else {
+                $data[$link] = $request->input($link);
+            }
+        }
+
+        // ✅ campaign_spent
+        $data['campaign_spent'] = $request->input('campaign_spent');
+
+
+        $data['stories_done'] = $request->input('stories_done');
+        $data['stories_total'] = $request->input('stories_total');
+
 
         $record->update($data);
 

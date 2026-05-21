@@ -13,7 +13,7 @@
 
 <?php if($errors->any()): ?>
   <div class="alert alert-danger mb-3">
-    <strong>يرجى تصحيح الأخطاء التالية قبل الحفظ:</strong>
+    <strong>يرجى تصحيح الأخطاء التالية:</strong>
     <ul class="mb-0 mt-2">
       <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <li><?php echo e($error); ?></li>
@@ -23,40 +23,27 @@
 <?php endif; ?>
 
 <style>
-  .link-field {
-    display: none;
-    margin-top: 8px;
-  }
-  .link-field.visible {
-    display: block;
-  }
-  .link-input {
-    border: 1px solid rgba(14,165,233,.4);
-    border-radius: 10px;
-    padding: 7px 12px;
-    font-size: 13px;
-    width: 100%;
-    background: rgba(14,165,233,.04);
-  }
-  .link-input:focus {
-    outline: none;
-    border-color: var(--namaa-blue);
-    background: #fff;
-  }
-  .link-label {
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--namaa-blue);
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
+.link-field { display:none; margin-top:8px; }
+.link-field.visible { display:block; }
+.link-input {
+  border:1px solid rgba(14,165,233,.4); border-radius:10px;
+  padding:7px 12px; font-size:13px; width:100%;
+  background:rgba(14,165,233,.04);
+}
+.link-input:focus { outline:none; border-color:var(--namaa-blue); background:#fff; }
+.link-label {
+  font-size:11px; font-weight:800; color:var(--namaa-blue);
+  margin-bottom:4px; display:flex; align-items:center; gap:5px;
+}
+.field-box {
+  background:rgba(248,250,252,.9);
+  border:1px solid rgba(226,232,240,.9);
+  border-radius:12px; padding:14px 16px;
+}
 </style>
 
 <form method="POST" action="<?php echo e(route('programs.management.update', $diploma)); ?>" enctype="multipart/form-data">
   <?php echo csrf_field(); ?>
-
   <div class="row g-4">
 
     
@@ -140,19 +127,99 @@
                 'opening_snippets'   => 'مقتطفات افتتاحية',
                 'carousel'           => 'كاروسيل',
                 'designs'            => 'تصاميم',
-                'stories'            => 'ستوريات',
+                
               ];
             ?>
+
             <?php $__currentLoopData = $mediaFields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <div class="col-md-3 form-check">
-                <input type="checkbox" name="<?php echo e($field); ?>" class="form-check-input" <?php if($record->$field): echo 'checked'; endif; ?>>
-                <label class="form-check-label"><?php echo e($label); ?></label>
+              <div class="col-md-3">
+                <div class="field-box">
+                  <div class="form-check mb-1">
+                    <input type="checkbox"
+                           name="<?php echo e($field); ?>"
+                           id="cb_<?php echo e($field); ?>"
+                           class="form-check-input session-checkbox"
+                           data-target="link_<?php echo e($field); ?>"
+                           <?php if($record->$field): echo 'checked'; endif; ?>>
+                    <label class="form-check-label fw-bold" for="cb_<?php echo e($field); ?>">
+                      <?php echo e($label); ?>
+
+                    </label>
+                  </div>
+                  <?php $linkField = $field . '_link'; ?>
+                  <div id="link_<?php echo e($field); ?>" class="link-field <?php echo e($record->$field ? 'visible' : ''); ?>">
+                    <div class="link-label"><i class="bi bi-link-45deg"></i> رابط <?php echo e($label); ?></div>
+                    <input type="url" name="<?php echo e($linkField); ?>" class="link-input"
+                           placeholder="https://..."
+                           value="<?php echo e(old($linkField, $record->$linkField ?? '')); ?>">
+                  </div>
+                </div>
               </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+
+
+
+<div class="col-md-3">
+  <div class="field-box">
+    <div class="form-check mb-2">
+      <input type="checkbox"
+             name="stories"
+             id="cb_stories"
+             class="form-check-input session-checkbox"
+             data-target="link_stories"
+             <?php if($record->stories): echo 'checked'; endif; ?>>
+      <label class="form-check-label fw-bold" for="cb_stories">ستوريات</label>
+    </div>
+
+    
+    <div class="row g-1 mb-2">
+      <div class="col-6">
+        <label style="font-size:11px; font-weight:800; color:#64748b;">المُنجز</label>
+        <input type="number" name="stories_done" min="0"
+               value="<?php echo e(old('stories_done', $record->stories_done)); ?>"
+               class="form-control form-control-sm" placeholder="0">
+      </div>
+      <div class="col-6">
+        <label style="font-size:11px; font-weight:800; color:#64748b;">الإجمالي</label>
+        <input type="number" name="stories_total" min="0"
+               value="<?php echo e(old('stories_total', $record->stories_total)); ?>"
+               class="form-control form-control-sm" placeholder="0">
+      </div>
+    </div>
+
+    
+    <?php if($record->stories_total && $record->stories_done !== null): ?>
+      <?php
+        $sPct = min(100, round(($record->stories_done / $record->stories_total) * 100));
+      ?>
+      <div class="d-flex justify-content-between" style="font-size:.72rem; color:#64748b;">
+        <span><?php echo e($record->stories_done); ?> / <?php echo e($record->stories_total); ?></span>
+        <span><?php echo e($sPct); ?>%</span>
+      </div>
+      <div class="progress mt-1" style="height:4px;">
+        <div class="progress-bar bg-info" style="width:<?php echo e($sPct); ?>%;"></div>
+      </div>
+    <?php endif; ?>
+
+    
+    <div id="link_stories" class="link-field <?php echo e($record->stories ? 'visible' : ''); ?>">
+      <div class="link-label"><i class="bi bi-link-45deg"></i> رابط الستوريات</div>
+      <input type="url" name="stories_link" class="link-input"
+             placeholder="https://..."
+             value="<?php echo e(old('stories_link', $record->stories_link ?? '')); ?>">
+    </div>
+  </div>
+</div>
+
+
+
           </div>
         </div>
       </div>
     </div>
+
+
 
     
     <div class="col-12">
@@ -160,26 +227,77 @@
         <div class="card-header bg-light fw-bold">قسم التسويق</div>
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-md-4">
+
+            <div class="col-md-3">
               <label class="form-label">بداية الحملة</label>
               <input type="date" name="campaign_start" value="<?php echo e($record->campaign_start); ?>" class="form-control">
             </div>
-            <div class="col-md-4">
+
+            <div class="col-md-3">
               <label class="form-label">نهاية الحملة</label>
               <input type="date" name="campaign_end" value="<?php echo e($record->campaign_end); ?>" class="form-control">
             </div>
-            <div class="col-md-4">
-              <label class="form-label">صرف الحملة</label>
-              <input type="number" step="0.01" name="campaign_budget" value="<?php echo e($record->campaign_budget); ?>" class="form-control">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">مسؤول التواصل</label>
-              <input type="text" name="communication_manager" value="<?php echo e($record->communication_manager); ?>" class="form-control">
-            </div>
+
+            
             <div class="col-md-3">
-              <label class="form-label">عدد الطلاب المثبتين</label>
-              <input type="number" name="confirmed_students" value="<?php echo e($record->confirmed_students); ?>" class="form-control">
+              <label class="form-label fw-bold">ميزانية الحملة</label>
+              <input type="number" step="0.01" name="campaign_budget"
+                     value="<?php echo e($record->campaign_budget); ?>" class="form-control"
+                     placeholder="المبلغ المخصص">
             </div>
+
+            
+            <div class="col-md-3">
+              <label class="form-label fw-bold">
+                المصروف الفعلي
+                <?php if($record->campaign_budget && $record->campaign_spent): ?>
+                  <span class="badge ms-1"
+                        style="background:rgba(14,165,233,.12); color:#0369a1; font-size:.72rem;">
+                    <?php echo e(number_format($record->campaign_spent, 0)); ?> /
+                    <?php echo e(number_format($record->campaign_budget, 0)); ?>
+
+                  </span>
+                <?php endif; ?>
+              </label>
+              <input type="number" step="0.01" name="campaign_spent"
+                     value="<?php echo e($record->campaign_spent); ?>" class="form-control"
+                     placeholder="المبلغ المصروف فعلياً">
+              <?php if($record->campaign_budget && $record->campaign_spent): ?>
+                <?php
+                  $pct = min(100, round(($record->campaign_spent / $record->campaign_budget) * 100));
+                  $color = $pct >= 100 ? '#ef4444' : ($pct >= 80 ? '#f59e0b' : '#10b981');
+                ?>
+                <div class="progress mt-1" style="height:5px;">
+                  <div class="progress-bar" style="width:<?php echo e($pct); ?>%; background:<?php echo e($color); ?>;"></div>
+                </div>
+                <div class="text-muted" style="font-size:.72rem;"><?php echo e($pct); ?>% من الميزانية</div>
+              <?php endif; ?>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">مسؤول التواصل</label>
+              <input type="text" name="communication_manager"
+                     value="<?php echo e($record->communication_manager); ?>" class="form-control">
+            </div>
+
+            
+            <div class="col-md-3">
+              <label class="form-label fw-bold">عدد الطلاب المثبتين</label>
+              <div class="input-group">
+                <input type="number" name="confirmed_students"
+                       value="<?php echo e($record->confirmed_students ?? $confirmedStudents); ?>"
+                       class="form-control">
+                <span class="input-group-text bg-light text-muted small"
+                      title="العدد الفعلي من قسم الطلاب">
+                  <i class="bi bi-people-fill"></i> <?php echo e($confirmedStudents); ?>
+
+                </span>
+              </div>
+              <div class="text-muted" style="font-size:.72rem;">
+                العدد الفعلي من قسم الطلاب: <strong><?php echo e($confirmedStudents); ?></strong>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -212,11 +330,7 @@
               <input type="number" name="duration_months" value="<?php echo e($record->duration_months); ?>" class="form-control">
             </div>
             <div class="col-md-3">
-              <?php if($diploma->type === 'online'): ?>
-                <label class="form-label">عدد الساعات</label>
-              <?php else: ?>
-                <label class="form-label">عدد الجلسات</label>
-              <?php endif; ?>
+              <label class="form-label"><?php echo e($diploma->type === 'online' ? 'عدد الساعات' : 'عدد الجلسات'); ?></label>
               <input type="number" name="hours" value="<?php echo e($record->hours); ?>" class="form-control">
             </div>
             <div class="col-md-3">
@@ -246,50 +360,32 @@
         <div class="card-header bg-light fw-bold">قسم شؤون الطلاب</div>
         <div class="card-body">
           <div class="row g-3">
-
-            
             <?php
               $sessionFields = [
-                'admin_session_1' => ' جلسة ادارية و تقييمية 1',
-                'admin_session_2' => 'جلسة ادارية و تقييمية  2',
-                'admin_session_3' => 'جلسة ادارية و تقييمية  3',
+                'admin_session_1'  => 'جلسة إدارية وتقييمية 1',
+                'admin_session_2'  => 'جلسة إدارية وتقييمية 2',
+                'admin_session_3'  => 'جلسة إدارية وتقييمية 3',
                 'evaluations_done' => 'تقييمات بعد انتهاء البرنامج',
               ];
             ?>
 
             <?php $__currentLoopData = $sessionFields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
               <div class="col-md-6">
-                <div style="background:rgba(248,250,252,.9); border:1px solid rgba(226,232,240,.9); border-radius:12px; padding:14px 16px;">
-
-                  
+                <div class="field-box">
                   <div class="form-check mb-1">
-                    <input type="checkbox"
-                           name="<?php echo e($field); ?>"
-                           id="cb_<?php echo e($field); ?>"
+                    <input type="checkbox" name="<?php echo e($field); ?>" id="cb_<?php echo e($field); ?>"
                            class="form-check-input session-checkbox"
                            data-target="link_<?php echo e($field); ?>"
                            <?php if($record->$field): echo 'checked'; endif; ?>>
-                    <label class="form-check-label fw-bold" for="cb_<?php echo e($field); ?>">
-                      <?php echo e($label); ?>
-
-                    </label>
+                    <label class="form-check-label fw-bold" for="cb_<?php echo e($field); ?>"><?php echo e($label); ?></label>
                   </div>
-
-                  
                   <?php $linkField = $field . '_link'; ?>
                   <div id="link_<?php echo e($field); ?>" class="link-field <?php echo e($record->$field ? 'visible' : ''); ?>">
-                    <div class="link-label">
-                      <i class="bi bi-link-45deg"></i> رابط <?php echo e($label); ?>
-
-                    </div>
-                    <input type="url"
-                           name="<?php echo e($linkField); ?>"
-                           id="<?php echo e($linkField); ?>"
-                           class="link-input"
+                    <div class="link-label"><i class="bi bi-link-45deg"></i> رابط <?php echo e($label); ?></div>
+                    <input type="url" name="<?php echo e($linkField); ?>" class="link-input"
                            placeholder="https://..."
                            value="<?php echo e(old($linkField, $record->$linkField ?? '')); ?>">
                   </div>
-
                 </div>
               </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -305,7 +401,6 @@
               <label class="form-label">ملاحظات</label>
               <textarea name="notes" rows="3" class="form-control"><?php echo e($record->notes); ?></textarea>
             </div>
-
           </div>
         </div>
       </div>
@@ -316,20 +411,17 @@
   <div class="mt-4 text-end">
     <button class="btn btn-namaa px-5 fw-bold">حفظ جميع البيانات</button>
   </div>
-
 </form>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.session-checkbox').forEach(function (cb) {
     cb.addEventListener('change', function () {
-      const targetId = this.getAttribute('data-target');
-      const linkDiv  = document.getElementById(targetId);
+      const linkDiv = document.getElementById(this.getAttribute('data-target'));
       if (this.checked) {
         linkDiv.classList.add('visible');
       } else {
         linkDiv.classList.remove('visible');
-        // مسح قيمة الرابط عند إلغاء التحديد
         linkDiv.querySelector('input[type="url"]').value = '';
       }
     });
