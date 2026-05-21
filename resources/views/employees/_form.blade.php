@@ -97,6 +97,93 @@
     <input name="job_title" class="form-control" value="{{ old('job_title', $employee->job_title ?? '') }}">
   </div>
 
+
+  <div class="col-12 col-md-6" id="diplomas-field">
+  <label class="form-label fw-bold">الدبلومات المرتبطة</label>
+
+  {{-- ✅ حقل البحث --}}
+  <input type="text" id="diplomaSearch"
+         class="form-control mb-2"
+         placeholder="🔍 ابحث عن دبلومة...">
+
+  {{-- ✅ القائمة القابلة للفلترة --}}
+  <div id="diplomaList"
+       style="max-height:200px; overflow-y:auto; border:1px solid #dee2e6;
+              border-radius:8px; padding:8px; background:#fff;">
+    @php
+      $selectedIds = collect(old('diploma_ids',
+        isset($employee) ? $employee->diplomas->pluck('id')->all() : []
+      ));
+    @endphp
+    @foreach($diplomas as $d)
+      <div class="diploma-item form-check py-1 px-2"
+           data-name="{{ strtolower($d->name) }}"
+           data-code="{{ strtolower($d->code) }}"
+           data-branch="{{ strtolower($d->branch->name ?? '') }}"
+           style="border-radius:6px; cursor:pointer;">
+        <input type="checkbox"
+               name="diploma_ids[]"
+               value="{{ $d->id }}"
+               id="dip_{{ $d->id }}"
+               class="form-check-input"
+               @checked($selectedIds->contains($d->id))>
+        <label class="form-check-label w-100" for="dip_{{ $d->id }}"
+               style="cursor:pointer;">
+          <span class="fw-bold">{{ $d->name }}</span>
+          <span class="badge bg-secondary ms-1" style="font-size:.72rem;">{{ $d->code }}</span>
+          @if($d->branch)
+            <span class="text-muted small ms-1">— {{ $d->branch->name }}</span>
+          @endif
+        </label>
+      </div>
+    @endforeach
+  </div>
+
+  {{-- عداد المحدد --}}
+  <div class="small text-muted mt-1">
+    تم تحديد <span id="selectedCount">{{ $selectedIds->count() }}</span> دبلومة
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput  = document.getElementById('diplomaSearch');
+  const items        = document.querySelectorAll('.diploma-item');
+  const countDisplay = document.getElementById('selectedCount');
+
+  // ✅ فلترة البحث
+  searchInput?.addEventListener('input', function () {
+    const q = this.value.toLowerCase().trim();
+    items.forEach(item => {
+      const match = item.dataset.name.includes(q)
+                 || item.dataset.code.includes(q)
+                 || item.dataset.branch.includes(q);
+      item.style.display = match ? 'block' : 'none';
+    });
+  });
+
+  // ✅ تحديث العداد
+  document.querySelectorAll('input[name="diploma_ids[]"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const count = document.querySelectorAll('input[name="diploma_ids[]"]:checked').length;
+      if (countDisplay) countDisplay.textContent = count;
+    });
+
+    // ✅ تلوين العنصر عند التحديد
+    cb.addEventListener('change', function () {
+      this.closest('.diploma-item').style.background = this.checked
+        ? 'rgba(16,185,129,.08)' : '';
+    });
+
+    // تطبيق اللون على المحدد مسبقاً
+    if (cb.checked) {
+      cb.closest('.diploma-item').style.background = 'rgba(16,185,129,.08)';
+    }
+  });
+});
+</script>
+
+<!--
   <div class="col-12 col-md-6" id="diplomas-field">
     <label class="form-label fw-bold">الدبلومات المرتبطة</label>
     <select name="diploma_ids[]" multiple class="form-select" style="min-height:120px">
@@ -109,11 +196,39 @@
     </select>
     <div class="small text-muted mt-1">اضغط Ctrl لاختيار أكثر من دبلومة.</div>
   </div>
-
+-->
   <div class="col-12">
     <label class="form-label fw-bold">ملاحظات</label>
     <textarea name="notes" class="form-control" rows="3">{{ old('notes', $employee->notes ?? '') }}</textarea>
   </div>
+
+
+
+  {{-- ✅ أضف هذا بعد حقل الملاحظات --}}
+  <div class="col-12 col-md-6">
+    <label class="form-label fw-bold">
+      <i class="bi bi-file-earmark-pdf text-danger"></i>
+      ملف العقد (PDF)
+    </label>
+    <input type="file" name="contract_pdf" class="form-control" accept="application/pdf">
+    <div class="small text-muted mt-1">الحد الأقصى: 20 ميغابايت — PDF فقط</div>
+
+    @if(isset($employee) && $employee->contract_pdf_path)
+      <div class="mt-2 d-flex align-items-center gap-2">
+        <a href="{{ Storage::url($employee->contract_pdf_path) }}" target="_blank" class="btn btn-sm btn-outline-danger">
+          <i class="bi bi-file-earmark-pdf"></i> عرض العقد الحالي
+        </a>
+        <div class="form-check mb-0">
+          <input type="checkbox" name="remove_contract_pdf" value="1" class="form-check-input" id="removeContract">
+          <label class="form-check-label small text-danger" for="removeContract">
+            حذف الملف الحالي
+          </label>
+        </div>
+      </div>
+    @endif
+  </div>
+
+
 </div>
 
 @if($errors->any())
@@ -158,7 +273,7 @@
     <div class="col-12 col-md-6 col-xl-4">
 
       <div class="card border rounded-3 shadow-sm h-100
-        {{ $scheduleMap[$wd]['is_off'] ? 'border-secondary bg-light' : 'border-primary' }}" id="card_day_{{ $wd }}">
+          {{ $scheduleMap[$wd]['is_off'] ? 'border-secondary bg-light' : 'border-primary' }}" id="card_day_{{ $wd }}">
 
         <div class="card-body p-3">
 

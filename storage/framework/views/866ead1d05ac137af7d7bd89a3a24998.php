@@ -5,7 +5,7 @@
 <div class="card border-0 shadow-sm">
   <div class="card-body">
     <h5 class="fw-bold mb-3"><i class="bi bi-pencil"></i> تعديل: <?php echo e($employee->full_name); ?></h5>
-    <form method="POST" action="<?php echo e(route('employees.update',$employee)); ?>">
+    <form method="POST" action="<?php echo e(route('employees.update',$employee)); ?>" enctype="multipart/form-data">
       <?php echo $__env->make('employees._form', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </form>
   </div>

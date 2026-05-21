@@ -23,6 +23,7 @@ class Employee extends Model
         'status',
         'notes',
         'user_id',
+         'contract_pdf_path', // ✅ أضف هذا
     ];
 
     public function branch(): BelongsTo

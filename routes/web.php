@@ -108,6 +108,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('branches', BranchController::class)->except(['show']);
 
+
+
+    Route::get('employees/{employee}/contract-download', function (\App\Models\Employee $employee) {
+        abort_unless($employee->contract_pdf_path, 404);
+        $path = storage_path('app/public/' . $employee->contract_pdf_path);
+        abort_unless(file_exists($path), 404);
+        return response()->download($path);
+    })->middleware('auth')->name('employees.contract.download');
+
+
     Route::post(
         'employees/{employee}/create-user',
         [EmployeeController::class, 'createUser']

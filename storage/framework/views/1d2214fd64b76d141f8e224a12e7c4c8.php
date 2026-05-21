@@ -100,6 +100,93 @@
     <input name="job_title" class="form-control" value="<?php echo e(old('job_title', $employee->job_title ?? '')); ?>">
   </div>
 
+
+  <div class="col-12 col-md-6" id="diplomas-field">
+  <label class="form-label fw-bold">الدبلومات المرتبطة</label>
+
+  
+  <input type="text" id="diplomaSearch"
+         class="form-control mb-2"
+         placeholder="🔍 ابحث عن دبلومة...">
+
+  
+  <div id="diplomaList"
+       style="max-height:200px; overflow-y:auto; border:1px solid #dee2e6;
+              border-radius:8px; padding:8px; background:#fff;">
+    <?php
+      $selectedIds = collect(old('diploma_ids',
+        isset($employee) ? $employee->diplomas->pluck('id')->all() : []
+      ));
+    ?>
+    <?php $__currentLoopData = $diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <div class="diploma-item form-check py-1 px-2"
+           data-name="<?php echo e(strtolower($d->name)); ?>"
+           data-code="<?php echo e(strtolower($d->code)); ?>"
+           data-branch="<?php echo e(strtolower($d->branch->name ?? '')); ?>"
+           style="border-radius:6px; cursor:pointer;">
+        <input type="checkbox"
+               name="diploma_ids[]"
+               value="<?php echo e($d->id); ?>"
+               id="dip_<?php echo e($d->id); ?>"
+               class="form-check-input"
+               <?php if($selectedIds->contains($d->id)): echo 'checked'; endif; ?>>
+        <label class="form-check-label w-100" for="dip_<?php echo e($d->id); ?>"
+               style="cursor:pointer;">
+          <span class="fw-bold"><?php echo e($d->name); ?></span>
+          <span class="badge bg-secondary ms-1" style="font-size:.72rem;"><?php echo e($d->code); ?></span>
+          <?php if($d->branch): ?>
+            <span class="text-muted small ms-1">— <?php echo e($d->branch->name); ?></span>
+          <?php endif; ?>
+        </label>
+      </div>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+  </div>
+
+  
+  <div class="small text-muted mt-1">
+    تم تحديد <span id="selectedCount"><?php echo e($selectedIds->count()); ?></span> دبلومة
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput  = document.getElementById('diplomaSearch');
+  const items        = document.querySelectorAll('.diploma-item');
+  const countDisplay = document.getElementById('selectedCount');
+
+  // ✅ فلترة البحث
+  searchInput?.addEventListener('input', function () {
+    const q = this.value.toLowerCase().trim();
+    items.forEach(item => {
+      const match = item.dataset.name.includes(q)
+                 || item.dataset.code.includes(q)
+                 || item.dataset.branch.includes(q);
+      item.style.display = match ? 'block' : 'none';
+    });
+  });
+
+  // ✅ تحديث العداد
+  document.querySelectorAll('input[name="diploma_ids[]"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const count = document.querySelectorAll('input[name="diploma_ids[]"]:checked').length;
+      if (countDisplay) countDisplay.textContent = count;
+    });
+
+    // ✅ تلوين العنصر عند التحديد
+    cb.addEventListener('change', function () {
+      this.closest('.diploma-item').style.background = this.checked
+        ? 'rgba(16,185,129,.08)' : '';
+    });
+
+    // تطبيق اللون على المحدد مسبقاً
+    if (cb.checked) {
+      cb.closest('.diploma-item').style.background = 'rgba(16,185,129,.08)';
+    }
+  });
+});
+</script>
+
+<!--
   <div class="col-12 col-md-6" id="diplomas-field">
     <label class="form-label fw-bold">الدبلومات المرتبطة</label>
     <select name="diploma_ids[]" multiple class="form-select" style="min-height:120px">
@@ -112,11 +199,39 @@
     </select>
     <div class="small text-muted mt-1">اضغط Ctrl لاختيار أكثر من دبلومة.</div>
   </div>
-
+-->
   <div class="col-12">
     <label class="form-label fw-bold">ملاحظات</label>
     <textarea name="notes" class="form-control" rows="3"><?php echo e(old('notes', $employee->notes ?? '')); ?></textarea>
   </div>
+
+
+
+  
+  <div class="col-12 col-md-6">
+    <label class="form-label fw-bold">
+      <i class="bi bi-file-earmark-pdf text-danger"></i>
+      ملف العقد (PDF)
+    </label>
+    <input type="file" name="contract_pdf" class="form-control" accept="application/pdf">
+    <div class="small text-muted mt-1">الحد الأقصى: 20 ميغابايت — PDF فقط</div>
+
+    <?php if(isset($employee) && $employee->contract_pdf_path): ?>
+      <div class="mt-2 d-flex align-items-center gap-2">
+        <a href="<?php echo e(Storage::url($employee->contract_pdf_path)); ?>" target="_blank" class="btn btn-sm btn-outline-danger">
+          <i class="bi bi-file-earmark-pdf"></i> عرض العقد الحالي
+        </a>
+        <div class="form-check mb-0">
+          <input type="checkbox" name="remove_contract_pdf" value="1" class="form-check-input" id="removeContract">
+          <label class="form-check-label small text-danger" for="removeContract">
+            حذف الملف الحالي
+          </label>
+        </div>
+      </div>
+    <?php endif; ?>
+  </div>
+
+
 </div>
 
 <?php if($errors->any()): ?>
@@ -161,7 +276,7 @@
     <div class="col-12 col-md-6 col-xl-4">
 
       <div class="card border rounded-3 shadow-sm h-100
-        <?php echo e($scheduleMap[$wd]['is_off'] ? 'border-secondary bg-light' : 'border-primary'); ?>" id="card_day_<?php echo e($wd); ?>">
+          <?php echo e($scheduleMap[$wd]['is_off'] ? 'border-secondary bg-light' : 'border-primary'); ?>" id="card_day_<?php echo e($wd); ?>">
 
         <div class="card-body p-3">
 

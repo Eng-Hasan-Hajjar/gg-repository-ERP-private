@@ -69,39 +69,39 @@ class EmployeeController extends Controller
         ]);
     }
 
-public function create(Request $request)
-{
-    $type = $request->get('type','trainer'); // القيمة الافتراضية
+    public function create(Request $request)
+    {
+        $type = $request->get('type', 'trainer'); // القيمة الافتراضية
 
-    $weekdays = [
-        0 => 'الأحد',
-        1 => 'الإثنين',
-        2 => 'الثلاثاء',
-        3 => 'الأربعاء',
-        4 => 'الخميس',
-        5 => 'الجمعة',
-        6 => 'السبت'
-    ];
-
-    $scheduleMap = [];
-
-    foreach (range(0,6) as $wd) {
-        $scheduleMap[$wd] = [
-            'is_off' => true,
-            'start' => '',
-            'end' => ''
+        $weekdays = [
+            0 => 'الأحد',
+            1 => 'الإثنين',
+            2 => 'الثلاثاء',
+            3 => 'الأربعاء',
+            4 => 'الخميس',
+            5 => 'الجمعة',
+            6 => 'السبت'
         ];
-    }
 
-    return view('employees.create',[
-        'type'=>$type,
-        'branches'=>Branch::orderBy('name')->get(),
-        'diplomas'=>Diploma::orderBy('name')->get(),
-        'scheduleMap'=>$scheduleMap,
-        'weekdays'=>$weekdays,
-        'users'=>User::doesntHave('employee')->orderBy('name')->get(),
-    ]);
-}
+        $scheduleMap = [];
+
+        foreach (range(0, 6) as $wd) {
+            $scheduleMap[$wd] = [
+                'is_off' => true,
+                'start' => '',
+                'end' => ''
+            ];
+        }
+
+        return view('employees.create', [
+            'type' => $type,
+            'branches' => Branch::orderBy('name')->get(),
+            'diplomas' => Diploma::orderBy('name')->get(),
+            'scheduleMap' => $scheduleMap,
+            'weekdays' => $weekdays,
+            'users' => User::doesntHave('employee')->orderBy('name')->get(),
+        ]);
+    }
 
 
 
@@ -126,9 +126,20 @@ public function create(Request $request)
             'schedule.*.is_off' => ['nullable'],
             'schedule.*.start' => ['nullable', 'date_format:H:i'],
             'schedule.*.end' => ['nullable', 'date_format:H:i', 'after:schedule.*.start'],
-        ]);
+            'contract_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
+        ], [
+    // ✅ رسائل عربية
+    'contract_pdf.file'  => 'ملف العقد يجب أن يكون ملفاً صالحاً.',
+    'contract_pdf.mimes' => 'ملف العقد يجب أن يكون بصيغة PDF فقط.',
+    'contract_pdf.max'   => 'حجم ملف العقد كبير جداً، الحد الأقصى 20 ميغابايت.',
+]);
 
         $data['code'] = $this->generateEmployeeCode();
+        // ✅ رفع PDF العقد
+        if ($request->hasFile('contract_pdf')) {
+            $data['contract_pdf_path'] = $request->file('contract_pdf')
+                ->store('employees/contracts', 'public');
+        }
 
         $employee = Employee::create($data);
 
@@ -266,7 +277,7 @@ public function create(Request $request)
             'email' => ['nullable', 'email', 'max:255'],
             'branch_id' => ['nullable', 'exists:branches,id'],
             'secondary_branch_id' => ['nullable', 'exists:branches,id'],
-            
+
             'job_title' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:active,inactive'],
             'notes' => ['nullable', 'string', 'max:3000'],
@@ -278,8 +289,29 @@ public function create(Request $request)
             'schedule.*.is_off' => ['nullable'],
             'schedule.*.start' => ['nullable', 'date_format:H:i'],
             'schedule.*.end' => ['nullable', 'date_format:H:i'],
-        ]);
+            'contract_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
+            'remove_contract_pdf' => ['nullable', 'boolean'],
+        ], [
+    // ✅ رسائل عربية
+    'contract_pdf.file'  => 'ملف العقد يجب أن يكون ملفاً صالحاً.',
+    'contract_pdf.mimes' => 'ملف العقد يجب أن يكون بصيغة PDF فقط.',
+    'contract_pdf.max'   => 'حجم ملف العقد كبير جداً، الحد الأقصى 20 ميغابايت.',
+]);
 
+        // ✅ حذف الملف القديم عند الطلب
+        if ($request->boolean('remove_contract_pdf') && $employee->contract_pdf_path) {
+            \Storage::disk('public')->delete($employee->contract_pdf_path);
+            $data['contract_pdf_path'] = null;
+        }
+
+        // ✅ رفع ملف جديد
+        if ($request->hasFile('contract_pdf')) {
+            if ($employee->contract_pdf_path) {
+                \Storage::disk('public')->delete($employee->contract_pdf_path);
+            }
+            $data['contract_pdf_path'] = $request->file('contract_pdf')
+                ->store('employees/contracts', 'public');
+        }
         $employee->update($data);
 
         // ← حفظ الجدول الجديد

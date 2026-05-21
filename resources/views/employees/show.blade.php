@@ -100,6 +100,19 @@
           </div>
 
 
+          {{-- في قسم البيانات الأساسية داخل row g-2 --}}
+          <div class="col-12 mt-2">
+
+            <b><i class="bi bi-file-earmark-pdf text-danger"></i> عقد العمل:</b>
+            @if($employee->contract_pdf_path && \Storage::disk('public')->exists($employee->contract_pdf_path))
+              <a href="{{ route('employees.contract.download', $employee) }}" class="btn btn-sm btn-outline-danger ms-2">
+                <i class="bi bi-download"></i> تحميل العقد
+              </a>
+            @else
+              <span class="text-muted">لم يُرفق عقد بعد</span>
+            @endif
+          </div>
+
 
           <div class="col-12 mt-2">
             <b>الدبلومات:</b>
