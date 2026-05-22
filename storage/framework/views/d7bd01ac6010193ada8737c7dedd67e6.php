@@ -104,18 +104,10 @@
 
           
           <div class="col-12 mt-2">
-            <?php if($employee->contract_pdf_path && \Storage::disk('public')->exists($employee->contract_pdf_path)): ?>
-  <a href="<?php echo e(route('employees.contract.download', $employee)); ?>"
-     class="btn btn-sm btn-outline-danger ms-2">
-    <i class="bi bi-download"></i> تحميل العقد
-  </a>
-<?php else: ?>
-  <span class="text-muted">لم يُرفق عقد بعد</span>
-<?php endif; ?>
+
             <b><i class="bi bi-file-earmark-pdf text-danger"></i> عقد العمل:</b>
             <?php if($employee->contract_pdf_path && \Storage::disk('public')->exists($employee->contract_pdf_path)): ?>
-              <a href="<?php echo e(asset('storage/' . $employee->contract_pdf_path)); ?>" download
-                class="btn btn-sm btn-outline-danger ms-2">
+              <a href="<?php echo e(route('employees.contract.download', $employee)); ?>" class="btn btn-sm btn-outline-danger ms-2">
                 <i class="bi bi-download"></i> تحميل العقد
               </a>
             <?php else: ?>

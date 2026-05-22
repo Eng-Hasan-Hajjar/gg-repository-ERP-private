@@ -198,7 +198,7 @@
   </div>
 
   {{-- first_name --}}
-  <div class="col-md-4">
+  <div class="col-md-4" hidden>
     <label class="form-label fw-bold">الاسم</label>
     <input name="first_name" value="{{ old('first_name', $student->first_name ?? '') }}"
       class="form-control @error('first_name') is-invalid @enderror" required>
@@ -209,7 +209,7 @@
   </div>
 
   {{-- last_name --}}
-  <div class="col-md-4">
+  <div class="col-md-4" hidden>
     <label class="form-label fw-bold">الكنية</label>
     <input name="last_name" value="{{ old('last_name', $student->last_name ?? '') }}"
       class="form-control @error('last_name') is-invalid @enderror">
@@ -290,25 +290,7 @@
   </div>
 
 
-  <div class="col-md-4">
-    <label class="form-label fw-bold">حالة الطالب</label>
 
-    <select name="status" class="form-select @error('status') is-invalid @enderror">
-
-      <option value="">-- اختر حالة الطالب --</option>
-
-      @foreach($statusOptions as $st => $stLabel)
-        <option value="{{ $st }}" @selected(old('status', $student->status ?? '') == $st)>
-          {{ $stLabel }}
-        </option>
-      @endforeach
-
-    </select>
-
-    @error('status')
-      <div class="invalid-feedback d-block">{{ $message }}</div>
-    @enderror
-  </div>
 
 
   {{-- ✅ Diploma Picker — مثل CRM --}}
@@ -346,9 +328,9 @@
     {{-- Hidden inputs --}}
     <div id="diplomaHiddenInputs"></div>
   </div>
-
+<!--
   <div id="diplomas-details-container"></div>
-
+-->
 
 
 
@@ -714,17 +696,37 @@
 
 
 
-
+          {{-- ✅ الجديد: checkbox + combobox --}}
           <div class="col-md-3">
-            <label class="form-label fw-bold">مستوى اللغة</label>
+            <label class="form-label fw-bold">اللغة</label>
+            <div class="form-check mt-1 mb-2">
+              <input type="checkbox"
+                    class="form-check-input"
+                    id="hasLangCheck"
+                    @if(!empty($profile['level'] ?? '')) checked @endif>
+              <label class="form-check-label" for="hasLangCheck">
+                يوجد مستوى لغة
+              </label>
+            </div>
 
-            <input name="profile[level]" value="{{ old('profile.level', $profile['level'] ?? '') }}"
-              class="form-control @error('profile.level') is-invalid @enderror"
-              placeholder="مثال: مبتدئ / متوسط / متقدم">
+            <div id="langLevelField" style="{{ empty($profile['level'] ?? '') ? 'display:none' : '' }}">
+              <select name="profile[level]"
+                      class="form-select @error('profile.level') is-invalid @enderror">
+                <option value="">-- اختر المستوى --</option>
+                @foreach(['A1','A2','B1','B2','C1','C2'] as $lvl)
+                  <option value="{{ $lvl }}"
+                    @selected(old('profile.level', $profile['level'] ?? '') == $lvl)>
+                    {{ $lvl }}
+                  </option>
+                @endforeach
+              </select>
+              @error('profile.level')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
 
-            @error('profile.level')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            {{-- إذا ما في لغة — أرسل null --}}
+            <input type="hidden" name="_lang_none" id="langNoneSignal" value="1">
           </div>
 
 
@@ -738,13 +740,25 @@
             </div>
           </div>
 
+          {{-- ✅ الجديد: combobox بالولايات --}}
           <div class="col-md-3" id="stageField"
-            style="{{ !empty($profile['stage_in_state'] ?? '') ? '' : 'display:none' }}">
-            <label class="form-label fw-bold">مرحلة/ولاية الستاج</label>
-            <input name="profile[stage_in_state]"
-              value="{{ old('profile.stage_in_state', $profile['stage_in_state'] ?? '') }}"
-              class="form-control @error('profile.stage_in_state') is-invalid @enderror"
-              placeholder="مثال: دمشق - سنة أولى">
+              style="{{ !empty($profile['stage_in_state'] ?? '') ? '' : 'display:none' }}">
+            <label class="form-label fw-bold">ولاية الستاج</label>
+            <select name="profile[stage_in_state]"
+                    class="form-select @error('profile.stage_in_state') is-invalid @enderror">
+              <option value="">-- اختر الولاية --</option>
+              @foreach(['بوصة','عنتاب','كلس','اسطنبول','مرسين'] as $city)
+                <option value="{{ $city }}"
+                  @selected(old('profile.stage_in_state', $profile['stage_in_state'] ?? '') == $city)>
+                  {{ $city }}
+                </option>
+              @endforeach
+              {{-- خيار "أخرى" للإدخال اليدوي --}}
+              <option value="أخرى"
+                @selected(!empty($profile['stage_in_state'] ?? '') && !in_array($profile['stage_in_state'] ?? '', ['بوصة','عنتاب','كلس','اسطنبول','مرسين']))>
+                أخرى
+              </option>
+            </select>
             @error('profile.stage_in_state')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -753,16 +767,7 @@
 
 
 
-          <div class="col-md-3">
-            <label class="form-label fw-bold">العمل</label>
-            <input name="crm[job]" class="form-control @error('crm.job') is-invalid @enderror"
-              value="{{ old('crm.job', $crm['job'] ?? '') }}">
-
-
-            @error('crm.job')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+         
           <div class="col-md-4">
             <label class="form-label fw-bold">مسؤول التواصل</label>
             <input class="form-control" value="{{ $student->crmInfo->creator->name ?? '-' }}" disabled>
@@ -805,6 +810,26 @@
             @enderror
           </div>
 
+
+            <div class="col-md-4">
+              <label class="form-label fw-bold">حالة الطالب</label>
+
+              <select name="status" class="form-select @error('status') is-invalid @enderror">
+
+                <option value="">-- اختر حالة الطالب --</option>
+
+                @foreach($statusOptions as $st => $stLabel)
+                  <option value="{{ $st }}" @selected(old('status', $student->status ?? '') == $st)>
+                    {{ $stLabel }}
+                  </option>
+                @endforeach
+
+              </select>
+
+              @error('status')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+              @enderror
+            </div>
 
           <div class="col-12">
             <label class="form-label fw-bold">ملاحظات</label>
@@ -1358,4 +1383,25 @@
       renderDetails();
     });
   })();
+
+
+  // ✅ checkbox اللغة
+document.addEventListener('DOMContentLoaded', function () {
+  var hasLangCheck  = document.getElementById('hasLangCheck');
+  var langLevelField = document.getElementById('langLevelField');
+  var langSelect    = langLevelField ? langLevelField.querySelector('select') : null;
+
+  if (hasLangCheck && langLevelField) {
+    hasLangCheck.addEventListener('change', function () {
+      if (this.checked) {
+        langLevelField.style.display = 'block';
+      } else {
+        langLevelField.style.display = 'none';
+        if (langSelect) langSelect.value = ''; // مسح عند إلغاء
+      }
+    });
+  }
+});
+
+
 </script>

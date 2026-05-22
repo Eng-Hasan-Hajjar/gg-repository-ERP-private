@@ -212,7 +212,7 @@ unset($__errorArgs, $__bag); ?>
   </div>
 
   
-  <div class="col-md-4">
+  <div class="col-md-4" hidden>
     <label class="form-label fw-bold">الاسم</label>
     <input name="first_name" value="<?php echo e(old('first_name', $student->first_name ?? '')); ?>"
       class="form-control <?php $__errorArgs = ['first_name'];
@@ -237,7 +237,7 @@ unset($__errorArgs, $__bag); ?>
   </div>
 
   
-  <div class="col-md-4">
+  <div class="col-md-4" hidden>
     <label class="form-label fw-bold">الكنية</label>
     <input name="last_name" value="<?php echo e(old('last_name', $student->last_name ?? '')); ?>"
       class="form-control <?php $__errorArgs = ['last_name'];
@@ -375,40 +375,7 @@ unset($__errorArgs, $__bag); ?>
   </div>
 
 
-  <div class="col-md-4">
-    <label class="form-label fw-bold">حالة الطالب</label>
 
-    <select name="status" class="form-select <?php $__errorArgs = ['status'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>">
-
-      <option value="">-- اختر حالة الطالب --</option>
-
-      <?php $__currentLoopData = $statusOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $st => $stLabel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <option value="<?php echo e($st); ?>" <?php if(old('status', $student->status ?? '') == $st): echo 'selected'; endif; ?>>
-          <?php echo e($stLabel); ?>
-
-        </option>
-      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-    </select>
-
-    <?php $__errorArgs = ['status'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-      <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
-    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-  </div>
 
 
   
@@ -446,9 +413,9 @@ unset($__errorArgs, $__bag); ?>
     
     <div id="diplomaHiddenInputs"></div>
   </div>
-
+<!--
   <div id="diplomas-details-container"></div>
-
+-->
 
 
 
@@ -986,31 +953,52 @@ unset($__errorArgs, $__bag); ?>
 
 
 
-
+          
           <div class="col-md-3">
-            <label class="form-label fw-bold">مستوى اللغة</label>
+            <label class="form-label fw-bold">اللغة</label>
+            <div class="form-check mt-1 mb-2">
+              <input type="checkbox"
+                    class="form-check-input"
+                    id="hasLangCheck"
+                    <?php if(!empty($profile['level'] ?? '')): ?> checked <?php endif; ?>>
+              <label class="form-check-label" for="hasLangCheck">
+                يوجد مستوى لغة
+              </label>
+            </div>
 
-            <input name="profile[level]" value="<?php echo e(old('profile.level', $profile['level'] ?? '')); ?>"
-              class="form-control <?php $__errorArgs = ['profile.level'];
+            <div id="langLevelField" style="<?php echo e(empty($profile['level'] ?? '') ? 'display:none' : ''); ?>">
+              <select name="profile[level]"
+                      class="form-select <?php $__errorArgs = ['profile.level'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-              placeholder="مثال: مبتدئ / متوسط / متقدم">
+unset($__errorArgs, $__bag); ?>">
+                <option value="">-- اختر المستوى --</option>
+                <?php $__currentLoopData = ['A1','A2','B1','B2','C1','C2']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lvl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <option value="<?php echo e($lvl); ?>"
+                    <?php if(old('profile.level', $profile['level'] ?? '') == $lvl): echo 'selected'; endif; ?>>
+                    <?php echo e($lvl); ?>
 
-            <?php $__errorArgs = ['profile.level'];
+                  </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              </select>
+              <?php $__errorArgs = ['profile.level'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-              <div class="invalid-feedback"><?php echo e($message); ?></div>
-            <?php unset($message);
+                <div class="invalid-feedback"><?php echo e($message); ?></div>
+              <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+            </div>
+
+            
+            <input type="hidden" name="_lang_none" id="langNoneSignal" value="1">
           </div>
 
 
@@ -1024,20 +1012,33 @@ unset($__errorArgs, $__bag); ?>
             </div>
           </div>
 
+          
           <div class="col-md-3" id="stageField"
-            style="<?php echo e(!empty($profile['stage_in_state'] ?? '') ? '' : 'display:none'); ?>">
-            <label class="form-label fw-bold">مرحلة/ولاية الستاج</label>
-            <input name="profile[stage_in_state]"
-              value="<?php echo e(old('profile.stage_in_state', $profile['stage_in_state'] ?? '')); ?>"
-              class="form-control <?php $__errorArgs = ['profile.stage_in_state'];
+              style="<?php echo e(!empty($profile['stage_in_state'] ?? '') ? '' : 'display:none'); ?>">
+            <label class="form-label fw-bold">ولاية الستاج</label>
+            <select name="profile[stage_in_state]"
+                    class="form-select <?php $__errorArgs = ['profile.stage_in_state'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-              placeholder="مثال: دمشق - سنة أولى">
+unset($__errorArgs, $__bag); ?>">
+              <option value="">-- اختر الولاية --</option>
+              <?php $__currentLoopData = ['بوصة','عنتاب','كلس','اسطنبول','مرسين']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $city): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($city); ?>"
+                  <?php if(old('profile.stage_in_state', $profile['stage_in_state'] ?? '') == $city): echo 'selected'; endif; ?>>
+                  <?php echo e($city); ?>
+
+                </option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              
+              <option value="أخرى"
+                <?php if(!empty($profile['stage_in_state'] ?? '') && !in_array($profile['stage_in_state'] ?? '', ['بوصة','عنتاب','كلس','اسطنبول','مرسين'])): echo 'selected'; endif; ?>>
+                أخرى
+              </option>
+            </select>
             <?php $__errorArgs = ['profile.stage_in_state'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -1053,30 +1054,7 @@ unset($__errorArgs, $__bag); ?>
 
 
 
-          <div class="col-md-3">
-            <label class="form-label fw-bold">العمل</label>
-            <input name="crm[job]" class="form-control <?php $__errorArgs = ['crm.job'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>"
-              value="<?php echo e(old('crm.job', $crm['job'] ?? '')); ?>">
-
-
-            <?php $__errorArgs = ['crm.job'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-              <div class="invalid-feedback"><?php echo e($message); ?></div>
-            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-          </div>
+         
           <div class="col-md-4">
             <label class="form-label fw-bold">مسؤول التواصل</label>
             <input class="form-control" value="<?php echo e($student->crmInfo->creator->name ?? '-'); ?>" disabled>
@@ -1161,6 +1139,41 @@ endif;
 unset($__errorArgs, $__bag); ?>
           </div>
 
+
+            <div class="col-md-4">
+              <label class="form-label fw-bold">حالة الطالب</label>
+
+              <select name="status" class="form-select <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+
+                <option value="">-- اختر حالة الطالب --</option>
+
+                <?php $__currentLoopData = $statusOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $st => $stLabel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <option value="<?php echo e($st); ?>" <?php if(old('status', $student->status ?? '') == $st): echo 'selected'; endif; ?>>
+                    <?php echo e($stLabel); ?>
+
+                  </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+              </select>
+
+              <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+              <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+            </div>
 
           <div class="col-12">
             <label class="form-label fw-bold">ملاحظات</label>
@@ -1812,4 +1825,25 @@ unset($__errorArgs, $__bag); ?>
       renderDetails();
     });
   })();
+
+
+  // ✅ checkbox اللغة
+document.addEventListener('DOMContentLoaded', function () {
+  var hasLangCheck  = document.getElementById('hasLangCheck');
+  var langLevelField = document.getElementById('langLevelField');
+  var langSelect    = langLevelField ? langLevelField.querySelector('select') : null;
+
+  if (hasLangCheck && langLevelField) {
+    hasLangCheck.addEventListener('change', function () {
+      if (this.checked) {
+        langLevelField.style.display = 'block';
+      } else {
+        langLevelField.style.display = 'none';
+        if (langSelect) langSelect.value = ''; // مسح عند إلغاء
+      }
+    });
+  }
+});
+
+
 </script><?php /**PATH C:\Users\engya\Desktop\customers\namaa\laravel11-auth\resources\views/students/_form.blade.php ENDPATH**/ ?>
