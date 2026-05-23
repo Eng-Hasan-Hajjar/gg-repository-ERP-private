@@ -10,24 +10,21 @@ class ExamResultController extends Controller
 {
 public function edit(Exam $exam, Request $request)
 {
-    $exam->load(['branch','diploma','trainer']);
+    $exam->load(['diploma', 'trainer']);
 
+    // ✅ جلب طلاب الدبلومة فقط — بدون فلتر الفرع
     $studentsQ = \App\Models\Student::query()
-        ->where('branch_id', $exam->branch_id)
         ->whereHas('diplomas', function ($q) use ($exam) {
             $q->where('diplomas.id', $exam->diploma_id);
         });
 
+    // فلتر البحث
     if ($request->filled('search')) {
         $s = trim($request->search);
-        $studentsQ->where(function($x) use ($s){
-            $x->where('full_name','like',"%$s%")
-              ->orWhere('university_id','like',"%$s%");
+        $studentsQ->where(function ($x) use ($s) {
+            $x->where('full_name', 'like', "%$s%")
+              ->orWhere('university_id', 'like', "%$s%");
         });
-    }
-
-    if ($request->filled('student_id')) {
-        $studentsQ->where('id', $request->student_id);
     }
 
     $students = $studentsQ->orderBy('full_name')->get();
@@ -36,7 +33,7 @@ public function edit(Exam $exam, Request $request)
         ->get()
         ->keyBy('student_id');
 
-    return view('exams.results_edit', compact('exam','students','existing'));
+    return view('exams.results_edit', compact('exam', 'students', 'existing'));
 }
 public function update(Request $request, Exam $exam)
 {

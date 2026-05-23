@@ -316,7 +316,19 @@ class DashboardController extends Controller
             $eventTypes2 = \App\Models\CalendarEvent::types();
         }
 
-
+// في DashboardController@index أضف
+$studentsNeedVerification = \App\Models\StudentProfile::query()
+    ->where(function ($q) {
+        $q->whereNull('arabic_full_name')
+          ->orWhere('arabic_full_name', '')
+          ->orWhereNull('birth_date')
+          ->orWhereNull('national_id')
+          ->orWhere('national_id', '');
+    })
+    ->whereHas('student', fn($sq) =>
+        $sq->where('registration_status', 'confirmed')
+    )
+    ->count();
 
         return view('dashboard', [
             'highlights' => $highlights,
@@ -354,7 +366,7 @@ class DashboardController extends Controller
             'calendarStats' => $calendarStats,
             'upcomingEvents2' => $upcomingEvents2 ?? collect(),
             'eventTypes2' => $eventTypes2 ?? [],
-
+'studentsNeedVerification' => $studentsNeedVerification,
         ]);
     }
 }

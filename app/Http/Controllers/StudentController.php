@@ -57,6 +57,21 @@ class StudentController extends Controller
             $q->where('updated_at', '<=', now()->subDays(7))->where('status', 'active');
         }
 
+        // ✅ أضف هذا مع باقي الفلاتر
+        if ($request->boolean('needs_verification')) {
+            $q->whereHas('profile', function ($p) {
+                $p->where(function ($inner) {
+                    $inner->whereNull('arabic_full_name')
+                        ->orWhere('arabic_full_name', '')
+                        ->orWhereNull('birth_date')
+                        ->orWhereNull('national_id')
+                        ->orWhere('national_id', '');
+                });
+            });
+        }
+
+
+
         // ✅ إحصائيات سريعة — نفس الـ query بدون pagination
         $statsQuery = clone $q;
         $totalCount = (clone $statsQuery)->count();
@@ -82,10 +97,26 @@ class StudentController extends Controller
 
 
         $showMyOnly = !$user->hasRole('super_admin')
-           && !$user->hasRole('manager_student_affairs')
-           && !$user->hasPermission('view_all_students');
+            && !$user->hasRole('manager_student_affairs')
+            && !$user->hasPermission('view_all_students');
 
 
+
+        // ✅ أضف هذا مع باقي الإحصائيات
+        $needsVerificationCount = \App\Models\StudentProfile::query()
+            ->where(function ($q) {
+                $q->whereNull('arabic_full_name')
+                    ->orWhere('arabic_full_name', '')
+                    ->orWhereNull('birth_date')
+                    ->orWhereNull('national_id')
+                    ->orWhere('national_id', '');
+            })
+            ->whereHas(
+                'student',
+                fn($sq) =>
+                $sq->where('registration_status', 'confirmed')
+            )
+            ->count();
 
         return view('students.index', [
             'students' => $students,
@@ -100,7 +131,8 @@ class StudentController extends Controller
             'confirmedCount' => $confirmedCount,
             'pendingCount' => $pendingCount,
             'myCount' => $myCount,
-              'showMyOnly'          => $showMyOnly,
+            'showMyOnly' => $showMyOnly,
+            'needsVerificationCount' => $needsVerificationCount,
         ]);
     }
 

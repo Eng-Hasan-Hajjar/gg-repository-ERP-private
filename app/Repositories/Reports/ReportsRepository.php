@@ -568,6 +568,58 @@ class ReportsRepository
         }
 
 
+
+        // =============================
+// طلبات الإجازة المعلقة
+// =============================
+        if ($this->has('leaves')) {
+            $pendingLeaves = DB::table('leaves')
+                ->where('status', 'pending')
+                ->count();
+
+            if ($pendingLeaves > 0) {
+                $alerts[] = [
+                    'type' => 'warning',
+                    'icon' => 'bi-calendar-x',
+                    'message' => "يوجد {$pendingLeaves} طلب إجازة بانتظار الموافقة",
+                    'time' => now()->toDateTimeString(),
+                    'url' => route('leaves.index'),
+                    // ✅ super_admin أو مدير الدوام والإجازات فقط
+                    'roles' => ['super_admin', 'manager_attendance'],
+                    'permissions' => [],
+                ];
+            }
+
+            // تفاصيل كل طلب على حدة
+            $leaveRequests = DB::table('leaves')
+                ->join('employees', 'employees.id', '=', 'leaves.employee_id')
+                ->select(
+                    'leaves.id',
+                    'leaves.start_date',
+                    'leaves.end_date',
+                    'leaves.type',
+                    'leaves.created_at',
+                    'employees.full_name as employee_name'
+                )
+                ->where('leaves.status', 'pending')
+                ->orderByDesc('leaves.created_at')
+                ->get();
+
+            foreach ($leaveRequests as $leave) {
+                $alerts[] = [
+                    'type' => 'info',
+                    'icon' => 'bi-person-slash',
+                    'message' => "طلب إجازة من {$leave->employee_name} — من {$leave->start_date} إلى {$leave->end_date}",
+                    'time' => $leave->created_at,
+                    'url' => route('leaves.index'),
+                    // ✅ نفس الشرط
+                    'roles' => ['super_admin', 'مدير الدوام والإجازات'],
+                    'permissions' => [],
+                ];
+            }
+        }
+
+
         // =============================
         // مهام متأخرة
         // =============================
@@ -793,32 +845,6 @@ class ReportsRepository
         return $alerts;
     }
 
-    /*
-        public function navbarAlerts(): array
-        {
-            $user = auth()->user();
-
-            if (
-                !$user->hasAnyRole([
-                    'super_admin',
-                    'finance_manager',
-                    'system_admin'
-                ])
-            ) {
-                return [
-                    'alerts' => [],
-                    'count' => 0
-                ];
-            }
-
-            $alerts = $this->repo->systemAlerts();
-
-            return [
-                'alerts' => $alerts,
-                'count' => count($alerts)
-            ];
-        }
-    */
 
     public function todayAlertsSummary(): array
     {

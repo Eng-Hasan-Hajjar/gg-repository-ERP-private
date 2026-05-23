@@ -23,29 +23,54 @@
 {{-- ══ إحصائيات سريعة ══ --}}
 <div class="row g-2 mb-3">
   <div class="col-6 col-md-3">
-    <div class="card border-0 shadow-sm text-center py-2 px-3" style="border-right:4px solid #3b82f6 !important; border-radius:12px;">
+    <div class="card border-0 shadow-sm text-center py-2 px-3"
+      style="border-right:4px solid #3b82f6 !important; border-radius:12px;">
       <div style="font-size:1.6rem; font-weight:900; color:#3b82f6;">{{ $totalCount }}</div>
       <div style="font-size:.8rem; color:#64748b; font-weight:700;">إجمالي الطلاب</div>
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="card border-0 shadow-sm text-center py-2 px-3" style="border-right:4px solid #10b981 !important; border-radius:12px;">
+    <div class="card border-0 shadow-sm text-center py-2 px-3"
+      style="border-right:4px solid #10b981 !important; border-radius:12px;">
       <div style="font-size:1.6rem; font-weight:900; color:#10b981;">{{ $confirmedCount }}</div>
       <div style="font-size:.8rem; color:#64748b; font-weight:700;">مثبّتون</div>
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="card border-0 shadow-sm text-center py-2 px-3" style="border-right:4px solid #f59e0b !important; border-radius:12px;">
+    <div class="card border-0 shadow-sm text-center py-2 px-3"
+      style="border-right:4px solid #f59e0b !important; border-radius:12px;">
       <div style="font-size:1.6rem; font-weight:900; color:#f59e0b;">{{ $pendingCount }}</div>
       <div style="font-size:.8rem; color:#64748b; font-weight:700;">قيد الانتظار</div>
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="card border-0 shadow-sm text-center py-2 px-3" style="border-right:4px solid #8b5cf6 !important; border-radius:12px;">
+    <div class="card border-0 shadow-sm text-center py-2 px-3"
+      style="border-right:4px solid #8b5cf6 !important; border-radius:12px;">
       <div style="font-size:1.6rem; font-weight:900; color:#8b5cf6;">{{ $myCount }}</div>
       <div style="font-size:.8rem; color:#64748b; font-weight:700;">أضفتهم أنا</div>
     </div>
   </div>
+
+  @if($needsVerificationCount > 0)
+    <div class="alert border-0 shadow-sm mb-3 d-flex align-items-center gap-3"
+      style="background:rgba(245,158,11,.08); border-right:4px solid #f59e0b !important; border-radius:12px;">
+      <i class="bi bi-exclamation-triangle-fill fs-4" style="color:#f59e0b;"></i>
+      <div>
+        <div class="fw-bold" style="color:#92400e;">
+          {{ $needsVerificationCount }} طالب يحتاج مراجعة بيانات
+        </div>
+        <div class="small text-muted">
+          ينقصهم: الاسم اللاتيني أو تاريخ الميلاد أو رقم الوثيقة
+        </div>
+      </div>
+      <a href="{{ route('students.index', ['needs_verification' => 1]) }}" class="btn btn-sm fw-bold ms-auto"
+        style="background:#f59e0b; color:#fff; border-radius:8px;">
+        عرض القائمة
+      </a>
+    </div>
+  @endif
+
+
 </div>
 
 {{-- ══ فلاتر ══ --}}
@@ -56,16 +81,16 @@
 
 
     @if($showMyOnly)
-    <div class="col-auto">
-      <label class="form-label fw-bold d-block" style="font-size:.75rem; color:#64748b;">عرض</label>
-      <a href="{{ request()->boolean('my_only')
-           ? request()->fullUrlWithQuery(['my_only' => 0, 'page' => null])
-           : request()->fullUrlWithQuery(['my_only' => 1, 'page' => null]) }}"
-         class="btn fw-bold {{ request()->boolean('my_only') ? 'btn-primary' : 'btn-outline-secondary' }}">
-        <i class="bi bi-person-fill"></i>
-        {{ request()->boolean('my_only') ? '✓ طلابي فقط' : 'كل الطلاب' }}
-      </a>
-    </div>
+      <div class="col-auto">
+        <label class="form-label fw-bold d-block" style="font-size:.75rem; color:#64748b;">عرض</label>
+        <a href="{{ request()->boolean('my_only')
+      ? request()->fullUrlWithQuery(['my_only' => 0, 'page' => null])
+      : request()->fullUrlWithQuery(['my_only' => 1, 'page' => null]) }}"
+          class="btn fw-bold {{ request()->boolean('my_only') ? 'btn-primary' : 'btn-outline-secondary' }}">
+          <i class="bi bi-person-fill"></i>
+          {{ request()->boolean('my_only') ? '✓ طلابي فقط' : 'كل الطلاب' }}
+        </a>
+      </div>
     @endif
 
     <div class="col-12 col-md-3">
@@ -118,7 +143,7 @@
       <button class="btn btn-namaa fw-bold px-3">
         <i class="bi bi-search"></i> تطبيق
       </button>
-      @if(request()->hasAny(['search','diploma_id','branch_id','status','registration_status','my_only']))
+      @if(request()->hasAny(['search', 'diploma_id', 'branch_id', 'status', 'registration_status', 'my_only']))
         <a href="{{ route('students.index') }}" class="btn btn-outline-secondary fw-bold px-3" title="مسح الفلاتر">
           <i class="bi bi-x-lg"></i>
         </a>
@@ -157,20 +182,40 @@
           <td class="fw-semibold">
             {{ $s->full_name }}
             @if(!empty($s->profile?->message_to_send))
-              <span class="badge bg-warning text-dark ms-1"
-                title="{{ $s->profile->message_to_send }}" data-bs-toggle="tooltip">📩</span>
+              <span class="badge bg-warning text-dark ms-1" title="{{ $s->profile->message_to_send }}"
+                data-bs-toggle="tooltip">📩</span>
             @endif
+
+            {{-- ✅ badge التحقق الجديد --}}
+            @if(
+                        empty($s->profile?->arabic_full_name) ||
+                        empty($s->profile?->birth_date) ||
+                        empty($s->profile?->national_id)
+                      )
+                      <span class="badge ms-1" style="background:rgba(245,158,11,.15); color:#92400e; font-size:.7rem;" title="يحتاج مراجعة: {{ collect([
+                empty($s->profile?->arabic_full_name) ? 'اسم لاتيني' : null,
+                empty($s->profile?->birth_date) ? 'تاريخ ميلاد' : null,
+                empty($s->profile?->national_id) ? 'رقم وثيقة' : null,
+              ])->filter()->implode(' · ') }}" data-bs-toggle="tooltip">
+                        ⚠️
+                      </span>
+            @endif
+
+
             {{-- علامة "أضفته أنا" --}}
             @if($s->created_by === auth()->id())
               <span class="badge ms-1" style="background:rgba(139,92,246,.12); color:#7c3aed; font-size:.7rem;">أنا</span>
             @endif
+
+
+
           </td>
           <td class="hide-mobile">{{ $s->branch->name ?? '-' }}</td>
           <td class="hide-mobile">
             <span class="badge bg-secondary">{{ $s->status_ar }}</span>
           </td>
           <td class="hide-mobile">
-            @php($map = ['pending'=>'warning','confirmed'=>'success','archived'=>'secondary','dismissed'=>'danger','frozen'=>'info'])
+            @php($map = ['pending' => 'warning', 'confirmed' => 'success', 'archived' => 'secondary', 'dismissed' => 'danger', 'frozen' => 'info'])
             <span class="badge bg-{{ $map[$s->registration_status] ?? 'secondary' }}">
               {{ $s->registration_ar }}
             </span>
@@ -194,7 +239,7 @@
               <i class="bi bi-journal-check"></i>
             </button>
 
-            @if(auth()->user()?->hasPermission('edit_students') )
+            @if(auth()->user()?->hasPermission('edit_students'))
               <a class="btn btn-sm btn-outline-primary" href="{{ route('students.show', $s) }}">
                 <i class="bi bi-eye"></i>
               </a>
@@ -206,7 +251,7 @@
               </a>
             @endif
 
-            @if(auth()->user()?->hasPermission('delete_students') )
+            @if(auth()->user()?->hasPermission('delete_students'))
               <form method="POST" action="{{ route('students.destroy', $s) }}" class="d-inline"
                 onsubmit="return confirm('هل أنت متأكد من حذف الطالب؟')">
                 @csrf @method('DELETE')
@@ -214,7 +259,7 @@
               </form>
             @endif
 
-            @if(!$s->is_confirmed )
+            @if(!$s->is_confirmed)
               <form method="POST" action="{{ route('students.confirm', $s) }}" class="d-inline">
                 @csrf
                 <button class="btn btn-sm btn-success">تثبيت</button>
@@ -263,22 +308,22 @@
 </div>
 
 <script>
-function showFinancial(id, name) {
-  document.getElementById('modalTitle').innerHTML = '<i class="bi bi-cash-coin text-success me-2"></i> التفاصيل المالية — ' + name;
-  document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success"></div></div>';
-  new bootstrap.Modal(document.getElementById('studentInfoModal')).show();
-  fetch('/students/' + id + '/modal/financial').then(r => r.text()).then(html => {
-    document.getElementById('modalBody').innerHTML = html;
-  });
-}
-function showExams(id, name) {
-  document.getElementById('modalTitle').innerHTML = '<i class="bi bi-journal-check text-info me-2"></i> نتائج الامتحانات — ' + name;
-  document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
-  new bootstrap.Modal(document.getElementById('studentInfoModal')).show();
-  fetch('/students/' + id + '/modal/exams').then(r => r.text()).then(html => {
-    document.getElementById('modalBody').innerHTML = html;
-  });
-}
+  function showFinancial(id, name) {
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-cash-coin text-success me-2"></i> التفاصيل المالية — ' + name;
+    document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success"></div></div>';
+    new bootstrap.Modal(document.getElementById('studentInfoModal')).show();
+    fetch('/students/' + id + '/modal/financial').then(r => r.text()).then(html => {
+      document.getElementById('modalBody').innerHTML = html;
+    });
+  }
+  function showExams(id, name) {
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-journal-check text-info me-2"></i> نتائج الامتحانات — ' + name;
+    document.getElementById('modalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
+    new bootstrap.Modal(document.getElementById('studentInfoModal')).show();
+    fetch('/students/' + id + '/modal/exams').then(r => r.text()).then(html => {
+      document.getElementById('modalBody').innerHTML = html;
+    });
+  }
 </script>
 
 @endsection

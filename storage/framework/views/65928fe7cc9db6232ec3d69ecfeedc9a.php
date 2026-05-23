@@ -605,7 +605,20 @@
     </div>
   <?php endif; ?>
 
-
+  <?php if($studentsNeedVerification > 0): ?>
+    <div class="alert d-flex align-items-center gap-2 mb-2" style="background:rgba(245,158,11,.08); border-right:4px solid #f59e0b;
+                  border-radius:10px; padding:10px 14px;">
+      <i class="bi bi-person-exclamation" style="color:#f59e0b; font-size:1.2rem;"></i>
+      <div class="flex-grow-1">
+        <span class="fw-bold" style="color:#92400e;"><?php echo e($studentsNeedVerification); ?></span>
+        <span class="small text-muted"> طالب يحتاج مراجعة بياناته (اسم لاتيني / ميلاد / وثيقة)</span>
+      </div>
+      <a href="<?php echo e(route('students.index', ['needs_verification' => 1])); ?>" class="btn btn-sm"
+        style="background:#f59e0b; color:#fff; border-radius:8px; font-size:.78rem;">
+        مراجعة
+      </a>
+    </div>
+  <?php endif; ?>
 
   
   <?php if($upcomingEvents->count()): ?>
@@ -1023,7 +1036,7 @@
               <div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:6px;">
                 <i class="bi bi-clock"></i> أقرب حدث
               </div>
-              
+
 
 
 
