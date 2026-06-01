@@ -20,15 +20,28 @@
   <form class="card border-0 shadow-sm mb-3">
     <div class="card-body">
       <div class="row g-2">
-        <div class="col-6 col-md-3">
+        {{-- ✅ ضع بدله هذين --}}
+        <div class="col-6 col-md-2">
           <select name="employee_id" class="form-select">
             <option value="">الموظف (الكل)</option>
             @foreach($employees as $e)
-              <option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>{{ $e->full_name }}</option>
+              <option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>
+                {{ $e->full_name }}
+              </option>
             @endforeach
           </select>
         </div>
 
+        <div class="col-6 col-md-2">
+          <select name="trainer_id" class="form-select">
+            <option value="">المدرب (الكل)</option>
+            @foreach($trainers as $t)
+              <option value="{{ $t->id }}" @selected(request('trainer_id') == $t->id)>
+                {{ $t->full_name }}
+              </option>
+            @endforeach
+          </select>
+        </div>
 
         <div class="col-6 col-md-2">
           <select name="type" class="form-select">

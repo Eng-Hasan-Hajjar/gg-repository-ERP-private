@@ -2,6 +2,7 @@
 @php($isDashboard = true)
 
 
+
 @section('title', 'لوحة التحكم')
 
 @section('dashboard')
@@ -605,7 +606,7 @@
 
   @if($studentsNeedVerification > 0)
     <div class="alert d-flex align-items-center gap-2 mb-2" style="background:rgba(245,158,11,.08); border-right:4px solid #f59e0b;
-                  border-radius:10px; padding:10px 14px;">
+                              border-radius:10px; padding:10px 14px;">
       <i class="bi bi-person-exclamation" style="color:#f59e0b; font-size:1.2rem;"></i>
       <div class="flex-grow-1">
         <span class="fw-bold" style="color:#92400e;">{{ $studentsNeedVerification }}</span>
@@ -616,6 +617,29 @@
         مراجعة
       </a>
     </div>
+  @endif
+
+  @if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('manager_attendance') || auth()->user()?->hasPermission('view_attendance'))
+
+
+    @if($pendingLeaves > 0)
+      <div class="alert d-flex align-items-center gap-3 mb-3" style="background:rgba(14,165,233,.08);
+                            border-right:4px solid #0ea5e9;
+                            border-radius:12px;
+                            padding:12px 18px;">
+        <i class="bi bi-calendar-x-fill fs-4" style="color:#0284c7;"></i>
+        <div class="flex-grow-1">
+          <span class="fw-bold" style="color:#0c4a6e;">
+            {{ $pendingLeaves }} طلب إجازة
+          </span>
+          <span class="small text-muted"> بانتظار المراجعة والموافقة</span>
+        </div>
+        <a href="{{ route('leaves.index', ['status' => 'pending']) }}" class="btn btn-sm fw-bold"
+          style="background:#0ea5e9; color:#fff; border-radius:8px;">
+          مراجعة الطلبات
+        </a>
+      </div>
+    @endif
   @endif
 
   {{-- ── أحداث الأسبوع القادم ── --}}
@@ -942,6 +966,14 @@
     @endif
 
 
+    
+
+
+
+
+
+
+
     {{-- الدوام والإجازات --}}
     @if(auth()->user()?->hasPermission('view_attendance'))
       <div class="col-12 col-md-6 col-xl-4">
@@ -974,21 +1006,70 @@
               <div class="sm-label"><i class="bi bi-calendar-check"></i> إجازات قادمة</div>
             </div>
           </div>
+
+      
+
+          {{-- ✅ الأزرار الرئيسية --}}
           <div class="module-actions grid-2">
-            <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
-            <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
+            <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100">التقويم</a>
+            <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100">فتح الدوام</a>
             @if(auth()->user()?->hasPermission('export_attendance_reports'))
-              <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
+              <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100">تقارير الدوام</a>
             @endif
             @if(auth()->user()?->hasPermission('view_leaves'))
-              <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+              <a href="{{ route('leaves.index') }}" class="btn btn-outline-secondary fw-bold w-100 position-relative">
+                طلبات الإجازات
+                @if($pendingLeaves > 0)
+                  <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size:.7rem;">
+                    {{ $pendingLeaves }}
+                  </span>
+                @endif
+              </a>
             @endif
           </div>
+
+
+
+              {{-- ✅ أزرار اليوم — صف كامل العرض --}}
+          <div style="padding: 0 16px 10px;">
+            <div class="small fw-bold text-muted mb-2">
+              <i class="bi bi-calendar-day"></i> دوام اليوم — {{ now()->locale('ar')->translatedFormat('l d/m') }}
+            </div>
+            <div class="d-flex gap-2">
+              <a href="{{ route('attendance.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->toDateString(),
+        'type' => 'employee'
+      ]) }}" class="btn fw-bold flex-fill" style="background:rgba(14,165,233,.1);
+                        color:#0369a1;
+                        border:1px solid rgba(14,165,233,.25);
+                        border-radius:10px;
+                        font-size:12px;">
+                <i class="bi bi-person-badge"></i><br>
+                دوام الموظفين
+              </a>
+              <a href="{{ route('attendance.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->toDateString(),
+        'type' => 'trainer'
+      ]) }}" class="btn fw-bold flex-fill" style="background:rgba(16,185,129,.1);
+                        color:#065f46;
+                        border:1px solid rgba(16,185,129,.25);
+                        border-radius:10px;
+                        font-size:12px;">
+                <i class="bi bi-mortarboard"></i><br>
+                دوام المدربين
+              </a>
+            </div>
+          </div>
+
+
+
+          
         </div>
       </div>
     @endif
-
-
 
 
     {{-- التقويم والأحداث --}}

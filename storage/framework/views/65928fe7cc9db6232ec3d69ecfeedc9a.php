@@ -2,6 +2,7 @@
 <?php ($isDashboard = true); ?>
 
 
+
 <?php $__env->startSection('title', 'لوحة التحكم'); ?>
 
 <?php $__env->startSection('dashboard'); ?>
@@ -607,7 +608,7 @@
 
   <?php if($studentsNeedVerification > 0): ?>
     <div class="alert d-flex align-items-center gap-2 mb-2" style="background:rgba(245,158,11,.08); border-right:4px solid #f59e0b;
-                  border-radius:10px; padding:10px 14px;">
+                              border-radius:10px; padding:10px 14px;">
       <i class="bi bi-person-exclamation" style="color:#f59e0b; font-size:1.2rem;"></i>
       <div class="flex-grow-1">
         <span class="fw-bold" style="color:#92400e;"><?php echo e($studentsNeedVerification); ?></span>
@@ -618,6 +619,29 @@
         مراجعة
       </a>
     </div>
+  <?php endif; ?>
+
+  <?php if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('manager_attendance') || auth()->user()?->hasPermission('view_attendance')): ?>
+
+
+    <?php if($pendingLeaves > 0): ?>
+      <div class="alert d-flex align-items-center gap-3 mb-3" style="background:rgba(14,165,233,.08);
+                            border-right:4px solid #0ea5e9;
+                            border-radius:12px;
+                            padding:12px 18px;">
+        <i class="bi bi-calendar-x-fill fs-4" style="color:#0284c7;"></i>
+        <div class="flex-grow-1">
+          <span class="fw-bold" style="color:#0c4a6e;">
+            <?php echo e($pendingLeaves); ?> طلب إجازة
+          </span>
+          <span class="small text-muted"> بانتظار المراجعة والموافقة</span>
+        </div>
+        <a href="<?php echo e(route('leaves.index', ['status' => 'pending'])); ?>" class="btn btn-sm fw-bold"
+          style="background:#0ea5e9; color:#fff; border-radius:8px;">
+          مراجعة الطلبات
+        </a>
+      </div>
+    <?php endif; ?>
   <?php endif; ?>
 
   
@@ -947,6 +971,14 @@
 
 
     
+
+
+
+
+
+
+
+    
     <?php if(auth()->user()?->hasPermission('view_attendance')): ?>
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
@@ -978,21 +1010,72 @@
               <div class="sm-label"><i class="bi bi-calendar-check"></i> إجازات قادمة</div>
             </div>
           </div>
+
+      
+
+          
           <div class="module-actions grid-2">
-            <a href="<?php echo e(route('attendance.calendar')); ?>" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
-            <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
+            <a href="<?php echo e(route('attendance.calendar')); ?>" class="btn btn-namaa w-100">التقويم</a>
+            <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-namaa w-100">فتح الدوام</a>
             <?php if(auth()->user()?->hasPermission('export_attendance_reports')): ?>
-              <a href="<?php echo e(route('attendance.reports')); ?>" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
+              <a href="<?php echo e(route('attendance.reports')); ?>" class="btn btn-soft w-100">تقارير الدوام</a>
             <?php endif; ?>
             <?php if(auth()->user()?->hasPermission('view_leaves')): ?>
-              <a href="<?php echo e(route('leaves.index')); ?>" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+              <a href="<?php echo e(route('leaves.index')); ?>" class="btn btn-outline-secondary fw-bold w-100 position-relative">
+                طلبات الإجازات
+                <?php if($pendingLeaves > 0): ?>
+                  <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size:.7rem;">
+                    <?php echo e($pendingLeaves); ?>
+
+                  </span>
+                <?php endif; ?>
+              </a>
             <?php endif; ?>
           </div>
+
+
+
+              
+          <div style="padding: 0 16px 10px;">
+            <div class="small fw-bold text-muted mb-2">
+              <i class="bi bi-calendar-day"></i> دوام اليوم — <?php echo e(now()->locale('ar')->translatedFormat('l d/m')); ?>
+
+            </div>
+            <div class="d-flex gap-2">
+              <a href="<?php echo e(route('attendance.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->toDateString(),
+        'type' => 'employee'
+      ])); ?>" class="btn fw-bold flex-fill" style="background:rgba(14,165,233,.1);
+                        color:#0369a1;
+                        border:1px solid rgba(14,165,233,.25);
+                        border-radius:10px;
+                        font-size:12px;">
+                <i class="bi bi-person-badge"></i><br>
+                دوام الموظفين
+              </a>
+              <a href="<?php echo e(route('attendance.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->toDateString(),
+        'type' => 'trainer'
+      ])); ?>" class="btn fw-bold flex-fill" style="background:rgba(16,185,129,.1);
+                        color:#065f46;
+                        border:1px solid rgba(16,185,129,.25);
+                        border-radius:10px;
+                        font-size:12px;">
+                <i class="bi bi-mortarboard"></i><br>
+                دوام المدربين
+              </a>
+            </div>
+          </div>
+
+
+
+          
         </div>
       </div>
     <?php endif; ?>
-
-
 
 
     

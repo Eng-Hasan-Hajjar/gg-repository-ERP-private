@@ -13,7 +13,7 @@ class AttendanceGeneratorController extends Controller
     {
         $data = $request->validate([
             'week_start' => ['required', 'date'],
-            'branch_id'  => ['nullable', 'integer', 'exists:branches,id'],
+            'branch_id' => ['nullable', 'integer', 'exists:branches,id'],
         ]);
 
         $start = Carbon::parse($data['week_start'])->startOfWeek();
@@ -29,13 +29,22 @@ class AttendanceGeneratorController extends Controller
             $weekly = $emp->schedules->keyBy('weekday');
 
             for ($d = 0; $d < 7; $d++) {
-                $date    = $start->copy()->addDays($d)->toDateString();
+                $date = $start->copy()->addDays($d)->toDateString();
                 $weekday = Carbon::parse($date)->dayOfWeek; // 0=Sun .. 6=Sat
 
                 $schedule = $weekly->get($weekday);
 
                 // هل هذا اليوم عطلة؟
                 $isOff = !$schedule || $schedule->is_off;
+
+
+                // ✅ تحقق من وجود إجازة معتمدة لهذا الموظف في هذا اليوم
+                $leave = \App\Models\LeaveRequest::where('employee_id', $emp->id)
+                    ->where('status', 'approved')
+                    ->whereDate('start_date', '<=', $date)
+                    ->whereDate('end_date', '>=', $date)
+                    ->first();
+
 
                 // بناء وقت البداية والنهاية كـ timestamp كامل
                 $scheduledStart = (!$isOff && $schedule->start_time)
@@ -50,11 +59,18 @@ class AttendanceGeneratorController extends Controller
                     ['employee_id' => $emp->id, 'work_date' => $date],
                     [
                         'scheduled_start' => $scheduledStart,
-                        'scheduled_end'   => $scheduledEnd,
-                        'work_shift_id'   => null, // لم نعد نستخدمه
-                        'status'          => $isOff ? 'off' : 'scheduled',
-                        'late_minutes'    => 0,
-                        'worked_minutes'  => 0,
+                        'scheduled_end' => $scheduledEnd,
+                        'work_shift_id' => null, // لم نعد نستخدمه
+
+                        'leave_request_id' => $leave?->id,
+                        // ✅ إجازة تأخذ الأولوية
+                        'status' => $leave ? 'leave' : ($isOff ? 'off' : 'scheduled'),
+
+
+
+                       // 'status' => $isOff ? 'off' : 'scheduled',
+                        'late_minutes' => 0,
+                        'worked_minutes' => 0,
                     ]
                 );
             }

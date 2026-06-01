@@ -178,20 +178,37 @@
               @endforeach
             </select>
           </div>
+          {{-- ✅ ضع بدله هذين --}}
           <div class="col-6 col-md-2">
             <select name="employee_id" class="form-select">
               <option value="">الموظف (الكل)</option>
               @foreach($employees as $e)
-                <option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>{{ $e->full_name }}</option>
+                <option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>
+                  {{ $e->full_name }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <select name="trainer_id" class="form-select">
+              <option value="">المدرب (الكل)</option>
+              @foreach($trainers as $t)
+                <option value="{{ $t->id }}" @selected(request('trainer_id') == $t->id)>
+                  {{ $t->full_name }}
+                </option>
               @endforeach
             </select>
           </div>
           <div class="col-6 col-md-2">
             <select name="status" class="form-select">
               <option value="">الحالة (الكل)</option>
-              @foreach(['scheduled', 'present', 'late', 'absent', 'off', 'leave'] as $s)
-                <option value="{{ $s }}" @selected(request('status') == $s)>{{ $s }}</option>
-              @endforeach
+              <option value="scheduled" @selected(request('status') == 'scheduled')>مجدول</option>
+              <option value="present" @selected(request('status') == 'present')>حاضر</option>
+              <option value="late" @selected(request('status') == 'late')>متأخر</option>
+              <option value="absent" @selected(request('status') == 'absent')>غائب</option>
+              <option value="off" @selected(request('status') == 'off')>عطلة</option>
+              <option value="leave" @selected(request('status') == 'leave')>إجازة</option>
             </select>
           </div>
           <div class="col-6 col-md-2">
@@ -243,6 +260,9 @@
         <button type="button" class="col-toggle-btn" data-col="col-location">
           <i class="bi bi-geo-alt"></i> الموقع
         </button>
+        <button type="button" class="col-toggle-btn" data-col="col-checkout-loc">
+          <i class="bi bi-geo-alt"></i> موقع الخروج
+        </button>
       </div>
     </div>
   </div>
@@ -264,6 +284,7 @@
             <th class="col-worked hide-mobile">ساعات</th>
             <th class="col-net hide-mobile">صافي</th>
             <th class="col-location hide-mobile">الموقع</th>
+            <th class="col-checkout-loc hide-mobile">موقع الخروج</th>
             <th class="hide-mobile">حالة</th>
             <th class="text-end">إجراءات</th>
             <th>تفاصيل</th>
@@ -302,8 +323,12 @@
                 ? floor($workedMin / 60) . 'س ' . ($workedMin % 60) . 'د'
                 : '—';
             @endphp
-            <tr class="{{ $r->notes ? 'table-warning' : '' }}"
-              style="{{ $r->notes ? 'border-right: 4px solid #f59e0b;' : '' }}">
+            <tr class="
+                                  {{ $r->status === 'leave' ? 'table-info' : '' }}
+                                  {{ $r->status === 'absent' ? 'table-danger' : '' }}
+                                  {{ $r->notes ? 'table-warning' : '' }}" style="{{ $r->status === 'leave' ? 'border-right:4px solid #0ea5e9;' : '' }}
+                               {{ $r->status === 'absent' ? 'border-right:4px solid #ef4444;' : '' }}
+                               {{ $r->notes ? 'border-right:4px solid #f59e0b;' : '' }}">
               <td class="fw-bold hide-mobile">{{ $r->work_date->format('Y-m-d') }}</td>
               <td>
                 <span class="badge {{ $r->work_date->isToday() ? 'bg-primary' : 'bg-secondary' }}">
@@ -366,6 +391,22 @@
                 @endif
               </td>
 
+
+
+              <td class="col-checkout-loc hide-mobile">
+                @if($r->checkout_latitude)
+                        <a href="https://maps.google.com/?q={{ $r->checkout_latitude }},{{ $r->checkout_longitude }}"
+                          target="_blank" class="btn btn-xs btn-outline-success" style="font-size:.75rem; padding:2px 8px;">
+                          <i class="bi bi-geo-alt-fill"></i>
+                          {{ $r->checkout_address
+                  ? \Illuminate\Support\Str::limit($r->checkout_address, 25)
+                  : "{$r->checkout_latitude}, {$r->checkout_longitude}" }}
+                        </a>
+                @else
+                  <span class="text-muted">—</span>
+                @endif
+              </td>
+
               <td class="hide-mobile">
                 <span class="badge bg-{{ $r->status_color }}">{{ $r->status_label }}</span>
               </td>
@@ -373,42 +414,56 @@
               <td class="text-end">
                 <div class="d-flex gap-1 justify-content-end flex-wrap">
                   @if(auth()->user()?->hasPermission('mark_attendance'))
+                    @if($r->status === 'leave')
+                      <span class="badge bg-info text-dark">
+                        <i class="bi bi-calendar-check"></i> إجازة
+                      </span>
+                    @else
 
-                    @if(!$r->check_in_at && $r->status != 'off')
-                      <form method="POST" action="{{ route('attendance.checkin', $r) }}">
-                        @csrf
-                        <button class="btn btn-sm btn-outline-success">
-                          <i class="bi bi-box-arrow-in-right"></i> دخول
-                        </button>
-                      </form>
+
+                      @if(!$r->check_in_at && $r->status != 'off')
+                        <form method="POST" action="{{ route('attendance.checkin', $r) }}">
+                          @csrf
+                          <button class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-box-arrow-in-right"></i> دخول
+                          </button>
+                        </form>
+                      @endif
+
+                      @if($r->can_start_break)
+                        <form method="POST" action="{{ route('attendance.break.start', $r) }}">
+                          @csrf
+                          <button class="btn btn-sm btn-break-start">
+                            <i class="bi bi-cup-hot"></i> استراحة
+                          </button>
+                        </form>
+                      @endif
+
+                      @if($r->can_end_break)
+                        <form method="POST" action="{{ route('attendance.break.end', $r) }}">
+                          @csrf
+                          <button class="btn btn-sm btn-break-end">
+                            <i class="bi bi-play-circle"></i> إنهاء الاستراحة
+                          </button>
+                        </form>
+                      @endif
+
+                      @if($r->check_in_at && !$r->check_out_at && !$r->is_on_break)
+                        <form method="POST" action="{{ route('attendance.checkout', $r) }}" class="checkout-form"
+                          id="checkout-form-{{ $r->id }}">
+                          @csrf
+                          <input type="hidden" name="checkout_lat" id="lat-{{ $r->id }}">
+                          <input type="hidden" name="checkout_lng" id="lng-{{ $r->id }}">
+                          <input type="hidden" name="checkout_address" id="addr-{{ $r->id }}">
+                          <button type="button" class="btn btn-sm btn-outline-primary" onclick="submitCheckout({{ $r->id }})">
+                            <i class="bi bi-box-arrow-left"></i> خروج
+                          </button>
+                        </form>
+                      @endif
+
                     @endif
 
-                    @if($r->can_start_break)
-                      <form method="POST" action="{{ route('attendance.break.start', $r) }}">
-                        @csrf
-                        <button class="btn btn-sm btn-break-start">
-                          <i class="bi bi-cup-hot"></i> استراحة
-                        </button>
-                      </form>
-                    @endif
 
-                    @if($r->can_end_break)
-                      <form method="POST" action="{{ route('attendance.break.end', $r) }}">
-                        @csrf
-                        <button class="btn btn-sm btn-break-end">
-                          <i class="bi bi-play-circle"></i> إنهاء الاستراحة
-                        </button>
-                      </form>
-                    @endif
-
-                    @if($r->check_in_at && !$r->check_out_at && !$r->is_on_break)
-                      <form method="POST" action="{{ route('attendance.checkout', $r) }}" class="checkout-form">
-                        @csrf
-                        <button class="btn btn-sm btn-outline-primary">
-                          <i class="bi bi-box-arrow-left"></i> خروج
-                        </button>
-                      </form>
-                    @endif
 
                   @endif
                 </div>
@@ -603,6 +658,50 @@
       document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
         new bootstrap.Tooltip(el);
       });
+
+
+
+
+
+
+
+      function submitCheckout(recordId) {
+        if (!confirm('⚠️ هل أنت متأكد من تسجيل الخروج الآن؟')) return;
+
+        const form = document.getElementById('checkout-form-' + recordId);
+
+        if (!navigator.geolocation) {
+          form.submit();
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            document.getElementById('lat-' + recordId).value = pos.coords.latitude;
+            document.getElementById('lng-' + recordId).value = pos.coords.longitude;
+
+            // جلب العنوان من Nominatim (مجاني)
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`)
+              .then(r => r.json())
+              .then(data => {
+                document.getElementById('addr-' + recordId).value =
+                  data.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                form.submit();
+              })
+              .catch(() => {
+                document.getElementById('addr-' + recordId).value =
+                  `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                form.submit();
+              });
+          },
+          function () {
+            // المستخدم رفض أو لا يوجد GPS
+            form.submit();
+          },
+          { timeout: 5000 }
+        );
+      }
+
 
 
     </script>

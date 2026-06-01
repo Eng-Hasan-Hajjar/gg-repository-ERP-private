@@ -60,6 +60,19 @@ class LeaveRequestController extends Controller
         if ($request->filled('to'))
             $q->whereDate('start_date', '<=', $request->to);
 
+
+
+        if ($request->filled('employee_id')) {
+            $q->where('employee_id', $request->employee_id);
+        }
+
+        // ✅ أضف هذا
+        if ($request->filled('trainer_id')) {
+            $q->where('employee_id', $request->trainer_id);
+        }
+
+
+
         if ($isSuperAdmin) {
             $employees = Employee::withoutGlobalScopes()->orderBy('full_name')->get();
         } elseif ($isManager) {
@@ -79,6 +92,8 @@ class LeaveRequestController extends Controller
         return view('leaves.index', [
             'leaves' => $q->latest()->paginate(20)->withQueryString(),
             'employees' => $employees,
+            'trainers' => Employee::where('type', 'trainer')->orderBy('full_name')->get(),
+
         ]);
     }
 

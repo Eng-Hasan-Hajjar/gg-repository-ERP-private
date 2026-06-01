@@ -1,7 +1,7 @@
-@extends('layouts.app')
-@section('title', 'إعدادات النظام')
 
-@section('content')
+<?php $__env->startSection('title', 'إعدادات النظام'); ?>
+
+<?php $__env->startSection('content'); ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
@@ -10,18 +10,19 @@
   </div>
 </div>
 
-<form method="POST" action="{{ route('admin.settings.update') }}">
-  @csrf
+<form method="POST" action="<?php echo e(route('admin.settings.update')); ?>">
+  <?php echo csrf_field(); ?>
 
-  @if(session('success'))
+  <?php if(session('success')): ?>
     <div class="alert alert-success rounded-3 mb-3">
-      <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+      <i class="bi bi-check-circle-fill me-2"></i> <?php echo e(session('success')); ?>
+
     </div>
-  @endif
+  <?php endif; ?>
 
   <div class="row g-4">
 
-    {{-- ── كارد المظهر ── --}}
+    
     <div class="col-12 col-lg-6">
       <div class="card border-0 shadow-sm h-100">
         <div class="card-body p-4">
@@ -36,7 +37,7 @@
             </div>
           </div>
 
-          {{-- وضع اللون --}}
+          
           <div class="mb-4">
             <label class="fw-bold mb-2">وضع العرض</label>
             <div class="d-flex gap-3">
@@ -45,7 +46,8 @@
                      style="cursor:pointer;transition:.2s;"
                      id="label-light">
                 <input type="radio" name="theme_mode" value="light"
-                       {{ ($settings['theme_mode'] ?? 'light') === 'light' ? 'checked' : '' }}
+                       <?php echo e(($settings['theme_mode'] ?? 'light') === 'light' ? 'checked' : ''); ?>
+
                        onchange="updateThemePreview(this.value)">
                 <div>
                   <div class="fw-bold"><i class="bi bi-sun-fill text-warning"></i> فاتح</div>
@@ -57,7 +59,8 @@
                      style="cursor:pointer;transition:.2s;"
                      id="label-dark">
                 <input type="radio" name="theme_mode" value="dark"
-                       {{ ($settings['theme_mode'] ?? 'light') === 'dark' ? 'checked' : '' }}
+                       <?php echo e(($settings['theme_mode'] ?? 'light') === 'dark' ? 'checked' : ''); ?>
+
                        onchange="updateThemePreview(this.value)">
                 <div>
                   <div class="fw-bold"><i class="bi bi-moon-stars-fill text-primary"></i> داكن</div>
@@ -68,17 +71,17 @@
             </div>
           </div>
 
-          {{-- الألوان --}}
+          
           <div class="row g-3">
             <div class="col-6">
               <label class="fw-bold mb-1">اللون الرئيسي</label>
               <div class="d-flex align-items-center gap-2">
                 <input type="color" name="primary_color"
-                       value="{{ $settings['primary_color'] ?? '#0ea5e9' }}"
+                       value="<?php echo e($settings['primary_color'] ?? '#0ea5e9'); ?>"
                        class="form-control form-control-color"
                        style="width:56px;height:44px;border-radius:12px;cursor:pointer;">
                 <input type="text" id="primary_color_text"
-                       value="{{ $settings['primary_color'] ?? '#0ea5e9' }}"
+                       value="<?php echo e($settings['primary_color'] ?? '#0ea5e9'); ?>"
                        class="form-control small"
                        readonly>
               </div>
@@ -87,26 +90,26 @@
               <label class="fw-bold mb-1">اللون الثانوي</label>
               <div class="d-flex align-items-center gap-2">
                 <input type="color" name="secondary_color"
-                       value="{{ $settings['secondary_color'] ?? '#10b981' }}"
+                       value="<?php echo e($settings['secondary_color'] ?? '#10b981'); ?>"
                        class="form-control form-control-color"
                        style="width:56px;height:44px;border-radius:12px;cursor:pointer;">
                 <input type="text" id="secondary_color_text"
-                       value="{{ $settings['secondary_color'] ?? '#10b981' }}"
+                       value="<?php echo e($settings['secondary_color'] ?? '#10b981'); ?>"
                        class="form-control small"
                        readonly>
               </div>
             </div>
           </div>
 
-          {{-- معاينة --}}
+          
           <div class="mt-4 p-3 rounded-3" id="color-preview"
-               style="background:linear-gradient(90deg, {{ $settings['primary_color'] ?? '#0ea5e9' }}, {{ $settings['secondary_color'] ?? '#10b981' }});">
+               style="background:linear-gradient(90deg, <?php echo e($settings['primary_color'] ?? '#0ea5e9'); ?>, <?php echo e($settings['secondary_color'] ?? '#10b981'); ?>);">
             <div class="text-white fw-bold text-center">معاينة الألوان</div>
           </div>
 
 
 
-            {{-- ✅ قسم الغياب التلقائي --}}
+            
 <div class="mt-4 p-3 rounded-3"
      style="background:rgba(239,68,68,.05);
             border:1px solid rgba(239,68,68,.2);">
@@ -136,7 +139,7 @@
              name="absent_after_hour"
              class="form-control form-control-sm"
              style="width:130px; border-color:rgba(239,68,68,.3);"
-             value="{{ \App\Models\SystemSetting::get('absent_after_hour', '18:00') }}">
+             value="<?php echo e(\App\Models\SystemSetting::get('absent_after_hour', '18:00')); ?>">
     </div>
     <div class="col-12">
       <div class="small mt-1" style="color:#6b7280;">
@@ -156,7 +159,7 @@
       </div>
     </div>
 
-    {{-- ── كارد الإشعارات ── --}}
+    
     <div class="col-12 col-lg-6">
       <div class="card border-0 shadow-sm h-100">
         <div class="card-body p-4">
@@ -178,7 +181,7 @@
             </label>
             <div class="input-group">
               <input type="number" name="alert_followup_hours"
-                     value="{{ $settings['alert_followup_hours'] ?? 48 }}"
+                     value="<?php echo e($settings['alert_followup_hours'] ?? 48); ?>"
                      min="1" max="8760" class="form-control">
               <span class="input-group-text">ساعة</span>
             </div>
@@ -194,7 +197,7 @@
             </label>
             <div class="input-group">
               <input type="number" name="alert_warning_hours"
-                     value="{{ $settings['alert_warning_hours'] ?? 24 }}"
+                     value="<?php echo e($settings['alert_warning_hours'] ?? 24); ?>"
                      min="1" max="8760" class="form-control">
               <span class="input-group-text">ساعة</span>
             </div>
@@ -203,7 +206,7 @@
             </div>
           </div>
 
-          {{-- مرجع سريع --}}
+          
           <div class="p-3 rounded-3" style="background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);">
             <div class="small fw-bold mb-2"><i class="bi bi-info-circle text-primary"></i> مرجع سريع</div>
             <div class="small text-muted">
@@ -259,4 +262,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\customers\namaa\laravel11-auth\resources\views/admin/settings/index.blade.php ENDPATH**/ ?>

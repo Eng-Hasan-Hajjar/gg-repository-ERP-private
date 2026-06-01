@@ -25,7 +25,19 @@ class AttendanceRecord extends Model
         'worked_minutes',
         'status',
         'notes',
+
+        'leave_request_id',
+        'checkout_latitude',
+        'checkout_longitude',
+        'checkout_address',
+        'scheduled_start',
+        'scheduled_end',
+
     ];
+
+
+
+
 
     protected $casts = [
         'work_date' => 'date',
@@ -36,6 +48,10 @@ class AttendanceRecord extends Model
     ];
 
     // ───── Relations ─────
+    public function leaveRequest()
+    {
+        return $this->belongsTo(\App\Models\LeaveRequest::class);
+    }
 
     public function employee(): BelongsTo
     {
@@ -110,7 +126,7 @@ class AttendanceRecord extends Model
         return "{$h} س {$m} د";
     }
 
-    
+
     // ───── Scopes ─────
 
     public function scopeReport(Builder $query, $from, $to, $branchId = null)

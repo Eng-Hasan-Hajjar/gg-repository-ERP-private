@@ -800,4 +800,13 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+use Illuminate\Support\Facades\Schedule;
+
+//Schedule::command('attendance:mark-absent')->dailyAt('18:00');
+// ✅ يشتغل كل ساعة ويتحقق هو من الإعداد
+Schedule::command('attendance:mark-absent')->hourly();
+
+
+
+
 require __DIR__ . '/auth.php';

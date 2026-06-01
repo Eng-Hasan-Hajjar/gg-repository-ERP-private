@@ -22,6 +22,7 @@ class SettingsController extends Controller
             'secondary_color'      => 'required|string|max:20',
             'alert_followup_hours' => 'required|integer|min:1|max:8760',
             'alert_warning_hours'  => 'required|integer|min:1|max:8760',
+             'absent_after_hour'    => 'nullable|string|max:10', 
         ]);
 
         SystemSetting::set('theme_mode',            $request->theme_mode);
@@ -29,6 +30,8 @@ class SettingsController extends Controller
         SystemSetting::set('secondary_color',       $request->secondary_color);
         SystemSetting::set('alert_followup_hours',  $request->alert_followup_hours);
         SystemSetting::set('alert_warning_hours',   $request->alert_warning_hours);
+           SystemSetting::set('absent_after_hour',     $request->absent_after_hour ?? '18:00'); // ✅ أضف هذا
+
 
         return back()->with('success', 'تم حفظ الإعدادات بنجاح.');
     }

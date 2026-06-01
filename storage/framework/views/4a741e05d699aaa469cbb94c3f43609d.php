@@ -178,20 +178,39 @@
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
+          
           <div class="col-6 col-md-2">
             <select name="employee_id" class="form-select">
               <option value="">الموظف (الكل)</option>
               <?php $__currentLoopData = $employees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $e): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <option value="<?php echo e($e->id); ?>" <?php if(request('employee_id') == $e->id): echo 'selected'; endif; ?>><?php echo e($e->full_name); ?></option>
+                <option value="<?php echo e($e->id); ?>" <?php if(request('employee_id') == $e->id): echo 'selected'; endif; ?>>
+                  <?php echo e($e->full_name); ?>
+
+                </option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <select name="trainer_id" class="form-select">
+              <option value="">المدرب (الكل)</option>
+              <?php $__currentLoopData = $trainers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($t->id); ?>" <?php if(request('trainer_id') == $t->id): echo 'selected'; endif; ?>>
+                  <?php echo e($t->full_name); ?>
+
+                </option>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
           <div class="col-6 col-md-2">
             <select name="status" class="form-select">
               <option value="">الحالة (الكل)</option>
-              <?php $__currentLoopData = ['scheduled', 'present', 'late', 'absent', 'off', 'leave']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <option value="<?php echo e($s); ?>" <?php if(request('status') == $s): echo 'selected'; endif; ?>><?php echo e($s); ?></option>
-              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              <option value="scheduled" <?php if(request('status') == 'scheduled'): echo 'selected'; endif; ?>>مجدول</option>
+              <option value="present" <?php if(request('status') == 'present'): echo 'selected'; endif; ?>>حاضر</option>
+              <option value="late" <?php if(request('status') == 'late'): echo 'selected'; endif; ?>>متأخر</option>
+              <option value="absent" <?php if(request('status') == 'absent'): echo 'selected'; endif; ?>>غائب</option>
+              <option value="off" <?php if(request('status') == 'off'): echo 'selected'; endif; ?>>عطلة</option>
+              <option value="leave" <?php if(request('status') == 'leave'): echo 'selected'; endif; ?>>إجازة</option>
             </select>
           </div>
           <div class="col-6 col-md-2">
@@ -243,6 +262,9 @@
         <button type="button" class="col-toggle-btn" data-col="col-location">
           <i class="bi bi-geo-alt"></i> الموقع
         </button>
+        <button type="button" class="col-toggle-btn" data-col="col-checkout-loc">
+          <i class="bi bi-geo-alt"></i> موقع الخروج
+        </button>
       </div>
     </div>
   </div>
@@ -264,6 +286,7 @@
             <th class="col-worked hide-mobile">ساعات</th>
             <th class="col-net hide-mobile">صافي</th>
             <th class="col-location hide-mobile">الموقع</th>
+            <th class="col-checkout-loc hide-mobile">موقع الخروج</th>
             <th class="hide-mobile">حالة</th>
             <th class="text-end">إجراءات</th>
             <th>تفاصيل</th>
@@ -302,8 +325,16 @@
                 ? floor($workedMin / 60) . 'س ' . ($workedMin % 60) . 'د'
                 : '—';
             ?>
-            <tr class="<?php echo e($r->notes ? 'table-warning' : ''); ?>"
-              style="<?php echo e($r->notes ? 'border-right: 4px solid #f59e0b;' : ''); ?>">
+            <tr class="
+                                  <?php echo e($r->status === 'leave' ? 'table-info' : ''); ?>
+
+                                  <?php echo e($r->status === 'absent' ? 'table-danger' : ''); ?>
+
+                                  <?php echo e($r->notes ? 'table-warning' : ''); ?>" style="<?php echo e($r->status === 'leave' ? 'border-right:4px solid #0ea5e9;' : ''); ?>
+
+                               <?php echo e($r->status === 'absent' ? 'border-right:4px solid #ef4444;' : ''); ?>
+
+                               <?php echo e($r->notes ? 'border-right:4px solid #f59e0b;' : ''); ?>">
               <td class="fw-bold hide-mobile"><?php echo e($r->work_date->format('Y-m-d')); ?></td>
               <td>
                 <span class="badge <?php echo e($r->work_date->isToday() ? 'bg-primary' : 'bg-secondary'); ?>">
@@ -370,6 +401,23 @@
                 <?php endif; ?>
               </td>
 
+
+
+              <td class="col-checkout-loc hide-mobile">
+                <?php if($r->checkout_latitude): ?>
+                        <a href="https://maps.google.com/?q=<?php echo e($r->checkout_latitude); ?>,<?php echo e($r->checkout_longitude); ?>"
+                          target="_blank" class="btn btn-xs btn-outline-success" style="font-size:.75rem; padding:2px 8px;">
+                          <i class="bi bi-geo-alt-fill"></i>
+                          <?php echo e($r->checkout_address
+                  ? \Illuminate\Support\Str::limit($r->checkout_address, 25)
+                  : "{$r->checkout_latitude}, {$r->checkout_longitude}"); ?>
+
+                        </a>
+                <?php else: ?>
+                  <span class="text-muted">—</span>
+                <?php endif; ?>
+              </td>
+
               <td class="hide-mobile">
                 <span class="badge bg-<?php echo e($r->status_color); ?>"><?php echo e($r->status_label); ?></span>
               </td>
@@ -377,42 +425,56 @@
               <td class="text-end">
                 <div class="d-flex gap-1 justify-content-end flex-wrap">
                   <?php if(auth()->user()?->hasPermission('mark_attendance')): ?>
+                    <?php if($r->status === 'leave'): ?>
+                      <span class="badge bg-info text-dark">
+                        <i class="bi bi-calendar-check"></i> إجازة
+                      </span>
+                    <?php else: ?>
 
-                    <?php if(!$r->check_in_at && $r->status != 'off'): ?>
-                      <form method="POST" action="<?php echo e(route('attendance.checkin', $r)); ?>">
-                        <?php echo csrf_field(); ?>
-                        <button class="btn btn-sm btn-outline-success">
-                          <i class="bi bi-box-arrow-in-right"></i> دخول
-                        </button>
-                      </form>
+
+                      <?php if(!$r->check_in_at && $r->status != 'off'): ?>
+                        <form method="POST" action="<?php echo e(route('attendance.checkin', $r)); ?>">
+                          <?php echo csrf_field(); ?>
+                          <button class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-box-arrow-in-right"></i> دخول
+                          </button>
+                        </form>
+                      <?php endif; ?>
+
+                      <?php if($r->can_start_break): ?>
+                        <form method="POST" action="<?php echo e(route('attendance.break.start', $r)); ?>">
+                          <?php echo csrf_field(); ?>
+                          <button class="btn btn-sm btn-break-start">
+                            <i class="bi bi-cup-hot"></i> استراحة
+                          </button>
+                        </form>
+                      <?php endif; ?>
+
+                      <?php if($r->can_end_break): ?>
+                        <form method="POST" action="<?php echo e(route('attendance.break.end', $r)); ?>">
+                          <?php echo csrf_field(); ?>
+                          <button class="btn btn-sm btn-break-end">
+                            <i class="bi bi-play-circle"></i> إنهاء الاستراحة
+                          </button>
+                        </form>
+                      <?php endif; ?>
+
+                      <?php if($r->check_in_at && !$r->check_out_at && !$r->is_on_break): ?>
+                        <form method="POST" action="<?php echo e(route('attendance.checkout', $r)); ?>" class="checkout-form"
+                          id="checkout-form-<?php echo e($r->id); ?>">
+                          <?php echo csrf_field(); ?>
+                          <input type="hidden" name="checkout_lat" id="lat-<?php echo e($r->id); ?>">
+                          <input type="hidden" name="checkout_lng" id="lng-<?php echo e($r->id); ?>">
+                          <input type="hidden" name="checkout_address" id="addr-<?php echo e($r->id); ?>">
+                          <button type="button" class="btn btn-sm btn-outline-primary" onclick="submitCheckout(<?php echo e($r->id); ?>)">
+                            <i class="bi bi-box-arrow-left"></i> خروج
+                          </button>
+                        </form>
+                      <?php endif; ?>
+
                     <?php endif; ?>
 
-                    <?php if($r->can_start_break): ?>
-                      <form method="POST" action="<?php echo e(route('attendance.break.start', $r)); ?>">
-                        <?php echo csrf_field(); ?>
-                        <button class="btn btn-sm btn-break-start">
-                          <i class="bi bi-cup-hot"></i> استراحة
-                        </button>
-                      </form>
-                    <?php endif; ?>
 
-                    <?php if($r->can_end_break): ?>
-                      <form method="POST" action="<?php echo e(route('attendance.break.end', $r)); ?>">
-                        <?php echo csrf_field(); ?>
-                        <button class="btn btn-sm btn-break-end">
-                          <i class="bi bi-play-circle"></i> إنهاء الاستراحة
-                        </button>
-                      </form>
-                    <?php endif; ?>
-
-                    <?php if($r->check_in_at && !$r->check_out_at && !$r->is_on_break): ?>
-                      <form method="POST" action="<?php echo e(route('attendance.checkout', $r)); ?>" class="checkout-form">
-                        <?php echo csrf_field(); ?>
-                        <button class="btn btn-sm btn-outline-primary">
-                          <i class="bi bi-box-arrow-left"></i> خروج
-                        </button>
-                      </form>
-                    <?php endif; ?>
 
                   <?php endif; ?>
                 </div>
@@ -607,6 +669,50 @@
       document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
         new bootstrap.Tooltip(el);
       });
+
+
+
+
+
+
+
+      function submitCheckout(recordId) {
+        if (!confirm('⚠️ هل أنت متأكد من تسجيل الخروج الآن؟')) return;
+
+        const form = document.getElementById('checkout-form-' + recordId);
+
+        if (!navigator.geolocation) {
+          form.submit();
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            document.getElementById('lat-' + recordId).value = pos.coords.latitude;
+            document.getElementById('lng-' + recordId).value = pos.coords.longitude;
+
+            // جلب العنوان من Nominatim (مجاني)
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`)
+              .then(r => r.json())
+              .then(data => {
+                document.getElementById('addr-' + recordId).value =
+                  data.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                form.submit();
+              })
+              .catch(() => {
+                document.getElementById('addr-' + recordId).value =
+                  `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                form.submit();
+              });
+          },
+          function () {
+            // المستخدم رفض أو لا يوجد GPS
+            form.submit();
+          },
+          { timeout: 5000 }
+        );
+      }
+
 
 
     </script>
