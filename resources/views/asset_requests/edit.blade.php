@@ -1,34 +1,34 @@
 @extends('layouts.app')
-@section('title', 'تقديم طلب لوجستي')
+@section('title', 'تعديل الطلب')
 
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="fw-bold mb-0">تقديم طلب جديد</h4>
+  <h4 class="fw-bold mb-0">تعديل الطلب #{{ $assetRequest->id }}</h4>
   <a href="{{ route('asset-requests.index') }}" class="btn btn-outline-secondary rounded-pill">رجوع</a>
 </div>
 
 <div class="card border-0 shadow-sm" style="max-width:700px;">
   <div class="card-body">
-    <form method="POST" action="{{ route('asset-requests.store') }}">
+    <form method="POST" action="{{ route('asset-requests.update', $assetRequest) }}">
       @csrf
+      @method('PUT')
 
       <div class="row g-3">
 
         {{-- نوع الطلب --}}
-        {{-- نوع الطلب --}}
         <div class="col-md-6">
           <label class="fw-bold">نوع الطلب <span class="text-danger">*</span></label>
           <select name="type" id="request-type" class="form-select @error('type') is-invalid @enderror" required>
-            <option value="purchase" @selected(old('type')=='purchase')>🛒 طلب شراء</option>
-            <option value="repair"   @selected(old('type')=='repair')>🔧 طلب إصلاح</option>
-            <option value="transfer" @selected(old('type')=='transfer')>🚚 طلب نقل</option>
+            <option value="purchase" @selected(old('type', $assetRequest->type)=='purchase')>🛒 طلب شراء</option>
+            <option value="repair"   @selected(old('type', $assetRequest->type)=='repair')>🔧 طلب إصلاح</option>
+            <option value="transfer" @selected(old('type', $assetRequest->type)=='transfer')>🚚 طلب نقل</option>
           </select>
           @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
-        {{-- حقول طلب النقل (تظهر فقط عند اختيار transfer) --}}
-        <div class="col-12" id="transfer-fields" style="{{ old('type') === 'transfer' ? '' : 'display:none;' }}">
+        {{-- حقول طلب النقل --}}
+        <div class="col-12" id="transfer-fields" style="{{ old('type', $assetRequest->type) === 'transfer' ? '' : 'display:none;' }}">
           <div class="row g-3 p-3 rounded-3" style="background:#f0f7ff; border: 1px solid #bbd6f5;">
             <div class="col-12">
               <div class="fw-bold text-primary mb-1"><i class="bi bi-arrow-left-right"></i> بيانات النقل</div>
@@ -38,7 +38,7 @@
               <select name="from_branch_id" class="form-select @error('from_branch_id') is-invalid @enderror">
                 <option value="">— اختر الفرع —</option>
                 @foreach($branches as $b)
-                  <option value="{{ $b->id }}" @selected(old('from_branch_id') == $b->id)>{{ $b->name }}</option>
+                  <option value="{{ $b->id }}" @selected(old('from_branch_id', $assetRequest->from_branch_id) == $b->id)>{{ $b->name }}</option>
                 @endforeach
               </select>
               @error('from_branch_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -48,7 +48,7 @@
               <select name="to_branch_id" class="form-select @error('to_branch_id') is-invalid @enderror">
                 <option value="">— اختر الفرع —</option>
                 @foreach($branches as $b)
-                  <option value="{{ $b->id }}" @selected(old('to_branch_id') == $b->id)>{{ $b->name }}</option>
+                  <option value="{{ $b->id }}" @selected(old('to_branch_id', $assetRequest->to_branch_id) == $b->id)>{{ $b->name }}</option>
                 @endforeach
               </select>
               @error('to_branch_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -56,19 +56,13 @@
           </div>
         </div>
 
-        {{-- ✅ الأولوية --}}
+        {{-- الأولوية --}}
         <div class="col-md-6">
           <label class="fw-bold">الأولوية <span class="text-danger">*</span></label>
           <select name="priority" class="form-select @error('priority') is-invalid @enderror" required>
-            <option value="normal"  @selected(old('priority', 'normal') == 'normal')>
-              ➖ عادية
-            </option>
-            <option value="low"     @selected(old('priority') == 'low')>
-              🔽 منخفضة
-            </option>
-            <option value="urgent"  @selected(old('priority') == 'urgent')>
-              🔴 عاجل
-            </option>
+            <option value="normal"  @selected(old('priority', $assetRequest->priority) == 'normal')>➖ عادية</option>
+            <option value="low"     @selected(old('priority', $assetRequest->priority) == 'low')>🔽 منخفضة</option>
+            <option value="urgent"  @selected(old('priority', $assetRequest->priority) == 'urgent')>🔴 عاجل</option>
           </select>
           @error('priority') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
@@ -79,7 +73,7 @@
           <select name="branch_id" class="form-select">
             <option value="">— اختر الفرع —</option>
             @foreach($branches as $b)
-              <option value="{{ $b->id }}" @selected(old('branch_id') == $b->id)>{{ $b->name }}</option>
+              <option value="{{ $b->id }}" @selected(old('branch_id', $assetRequest->branch_id) == $b->id)>{{ $b->name }}</option>
             @endforeach
           </select>
         </div>
@@ -87,7 +81,7 @@
         {{-- عنوان الطلب --}}
         <div class="col-md-6">
           <label class="fw-bold">عنوان الطلب <span class="text-danger">*</span></label>
-          <input type="text" name="title" value="{{ old('title') }}"
+          <input type="text" name="title" value="{{ old('title', $assetRequest->title) }}"
                  class="form-control @error('title') is-invalid @enderror"
                  placeholder="مثال: شراء طابعة / إصلاح جهاز العرض" required>
           @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -99,7 +93,7 @@
           <select name="asset_id" class="form-select">
             <option value="">— للإصلاح: اختر الأصل —</option>
             @foreach($assets as $a)
-              <option value="{{ $a->id }}" @selected(old('asset_id') == $a->id)>
+              <option value="{{ $a->id }}" @selected(old('asset_id', $assetRequest->asset_id) == $a->id)>
                 {{ $a->name }} — {{ $a->branch->name ?? '' }}
               </option>
             @endforeach
@@ -111,7 +105,7 @@
         <div class="col-12">
           <label class="fw-bold">التفاصيل</label>
           <textarea name="description" rows="4" class="form-control"
-            placeholder="اشرح تفاصيل الطلب، المواصفات، أو سبب الإصلاح...">{{ old('description') }}</textarea>
+            placeholder="اشرح تفاصيل الطلب، المواصفات، أو سبب الإصلاح...">{{ old('description', $assetRequest->description) }}</textarea>
         </div>
 
         {{-- تنبيه للطلبات العاجلة --}}
@@ -132,7 +126,7 @@
 
       <div class="mt-4 d-flex gap-2">
         <button class="btn btn-namaa px-5 fw-bold rounded-pill">
-          <i class="bi bi-send"></i> تقديم الطلب
+          <i class="bi bi-save"></i> حفظ التعديلات
         </button>
         <a href="{{ route('asset-requests.index') }}" class="btn btn-outline-secondary rounded-pill">إلغاء</a>
       </div>
@@ -151,15 +145,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     prioritySelect.addEventListener('change', toggleAlert);
-    toggleAlert(); // عند التحميل
+    toggleAlert();
 });
 
 document.getElementById('request-type').addEventListener('change', function () {
     const transferFields = document.getElementById('transfer-fields');
     transferFields.style.display = this.value === 'transfer' ? '' : 'none';
 });
-
-
 </script>
 
 @endsection

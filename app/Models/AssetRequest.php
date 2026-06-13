@@ -26,6 +26,10 @@ class AssetRequest extends Model
         'approved_by',
         'approved_at',
 
+        'from_branch_id',
+        'to_branch_id',
+
+
     ];
 
 
@@ -34,6 +38,19 @@ class AssetRequest extends Model
         'transferred_at' => 'datetime', // ✅
         'approved_at' => 'datetime', // ✅
     ];
+
+
+    // علاقات جديدة:
+    public function fromBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'from_branch_id');
+    }
+
+    public function toBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'to_branch_id');
+    }
+
 
     public function user(): BelongsTo
     {
@@ -61,7 +78,7 @@ class AssetRequest extends Model
             'pending' => 'قيد المراجعة',
             'approved' => 'مقبول',
             'rejected' => 'مرفوض',
-             'transferred' => 'مُرحَّل',
+            'transferred' => 'مُرحَّل',
             default => $this->status,
         };
     }

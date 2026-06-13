@@ -111,6 +111,20 @@
               <td class="text-end">
                 <div class="d-flex gap-1 justify-content-end flex-wrap">
 
+
+                  
+                  <a href="<?php echo e(route('asset-requests.show', $r)); ?>" class="btn btn-sm btn-outline-info rounded-pill"
+                    title="عرض التفاصيل">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  
+                  <?php if($r->status === 'pending' && ($r->user_id === auth()->id() || auth()->user()?->hasPermission('manage_assets'))): ?>
+                    <a href="<?php echo e(route('asset-requests.edit', $r)); ?>" class="btn btn-sm btn-outline-primary rounded-pill"
+                      title="تعديل الطلب">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                  <?php endif; ?>
+
                   
                   <?php if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending'): ?>
                     <form method="POST" action="<?php echo e(route('asset-requests.approve', $r)); ?>">
@@ -136,7 +150,7 @@
                   
                   <?php if(
                       $r->status !== 'transferred' &&
-                      (auth()->user()?->hasPermission('manage_assets') || $r->created_by === auth()->id())
+                      (auth()->user()?->hasPermission('manage_assets') || $r->created_by === auth()->id() || $r->user_id === auth()->id())
                     ): ?>
                     <form method="POST" action="<?php echo e(route('asset-requests.destroy', $r)); ?>" class="d-inline"
                       onsubmit="return confirm('هل أنت متأكد من حذف هذا الطلب؟')">
@@ -237,7 +251,7 @@
                           </div>
                         </div>
 
-                        
+
                         <div class="mb-3 mt-2">
                           <label class="form-label fw-bold">ملاحظات</label>
                           <textarea name="notes" class="form-control" rows="2"></textarea>

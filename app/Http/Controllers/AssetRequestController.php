@@ -84,12 +84,18 @@ class AssetRequestController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'type' => ['required', 'in:purchase,repair'],
+            'type' => ['required', 'in:purchase,repair,transfer'],
             'priority' => ['required', 'in:low,normal,urgent'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'branch_id' => ['nullable', 'exists:branches,id'],
             'asset_id' => ['nullable', 'exists:assets,id'],
+
+
+            'from_branch_id' => ['nullable', 'exists:branches,id', 'required_if:type,transfer'],
+            'to_branch_id' => ['nullable', 'exists:branches,id', 'required_if:type,transfer', 'different:from_branch_id'],
+
+
         ]);
 
         $data['user_id'] = auth()->id();
@@ -108,42 +114,75 @@ class AssetRequestController extends Controller
             ->with('asset_request_success', 'تم تقديم طلبك بنجاح، في انتظار موافقة المدير.');
     }
 
+    public function show(AssetRequest $assetRequest)
+    {
+        $assetRequest->load(['user', 'branch', 'asset', 'reviewer', 'fromBranch', 'toBranch']);
+        return view('asset_requests.show', compact('assetRequest'));
+    }
 
+
+
+
+    // ── نموذج تعديل الطلب ──
+public function edit(AssetRequest $assetRequest)
+{
+    abort_if(
+        $assetRequest->user_id !== auth()->id() && !auth()->user()->hasPermission('manage_assets'),
+        403
+    );
+    abort_if($assetRequest->status !== 'pending', 422, 'لا يمكن تعديل طلب تمت مراجعته.');
+
+    $user = auth()->user();
+    $employee = \App\Models\Employee::withoutGlobalScopes()
+        ->where('user_id', $user->id)->first();
+
+    $branches = $user->hasRole('super_admin') || $user->hasPermission('manage_assets')
+        ? Branch::orderBy('name')->get()
+        : Branch::where('id', $employee?->branch_id)->get();
+
+    $assets = Asset::orderBy('name')->get();
+
+    return view('asset_requests.edit', compact('assetRequest', 'branches', 'assets'));
+}
+
+// ── حفظ التعديل ──
+public function update(Request $request, AssetRequest $assetRequest)
+{
+    abort_if(
+        $assetRequest->user_id !== auth()->id() && !auth()->user()->hasPermission('manage_assets'),
+        403
+    );
+    abort_if($assetRequest->status !== 'pending', 422, 'لا يمكن تعديل طلب تمت مراجعته.');
+
+    $data = $request->validate([
+        'type'        => ['required', 'in:purchase,repair,transfer'],
+        'priority'    => ['required', 'in:low,normal,urgent'],
+        'title'       => ['required', 'string', 'max:255'],
+        'description' => ['nullable', 'string', 'max:2000'],
+        'branch_id'   => ['nullable', 'exists:branches,id'],
+        'asset_id'    => ['nullable', 'exists:assets,id'],
+
+        'from_branch_id' => ['nullable', 'exists:branches,id', 'required_if:type,transfer'],
+        'to_branch_id'   => ['nullable', 'exists:branches,id', 'required_if:type,transfer', 'different:from_branch_id'],
+    ]);
+
+    // ✅ إذا غيّر النوع من "نقل" لشيء آخر، نفضّي حقول الفروع
+    if ($data['type'] !== 'transfer') {
+        $data['from_branch_id'] = null;
+        $data['to_branch_id']   = null;
+    }
+
+    $assetRequest->update($data);
+
+    return redirect()->route('asset-requests.index')
+        ->with('success', 'تم تعديل الطلب بنجاح.');
+}
 
 
     // ── قبول الطلب ──
 
 
-    /*
-   public function approve(AssetRequest $assetRequest)
-{
-    $assetRequest->update([
-        'status'      => 'approved',
-        'reviewed_by' => auth()->id(),
-        'reviewed_at' => now(),
-    ]);
 
-    // ✅ إذا كان طلب شراء → أنشئ asset تلقائياً
-    if ($assetRequest->type === 'purchase') {
-
-        // توليد asset_tag فريد
-        do {
-            $tag = 'AST-' . now()->format('Y') . '-' . \Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6));
-        } while (\App\Models\Asset::where('asset_tag', $tag)->exists());
-
-        \App\Models\Asset::create([
-            'asset_tag'   => $tag,
-            'name'        => $assetRequest->title,
-            'description' => $assetRequest->description,
-            'branch_id'   => $assetRequest->branch_id,
-            'condition'   => 'good',
-            'currency'    => 'USD',
-        ]);
-    }
-
-    return back()->with('success', 'تم قبول الطلب وترحيله إلى اللوجستيات.');
-}
-*/
 
     public function approve(Request $request, AssetRequest $assetRequest)
     {

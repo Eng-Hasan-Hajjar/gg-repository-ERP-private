@@ -108,6 +108,20 @@
               <td class="text-end">
                 <div class="d-flex gap-1 justify-content-end flex-wrap">
 
+
+                  {{-- زر العرض --}}
+                  <a href="{{ route('asset-requests.show', $r) }}" class="btn btn-sm btn-outline-info rounded-pill"
+                    title="عرض التفاصيل">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  {{-- زر التعديل --}}
+                  @if($r->status === 'pending' && ($r->user_id === auth()->id() || auth()->user()?->hasPermission('manage_assets')))
+                    <a href="{{ route('asset-requests.edit', $r) }}" class="btn btn-sm btn-outline-primary rounded-pill"
+                      title="تعديل الطلب">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                  @endif
+
                   {{-- ✅ قبول الطلب --}}
                   @if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending')
                     <form method="POST" action="{{ route('asset-requests.approve', $r) }}">
@@ -133,7 +147,7 @@
                   {{-- ✅ حذف الطلب --}}
                   @if(
                       $r->status !== 'transferred' &&
-                      (auth()->user()?->hasPermission('manage_assets') || $r->created_by === auth()->id())
+                      (auth()->user()?->hasPermission('manage_assets') || $r->created_by === auth()->id() || $r->user_id === auth()->id())
                     )
                     <form method="POST" action="{{ route('asset-requests.destroy', $r) }}" class="d-inline"
                       onsubmit="return confirm('هل أنت متأكد من حذف هذا الطلب؟')">
@@ -233,7 +247,7 @@
                           </div>
                         </div>
 
-                        
+
                         <div class="mb-3 mt-2">
                           <label class="form-label fw-bold">ملاحظات</label>
                           <textarea name="notes" class="form-control" rows="2"></textarea>

@@ -91,91 +91,7 @@ class LeadController extends Controller
       'registrationOptions' => $labels['registration_status'],
     ]);
   }
-  /*
-    public function index(Request $request)
-    {
-      $q = Lead::query()->with(['branch', 'diplomas', 'followups']);
-
-
-      $user = auth()->user();
-
-
-
-          if (!$user->hasRole('super_admin')) {
-
-              $branchId = $user->employee?->branch_id;
-
-              if ($branchId) {
-                  $q->where('branch_id', $branchId);
-              }
-
-
-              $employee = $user->employee;
-
-              $branchIds = collect([
-                  $employee?->branch_id,
-                  $employee?->secondary_branch_id
-              ])->filter()->unique()->all();
-
-              if (!$user->hasRole('super_admin') && !empty($branchIds)) {
-                  $q->whereIn('branch_id', $branchIds);
-              }
-
-          }
-
-      if ($request->filled('branch_id'))
-        $q->where('branch_id', $request->branch_id);
-      if ($request->filled('stage'))
-        $q->where('stage', $request->stage);
-      if ($request->filled('registration_status'))
-        $q->where('registration_status', $request->registration_status);
-
-      if ($request->filled('diploma_id')) {
-        $did = $request->diploma_id;
-        $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $did));
-      }
-
-      if ($request->filled('search')) {
-        $s = trim($request->search);
-        $q->where(
-          fn($x) => $x
-            ->where('full_name', 'like', "%$s%")
-            ->orWhere('phone', 'like', "%$s%")
-            ->orWhere('whatsapp', 'like', "%$s%")
-        );
-      }
-
-      $leads = $q->latest()->paginate(15)->withQueryString();
-
-      // ======= خرائط التعريب =======
-      $labels = $this->leadArabicLabels();
-
-      // ======= خيارات الفلاتر بالعربي =======
-      $stageOptions = $labels['stage']; // key => عربي
-      $registrationOptions = $labels['registration_status']; // key => عربي
-
-      // ======= أضف ترجمة جاهزة لكل Lead للعرض =======
-      $leads->getCollection()->transform(function ($l) use ($labels) {
-        $l->stage_ar = $labels['stage'][$l->stage]
-          ?? ($l->stage ?? '-');
-
-        $l->registration_ar = $labels['registration_status'][$l->registration_status]
-          ?? ($l->registration_status ?? '-');
-
-        return $l;
-      });
-
-      return view('crm.leads.index', [
-        'leads' => $leads,
-        'branches' => Branch::orderBy('name')->get(),
-        'diplomas' => Diploma::orderBy('name')->get(),
-
-        // للفلاتر:
-        'stageOptions' => $stageOptions,
-        'registrationOptions' => $registrationOptions,
-      ]);
-    }
-  */
+ 
   public function create()
   {
     $user = auth()->user();
@@ -205,26 +121,7 @@ class LeadController extends Controller
     ]);
   }
 
-  /*
-public function create()
-{
-  $user = auth()->user();
 
-  if ($user->hasRole('super_admin')) {
-    $branches = Branch::orderBy('name')->get();
-  } else {
-    $branches = Branch::where('id', $user->employee?->branch_id)->get();
-  }
-
-  return view('crm.leads.create', [
-    'branches' => $branches,
-    'diplomas' => Diploma::with('branch')
-      ->where('is_active', true)
-      ->orderBy('name')
-      ->get(),
-  ]);
-}
-*/
 
   public function store(LeadStoreRequest $request)
   {

@@ -760,7 +760,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/asset-requests', [AssetRequestController::class, 'index'])->name('asset-requests.index');
     Route::get('/asset-requests/create', [AssetRequestController::class, 'create'])->name('asset-requests.create');
+
+    Route::get('/asset-requests/{assetRequest}/edit', [AssetRequestController::class, 'edit'])->name('asset-requests.edit');
+    Route::put('/asset-requests/{assetRequest}', [AssetRequestController::class, 'update'])->name('asset-requests.update');
+
+
     Route::post('/asset-requests', [AssetRequestController::class, 'store'])->name('asset-requests.store');
+    Route::get('asset-requests/{assetRequest}', [AssetRequestController::class, 'show'])
+        ->name('asset-requests.show');
     Route::post('/asset-requests/{assetRequest}/approve', [AssetRequestController::class, 'approve'])->name('asset-requests.approve');
     Route::post('/asset-requests/{assetRequest}/reject', [AssetRequestController::class, 'reject'])->name('asset-requests.reject');
     Route::delete('/asset-requests/{assetRequest}', [AssetRequestController::class, 'destroy'])->name('asset-requests.destroy');

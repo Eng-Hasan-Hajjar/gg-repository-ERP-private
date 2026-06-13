@@ -1,8 +1,8 @@
-@extends('layouts.app')
-@php($activeModule = 'reports')
-@section('title','لوحة القيادة التنفيذية')
 
-@section('content')
+<?php ($activeModule = 'reports'); ?>
+<?php $__env->startSection('title','لوحة القيادة التنفيذية'); ?>
+
+<?php $__env->startSection('content'); ?>
 <style>
 *{box-sizing:border-box}
 .erp-rpt{direction:rtl;font-family:inherit}
@@ -44,7 +44,7 @@
 
 <div class="erp-rpt">
 
-{{-- Header --}}
+
 <div class="rpt-header">
   <div class="rpt-title">
     <i class="bi bi-graph-up-arrow text-primary"></i>
@@ -52,71 +52,72 @@
   </div>
   <div class="rpt-date">
     <i class="bi bi-calendar3"></i>
-    {{ now()->locale('ar')->translatedFormat('l d F Y') }}
+    <?php echo e(now()->locale('ar')->translatedFormat('l d F Y')); ?>
+
   </div>
 </div>
 
-{{-- KPIs --}}
+
 <div class="kpi-grid">
   <div class="kpi">
     <div class="kpi-icon" style="color:#2563eb"><i class="bi bi-mortarboard-fill"></i></div>
-    <div class="kpi-val">{{ $studentTotal }}</div>
+    <div class="kpi-val"><?php echo e($studentTotal); ?></div>
     <div class="kpi-lbl">إجمالي الطلاب</div>
-    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:{{ $studentTotal > 0 ? min(100, round($studentConfirmed/$studentTotal*100)) : 0 }}%;background:#2563eb"></div></div>
-    <span class="kpi-badge" style="background:#dbeafe;color:#1e40af">+{{ $studentToday }} اليوم</span>
+    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:<?php echo e($studentTotal > 0 ? min(100, round($studentConfirmed/$studentTotal*100)) : 0); ?>%;background:#2563eb"></div></div>
+    <span class="kpi-badge" style="background:#dbeafe;color:#1e40af">+<?php echo e($studentToday); ?> اليوم</span>
   </div>
   <div class="kpi">
     <div class="kpi-icon" style="color:#059669"><i class="bi bi-cash-coin"></i></div>
-    <div class="kpi-val">{{ number_format($revenueMonth,0) }}</div>
+    <div class="kpi-val"><?php echo e(number_format($revenueMonth,0)); ?></div>
     <div class="kpi-lbl">إيرادات الشهر</div>
     <div class="kpi-bar"><div class="kpi-bar-fill" style="width:70%;background:#059669"></div></div>
-    <span class="kpi-badge" style="background:#d1fae5;color:#065f46">{{ number_format($revenueToday,0) }} اليوم</span>
+    <span class="kpi-badge" style="background:#d1fae5;color:#065f46"><?php echo e(number_format($revenueToday,0)); ?> اليوم</span>
   </div>
   <div class="kpi">
     <div class="kpi-icon" style="color:#d97706"><i class="bi bi-people-fill"></i></div>
-    <div class="kpi-val">{{ $hrStats['trainers'] + $hrStats['employees'] }}</div>
+    <div class="kpi-val"><?php echo e($hrStats['trainers'] + $hrStats['employees']); ?></div>
     <div class="kpi-lbl">موظفون ومدربون</div>
-    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:{{ ($hrStats['active_trainers']+$hrStats['active_employees']) > 0 ? round(($hrStats['active_trainers']+$hrStats['active_employees'])/($hrStats['trainers']+$hrStats['employees'])*100) : 0 }}%;background:#d97706"></div></div>
-    <span class="kpi-badge" style="background:#fef3c7;color:#92400e">{{ $hrStats['active_trainers']+$hrStats['active_employees'] }} نشط</span>
+    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:<?php echo e(($hrStats['active_trainers']+$hrStats['active_employees']) > 0 ? round(($hrStats['active_trainers']+$hrStats['active_employees'])/($hrStats['trainers']+$hrStats['employees'])*100) : 0); ?>%;background:#d97706"></div></div>
+    <span class="kpi-badge" style="background:#fef3c7;color:#92400e"><?php echo e($hrStats['active_trainers']+$hrStats['active_employees']); ?> نشط</span>
   </div>
   <div class="kpi">
     <div class="kpi-icon" style="color:#7c3aed"><i class="bi bi-check2-square"></i></div>
-    <div class="kpi-val">{{ $taskStats['todo'] }}</div>
+    <div class="kpi-val"><?php echo e($taskStats['todo']); ?></div>
     <div class="kpi-lbl">مهام قيد التنفيذ</div>
-    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:{{ $taskStats['total'] > 0 ? round($taskStats['done']/$taskStats['total']*100) : 0 }}%;background:#7c3aed"></div></div>
-    <span class="kpi-badge" style="background:#ede9fe;color:#5b21b6">{{ $taskStats['overdue'] }} متأخرة</span>
+    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:<?php echo e($taskStats['total'] > 0 ? round($taskStats['done']/$taskStats['total']*100) : 0); ?>%;background:#7c3aed"></div></div>
+    <span class="kpi-badge" style="background:#ede9fe;color:#5b21b6"><?php echo e($taskStats['overdue']); ?> متأخرة</span>
   </div>
   <div class="kpi">
     <div class="kpi-icon" style="color:#0891b2"><i class="bi bi-person-check-fill"></i></div>
-    <div class="kpi-val">{{ $presentToday }}</div>
+    <div class="kpi-val"><?php echo e($presentToday); ?></div>
     <div class="kpi-lbl">حاضر اليوم</div>
-    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:{{ ($presentToday+$absentToday) > 0 ? round($presentToday/($presentToday+$absentToday)*100) : 0 }}%;background:#0891b2"></div></div>
-    <span class="kpi-badge" style="background:#cffafe;color:#155e75">{{ $absentToday }} غائب</span>
+    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:<?php echo e(($presentToday+$absentToday) > 0 ? round($presentToday/($presentToday+$absentToday)*100) : 0); ?>%;background:#0891b2"></div></div>
+    <span class="kpi-badge" style="background:#cffafe;color:#155e75"><?php echo e($absentToday); ?> غائب</span>
   </div>
   <div class="kpi">
     <div class="kpi-icon" style="color:#dc2626"><i class="bi bi-exclamation-triangle-fill"></i></div>
-    <div class="kpi-val">{{ $urgentLeads }}</div>
+    <div class="kpi-val"><?php echo e($urgentLeads); ?></div>
     <div class="kpi-lbl">عملاء بدون متابعة</div>
-    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:{{ $leadsTotal > 0 ? min(100,round($urgentLeads/$leadsTotal*100)) : 0 }}%;background:#dc2626"></div></div>
-    <span class="kpi-badge" style="background:#fee2e2;color:#991b1b">{{ $leadsConverted }} تحوّل</span>
+    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:<?php echo e($leadsTotal > 0 ? min(100,round($urgentLeads/$leadsTotal*100)) : 0); ?>%;background:#dc2626"></div></div>
+    <span class="kpi-badge" style="background:#fee2e2;color:#991b1b"><?php echo e($leadsConverted); ?> تحوّل</span>
   </div>
   <div class="kpi">
     <div class="kpi-icon" style="color:#ea580c"><i class="bi bi-box-seam"></i></div>
-    <div class="kpi-val">{{ $assetStats['total'] }}</div>
+    <div class="kpi-val"><?php echo e($assetStats['total']); ?></div>
     <div class="kpi-lbl">إجمالي الأصول</div>
-    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:{{ $assetStats['total'] > 0 ? round($assetStats['good']/$assetStats['total']*100) : 0 }}%;background:#ea580c"></div></div>
-    <span class="kpi-badge" style="background:#ffedd5;color:#9a3412">{{ $assetStats['maintenance'] }} صيانة</span>
+    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:<?php echo e($assetStats['total'] > 0 ? round($assetStats['good']/$assetStats['total']*100) : 0); ?>%;background:#ea580c"></div></div>
+    <span class="kpi-badge" style="background:#ffedd5;color:#9a3412"><?php echo e($assetStats['maintenance']); ?> صيانة</span>
   </div>
   <div class="kpi">
     <div class="kpi-icon" style="color:#0f766e"><i class="bi bi-mortarboard"></i></div>
-    <div class="kpi-val">{{ $diplomaStats['active'] }}</div>
+    <div class="kpi-val"><?php echo e($diplomaStats['active']); ?></div>
     <div class="kpi-lbl">دبلومات نشطة</div>
-    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:{{ $diplomaStats['total'] > 0 ? round($diplomaStats['active']/$diplomaStats['total']*100) : 0 }}%;background:#0f766e"></div></div>
-    <span class="kpi-badge" style="background:#ccfbf1;color:#134e4a">{{ $diplomaStats['online'] }} أونلاين</span>
+    <div class="kpi-bar"><div class="kpi-bar-fill" style="width:<?php echo e($diplomaStats['total'] > 0 ? round($diplomaStats['active']/$diplomaStats['total']*100) : 0); ?>%;background:#0f766e"></div></div>
+    <span class="kpi-badge" style="background:#ccfbf1;color:#134e4a"><?php echo e($diplomaStats['online']); ?> أونلاين</span>
   </div>
 </div>
 
-{{-- Charts Row 1 --}}
+
 <div class="charts-row">
   <div class="chart-card">
     <div class="chart-card-title"><i class="bi bi-bar-chart-fill text-primary"></i> نمو الطلاب — آخر 6 أشهر</div>
@@ -137,28 +138,28 @@
   </div>
 </div>
 
-{{-- Charts Row 2 --}}
+
 <div class="three-col">
   <div class="chart-card">
     <div class="chart-card-title"><i class="bi bi-person-badge text-warning"></i> الموارد البشرية</div>
-    <div class="stat-row"><span class="stat-lbl">مدربون</span><span class="stat-val" style="color:#2563eb">{{ $hrStats['trainers'] }}</span></div>
-    <div style="background:#f1f5f9;border-radius:4px;height:4px;margin:2px 0 8px"><div style="height:100%;border-radius:4px;background:#2563eb;width:{{ ($hrStats['trainers']+$hrStats['employees'])>0 ? round($hrStats['trainers']/($hrStats['trainers']+$hrStats['employees'])*100) : 0 }}%"></div></div>
-    <div class="stat-row"><span class="stat-lbl">موظفون</span><span class="stat-val" style="color:#7c3aed">{{ $hrStats['employees'] }}</span></div>
-    <div style="background:#f1f5f9;border-radius:4px;height:4px;margin:2px 0 8px"><div style="height:100%;border-radius:4px;background:#7c3aed;width:{{ ($hrStats['trainers']+$hrStats['employees'])>0 ? round($hrStats['employees']/($hrStats['trainers']+$hrStats['employees'])*100) : 0 }}%"></div></div>
-    <div class="stat-row" style="margin-top:4px"><span class="stat-lbl">إجازات معلقة</span><span class="stat-val"><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;font-size:11px">{{ $pendingLeaves }}</span></span></div>
-    <div class="stat-row"><span class="stat-lbl">غياب اليوم</span><span class="stat-val"><span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;font-size:11px">{{ $absentToday }}</span></span></div>
-    <div class="stat-row"><span class="stat-lbl">تأخير اليوم</span><span class="stat-val"><span style="background:#ffedd5;color:#9a3412;padding:2px 8px;border-radius:10px;font-size:11px">{{ $lateToday }}</span></span></div>
+    <div class="stat-row"><span class="stat-lbl">مدربون</span><span class="stat-val" style="color:#2563eb"><?php echo e($hrStats['trainers']); ?></span></div>
+    <div style="background:#f1f5f9;border-radius:4px;height:4px;margin:2px 0 8px"><div style="height:100%;border-radius:4px;background:#2563eb;width:<?php echo e(($hrStats['trainers']+$hrStats['employees'])>0 ? round($hrStats['trainers']/($hrStats['trainers']+$hrStats['employees'])*100) : 0); ?>%"></div></div>
+    <div class="stat-row"><span class="stat-lbl">موظفون</span><span class="stat-val" style="color:#7c3aed"><?php echo e($hrStats['employees']); ?></span></div>
+    <div style="background:#f1f5f9;border-radius:4px;height:4px;margin:2px 0 8px"><div style="height:100%;border-radius:4px;background:#7c3aed;width:<?php echo e(($hrStats['trainers']+$hrStats['employees'])>0 ? round($hrStats['employees']/($hrStats['trainers']+$hrStats['employees'])*100) : 0); ?>%"></div></div>
+    <div class="stat-row" style="margin-top:4px"><span class="stat-lbl">إجازات معلقة</span><span class="stat-val"><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;font-size:11px"><?php echo e($pendingLeaves); ?></span></span></div>
+    <div class="stat-row"><span class="stat-lbl">غياب اليوم</span><span class="stat-val"><span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;font-size:11px"><?php echo e($absentToday); ?></span></span></div>
+    <div class="stat-row"><span class="stat-lbl">تأخير اليوم</span><span class="stat-val"><span style="background:#ffedd5;color:#9a3412;padding:2px 8px;border-radius:10px;font-size:11px"><?php echo e($lateToday); ?></span></span></div>
   </div>
 
   <div class="chart-card">
     <div class="chart-card-title"><i class="bi bi-check2-circle text-success"></i> المهام</div>
     <div style="position:relative;height:130px">
-      <canvas id="cTasks" role="img" aria-label="حالة المهام">منجزة {{ $taskStats['done'] }} — جارية {{ $taskStats['todo'] }} — متأخرة {{ $taskStats['overdue'] }}</canvas>
+      <canvas id="cTasks" role="img" aria-label="حالة المهام">منجزة <?php echo e($taskStats['done']); ?> — جارية <?php echo e($taskStats['todo']); ?> — متأخرة <?php echo e($taskStats['overdue']); ?></canvas>
     </div>
     <div class="mini-legend" style="justify-content:center;margin-top:8px">
-      <span class="leg-item"><span class="leg-sq" style="background:#059669"></span>منجز {{ $taskStats['done'] }}</span>
-      <span class="leg-item"><span class="leg-sq" style="background:#7c3aed"></span>جارٍ {{ $taskStats['todo'] }}</span>
-      <span class="leg-item"><span class="leg-sq" style="background:#dc2626"></span>متأخر {{ $taskStats['overdue'] }}</span>
+      <span class="leg-item"><span class="leg-sq" style="background:#059669"></span>منجز <?php echo e($taskStats['done']); ?></span>
+      <span class="leg-item"><span class="leg-sq" style="background:#7c3aed"></span>جارٍ <?php echo e($taskStats['todo']); ?></span>
+      <span class="leg-item"><span class="leg-sq" style="background:#dc2626"></span>متأخر <?php echo e($taskStats['overdue']); ?></span>
     </div>
   </div>
 
@@ -167,32 +168,32 @@
     <div class="alert-row">
       <div class="alert-dot" style="background:#dc2626"></div>
       <div class="alert-text">عملاء بدون متابعة</div>
-      <div class="alert-num" style="color:#dc2626">{{ $urgentLeads }}</div>
+      <div class="alert-num" style="color:#dc2626"><?php echo e($urgentLeads); ?></div>
     </div>
     <div class="alert-row">
       <div class="alert-dot" style="background:#d97706"></div>
       <div class="alert-text">إجازات معلقة</div>
-      <div class="alert-num" style="color:#d97706">{{ $pendingLeaves }}</div>
+      <div class="alert-num" style="color:#d97706"><?php echo e($pendingLeaves); ?></div>
     </div>
     <div class="alert-row">
       <div class="alert-dot" style="background:#7c3aed"></div>
       <div class="alert-text">مهام متأخرة</div>
-      <div class="alert-num" style="color:#7c3aed">{{ $taskStats['overdue'] }}</div>
+      <div class="alert-num" style="color:#7c3aed"><?php echo e($taskStats['overdue']); ?></div>
     </div>
     <div class="alert-row">
       <div class="alert-dot" style="background:#d97706"></div>
       <div class="alert-text">طلبات لوجستيات</div>
-      <div class="alert-num" style="color:#d97706">{{ $assetRequests['pending'] }}</div>
+      <div class="alert-num" style="color:#d97706"><?php echo e($assetRequests['pending']); ?></div>
     </div>
     <div class="alert-row">
       <div class="alert-dot" style="background:#2563eb"></div>
       <div class="alert-text">طلاب معلقون</div>
-      <div class="alert-num" style="color:#2563eb">{{ $studentPending }}</div>
+      <div class="alert-num" style="color:#2563eb"><?php echo e($studentPending); ?></div>
     </div>
   </div>
 </div>
 
-{{-- Charts Row 3 --}}
+
 <div class="charts-row">
   <div class="chart-card">
     <div class="chart-card-title"><i class="bi bi-graph-up text-success"></i> الإيرادات اليومية — هذا الشهر</div>
@@ -208,7 +209,7 @@
   </div>
 </div>
 
-{{-- حضور الأسبوع --}}
+
 <div class="chart-card" style="margin-bottom:1.5rem">
   <div class="chart-card-title"><i class="bi bi-calendar-week text-info"></i> الحضور الأسبوعي — نسبة مئوية</div>
   <div class="mini-legend">
@@ -220,30 +221,30 @@
   <div class="hbar-lbl" id="hbarLbl"></div>
 </div>
 
-{{-- أزرار ──>>──>>──>>──>>──>>──>>──>>──>>──>>──>>──>>──>> --}}
+
 <div class="d-flex flex-wrap gap-2 mt-3">
-  <a href="{{ route('attendance.index') }}" class="btn btn-outline-primary btn-sm fw-bold">
+  <a href="<?php echo e(route('attendance.index')); ?>" class="btn btn-outline-primary btn-sm fw-bold">
     <i class="bi bi-calendar2-check"></i> قسم الدوام
   </a>
-  <a href="{{ route('students.index') }}" class="btn btn-outline-primary btn-sm fw-bold">
+  <a href="<?php echo e(route('students.index')); ?>" class="btn btn-outline-primary btn-sm fw-bold">
     <i class="bi bi-people"></i> الطلاب
   </a>
-  <a href="{{ route('tasks.index') }}" class="btn btn-outline-secondary btn-sm fw-bold">
+  <a href="<?php echo e(route('tasks.index')); ?>" class="btn btn-outline-secondary btn-sm fw-bold">
     <i class="bi bi-check2-square"></i> المهام
   </a>
-  <a href="{{ route('leaves.index') }}" class="btn btn-outline-warning btn-sm fw-bold">
+  <a href="<?php echo e(route('leaves.index')); ?>" class="btn btn-outline-warning btn-sm fw-bold">
     <i class="bi bi-calendar-x"></i> الإجازات
   </a>
-  <a href="{{ route('leads.index') }}" class="btn btn-outline-danger btn-sm fw-bold">
+  <a href="<?php echo e(route('leads.index')); ?>" class="btn btn-outline-danger btn-sm fw-bold">
     <i class="bi bi-headset"></i> CRM
   </a>
-  <a href="{{ route('cashboxes.index') }}" class="btn btn-outline-success btn-sm fw-bold">
+  <a href="<?php echo e(route('cashboxes.index')); ?>" class="btn btn-outline-success btn-sm fw-bold">
     <i class="bi bi-cash-coin"></i> المالية
   </a>
-  <a href="{{ route('assets.index') }}" class="btn btn-outline-secondary btn-sm fw-bold">
+  <a href="<?php echo e(route('assets.index')); ?>" class="btn btn-outline-secondary btn-sm fw-bold">
     <i class="bi bi-box-seam"></i> الأصول
   </a>
-  <a href="{{ route('admin.audit.index') }}" class="btn btn-outline-dark btn-sm fw-bold">
+  <a href="<?php echo e(route('admin.audit.index')); ?>" class="btn btn-outline-dark btn-sm fw-bold">
     <i class="bi bi-shield-check"></i> التدقيق
   </a>
 </div>
@@ -280,18 +281,18 @@
 
 <div class="row g-3 mb-4">
 
-  {{-- حالة النظام --}}
+  
   <div class="col-md-4">
     <div class="stat-card">
       <div class="stat-title">حالة النظام</div>
       <div class="stat-value">
-        @if($data['executive']['health'] === 'online')
+        <?php if($data['executive']['health'] === 'online'): ?>
           <span class="badge bg-success">Online</span>
-        @elseif($data['executive']['health'] === 'degraded')
+        <?php elseif($data['executive']['health'] === 'degraded'): ?>
           <span class="badge bg-warning">Degraded</span>
-        @else
+        <?php else: ?>
           <span class="badge bg-danger">Issues</span>
-        @endif
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -299,7 +300,7 @@
 
 </div>
 
-{{-- آخر 5 عمليات --}}
+
 <div class="glass-card p-3">
   <h6 class="card-title mb-2">آخر 5 عمليات في النظام</h6>
   <table class="table table-sm">
@@ -312,19 +313,19 @@
       </tr>
     </thead>
     <tbody>
-      @foreach($data['executive']['latest_audit'] as $log)
+      <?php $__currentLoopData = $data['executive']['latest_audit']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
       <tr>
-        <td>{{ \Carbon\Carbon::parse($log['time'])->format('H:i') }}</td>
-        <td>{{ $log['action'] }}</td>
-        <td>{{ $log['model'] }}</td>
-        <td>{{ $log['description'] }}</td>
+        <td><?php echo e(\Carbon\Carbon::parse($log['time'])->format('H:i')); ?></td>
+        <td><?php echo e($log['action']); ?></td>
+        <td><?php echo e($log['model']); ?></td>
+        <td><?php echo e($log['description']); ?></td>
       </tr>
-      @endforeach
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </tbody>
   </table>
 
   <div class="text-end mt-2">
-    <a href="{{ route('admin.audit.index') }}" class="btn btn-soft">
+    <a href="<?php echo e(route('admin.audit.index')); ?>" class="btn btn-soft">
       الذهاب إلى مركز التدقيق الكامل
     </a>
   </div>
@@ -355,14 +356,14 @@
 
 </div>
 
-{{-- Charts JS --}}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ── بيانات من Laravel ──
-const growthData = @json($studentGrowth->map(fn($r) => ['m'=>$r->m,'t'=>(int)$r->t]));
-const dailyData  = @json($revenueDaily->map(fn($r) => ['d'=>$r->d,'t'=>(float)$r->t]));
-const branchData = @json($studentsByBranch->map(fn($b) => ['name'=>$b->name,'count'=>$b->students_count]));
-const revBranch  = @json($revenueBranch);
+const growthData = <?php echo json_encode($studentGrowth->map(fn($r) => ['m'=>$r->m, 't'=>(int)$r->t]), 512) ?>;
+const dailyData  = <?php echo json_encode($revenueDaily->map(fn($r) => ['d'=>$r->d, 't'=>(float)$r->t]), 512) ?>;
+const branchData = <?php echo json_encode($studentsByBranch->map(fn($b) => ['name'=>$b->name, 'count'=>$b->students_count]), 512) ?>;
+const revBranch  = <?php echo json_encode($revenueBranch, 15, 512) ?>;
 
 // ── نمو الطلاب ──
 new Chart(document.getElementById('cGrowth'), {
@@ -412,7 +413,7 @@ new Chart(document.getElementById('cTasks'), {
   type: 'doughnut',
   data: {
     labels: ['منجزة','جارية','متأخرة'],
-    datasets: [{ data: [{{ $taskStats['done'] }},{{ $taskStats['todo'] }},{{ $taskStats['overdue'] }}], backgroundColor: ['#059669','#7c3aed','#dc2626'], borderWidth: 0 }]
+    datasets: [{ data: [<?php echo e($taskStats['done']); ?>,<?php echo e($taskStats['todo']); ?>,<?php echo e($taskStats['overdue']); ?>], backgroundColor: ['#059669','#7c3aed','#dc2626'], borderWidth: 0 }]
   },
   options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
 });
@@ -478,4 +479,5 @@ wdays.forEach((d,i) => {
   hlbl.appendChild(lbl);
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\customers\namaa\laravel11-auth\resources\views/reports/executive.blade.php ENDPATH**/ ?>
