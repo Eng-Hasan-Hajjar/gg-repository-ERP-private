@@ -510,6 +510,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/system/health', [SystemHealthController::class, 'index'])
         ->name('system.health');
 
+
 });
 
 Route::middleware(['auth'])->prefix('system')->name('system.')->group(function () {
@@ -525,6 +526,10 @@ Route::middleware(['auth'])->prefix('system')->name('system.')->group(function (
         [BackupController::class, 'downloadFile']
     )
         ->name('backup.download');
+
+
+            Route::get('/resources', [SystemHealthController::class, 'resources'])->name('resources');
+    Route::get('/resources/data', [SystemHealthController::class, 'resourcesData'])->name('resources.data');
 
 });
 

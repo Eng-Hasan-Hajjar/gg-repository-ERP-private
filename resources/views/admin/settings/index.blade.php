@@ -228,6 +228,16 @@
 
 </form>
 
+
+
+
+<a href="{{ route('system.resources') }}" class="btn btn-namaa rounded-pill px-4 fw-bold mb-3">
+  <i class="bi bi-speedometer2"></i> مراقبة الموارد اللحظية
+</a>
+
+
+
+
 <script>
 // ── معاينة الألوان ──
 document.querySelector('input[name="primary_color"]').addEventListener('input', function() {
