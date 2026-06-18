@@ -50,17 +50,17 @@ class SystemHealthController extends Controller
 
         }
 
-        return view('system.health',[
-            'users'=>$users,
-            'students'=>$students,
-            'transactions'=>$transactions,
-            'size'=>$size,
-            'lastBackup'=>$lastBackup
+        return view('system.health', [
+            'users' => $users,
+            'students' => $students,
+            'transactions' => $transactions,
+            'size' => $size,
+            'lastBackup' => $lastBackup
         ]);
 
     }
 
-      // ════════════════════════════════════
+    // ════════════════════════════════════
     // ✅ صفحة مراقبة الموارد
     // ════════════════════════════════════
     public function resources()
@@ -81,14 +81,14 @@ class SystemHealthController extends Controller
     private function collectResourceData(): array
     {
         return [
-            'cpu'      => $this->getCpuLoad(),
-            'memory'   => $this->getMemoryUsage(),
-            'disk'     => $this->getDiskUsage(),
-            'db'       => $this->getDbStats(),
-            'logs'     => $this->getLogStats(),
-            'queue'    => $this->getQueueStats(),
+            'cpu' => $this->getCpuLoad(),
+            'memory' => $this->getMemoryUsage(),
+            'disk' => $this->getDiskUsage(),
+            'db' => $this->getDbStats(),
+            'logs' => $this->getLogStats(),
+            'queue' => $this->getQueueStats(),
             'sessions' => $this->getSessionStats(),
-            'php'      => $this->getPhpStats(),
+            'php' => $this->getPhpStats(),
         ];
     }
 
@@ -103,14 +103,14 @@ class SystemHealthController extends Controller
 
     private function getCpuLoad(): array
     {
-        $load  = function_exists('sys_getloadavg') ? sys_getloadavg() : [0, 0, 0];
+        $load = function_exists('sys_getloadavg') ? sys_getloadavg() : [0, 0, 0];
         $cores = $this->cpuCores();
 
         return [
-            'load1'   => round($load[0] ?? 0, 2),
-            'load5'   => round($load[1] ?? 0, 2),
-            'load15'  => round($load[2] ?? 0, 2),
-            'cores'   => $cores,
+            'load1' => round($load[0] ?? 0, 2),
+            'load5' => round($load[1] ?? 0, 2),
+            'load15' => round($load[2] ?? 0, 2),
+            'cores' => $cores,
             'percent' => $cores > 0 ? round((($load[0] ?? 0) / $cores) * 100, 1) : 0,
         ];
     }
@@ -128,31 +128,31 @@ class SystemHealthController extends Controller
             }
         }
 
-        $totalKb     = $meminfo['MemTotal'] ?? 0;
+        $totalKb = $meminfo['MemTotal'] ?? 0;
         $availableKb = $meminfo['MemAvailable'] ?? ($meminfo['MemFree'] ?? 0);
-        $usedKb      = max(0, $totalKb - $availableKb);
+        $usedKb = max(0, $totalKb - $availableKb);
 
         return [
             'total_mb' => round($totalKb / 1024, 1),
-            'used_mb'  => round($usedKb / 1024, 1),
-            'free_mb'  => round($availableKb / 1024, 1),
-            'percent'  => $totalKb > 0 ? round(($usedKb / $totalKb) * 100, 1) : 0,
+            'used_mb' => round($usedKb / 1024, 1),
+            'free_mb' => round($availableKb / 1024, 1),
+            'percent' => $totalKb > 0 ? round(($usedKb / $totalKb) * 100, 1) : 0,
         ];
     }
 
     // ── Disk ──
     private function getDiskUsage(): array
     {
-        $path  = base_path();
+        $path = base_path();
         $total = @disk_total_space($path) ?: 0;
-        $free  = @disk_free_space($path) ?: 0;
-        $used  = max(0, $total - $free);
+        $free = @disk_free_space($path) ?: 0;
+        $used = max(0, $total - $free);
 
         return [
             'total_gb' => round($total / 1073741824, 2),
-            'used_gb'  => round($used / 1073741824, 2),
-            'free_gb'  => round($free / 1073741824, 2),
-            'percent'  => $total > 0 ? round(($used / $total) * 100, 1) : 0,
+            'used_gb' => round($used / 1073741824, 2),
+            'free_gb' => round($free / 1073741824, 2),
+            'percent' => $total > 0 ? round(($used / $total) * 100, 1) : 0,
         ];
     }
 
@@ -161,7 +161,7 @@ class SystemHealthController extends Controller
     {
         try {
             $connections = DB::select("SHOW STATUS LIKE 'Threads_connected'");
-            $maxConn     = DB::select("SHOW VARIABLES LIKE 'max_connections'");
+            $maxConn = DB::select("SHOW VARIABLES LIKE 'max_connections'");
             $slowQueries = DB::select("SHOW GLOBAL STATUS LIKE 'Slow_queries'");
 
             $size = DB::select("
@@ -171,10 +171,10 @@ class SystemHealthController extends Controller
             ");
 
             return [
-                'connections'     => (int) ($connections[0]->Value ?? 0),
+                'connections' => (int) ($connections[0]->Value ?? 0),
                 'max_connections' => (int) ($maxConn[0]->Value ?? 0),
-                'slow_queries'    => (int) ($slowQueries[0]->Value ?? 0),
-                'size_mb'         => $size[0]->size_mb ?? 0,
+                'slow_queries' => (int) ($slowQueries[0]->Value ?? 0),
+                'size_mb' => $size[0]->size_mb ?? 0,
             ];
         } catch (\Throwable $e) {
             return ['connections' => 0, 'max_connections' => 0, 'slow_queries' => 0, 'size_mb' => 0];
@@ -191,7 +191,7 @@ class SystemHealthController extends Controller
         }
 
         return [
-            'size_mb'     => round(filesize($path) / 1048576, 2),
+            'size_mb' => round(filesize($path) / 1048576, 2),
             'error_count' => substr_count($this->tailFile($path, 1000), '.ERROR:'),
         ];
     }
@@ -200,7 +200,8 @@ class SystemHealthController extends Controller
     private function tailFile(string $path, int $lines = 1000): string
     {
         $f = @fopen($path, 'r');
-        if (!$f) return '';
+        if (!$f)
+            return '';
 
         $buffer = 4096;
         $output = '';
@@ -225,7 +226,7 @@ class SystemHealthController extends Controller
     {
         return [
             'pending' => Schema::hasTable('jobs') ? DB::table('jobs')->count() : 0,
-            'failed'  => Schema::hasTable('failed_jobs') ? DB::table('failed_jobs')->count() : 0,
+            'failed' => Schema::hasTable('failed_jobs') ? DB::table('failed_jobs')->count() : 0,
         ];
     }
 
@@ -247,12 +248,23 @@ class SystemHealthController extends Controller
     {
         return [
             'memory_usage_mb' => round(memory_get_usage(true) / 1048576, 2),
-            'memory_peak_mb'  => round(memory_get_peak_usage(true) / 1048576, 2),
-            'memory_limit'    => ini_get('memory_limit'),
-            'php_version'     => PHP_VERSION,
+            'memory_peak_mb' => round(memory_get_peak_usage(true) / 1048576, 2),
+            'memory_limit' => ini_get('memory_limit'),
+            'php_version' => PHP_VERSION,
         ];
     }
 
+    public function clearLog()
+    {
+        abort_unless(auth()->user()->hasRole('super_admin'), 403);
 
+        $path = storage_path('logs/laravel.log');
+
+        if (file_exists($path)) {
+            file_put_contents($path, '');
+        }
+
+        return back()->with('success', 'تم تفريغ ملف السجل بنجاح.');
+    }
 
 }

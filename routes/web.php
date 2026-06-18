@@ -527,8 +527,8 @@ Route::middleware(['auth'])->prefix('system')->name('system.')->group(function (
     )
         ->name('backup.download');
 
-
-            Route::get('/resources', [SystemHealthController::class, 'resources'])->name('resources');
+    Route::post('/resources/clear-log', [SystemHealthController::class, 'clearLog'])->name('resources.clearLog');
+    Route::get('/resources', [SystemHealthController::class, 'resources'])->name('resources');
     Route::get('/resources/data', [SystemHealthController::class, 'resourcesData'])->name('resources.data');
 
 });
