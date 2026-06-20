@@ -16,7 +16,6 @@
       <div class="row g-3">
 
         
-        
         <div class="col-md-6">
           <label class="fw-bold">نوع الطلب <span class="text-danger">*</span></label>
           <select name="type" id="request-type" class="form-select <?php $__errorArgs = ['type'];
@@ -49,7 +48,7 @@ unset($__errorArgs, $__bag); ?>
             </div>
             <div class="col-md-6">
               <label class="fw-bold">من فرع <span class="text-danger">*</span></label>
-              <select name="from_branch_id" class="form-select <?php $__errorArgs = ['from_branch_id'];
+              <select name="from_branch_id" id="from-branch-select" class="form-select <?php $__errorArgs = ['from_branch_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -130,9 +129,9 @@ unset($__errorArgs, $__bag); ?>
         </div>
 
         
-        <div class="col-md-6">
+        <div class="col-md-6" id="branch-field-wrapper">
           <label class="fw-bold">الفرع</label>
-          <select name="branch_id" class="form-select">
+          <select name="branch_id" id="branch-id-select" class="form-select">
             <option value="">— اختر الفرع —</option>
             <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
               <option value="<?php echo e($b->id); ?>" <?php if(old('branch_id') == $b->id): echo 'selected'; endif; ?>><?php echo e($b->name); ?></option>
@@ -225,12 +224,36 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleAlert(); // عند التحميل
 });
 
-document.getElementById('request-type').addEventListener('change', function () {
-    const transferFields = document.getElementById('transfer-fields');
-    transferFields.style.display = this.value === 'transfer' ? '' : 'none';
+const requestTypeSelect  = document.getElementById('request-type');
+const transferFields     = document.getElementById('transfer-fields');
+const branchFieldWrapper = document.getElementById('branch-field-wrapper');
+const branchSelect       = document.getElementById('branch-id-select');
+const fromBranchSelect   = document.getElementById('from-branch-select');
+
+function toggleTransferMode() {
+    const isTransfer = requestTypeSelect.value === 'transfer';
+
+    transferFields.style.display = isTransfer ? '' : 'none';
+    branchFieldWrapper.style.display = isTransfer ? 'none' : '';
+
+    if (isTransfer) {
+        // عبّي قيمة الفرع تلقائياً من "من فرع" عند طلب النقل
+        branchSelect.value = fromBranchSelect.value;
+    }
+}
+
+// عند تغيير نوع الطلب
+requestTypeSelect.addEventListener('change', toggleTransferMode);
+
+// عند تغيير "من فرع" أثناء وضع النقل، حدّث قيمة branch_id تلقائياً
+fromBranchSelect.addEventListener('change', function () {
+    if (requestTypeSelect.value === 'transfer') {
+        branchSelect.value = this.value;
+    }
 });
 
-
+// تشغيل عند تحميل الصفحة (حال وجود old() بعد خطأ فاليديشن)
+toggleTransferMode();
 </script>
 
 <?php $__env->stopSection(); ?>

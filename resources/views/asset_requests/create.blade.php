@@ -16,7 +16,6 @@
       <div class="row g-3">
 
         {{-- نوع الطلب --}}
-        {{-- نوع الطلب --}}
         <div class="col-md-6">
           <label class="fw-bold">نوع الطلب <span class="text-danger">*</span></label>
           <select name="type" id="request-type" class="form-select @error('type') is-invalid @enderror" required>
@@ -35,7 +34,7 @@
             </div>
             <div class="col-md-6">
               <label class="fw-bold">من فرع <span class="text-danger">*</span></label>
-              <select name="from_branch_id" class="form-select @error('from_branch_id') is-invalid @enderror">
+              <select name="from_branch_id" id="from-branch-select" class="form-select @error('from_branch_id') is-invalid @enderror">
                 <option value="">— اختر الفرع —</option>
                 @foreach($branches as $b)
                   <option value="{{ $b->id }}" @selected(old('from_branch_id') == $b->id)>{{ $b->name }}</option>
@@ -74,9 +73,9 @@
         </div>
 
         {{-- الفرع --}}
-        <div class="col-md-6">
+        <div class="col-md-6" id="branch-field-wrapper">
           <label class="fw-bold">الفرع</label>
-          <select name="branch_id" class="form-select">
+          <select name="branch_id" id="branch-id-select" class="form-select">
             <option value="">— اختر الفرع —</option>
             @foreach($branches as $b)
               <option value="{{ $b->id }}" @selected(old('branch_id') == $b->id)>{{ $b->name }}</option>
@@ -154,12 +153,36 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleAlert(); // عند التحميل
 });
 
-document.getElementById('request-type').addEventListener('change', function () {
-    const transferFields = document.getElementById('transfer-fields');
-    transferFields.style.display = this.value === 'transfer' ? '' : 'none';
+const requestTypeSelect  = document.getElementById('request-type');
+const transferFields     = document.getElementById('transfer-fields');
+const branchFieldWrapper = document.getElementById('branch-field-wrapper');
+const branchSelect       = document.getElementById('branch-id-select');
+const fromBranchSelect   = document.getElementById('from-branch-select');
+
+function toggleTransferMode() {
+    const isTransfer = requestTypeSelect.value === 'transfer';
+
+    transferFields.style.display = isTransfer ? '' : 'none';
+    branchFieldWrapper.style.display = isTransfer ? 'none' : '';
+
+    if (isTransfer) {
+        // عبّي قيمة الفرع تلقائياً من "من فرع" عند طلب النقل
+        branchSelect.value = fromBranchSelect.value;
+    }
+}
+
+// عند تغيير نوع الطلب
+requestTypeSelect.addEventListener('change', toggleTransferMode);
+
+// عند تغيير "من فرع" أثناء وضع النقل، حدّث قيمة branch_id تلقائياً
+fromBranchSelect.addEventListener('change', function () {
+    if (requestTypeSelect.value === 'transfer') {
+        branchSelect.value = this.value;
+    }
 });
 
-
+// تشغيل عند تحميل الصفحة (حال وجود old() بعد خطأ فاليديشن)
+toggleTransferMode();
 </script>
 
 @endsection

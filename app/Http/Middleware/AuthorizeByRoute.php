@@ -96,8 +96,15 @@ class AuthorizeByRoute
             'asset-requests.index' => 'submit_asset_request',
             'asset-requests.create' => 'submit_asset_request',
             'asset-requests.store' => 'submit_asset_request',
+            'asset-requests.show'     => 'submit_asset_request', // ✅ أضف هذا السطر
+'asset-requests.edit'     => 'submit_asset_request', // ✅ وهذا أيضاً (edit ناقصة كمان)
+'asset-requests.update'   => 'submit_asset_request',
+
             'asset-requests.approve' => 'manage_assets',
             'asset-requests.reject' => 'manage_assets',
+
+            'asset-requests.transfer' => 'manage_assets',
+            
             'asset-requests.destroy' => 'submit_asset_request',
 
             // مجموعات الرؤية

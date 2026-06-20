@@ -106,12 +106,17 @@ class SystemHealthController extends Controller
         $load = function_exists('sys_getloadavg') ? sys_getloadavg() : [0, 0, 0];
         $cores = $this->cpuCores();
 
+        // ✅ النسبة تُحسب لكن تُحدّ بحد أقصى منطقي للعرض (200% يعني تحميل مضاعف خطير فعلاً)
+        $rawPercent = $cores > 0 ? round((($load[0] ?? 0) / $cores) * 100, 1) : 0;
+
         return [
             'load1' => round($load[0] ?? 0, 2),
             'load5' => round($load[1] ?? 0, 2),
             'load15' => round($load[2] ?? 0, 2),
             'cores' => $cores,
-            'percent' => $cores > 0 ? round((($load[0] ?? 0) / $cores) * 100, 1) : 0,
+            'percent' => $rawPercent,
+            'percent_capped' => min($rawPercent, 999), // لمنع تشويه الواجهة برقم خرافي
+            'status' => $rawPercent >= 200 ? 'critical' : ($rawPercent >= 100 ? 'warning' : 'ok'),
         ];
     }
 

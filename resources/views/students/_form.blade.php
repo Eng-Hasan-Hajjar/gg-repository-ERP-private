@@ -251,6 +251,8 @@
       <option value="جراح باشا" @selected(old('certificate_agreement', $student->certificate_agreement ?? '') == 'جراح باشا')>جراح باشا</option>
       <option value="بورد الماني" @selected(old('certificate_agreement', $student->certificate_agreement ?? '') == 'بورد الماني')>بورد الماني</option>
       <option value="جامعة تركية" @selected(old('certificate_agreement', $student->certificate_agreement ?? '') == 'جامعة تركية')>جامعة تركية</option>
+     <option value="ميديبول" @selected(old('certificate_agreement', $student->certificate_agreement ?? '') == 'ميديبول')>ميديبول</option>
+
     </select>
   </div>
 
