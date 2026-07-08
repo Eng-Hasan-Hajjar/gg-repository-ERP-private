@@ -16,41 +16,41 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-                 RoleSeeder::class,
-        PermissionSeeder::class,
-        RolePermissionSeeder::class,
+            RoleSeeder::class,
+            PermissionSeeder::class,
+            RolePermissionSeeder::class,
 
 
-          UserSeeder::class,
-          BranchSeeder::class,
-          AssetCategorySeeder::class,
-          DiplomaSeeder::class,
-          EmployeeSeeder::class,
-          StudentSeeder::class,
-          CashboxSeeder::class,
-           AssetSeeder::class,   // ✅ هنا
-             // ✅ الدوام والمهام
+            UserSeeder::class,
+            BranchSeeder::class,
+            AssetCategorySeeder::class,
+            DiplomaSeeder::class,
+            EmployeeSeeder::class,
+            StudentSeeder::class,
+            CashboxSeeder::class,
+            AssetSeeder::class,   // ✅ هنا
+                // ✅ الدوام والمهام
             WorkShiftSeeder::class,
             EmployeeScheduleSeeder::class,
             AttendanceRecordSeeder::class,
             LeaveRequestSeeder::class,
             TaskSeeder::class,
-          //  ExamSeeder::class,
-   // ✅ CRM
-        LeadSeeder::class,
-         LeadFollowupSeeder::class, // اختياري إذا فصلته
-           
+                //  ExamSeeder::class,
+                // ✅ CRM
+            LeadSeeder::class,
+            LeadFollowupSeeder::class, // اختياري إذا فصلته
 
 
 
-        StudentSeeder::class
-           
-    ]);
+
+            StudentSeeder::class
+
+        ]);
         // User::factory(10)->create();
 
-      /*  User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);*/
+        /*  User::factory()->create([
+              'name' => 'Test User',
+              'email' => 'test@example.com',
+          ]);*/
     }
 }
