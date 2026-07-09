@@ -5,58 +5,98 @@
 
 @section('dashboard')
 <style>
+  /* ══════════════════════════════════════════
+     متغيرات عامة
+  ══════════════════════════════════════════ */
   .dash-hero {
     background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
-    border-radius: 18px; padding: 28px 32px;
-    color: #fff; margin-bottom: 20px;
-    position: relative; overflow: hidden;
+    border-radius: 18px;
+    padding: 28px 32px;
+    color: #fff;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
   }
+
   .dash-hero::before {
-    content: ''; position: absolute;
-    top: -40%; left: -10%; width: 300px; height: 300px;
+    content: '';
+    position: absolute;
+    top: -40%; left: -10%;
+    width: 300px; height: 300px;
     background: radial-gradient(circle, rgba(99,102,241,.15), transparent 70%);
     border-radius: 50%;
   }
+
   .dash-hero::after {
-    content: ''; position: absolute;
-    bottom: -30%; right: -5%; width: 200px; height: 200px;
+    content: '';
+    position: absolute;
+    bottom: -30%; right: -5%;
+    width: 200px; height: 200px;
     background: radial-gradient(circle, rgba(16,185,129,.1), transparent 70%);
     border-radius: 50%;
   }
-  .dash-hero h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; position: relative; }
-  .dash-date { font-size: 13px; opacity: .6; position: relative; }
-  .dash-role {
-    font-size: 12px; background: rgba(99,102,241,.3);
+
+  .dash-hero h1 {
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 4px; position: relative;
+  }
+
+  .dash-date   { font-size: 13px; opacity: .6; position: relative; }
+  .dash-role   {
+    font-size: 12px;
+    background: rgba(99,102,241,.3);
     padding: 3px 12px; border-radius: 12px;
     display: inline-block; margin-top: 6px; position: relative;
   }
-  .dash-hero .chips { display: flex; gap: 8px; flex-wrap: wrap; position: relative; }
+
+  .dash-hero .chips {
+    display: flex; gap: 8px; flex-wrap: wrap; position: relative;
+  }
+
   .chip-item {
-    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.15);
     padding: 4px 14px; border-radius: 20px;
     font-size: 12px; color: rgba(255,255,255,.8);
   }
+
+  /* ── Live Bar ── */
   .live-bar {
-    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
-    border-radius: 12px; padding: 10px 16px;
-    display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex; flex-wrap: wrap;
+    gap: 16px; align-items: center;
     margin-top: 16px; position: relative;
   }
+
   .live-item {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 13px; font-weight: 800; color: rgba(255,255,255,.85);
+    display: flex; align-items: center;
+    gap: 7px; font-size: 13px; font-weight: 800;
+    color: rgba(255,255,255,.85);
   }
+
   .live-dot {
-    width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34,197,94,.3); flex-shrink: 0;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,.3);
+    flex-shrink: 0;
   }
+
   .live-badge {
-    background: rgba(255,255,255,.15); border-radius: 8px;
-    padding: 2px 10px; font-size: 13px; font-weight: 900; color: #fff;
+    background: rgba(255,255,255,.15);
+    border-radius: 8px; padding: 2px 10px;
+    font-size: 13px; font-weight: 900; color: #fff;
   }
 
   /* ── Quick Stats ── */
-  .quick-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-bottom: 20px;
+  }
+
   @media(max-width:991px) { .quick-stats { grid-template-columns: repeat(2,1fr); } }
   @media(max-width:767px) {
     .live-bar { gap: 10px; padding: 10px 12px; }
@@ -72,7 +112,8 @@
   }
 
   .qs-card {
-    background: #fff; border-radius: 14px; padding: 16px 18px;
+    background: #fff; border-radius: 14px;
+    padding: 16px 18px;
     box-shadow: 0 1px 8px rgba(0,0,0,.04);
     display: flex; align-items: center; gap: 12px;
     transition: transform .15s, box-shadow .15s;
@@ -88,6 +129,7 @@
   .qs-card.qs-teal   { border-right-color: #0d9488; }
   .qs-card.qs-amber  { border-right-color: #d97706; }
   .qs-card.qs-sky    { border-right-color: #0284c7; }
+
   .qs-icon {
     width: 42px; height: 42px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
@@ -101,16 +143,19 @@
   .qs-icon.teal   { background: #ccfbf1; color: #0f766e; }
   .qs-icon.amber  { background: #fef3c7; color: #b45309; }
   .qs-icon.sky    { background: #e0f2fe; color: #0369a1; }
+
   .qs-val   { font-size: 20px; font-weight: 900; color: #1e293b; line-height: 1.1; }
   .qs-label { font-size: 11px; color: #94a3b8; margin-top: 2px; }
 
-  /* ── CRM alert ── */
+  /* CRM alert card */
   .crm-alert-card {
     background: linear-gradient(135deg, rgba(239,68,68,.08), rgba(245,158,11,.06));
-    border: 1px solid rgba(239,68,68,.2); border-right: 4px solid #ef4444;
+    border: 1px solid rgba(239,68,68,.2);
+    border-right: 4px solid #ef4444;
     border-radius: 14px; padding: 14px 18px;
     display: flex; align-items: center; gap: 14px;
-    text-decoration: none; transition: transform .15s; flex: 1;
+    margin-bottom: 20px; text-decoration: none;
+    transition: transform .15s;
   }
   .crm-alert-card:hover { transform: translateY(-1px); }
   .crm-alert-icon {
@@ -123,15 +168,16 @@
   .crm-alert-lbl { font-size: 13px; font-weight: 800; color: #7f1d1d; }
   .crm-alert-sub { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 
-  /* ── Module cards ── */
+  /* Module cards */
   .module-card { border-radius: 16px !important; transition: transform .2s, box-shadow .2s; }
   .module-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
 
-  /* ── Stats mini ── */
+  /* Stats mini */
   .stats-mini {
     display: grid; grid-template-columns: repeat(4,1fr);
     gap: 8px; padding: 12px 16px;
-    background: #f8fafc; border-radius: 12px; margin: 8px 16px 12px;
+    background: #f8fafc; border-radius: 12px;
+    margin: 8px 16px 12px;
   }
   .sm-item { text-align: center; }
   .sm-val  { font-size: 20px; font-weight: 800; line-height: 1.2; }
@@ -141,7 +187,7 @@
     gap: 3px; margin-top: 2px;
   }
 
-  /* ── Progress ── */
+  /* Progress bar */
   .prog-wrap { padding: 0 16px 12px; }
   .prog-label {
     display: flex; justify-content: space-between;
@@ -150,86 +196,68 @@
   .prog-bar { height: 6px; border-radius: 10px; background: #e2e8f0; overflow: hidden; }
   .prog-fill { height: 100%; border-radius: 10px; transition: width .6s ease; }
 
-  /* ── Section Divider ── */
-  .section-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0 14px; }
+  /* ══════════════════════════════════════════
+     Section Divider — مع زر الطي
+  ══════════════════════════════════════════ */
+  .section-divider {
+    display: flex; align-items: center;
+    gap: 12px; margin: 24px 0 14px;
+  }
   .section-divider .sd-line { flex: 1; height: 1px; background: #e2e8f0; }
-  .section-divider .sd-title { font-size: 13px; font-weight: 700; color: #64748b; white-space: nowrap; }
+  .section-divider .sd-title {
+    font-size: 13px; font-weight: 700; color: #64748b; white-space: nowrap;
+  }
 
+  /* ── زر الطي ── */
   .toggle-section-btn {
     display: flex; align-items: center; gap: 6px;
-    background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px;
-    padding: 4px 10px; font-size: 12px; font-weight: 600; color: #64748b;
-    cursor: pointer; transition: background .15s, color .15s;
-    white-space: nowrap; user-select: none;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+    user-select: none;
   }
   .toggle-section-btn:hover { background: #e2e8f0; color: #1e293b; }
-  .toggle-section-btn .toggle-icon { transition: transform .3s ease; font-size: 11px; }
+  .toggle-section-btn .toggle-icon {
+    transition: transform .3s ease;
+    font-size: 11px;
+  }
   .toggle-section-btn.collapsed .toggle-icon { transform: rotate(-90deg); }
 
+  /* ── القسم القابل للطي ── */
   .collapsible-section {
     overflow: hidden;
     transition: max-height .4s ease, opacity .3s ease;
-    max-height: 2000px; opacity: 1;
+    max-height: 2000px;
+    opacity: 1;
   }
-  .collapsible-section.section-hidden { max-height: 0; opacity: 0; }
+  .collapsible-section.section-hidden {
+    max-height: 0;
+    opacity: 0;
+  }
 
-  .section-mini-stats { display: none; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 0; }
+  /* ── شريط الإحصائيات المصغّرة عند الطي ── */
+  .section-mini-stats {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 6px 0;
+  }
   .section-mini-stats.visible { display: flex; }
   .sms-item {
     display: flex; align-items: center; gap: 5px;
     font-size: 12px; font-weight: 700; color: #475569;
-    background: #f8fafc; border: 1px solid #e2e8f0;
-    border-radius: 8px; padding: 3px 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 3px 10px;
   }
-
-  /* ══════════════════════════════════════════
-     تنبيهات قابلة للإخفاء — التصميم الصحيح
-     زر × خارج التنبيه في نفس الصف
-  ══════════════════════════════════════════ */
-  .dismissible-alert-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .dismissible-alert-row .alert-inner { flex: 1; min-width: 0; }
-
-  .dismiss-x {
-    flex-shrink: 0;
-    width: 30px; height: 30px; border-radius: 50%;
-    background: #f1f5f9; border: 1px solid #e2e8f0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; color: #94a3b8;
-    cursor: pointer;
-    transition: background .15s, color .15s, border-color .15s;
-  }
-  .dismiss-x:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
-
-  /* ── شريط ملخص التنبيهات ── */
-  .alerts-summary-bar {
-    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    padding: 10px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.05);
-    margin-bottom: 16px;
-  }
-  .alerts-summary-bar .sum-title { font-size: 13px; font-weight: 700; color: #475569; }
-  .alert-chip {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 10px; border-radius: 20px;
-    font-size: 12px; font-weight: 700;
-  }
-  .alert-chip.red   { background: #fee2e2; color: #dc2626; }
-  .alert-chip.amber { background: #fef3c7; color: #d97706; }
-  .alert-chip.blue  { background: #dbeafe; color: #2563eb; }
-  .alert-chip.teal  { background: #ccfbf1; color: #0f766e; }
-  #show-all-alerts {
-    margin-right: auto;
-    background: #f1f5f9; border: 1px solid #e2e8f0;
-    border-radius: 8px; font-size: 12px; font-weight: 600;
-    color: #475569; padding: 4px 12px; cursor: pointer;
-    transition: background .15s;
-  }
-  #show-all-alerts:hover { background: #e2e8f0; color: #1e293b; }
 </style>
 
 {{-- ══════════ HERO ══════════ --}}
@@ -249,86 +277,66 @@
       <span class="chip-item"><i class="bi bi-building"></i> فروع متعددة</span>
     </div>
   </div>
+
   <div class="live-bar">
-    <div class="live-item"><span class="live-dot"></span><span>النظام يعمل</span></div>
+    <div class="live-item">
+      <span class="live-dot"></span>
+      <span>النظام يعمل</span>
+    </div>
     <div class="live-item">
       <i class="bi bi-people-fill" style="color:rgba(255,255,255,.6);font-size:14px"></i>
-      <span class="live-badge">{{ $onlineUsers }}</span><span>متصل الآن</span>
+      <span class="live-badge">{{ $onlineUsers }}</span>
+      <span>متصل الآن</span>
     </div>
     <div class="live-item">
       <i class="bi bi-activity" style="color:rgba(255,255,255,.6);font-size:14px"></i>
-      <span>آخر نشاط:</span><span class="live-badge">{{ $lastActivityAr }}</span>
+      <span>آخر نشاط:</span>
+      <span class="live-badge">{{ $lastActivityAr }}</span>
     </div>
     <div class="live-item">
       <i class="bi bi-box-arrow-in-right" style="color:rgba(255,255,255,.6);font-size:14px"></i>
-      <span class="live-badge">{{ $todayLogins }}</span><span>دخول اليوم</span>
+      <span class="live-badge">{{ $todayLogins }}</span>
+      <span>دخول اليوم</span>
     </div>
     <div class="live-item" style="margin-right:auto;font-size:11px;opacity:.55;">
-      <i class="bi bi-clock"></i> {{ now()->locale('ar')->format('H:i') }}
+      <i class="bi bi-clock"></i>
+      {{ now()->locale('ar')->format('H:i') }}
     </div>
   </div>
 </div>
 
-{{-- ══════════ شريط ملخص التنبيهات ══════════ --}}
-<div id="alerts-summary-bar-wrap" style="display:none;">
-  <div class="alerts-summary-bar">
-    <i class="bi bi-bell-fill" style="color:#f59e0b;font-size:15px;"></i>
-    <span class="sum-title">تنبيهات مخفية:</span>
-    <div class="d-flex gap-2 flex-wrap">
-      @if(auth()->user()?->hasPermission('view_leads') && $urgentLeads > 0)
-        <span class="alert-chip red"><i class="bi bi-exclamation-triangle-fill"></i> {{ $urgentLeads }} عميل عاجل</span>
-      @endif
-      @if($pendingMessages > 0)
-        <span class="alert-chip amber"><i class="bi bi-envelope-fill"></i> {{ $pendingMessages }} رسالة معلقة</span>
-      @endif
-      @if($studentsNeedUpdate > 0)
-        <span class="alert-chip blue"><i class="bi bi-bell-fill"></i> {{ $studentsNeedUpdate }} طالب للمتابعة</span>
-      @endif
-      @if($studentsNeedVerification > 0)
-        <span class="alert-chip amber"><i class="bi bi-person-exclamation"></i> {{ $studentsNeedVerification }} للمراجعة</span>
-      @endif
-      @if(isset($pendingLeaves) && $pendingLeaves > 0)
-        <span class="alert-chip teal"><i class="bi bi-calendar-x-fill"></i> {{ $pendingLeaves }} إجازة معلقة</span>
-      @endif
-    </div>
-    <button id="show-all-alerts"><i class="bi bi-eye me-1"></i> إظهار التنبيهات</button>
-  </div>
-</div>
-
-{{-- ══════════ CRM URGENT ══════════ --}}
+{{-- ══════════ CRM URGENT ALERT ══════════ --}}
 @if(auth()->user()?->hasPermission('view_leads') && $urgentLeads > 0)
-  <div class="dismissible-alert-row" id="alert-crm">
-    <div class="alert-inner">
-      <a href="{{ route('leads.index') }}" class="crm-alert-card">
-        <div class="crm-alert-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
-        <div>
-          <div class="crm-alert-num">{{ $urgentLeads }}</div>
-          <div class="crm-alert-lbl">عميل محتمل بدون متابعة منذ أكثر من 48 ساعة</div>
-          <div class="crm-alert-sub">اضغط للانتقال إلى CRM ومتابعة العملاء</div>
-        </div>
-        <i class="bi bi-arrow-left-circle-fill ms-auto" style="font-size:22px;color:#ef4444;opacity:.6;"></i>
-      </a>
+  <a href="{{ route('leads.index') }}" class="crm-alert-card">
+    <div class="crm-alert-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <div>
+      <div class="crm-alert-num">{{ $urgentLeads }}</div>
+      <div class="crm-alert-lbl">عميل محتمل بدون متابعة منذ أكثر من 48 ساعة</div>
+      <div class="crm-alert-sub">اضغط للانتقال إلى CRM ومتابعة العملاء</div>
     </div>
-    <button class="dismiss-x" data-alert="alert-crm" title="إخفاء">
-      <i class="bi bi-x-lg"></i>
-    </button>
-  </div>
+    <i class="bi bi-arrow-left-circle-fill ms-auto" style="font-size:22px;color:#ef4444;opacity:.6;"></i>
+  </a>
 @endif
 
 {{-- ══════════ QUICK STATS ══════════ --}}
 @if(auth()->user()?->hasPermission('view_dashboard'))
+
+  {{-- رأس القسم مع زر الطي --}}
   <div class="section-divider" style="margin-top:0;margin-bottom:12px;">
     <span class="sd-title"><i class="bi bi-bar-chart-fill me-1"></i> الأرقام السريعة</span>
     <div class="sd-line"></div>
+    {{-- mini stats تظهر عند الطي --}}
     <div class="section-mini-stats" id="mini-quick">
       <div class="sms-item"><i class="bi bi-mortarboard text-primary"></i> {{ $studentStats['total'] }} طالب</div>
       <div class="sms-item"><i class="bi bi-person-check text-success"></i> {{ $attendanceStats['present_today'] }} حاضر</div>
-      <div class="sms-item"><i class="bi bi-check2-square" style="color:#8b5cf6"></i> {{ $highlights['alerts']['today_tasks'] }} مهام</div>
+      <div class="sms-item"><i class="bi bi-check2-square text-purple" style="color:#8b5cf6"></i> {{ $highlights['alerts']['today_tasks'] }} مهام</div>
     </div>
     <button class="toggle-section-btn" data-target="section-quick" data-key="dash_quick">
-      <i class="bi bi-chevron-down toggle-icon"></i><span class="btn-lbl">إخفاء</span>
+      <i class="bi bi-chevron-down toggle-icon"></i>
+      <span class="btn-lbl">إخفاء</span>
     </button>
   </div>
+
   <div class="collapsible-section" id="section-quick">
     <div class="quick-stats">
       <div class="qs-card qs-blue">
@@ -367,96 +375,71 @@
   </div>
 @endif
 
-{{-- ══════════ تنبيه الرسائل والمتابعة ══════════ --}}
+{{-- ── تنبيهات الرسائل والطلاب ── --}}
 @if($pendingMessages > 0 || $studentsNeedUpdate > 0)
-  <div class="dismissible-alert-row" id="alert-messages">
-    <div class="alert-inner">
-      <div class="row g-3 mb-0">
-        @if($pendingMessages > 0)
-          <div class="col-12 col-md-6">
-            <a href="{{ route('students.index', ['has_message' => 1]) }}" class="text-decoration-none">
-              <div class="alert alert-warning d-flex align-items-center gap-3 mb-0 shadow-sm"
-                style="border-radius:12px;border-right:5px solid #f59e0b;">
-                <div style="font-size:2rem;">📩</div>
-                <div>
-                  <div class="fw-bold">{{ $pendingMessages }} طالب لديه رسالة معلقة</div>
-                  <div class="small text-muted">اضغط لعرض قائمة الطلاب ذوي الرسائل المعلقة</div>
-                </div>
-                <i class="bi bi-chevron-left ms-auto"></i>
-              </div>
-            </a>
+  <div class="row g-3 mb-4">
+    @if($pendingMessages > 0)
+      <div class="col-12 col-md-6">
+        <a href="{{ route('students.index', ['has_message' => 1]) }}" class="text-decoration-none">
+          <div class="alert alert-warning d-flex align-items-center gap-3 mb-0 shadow-sm"
+            style="border-radius:12px;border-right:5px solid #f59e0b;">
+            <div style="font-size:2rem;">📩</div>
+            <div>
+              <div class="fw-bold">{{ $pendingMessages }} طالب لديه رسالة معلقة</div>
+              <div class="small text-muted">اضغط لعرض قائمة الطلاب ذوي الرسائل المعلقة</div>
+            </div>
+            <i class="bi bi-chevron-left ms-auto"></i>
           </div>
-        @endif
-        @if($studentsNeedUpdate > 0)
-          <div class="col-12 col-md-6">
-            <a href="{{ route('students.index', ['needs_update' => 1]) }}" class="text-decoration-none">
-              <div class="alert alert-info d-flex align-items-center gap-3 mb-0 shadow-sm"
-                style="border-radius:12px;border-right:5px solid #3b82f6;">
-                <div style="font-size:2rem;">🔔</div>
-                <div>
-                  <div class="fw-bold">{{ $studentsNeedUpdate }} طالب لم يتم تحديث بياناتهم منذ 7 أيام</div>
-                  <div class="small text-muted">اضغط لعرض الطلاب الذين يحتاجون متابعة</div>
-                </div>
-                <i class="bi bi-chevron-left ms-auto"></i>
-              </div>
-            </a>
-          </div>
-        @endif
+        </a>
       </div>
-    </div>
-    <button class="dismiss-x" data-alert="alert-messages" title="إخفاء">
-      <i class="bi bi-x-lg"></i>
-    </button>
+    @endif
+    @if($studentsNeedUpdate > 0)
+      <div class="col-12 col-md-6">
+        <a href="{{ route('students.index', ['needs_update' => 1]) }}" class="text-decoration-none">
+          <div class="alert alert-info d-flex align-items-center gap-3 mb-0 shadow-sm"
+            style="border-radius:12px;border-right:5px solid #3b82f6;">
+            <div style="font-size:2rem;">🔔</div>
+            <div>
+              <div class="fw-bold">{{ $studentsNeedUpdate }} طالب لم يتم تحديث بياناتهم منذ 7 أيام</div>
+              <div class="small text-muted">اضغط لعرض الطلاب الذين يحتاجون متابعة</div>
+            </div>
+            <i class="bi bi-chevron-left ms-auto"></i>
+          </div>
+        </a>
+      </div>
+    @endif
   </div>
 @endif
 
-{{-- ══════════ تنبيه التحقق ══════════ --}}
 @if($studentsNeedVerification > 0)
-  <div class="dismissible-alert-row" id="alert-verify">
-    <div class="alert-inner">
-      <div class="d-flex align-items-center gap-2 px-3 py-2"
-        style="background:rgba(245,158,11,.08);border-right:4px solid #f59e0b;border-radius:10px;">
-        <i class="bi bi-person-exclamation" style="color:#f59e0b;font-size:1.2rem;flex-shrink:0;"></i>
-        <div class="flex-grow-1">
-          <span class="fw-bold" style="color:#92400e;">{{ $studentsNeedVerification }}</span>
-          <span class="small text-muted"> طالب يحتاج مراجعة بياناته (اسم لاتيني / ميلاد / وثيقة)</span>
-        </div>
-        <a href="{{ route('students.index', ['needs_verification' => 1]) }}"
-          class="btn btn-sm flex-shrink-0"
-          style="background:#f59e0b;color:#fff;border-radius:8px;font-size:.78rem;">مراجعة</a>
-      </div>
+  <div class="alert d-flex align-items-center gap-2 mb-2"
+    style="background:rgba(245,158,11,.08);border-right:4px solid #f59e0b;border-radius:10px;padding:10px 14px;">
+    <i class="bi bi-person-exclamation" style="color:#f59e0b;font-size:1.2rem;"></i>
+    <div class="flex-grow-1">
+      <span class="fw-bold" style="color:#92400e;">{{ $studentsNeedVerification }}</span>
+      <span class="small text-muted"> طالب يحتاج مراجعة بياناته (اسم لاتيني / ميلاد / وثيقة)</span>
     </div>
-    <button class="dismiss-x" data-alert="alert-verify" title="إخفاء">
-      <i class="bi bi-x-lg"></i>
-    </button>
+    <a href="{{ route('students.index', ['needs_verification' => 1]) }}" class="btn btn-sm"
+      style="background:#f59e0b;color:#fff;border-radius:8px;font-size:.78rem;">مراجعة</a>
   </div>
 @endif
 
-{{-- ══════════ تنبيه الإجازات ══════════ --}}
 @if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('manager_attendance') || auth()->user()?->hasPermission('view_attendance'))
   @if($pendingLeaves > 0)
-    <div class="dismissible-alert-row" id="alert-leaves">
-      <div class="alert-inner">
-        <div class="d-flex align-items-center gap-3 px-3 py-2"
-          style="background:rgba(14,165,233,.08);border-right:4px solid #0ea5e9;border-radius:12px;">
-          <i class="bi bi-calendar-x-fill fs-4" style="color:#0284c7;flex-shrink:0;"></i>
-          <div class="flex-grow-1">
-            <span class="fw-bold" style="color:#0c4a6e;">{{ $pendingLeaves }} طلب إجازة</span>
-            <span class="small text-muted"> بانتظار المراجعة والموافقة</span>
-          </div>
-          <a href="{{ route('leaves.index', ['status' => 'pending']) }}"
-            class="btn btn-sm fw-bold flex-shrink-0"
-            style="background:#0ea5e9;color:#fff;border-radius:8px;">مراجعة الطلبات</a>
-        </div>
+    <div class="alert d-flex align-items-center gap-3 mb-3"
+      style="background:rgba(14,165,233,.08);border-right:4px solid #0ea5e9;border-radius:12px;padding:12px 18px;">
+      <i class="bi bi-calendar-x-fill fs-4" style="color:#0284c7;"></i>
+      <div class="flex-grow-1">
+        <span class="fw-bold" style="color:#0c4a6e;">{{ $pendingLeaves }} طلب إجازة</span>
+        <span class="small text-muted"> بانتظار المراجعة والموافقة</span>
       </div>
-      <button class="dismiss-x" data-alert="alert-leaves" title="إخفاء">
-        <i class="bi bi-x-lg"></i>
-      </button>
+      <a href="{{ route('leaves.index', ['status' => 'pending']) }}" class="btn btn-sm fw-bold"
+        style="background:#0ea5e9;color:#fff;border-radius:8px;">مراجعة الطلبات</a>
     </div>
   @endif
 @endif
 
-{{-- ══════════ أحداث الأسبوع ══════════ --}}
+{{-- أحداث الأسبوع القادم --}}
 @if($upcomingEvents->count())
   <div class="row g-3 mb-4">
     <div class="col-12">
@@ -490,9 +473,7 @@
   </div>
 @endif
 
-{{-- ══════════════════════════════════════════
-     القسم الأول: العمليات الأساسية
-══════════════════════════════════════════ --}}
+{{-- ══════════ القسم الأول: العمليات الأساسية ══════════ --}}
 <div class="section-divider">
   <span class="sd-title"><i class="bi bi-grid-3x3-gap me-1"></i> العمليات الأساسية</span>
   <div class="sd-line"></div>
@@ -502,9 +483,11 @@
     <div class="sms-item"><i class="bi bi-headset" style="color:#ef4444"></i> {{ $leadStats['total'] }} عميل</div>
   </div>
   <button class="toggle-section-btn" data-target="section-ops" data-key="dash_ops">
-    <i class="bi bi-chevron-down toggle-icon"></i><span class="btn-lbl">إخفاء</span>
+    <i class="bi bi-chevron-down toggle-icon"></i>
+    <span class="btn-lbl">إخفاء</span>
   </button>
 </div>
+
 <div class="collapsible-section" id="section-ops">
   <div class="row g-3 g-lg-4 mb-2">
 
@@ -728,9 +711,7 @@
             @endif
           </div>
           <div style="padding:0 16px 10px;">
-            <div class="small fw-bold text-muted mb-2">
-              <i class="bi bi-calendar-day"></i> دوام اليوم — {{ now()->locale('ar')->translatedFormat('l d/m') }}
-            </div>
+            <div class="small fw-bold text-muted mb-2"><i class="bi bi-calendar-day"></i> دوام اليوم — {{ now()->locale('ar')->translatedFormat('l d/m') }}</div>
             <div class="d-flex gap-2">
               <a href="{{ route('attendance.index', ['from'=>now()->toDateString(),'to'=>now()->toDateString(),'type'=>'employee']) }}"
                 class="btn fw-bold flex-fill"
@@ -796,9 +777,7 @@
   </div>
 </div>{{-- /section-ops --}}
 
-{{-- ══════════════════════════════════════════
-     القسم الثاني: الموارد البشرية
-══════════════════════════════════════════ --}}
+{{-- ══════════ القسم الثاني: الموارد البشرية ══════════ --}}
 <div class="section-divider">
   <span class="sd-title"><i class="bi bi-person-gear me-1"></i> الموارد البشرية والإدارة</span>
   <div class="sd-line"></div>
@@ -808,9 +787,11 @@
     <div class="sms-item"><i class="bi bi-list-check" style="color:#8b5cf6"></i> {{ $taskStats['total'] }} مهمة</div>
   </div>
   <button class="toggle-section-btn" data-target="section-hr" data-key="dash_hr">
-    <i class="bi bi-chevron-down toggle-icon"></i><span class="btn-lbl">إخفاء</span>
+    <i class="bi bi-chevron-down toggle-icon"></i>
+    <span class="btn-lbl">إخفاء</span>
   </button>
 </div>
+
 <div class="collapsible-section" id="section-hr">
   <div class="row g-3 g-lg-4 mb-2">
 
@@ -947,9 +928,7 @@
   </div>
 </div>{{-- /section-hr --}}
 
-{{-- ══════════════════════════════════════════
-     القسم الثالث: البنية التحتية
-══════════════════════════════════════════ --}}
+{{-- ══════════ القسم الثالث: البنية التحتية ══════════ --}}
 <div class="section-divider">
   <span class="sd-title"><i class="bi bi-buildings me-1"></i> البنية التحتية والبرامج</span>
   <div class="sd-line"></div>
@@ -959,9 +938,11 @@
     <div class="sms-item"><i class="bi bi-mortarboard-fill" style="color:#84cc16"></i> {{ $diplomaStats['total'] }} دبلومة</div>
   </div>
   <button class="toggle-section-btn" data-target="section-infra" data-key="dash_infra">
-    <i class="bi bi-chevron-down toggle-icon"></i><span class="btn-lbl">إخفاء</span>
+    <i class="bi bi-chevron-down toggle-icon"></i>
+    <span class="btn-lbl">إخفاء</span>
   </button>
 </div>
+
 <div class="collapsible-section" id="section-infra">
   <div class="row g-3 g-lg-4 mb-4">
 
@@ -1195,6 +1176,7 @@
   </div>
 </div>{{-- /section-infra --}}
 
+{{-- رسالة نجاح --}}
 @if(session('asset_request_success'))
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -1209,121 +1191,56 @@
 @endif
 
 {{-- ══════════════════════════════════════════
-     JavaScript الكامل
+     JavaScript — منطق الطي/التوسيع
 ══════════════════════════════════════════ --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-  var PREFIX     = 'namaa_dash_';
-  var ALERTS_KEY = 'namaa_hidden_alerts';
+  var STORAGE_KEY_PREFIX = 'namaa_dash_';
 
-  /* ══════════════════════════════
-     1) طي / توسيع الأقسام
-  ══════════════════════════════ */
+  /* ── تهيئة كل زر ── */
   document.querySelectorAll('.toggle-section-btn').forEach(function (btn) {
-    var targetId   = btn.dataset.target;
-    var storageKey = PREFIX + btn.dataset.key;
-    var section    = document.getElementById(targetId);
-    var miniId     = targetId.replace('section-', 'mini-');
-    var mini       = document.getElementById(miniId);
-    var lbl        = btn.querySelector('.btn-lbl');
+    var targetId = btn.dataset.target;
+    var storageKey = STORAGE_KEY_PREFIX + btn.dataset.key;
+    var section  = document.getElementById(targetId);
+    var miniId   = targetId.replace('section-', 'mini-');
+    var mini     = document.getElementById(miniId);
+    var lbl      = btn.querySelector('.btn-lbl');
+    var icon     = btn.querySelector('.toggle-icon');
 
-    if (localStorage.getItem(storageKey) === 'hidden') {
-      collapseSection(section, mini, btn, lbl);
+    /* ── قراءة الحالة المحفوظة ── */
+    var savedState = localStorage.getItem(storageKey);
+    if (savedState === 'hidden') {
+      collapse(section, mini, btn, lbl, icon, false);
     }
 
+    /* ── حدث النقر ── */
     btn.addEventListener('click', function () {
-      if (section.classList.contains('section-hidden')) {
-        expandSection(section, mini, btn, lbl);
+      var isHidden = section.classList.contains('section-hidden');
+      if (isHidden) {
+        expand(section, mini, btn, lbl, icon);
         localStorage.setItem(storageKey, 'visible');
       } else {
-        collapseSection(section, mini, btn, lbl);
+        collapse(section, mini, btn, lbl, icon, true);
         localStorage.setItem(storageKey, 'hidden');
       }
     });
   });
 
-  function collapseSection(section, mini, btn, lbl) {
+  /* ── دالة الطي ── */
+  function collapse(section, mini, btn, lbl, icon, animate) {
     section.classList.add('section-hidden');
     btn.classList.add('collapsed');
     if (lbl) lbl.textContent = 'إظهار';
     if (mini) mini.classList.add('visible');
   }
 
-  function expandSection(section, mini, btn, lbl) {
+  /* ── دالة التوسيع ── */
+  function expand(section, mini, btn, lbl, icon) {
     section.classList.remove('section-hidden');
     btn.classList.remove('collapsed');
     if (lbl) lbl.textContent = 'إخفاء';
     if (mini) mini.classList.remove('visible');
-  }
-
-  /* ══════════════════════════════
-     2) إخفاء التنبيهات
-  ══════════════════════════════ */
-  function getHidden() {
-    try { return JSON.parse(localStorage.getItem(ALERTS_KEY) || '[]'); } catch(e) { return []; }
-  }
-  function saveHidden(arr) { localStorage.setItem(ALERTS_KEY, JSON.stringify(arr)); }
-
-  function updateSummaryBar() {
-    var all = document.querySelectorAll('.dismissible-alert-row');
-    var bar = document.getElementById('alerts-summary-bar-wrap');
-    if (!bar || all.length === 0) return;
-    var allHidden = true;
-    all.forEach(function(el) { if (el.style.display !== 'none') allHidden = false; });
-    bar.style.display = allHidden ? 'block' : 'none';
-  }
-
-  /* تطبيق الحالة المحفوظة عند التحميل */
-  getHidden().forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-  updateSummaryBar();
-
-  /* أزرار × الإخفاء */
-  document.querySelectorAll('.dismiss-x').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      var id = btn.dataset.alert;
-      var el = document.getElementById(id);
-      if (!el) return;
-
-      el.style.transition    = 'opacity .25s ease, max-height .35s ease, margin .3s ease';
-      el.style.overflow      = 'hidden';
-      el.style.maxHeight     = el.offsetHeight + 'px';
-      el.style.opacity       = '1';
-      requestAnimationFrame(function() {
-        el.style.opacity      = '0';
-        el.style.maxHeight    = '0';
-        el.style.marginBottom = '0';
-      });
-      setTimeout(function() {
-        el.style.display = 'none';
-        var arr = getHidden();
-        if (!arr.includes(id)) arr.push(id);
-        saveHidden(arr);
-        updateSummaryBar();
-      }, 360);
-    });
-  });
-
-  /* زر إظهار الكل */
-  var showAllBtn = document.getElementById('show-all-alerts');
-  if (showAllBtn) {
-    showAllBtn.addEventListener('click', function() {
-      document.querySelectorAll('.dismissible-alert-row').forEach(function(el) {
-        el.style.display      = '';
-        el.style.opacity      = '';
-        el.style.maxHeight    = '';
-        el.style.marginBottom = '';
-        el.style.overflow     = '';
-        el.style.transition   = '';
-      });
-      saveHidden([]);
-      updateSummaryBar();
-    });
   }
 
 });

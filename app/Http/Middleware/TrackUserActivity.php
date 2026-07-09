@@ -31,7 +31,7 @@ class TrackUserActivity
                 $route = $request->path() ?: 'dashboard';
             }
 
-            $url = $request->fullUrl() ?: url()->current();
+           $url = substr($request->fullUrl() ?: url()->current(), 0, 250);
 
             $session = UserSession::where('user_id', $userId)
                 ->whereNull('logout_at')

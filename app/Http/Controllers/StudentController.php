@@ -15,6 +15,302 @@ use App\Models\ExamResult;
 class StudentController extends Controller
 {
 
+public function index(Request $request)
+    {
+        $q = Student::query()->with(['branch', 'diplomas', 'profile', 'crmInfo']);
+        $user = auth()->user();
+
+        // ✅ فلتر "طلابي فقط" — يُضاف فوق الـ GlobalScope
+        if ($request->boolean('my_only')) {
+            $q->where('created_by', $user->id);
+        }
+
+        if ($request->filled('branch_id')) {
+            $q->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('diploma_id')) {
+            $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $request->diploma_id));
+        }
+
+        if ($request->filled('status')) {
+            $q->where('status', $request->status);
+        }
+
+        if ($request->filled('registration_status')) {
+            $q->where('registration_status', $request->registration_status);
+        }
+
+        // ✅ فلتر نوع الطالب (حضوري/أونلاين)
+        if ($request->filled('mode')) {
+            $q->where('mode', $request->mode);
+        }
+
+        if ($request->filled('search')) {
+            $s = trim($request->search);
+            $q->where(
+                fn($x) => $x
+                    ->where('full_name', 'like', "%$s%")
+                    ->orWhere('university_id', 'like', "%$s%")
+                    ->orWhere('phone', 'like', "%$s%")
+                    ->orWhere('whatsapp', 'like', "%$s%")
+            );
+        }
+
+        if ($request->filled('has_message')) {
+            $q->whereHas(
+                'profile',
+                fn($p) =>
+                $p->whereNotNull('message_to_send')->where('message_to_send', '!=', '')
+            );
+        }
+
+        if ($request->filled('needs_update')) {
+            $q->where('updated_at', '<=', now()->subDays(7))->where('status', 'active');
+        }
+
+        if ($request->boolean('needs_verification')) {
+            $q->whereHas('profile', function ($p) {
+                $p->where(function ($inner) {
+                    $inner->whereNull('arabic_full_name')
+                        ->orWhere('arabic_full_name', '')
+                        ->orWhereNull('birth_date')
+                        ->orWhereNull('national_id')
+                        ->orWhere('national_id', '');
+                });
+            });
+        }
+
+        // ✅ فلتر الجنسية
+        if ($request->filled('nationality')) {
+            $q->whereHas('profile', fn($p) => $p->where('nationality', $request->nationality));
+        }
+
+        // ✅ فلتر مصدر CRM
+        if ($request->filled('crm_source')) {
+            $q->whereHas('crmInfo', fn($c) => $c->where('source', $request->crm_source));
+        }
+
+        // ✅ فلتر مرحلة CRM
+        if ($request->filled('crm_stage')) {
+            $q->whereHas('crmInfo', fn($c) => $c->where('stage', $request->crm_stage));
+        }
+
+        // ✅ فلتر مستوى اللغة (عبر pivot الدبلومات)
+        if ($request->filled('language_level')) {
+            $q->whereHas('diplomas', fn($d) => $d->wherePivot('language_level', $request->language_level));
+        }
+
+        // ✅ فلتر اتفاق الشهادة (عبر pivot الدبلومات)
+        if ($request->filled('certificate_agreement')) {
+            $q->whereHas('diplomas', fn($d) => $d->wherePivot('certificate_agreement', $request->certificate_agreement));
+        }
+
+        // ✅ فلتر نطاق تاريخ الإضافة
+        if ($request->filled('date_from')) {
+            $q->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $q->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // ✅ فلتر نطاق العلامة الامتحانية
+        if ($request->filled('exam_score_min')) {
+            $q->whereHas('profile', fn($p) => $p->where('exam_score', '>=', $request->exam_score_min));
+        }
+        if ($request->filled('exam_score_max')) {
+            $q->whereHas('profile', fn($p) => $p->where('exam_score', '<=', $request->exam_score_max));
+        }
+
+        // ✅ الترتيب
+        $sortBy  = $request->get('sort_by', 'created_at');
+        $sortDir = $request->get('sort_dir', 'desc');
+        $allowedSorts = ['created_at', 'full_name', 'university_id', 'updated_at'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+        $sortDir = $sortDir === 'asc' ? 'asc' : 'desc';
+
+        // ✅ إحصائيات سريعة — نفس الـ query بدون pagination
+        $statsQuery = clone $q;
+        $totalCount     = (clone $statsQuery)->count();
+        $confirmedCount = (clone $statsQuery)->where('registration_status', 'confirmed')->count();
+        $pendingCount   = (clone $statsQuery)->where('registration_status', 'pending')->count();
+        $myCount        = (clone $statsQuery)->where('created_by', $user->id)->count();
+
+        $students = $q->orderBy($sortBy, $sortDir)->paginate(15)->withQueryString();
+
+        $labels = $this->studentArabicLabels();
+        $currentUserId = $user->id;
+        $isAdmin = $user->hasRole('super_admin')
+            || $user->hasRole('manager_student_affairs')
+            || $user->hasPermission('view_all_students');
+
+        $students->getCollection()->transform(function ($s) use ($labels, $currentUserId, $isAdmin) {
+            $s->status_ar       = $labels['student_status'][$s->status] ?? '-';
+            $s->registration_ar = $labels['registration_status'][$s->registration_status] ?? '-';
+            $s->mode_ar         = $labels['mode'][$s->mode] ?? '-';
+            $s->is_readonly     = !$isAdmin && ($s->created_by !== $currentUserId);
+            return $s;
+        });
+
+        $showMyOnly = !$user->hasRole('super_admin')
+            && !$user->hasRole('manager_student_affairs')
+            && !$user->hasPermission('view_all_students');
+
+        $needsVerificationCount = \App\Models\StudentProfile::query()
+            ->where(function ($q) {
+                $q->whereNull('arabic_full_name')
+                    ->orWhere('arabic_full_name', '')
+                    ->orWhereNull('birth_date')
+                    ->orWhereNull('national_id')
+                    ->orWhere('national_id', '');
+            })
+            ->whereHas(
+                'student',
+                fn($sq) =>
+                $sq->where('registration_status', 'confirmed')
+            )
+            ->count();
+
+        // ✅ قائمة الجنسيات المستخدمة فعلياً (لتفادي قائمة ضخمة غير مستخدمة)
+        $usedNationalities = \App\Models\StudentProfile::query()
+            ->whereNotNull('nationality')
+            ->where('nationality', '!=', '')
+            ->distinct()
+            ->orderBy('nationality')
+            ->pluck('nationality');
+
+
+
+
+            $activeFilters = $this->buildActiveFilters(
+    $request,
+    \App\Models\Diploma::with('branch')->orderBy('name')->get(),
+    \App\Models\Branch::orderBy('name')->get(),
+    $labels['student_status'],
+    $labels['registration_status'],
+    $labels['mode'],
+    $labels['crm_source'],
+    $labels['crm_stage']
+);
+
+
+        return view('students.index', [
+            'students'            => $students,
+            'branches'            => \App\Models\Branch::orderBy('name')->get(),
+            'diplomas'            => \App\Models\Diploma::with('branch')->orderBy('name')->get(),
+            'labels'              => $labels,
+            'statusOptions'       => $labels['student_status'],
+            'registrationOptions' => $labels['registration_status'],
+            'modeOptions'         => $labels['mode'],
+            'crmSourceOptions'    => $labels['crm_source'],
+            'crmStageOptions'     => $labels['crm_stage'],
+            'nationalities'       => $usedNationalities,
+            // ✅ إحصائيات
+            'totalCount'              => $totalCount,
+            'confirmedCount'          => $confirmedCount,
+            'pendingCount'            => $pendingCount,
+            'myCount'                 => $myCount,
+            'showMyOnly'              => $showMyOnly,
+            'needsVerificationCount'  => $needsVerificationCount,
+            'sortBy'                  => $sortBy,
+            'sortDir'                 => $sortDir,
+            'activeFilters' => $activeFilters,
+        ]);
+    }
+
+    /**
+     * بناء قائمة الفلاتر النشطة المعروضة كـ chips فوق الجدول.
+     * تُحسب بالكامل في الكونترولر لتفادي أي مشاكل ترتيب في Blade.
+     */
+    private function buildActiveFilters(Request $request, $diplomas, $branches, array $statusOptions, array $registrationOptions, array $modeOptions, array $crmSourceOptions, array $crmStageOptions): array
+    {
+        $activeFilters = [];
+
+        if ($request->filled('search')) {
+            $activeFilters[] = ['key' => 'search', 'label' => 'بحث: ' . $request->search];
+        }
+
+        if ($request->filled('diploma_id')) {
+            $selDip = $diplomas->firstWhere('id', $request->diploma_id);
+            if ($selDip) {
+                $activeFilters[] = ['key' => 'diploma_id', 'label' => 'دبلومة: ' . $selDip->name . ' (' . $selDip->code . ')'];
+            }
+        }
+
+        if ($request->filled('branch_id')) {
+            $selBranch = $branches->firstWhere('id', $request->branch_id);
+            if ($selBranch) {
+                $activeFilters[] = ['key' => 'branch_id', 'label' => 'فرع: ' . $selBranch->name];
+            }
+        }
+
+        if ($request->filled('status')) {
+            $activeFilters[] = ['key' => 'status', 'label' => 'حالة: ' . ($statusOptions[$request->status] ?? $request->status)];
+        }
+
+        if ($request->filled('registration_status')) {
+            $activeFilters[] = ['key' => 'registration_status', 'label' => 'تسجيل: ' . ($registrationOptions[$request->registration_status] ?? $request->registration_status)];
+        }
+
+        if ($request->filled('mode')) {
+            $activeFilters[] = ['key' => 'mode', 'label' => 'نوع: ' . ($modeOptions[$request->mode] ?? $request->mode)];
+        }
+
+        if ($request->filled('nationality')) {
+            $activeFilters[] = ['key' => 'nationality', 'label' => 'جنسية: ' . $request->nationality];
+        }
+
+        if ($request->filled('crm_source')) {
+            $activeFilters[] = ['key' => 'crm_source', 'label' => 'مصدر: ' . ($crmSourceOptions[$request->crm_source] ?? $request->crm_source)];
+        }
+
+        if ($request->filled('crm_stage')) {
+            $activeFilters[] = ['key' => 'crm_stage', 'label' => 'مرحلة: ' . ($crmStageOptions[$request->crm_stage] ?? $request->crm_stage)];
+        }
+
+        if ($request->filled('language_level')) {
+            $activeFilters[] = ['key' => 'language_level', 'label' => 'لغة: ' . $request->language_level];
+        }
+
+        if ($request->filled('certificate_agreement')) {
+            $activeFilters[] = ['key' => 'certificate_agreement', 'label' => 'اتفاق شهادة: ' . $request->certificate_agreement];
+        }
+
+        if ($request->filled('date_from')) {
+            $activeFilters[] = ['key' => 'date_from', 'label' => 'من: ' . $request->date_from];
+        }
+
+        if ($request->filled('date_to')) {
+            $activeFilters[] = ['key' => 'date_to', 'label' => 'إلى: ' . $request->date_to];
+        }
+
+        if ($request->filled('exam_score_min')) {
+            $activeFilters[] = ['key' => 'exam_score_min', 'label' => 'علامة من: ' . $request->exam_score_min];
+        }
+
+        if ($request->filled('exam_score_max')) {
+            $activeFilters[] = ['key' => 'exam_score_max', 'label' => 'علامة إلى: ' . $request->exam_score_max];
+        }
+
+        if ($request->boolean('has_message')) {
+            $activeFilters[] = ['key' => 'has_message', 'label' => 'لديه رسالة'];
+        }
+
+        if ($request->boolean('needs_update')) {
+            $activeFilters[] = ['key' => 'needs_update', 'label' => 'يحتاج تحديث'];
+        }
+
+        if ($request->boolean('needs_verification')) {
+            $activeFilters[] = ['key' => 'needs_verification', 'label' => 'يحتاج مراجعة'];
+        }
+
+        return $activeFilters;
+    }
+
+    
+/*
     public function index(Request $request)
     {
         $q = Student::query()->with(['branch', 'diplomas', 'profile', 'crmInfo']);
@@ -136,7 +432,7 @@ class StudentController extends Controller
         ]);
     }
 
-    public function create()
+*/    public function create()
     {
         $labels = $this->studentArabicLabels();
         $user = auth()->user();
@@ -470,11 +766,11 @@ class StudentController extends Controller
             'student_status' => [
                 'active' => 'مستمر في الدراسة',
                 'waiting' => 'قيد الانتظار',
-                'paid' => 'مدفوع',
+                // 'paid' => 'مدفوع',
                 'withdrawn' => 'منسحب',
                 'failed' => 'راسب',
                 'absent_exam' => 'لم يتقدّم للامتحان',
-                'certificate_delivered' => 'جرى تسليم الشهادة',
+                'certificate_delivered' => 'تم تسليم الشهادة',
                 'certificate_waiting' => 'الشهادة قيد الإصدار',
                 'registration_ended' => 'انتهى التسجيل',
                 'dismissed' => 'فُصل الطالب',
@@ -505,6 +801,9 @@ class StudentController extends Controller
         $student->load(['diplomas', 'profile', 'crmInfo']);
         $user = auth()->user();
 
+
+
+
         if ($user->hasRole('super_admin')) {
 
             $branches = Branch::orderBy('name')->get();
@@ -533,6 +832,9 @@ class StudentController extends Controller
             'code' => $d->code,
             'branch_id' => $d->branch_id,
         ])->toJson();
+
+
+
 
         return view('students.edit', [
             'student' => $student,
@@ -627,6 +929,8 @@ class StudentController extends Controller
                     'notes' => $data['notes'] ?? null,
                     'ended_at' => $data['ended_at'] ?? null,
                     'certificate_delivered' => isset($data['certificate_delivered']),
+                    'certificate_agreement' => $data['certificate_agreement'] ?? null,
+                    'language_level' => $data['language_level'] ?? null,
                 ]);
             }
 

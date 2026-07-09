@@ -1,18 +1,18 @@
 @extends('layouts.app')
 @php($isDashboard = true)
 
+
+
 @section('title', 'لوحة التحكم')
 
 @section('dashboard')
-
   <style>
-    /* ───── Hero Section ───── */
     .dash-hero {
       background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
       border-radius: 18px;
       padding: 28px 32px;
       color: #fff;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       position: relative;
       overflow: hidden;
     }
@@ -24,7 +24,7 @@
       left: -10%;
       width: 300px;
       height: 300px;
-      background: radial-gradient(circle, rgba(99, 102, 241, .15) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(99, 102, 241, .15), transparent 70%);
       border-radius: 50%;
     }
 
@@ -35,7 +35,7 @@
       right: -5%;
       width: 200px;
       height: 200px;
-      background: radial-gradient(circle, rgba(16, 185, 129, .1) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(16, 185, 129, .1), transparent 70%);
       border-radius: 50%;
     }
 
@@ -44,29 +44,6 @@
       font-weight: 800;
       margin-bottom: 4px;
       position: relative;
-    }
-
-    .dash-hero .sub {
-      font-size: 14px;
-      opacity: .7;
-      position: relative;
-    }
-
-    .dash-hero .chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      position: relative;
-    }
-
-    .dash-hero .chip-item {
-      background: rgba(255, 255, 255, .1);
-      border: 1px solid rgba(255, 255, 255, .15);
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, .8);
-      backdrop-filter: blur(4px);
     }
 
     .dash-date {
@@ -85,42 +62,134 @@
       position: relative;
     }
 
-    /* ───── Quick Stats Row ───── */
+    .dash-hero .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .chip-item {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .8);
+    }
+
+    /* ── Live Bar ── */
+    .live-bar {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      margin-top: 16px;
+      position: relative;
+    }
+
+    .live-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, .85);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .3);
+      flex-shrink: 0;
+    }
+
+    .live-badge {
+      background: rgba(255, 255, 255, .15);
+      border-radius: 8px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    /* ── Quick Stats ── */
     .quick-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
-    @media (max-width: 991px) {
+    @media(max-width:991px) {
       .quick-stats {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 575px) {
+    @media(max-width:767px) {
+      .live-bar {
+        gap: 10px;
+        padding: 10px 12px;
+      }
+
+      .live-item {
+        font-size: 11px;
+      }
+
+      .live-badge {
+        font-size: 11px;
+        padding: 2px 7px;
+      }
+
+      .dash-hero {
+        padding: 18px 16px;
+      }
+
+      .dash-hero h1 {
+        font-size: 16px;
+      }
+    }
+
+    @media(max-width:400px) {
       .quick-stats {
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 8px;
+      }
+
+      .qs-card {
+        padding: 10px 8px;
+      }
+
+      .qs-val {
+        font-size: 15px;
       }
     }
 
     .qs-card {
       background: #fff;
       border-radius: 14px;
-      padding: 18px 20px;
+      padding: 16px 18px;
       box-shadow: 0 1px 8px rgba(0, 0, 0, .04);
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       transition: transform .15s, box-shadow .15s;
       border-right: 4px solid transparent;
+      text-decoration: none;
+      color: inherit;
     }
 
     .qs-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+      color: inherit;
     }
 
     .qs-card.qs-warn {
@@ -139,14 +208,30 @@
       border-right-color: #8b5cf6;
     }
 
+    .qs-card.qs-red {
+      border-right-color: #ef4444;
+    }
+
+    .qs-card.qs-teal {
+      border-right-color: #0d9488;
+    }
+
+    .qs-card.qs-amber {
+      border-right-color: #d97706;
+    }
+
+    .qs-card.qs-sky {
+      border-right-color: #0284c7;
+    }
+
     .qs-icon {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 17px;
       flex-shrink: 0;
     }
 
@@ -170,19 +255,91 @@
       color: #7c3aed;
     }
 
-    .qs-text .qs-val {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1e293b;
-      line-height: 1.2;
+    .qs-icon.red {
+      background: #fee2e2;
+      color: #dc2626;
     }
 
-    .qs-text .qs-label {
+    .qs-icon.teal {
+      background: #ccfbf1;
+      color: #0f766e;
+    }
+
+    .qs-icon.amber {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .qs-icon.sky {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .qs-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: #1e293b;
+      line-height: 1.1;
+    }
+
+    .qs-label {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* CRM alert card */
+    .crm-alert-card {
+      background: linear-gradient(135deg, rgba(239, 68, 68, .08), rgba(245, 158, 11, .06));
+      border: 1px solid rgba(239, 68, 68, .2);
+      border-right: 4px solid #ef4444;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      text-decoration: none;
+      transition: transform .15s;
+    }
+
+    .crm-alert-card:hover {
+      transform: translateY(-1px);
+    }
+
+    .crm-alert-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(239, 68, 68, .12);
+      color: #dc2626;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .crm-alert-num {
+      font-size: 24px;
+      font-weight: 900;
+      color: #dc2626;
+      line-height: 1;
+    }
+
+    .crm-alert-lbl {
+      font-size: 13px;
+      font-weight: 800;
+      color: #7f1d1d;
+    }
+
+    .crm-alert-sub {
       font-size: 12px;
       color: #94a3b8;
+      margin-top: 2px;
     }
 
-    /* ───── Module Cards Enhancement ───── */
+    /* Module cards */
     .module-card {
       border-radius: 16px !important;
       transition: transform .2s, box-shadow .2s;
@@ -193,7 +350,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
     }
 
-    /* ───── Stats Mini Grid inside cards ───── */
+    /* Stats mini */
     .stats-mini {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -204,17 +361,17 @@
       margin: 8px 16px 12px;
     }
 
-    .stats-mini .sm-item {
+    .sm-item {
       text-align: center;
     }
 
-    .stats-mini .sm-val {
+    .sm-val {
       font-size: 20px;
       font-weight: 800;
       line-height: 1.2;
     }
 
-    .stats-mini .sm-label {
+    .sm-label {
       font-size: 11px;
       color: #94a3b8;
       display: flex;
@@ -224,12 +381,39 @@
       margin-top: 2px;
     }
 
-    /* ───── Section Divider ───── */
+    /* Progress bar */
+    .prog-wrap {
+      padding: 0 16px 12px;
+    }
+
+    .prog-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+
+    .prog-bar {
+      height: 6px;
+      border-radius: 10px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width .6s ease;
+    }
+
+    /* Section divider */
     .section-divider {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 28px 0 16px;
+      margin: 24px 0 14px;
     }
 
     .section-divider .sd-line {
@@ -239,21 +423,19 @@
     }
 
     .section-divider .sd-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: #64748b;
       white-space: nowrap;
     }
   </style>
 
-  {{-- ═══════════════════════════════════════════════════════ --}}
-  {{-- HERO --}}
-  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- ══════════ HERO ══════════ --}}
   <div class="dash-hero">
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
       <div>
         <h1>لوحة التحكم — نظام نماء أكاديمي</h1>
-        <div class="dash-date">اليوم: {{ now()->locale('ar')->translatedFormat('l d F Y') }}</div>
+        <div class="dash-date">{{ now()->locale('ar')->translatedFormat('l d F Y') }}</div>
         <div class="dash-role">
           <i class="bi bi-shield-check"></i>
           {{ auth()->user()->hasRole('super_admin') ? 'صلاحيات الإدارة العليا' : 'صلاحيات مصرّح بها' }}
@@ -265,55 +447,238 @@
         <span class="chip-item"><i class="bi bi-building"></i> فروع متعددة</span>
       </div>
     </div>
+
+    {{-- Live Bar --}}
+    <div class="live-bar">
+      <div class="live-item">
+        <span class="live-dot"></span>
+        <span>النظام يعمل</span>
+      </div>
+      <div class="live-item">
+        <i class="bi bi-people-fill" style="color:rgba(255,255,255,.6); font-size:14px"></i>
+        <span class="live-badge">{{ $onlineUsers }}</span>
+        <span>متصل الآن</span>
+      </div>
+      <div class="live-item">
+        <i class="bi bi-activity" style="color:rgba(255,255,255,.6); font-size:14px"></i>
+        <span>آخر نشاط:</span>
+        <span class="live-badge">{{ $lastActivityAr }}</span>
+      </div>
+      <div class="live-item">
+        <i class="bi bi-box-arrow-in-right" style="color:rgba(255,255,255,.6); font-size:14px"></i>
+        <span class="live-badge">{{ $todayLogins }}</span>
+        <span>دخول اليوم</span>
+      </div>
+      <div class="live-item" style="margin-right:auto; font-size:11px; opacity:.55;">
+        <i class="bi bi-clock"></i>
+        {{ now()->locale('ar')->format('H:i') }}
+      </div>
+    </div>
   </div>
 
-  {{-- ═══════════════════════════════════════════════════════ --}}
-  {{-- QUICK STATS --}}
-  {{-- ═══════════════════════════════════════════════════════ --}}
+  {{-- ══════════ CRM URGENT ALERT ══════════ --}}
+  @if(auth()->user()?->hasPermission('view_leads') && $urgentLeads > 0)
+    <a href="{{ route('leads.index') }}" class="crm-alert-card">
+      <div class="crm-alert-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div>
+        <div class="crm-alert-num">{{ $urgentLeads }}</div>
+        <div class="crm-alert-lbl">عميل محتمل بدون متابعة منذ أكثر من 48 ساعة</div>
+        <div class="crm-alert-sub">اضغط للانتقال إلى CRM ومتابعة العملاء</div>
+      </div>
+      <i class="bi bi-arrow-left-circle-fill ms-auto" style="font-size:22px; color:#ef4444; opacity:.6;"></i>
+    </a>
+  @endif
+
+  {{-- ══════════ QUICK STATS (8 كاردات منفصلة) ══════════ --}}
   @if(auth()->user()?->hasPermission('view_dashboard'))
     <div class="quick-stats">
-      <div class="qs-card qs-warn">
-        <div class="qs-icon warn"><i class="bi bi-bell"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $highlights['alerts']['pending_leaves'] }} إجازة •
-            {{ $highlights['alerts']['today_tasks'] }} مهمة
-          </div>
-          <div class="qs-label">تنبيهات اليوم</div>
+
+      <div class="qs-card qs-blue">
+        <div class="qs-icon blue"><i class="bi bi-mortarboard-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $studentStats['total'] }}</div>
+          <div class="qs-label">إجمالي الطلاب</div>
         </div>
       </div>
+
       <div class="qs-card qs-green">
         <div class="qs-icon green"><i class="bi bi-cash-coin"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $todayStats['financial_transactions'] }} حركة •
-            {{ number_format($todayStats['financial_amount'], 0) }}
-          </div>
-          <div class="qs-label">المالية اليوم</div>
+        <div>
+          <div class="qs-val">{{ number_format($todayStats['financial_amount'], 0) }}</div>
+          <div class="qs-label">إيرادات اليوم</div>
         </div>
       </div>
-      <div class="qs-card qs-blue">
-        <div class="qs-icon blue"><i class="bi bi-mortarboard"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $todayStats['new_students'] }} جدد • {{ $todayStats['confirmed_students'] }} تثبيت</div>
-          <div class="qs-label">نشاط الطلاب</div>
+
+      <div class="qs-card qs-warn">
+        <div class="qs-icon warn"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div class="qs-val">{{ $highlights['alerts']['pending_leaves'] }}</div>
+          <div class="qs-label">إجازات معلقة</div>
         </div>
       </div>
+
       <div class="qs-card qs-purple">
-        <div class="qs-icon purple"><i class="bi bi-activity"></i></div>
-        <div class="qs-text">
-          <div class="qs-val">{{ $highlights['activity']['count'] }} تعديل •
-            {{ $highlights['activity']['last'] ? \Carbon\Carbon::parse($highlights['activity']['last'])->diffForHumans() : '—' }}
+        <div class="qs-icon purple"><i class="bi bi-check2-square"></i></div>
+        <div>
+          <div class="qs-val">{{ $highlights['alerts']['today_tasks'] }}</div>
+          <div class="qs-label">مهام اليوم</div>
+        </div>
+      </div>
+
+      <div class="qs-card qs-teal">
+        <div class="qs-icon teal"><i class="bi bi-person-check-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $attendanceStats['present_today'] }}</div>
+          <div class="qs-label">حاضر اليوم</div>
+        </div>
+      </div>
+
+      <div class="qs-card qs-red">
+        <div class="qs-icon red"><i class="bi bi-person-x-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $attendanceStats['absent_today'] }}</div>
+          <div class="qs-label">غائب اليوم</div>
+        </div>
+      </div>
+
+      <div class="qs-card qs-sky">
+        <div class="qs-icon sky"><i class="bi bi-person-plus-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $todayStats['new_students'] }}</div>
+          <div class="qs-label">طلاب جدد اليوم</div>
+        </div>
+      </div>
+
+      <div class="qs-card qs-amber">
+        <div class="qs-icon amber"><i class="bi bi-exclamation-circle-fill"></i></div>
+        <div>
+          <div class="qs-val">{{ $taskStats['overdue'] }}</div>
+          <div class="qs-label">مهام متأخرة</div>
+        </div>
+      </div>
+
+    </div>
+  @endif
+
+
+
+
+  {{-- ── تنبيهات الرسائل والطلاب ── --}}
+  @if($pendingMessages > 0 || $studentsNeedUpdate > 0)
+    <div class="row g-3 mb-4">
+
+      @if($pendingMessages > 0)
+        <div class="col-12 col-md-6">
+          <a href="{{ route('students.index', ['has_message' => 1]) }}" class="text-decoration-none">
+            <div class="alert alert-warning d-flex align-items-center gap-3 mb-0 shadow-sm"
+              style="border-radius:12px; border-right: 5px solid #f59e0b;">
+              <div style="font-size:2rem;">📩</div>
+              <div>
+                <div class="fw-bold">{{ $pendingMessages }} طالب لديه رسالة معلقة</div>
+                <div class="small text-muted">اضغط لعرض قائمة الطلاب ذوي الرسائل المعلقة</div>
+              </div>
+              <i class="bi bi-chevron-left ms-auto"></i>
+            </div>
+          </a>
+        </div>
+      @endif
+
+      @if($studentsNeedUpdate > 0)
+        <div class="col-12 col-md-6">
+          <a href="{{ route('students.index', ['needs_update' => 1]) }}" class="text-decoration-none">
+            <div class="alert alert-info d-flex align-items-center gap-3 mb-0 shadow-sm"
+              style="border-radius:12px; border-right: 5px solid #3b82f6;">
+              <div style="font-size:2rem;">🔔</div>
+              <div>
+                <div class="fw-bold">{{ $studentsNeedUpdate }} طالب لم يتم تحديث بياناتهم منذ 7 أيام</div>
+                <div class="small text-muted">اضغط لعرض الطلاب الذين يحتاجون متابعة</div>
+              </div>
+              <i class="bi bi-chevron-left ms-auto"></i>
+            </div>
+          </a>
+        </div>
+      @endif
+
+    </div>
+  @endif
+
+  @if($studentsNeedVerification > 0)
+    <div class="alert d-flex align-items-center gap-2 mb-2" style="background:rgba(245,158,11,.08); border-right:4px solid #f59e0b;
+                              border-radius:10px; padding:10px 14px;">
+      <i class="bi bi-person-exclamation" style="color:#f59e0b; font-size:1.2rem;"></i>
+      <div class="flex-grow-1">
+        <span class="fw-bold" style="color:#92400e;">{{ $studentsNeedVerification }}</span>
+        <span class="small text-muted"> طالب يحتاج مراجعة بياناته (اسم لاتيني / ميلاد / وثيقة)</span>
+      </div>
+      <a href="{{ route('students.index', ['needs_verification' => 1]) }}" class="btn btn-sm"
+        style="background:#f59e0b; color:#fff; border-radius:8px; font-size:.78rem;">
+        مراجعة
+      </a>
+    </div>
+  @endif
+
+  @if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('manager_attendance') || auth()->user()?->hasPermission('view_attendance'))
+
+
+    @if($pendingLeaves > 0)
+      <div class="alert d-flex align-items-center gap-3 mb-3" style="background:rgba(14,165,233,.08);
+                            border-right:4px solid #0ea5e9;
+                            border-radius:12px;
+                            padding:12px 18px;">
+        <i class="bi bi-calendar-x-fill fs-4" style="color:#0284c7;"></i>
+        <div class="flex-grow-1">
+          <span class="fw-bold" style="color:#0c4a6e;">
+            {{ $pendingLeaves }} طلب إجازة
+          </span>
+          <span class="small text-muted"> بانتظار المراجعة والموافقة</span>
+        </div>
+        <a href="{{ route('leaves.index', ['status' => 'pending']) }}" class="btn btn-sm fw-bold"
+          style="background:#0ea5e9; color:#fff; border-radius:8px;">
+          مراجعة الطلبات
+        </a>
+      </div>
+    @endif
+  @endif
+
+  {{-- ── أحداث الأسبوع القادم ── --}}
+  @if($upcomingEvents->count())
+    <div class="row g-3 mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white fw-bold border-0 d-flex justify-content-between align-items-center pt-3">
+            <span><i class="bi bi-calendar-event text-primary"></i> أحداث الأسبوع القادم</span>
+            <a href="{{ route('calendar.index') }}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-calendar3"></i> عرض التقويم
+            </a>
           </div>
-          <div class="qs-label">نشاط النظام</div>
+          <div class="card-body p-0">
+            @foreach($upcomingEvents as $ev)
+              <div class="d-flex align-items-center gap-3 px-3 py-2 border-bottom">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                  style="width:34px; height:34px; background:{{ $ev->color }}22;">
+                  <i class="bi {{ $eventTypes[$ev->type]['icon'] }}" style="color:{{ $ev->color }}; font-size:14px;"></i>
+                </div>
+                <div>
+                  <div class="fw-bold" style="font-size:13px;">{{ $ev->title }}</div>
+                  <div class="text-muted" style="font-size:11px;">
+                    {{ $ev->start_date->format('d/m/Y') }}
+                    @if($ev->start_time) — {{ $ev->start_time }} @endif
+                    • {{ $eventTypes[$ev->type]['label'] }}
+                  </div>
+                </div>
+              </div>
+            @endforeach
+          </div>
         </div>
       </div>
     </div>
   @endif
 
-  {{-- ═══════════════════════════════════════════════════════ --}}
-  {{-- MAIN MODULES --}}
-  {{-- ═══════════════════════════════════════════════════════ --}}
 
-  {{-- ── القسم الأول: العمليات الأساسية ── --}}
+  {{-- ══════════ MODULES ══════════ --}}
+
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-grid-3x3-gap me-1"></i> العمليات الأساسية</span>
     <div class="sd-line"></div>
@@ -333,13 +698,12 @@
             </div>
           </div>
           <div class="module-body">
-            <p class="section-note">عرض إحصائيات سريعة، تقارير ، وتصفية متقدمة حسب الفرع والفترة.</p>
+            <p class="section-note">عرض إحصائيات سريعة وتصفية متقدمة حسب الفرع والفترة.</p>
           </div>
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $dashboardStats['total_students'] }}</div>
-              <div class="sm-label"><i class="bi bi-mortarboard"></i> إجمالي الطلاب</div>
+              <div class="sm-label"><i class="bi bi-mortarboard"></i> الطلاب</div>
             </div>
             <div class="sm-item">
               <div class="sm-val text-success">{{ number_format($dashboardStats['revenue_today'], 0) }}</div>
@@ -351,11 +715,9 @@
             </div>
             <div class="sm-item">
               <div class="sm-val text-danger">{{ $dashboardStats['overdue_tasks'] }}</div>
-              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> مهام متأخرة</div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخرة</div>
             </div>
           </div>
-
-
           <div class="module-actions">
             <a href="{{ route('reports.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح التقارير</a>
             @if(auth()->user()?->hasPermission('view_executive_dashboard'))
@@ -398,6 +760,16 @@
               <div class="sm-label"><i class="bi bi-check2-circle"></i> تحويل</div>
             </div>
           </div>
+          {{-- Progress: نسبة التحويل --}}
+          <div class="prog-wrap">
+            <div class="prog-label">
+              <span>نسبة التحويل</span>
+              <span>{{ $convRate }}%</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill" style="width:{{ $convRate }}%; background:#10b981;"></div>
+            </div>
+          </div>
           <div class="module-actions">
             <a href="{{ route('leads.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح CRM</a>
             @if(auth()->user()?->hasPermission('view_reports') || auth()->user()?->hasPermission('view_crm_reports'))
@@ -438,6 +810,16 @@
             <div class="sm-item">
               <div class="sm-val text-info">{{ $studentStats['today_new'] }}</div>
               <div class="sm-label"><i class="bi bi-plus-circle"></i> جدد اليوم</div>
+            </div>
+          </div>
+          {{-- Progress: نسبة التثبيت --}}
+          <div class="prog-wrap">
+            <div class="prog-label">
+              <span>نسبة التثبيت</span>
+              <span>{{ $confRate }}%</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill" style="width:{{ $confRate }}%; background:#3b82f6;"></div>
             </div>
           </div>
           <div class="module-actions">
@@ -529,6 +911,69 @@
       </div>
     @endif
 
+
+    {{-- الذمم المالية وكشف الحسابات --}}
+    @if(auth()->user()?->hasPermission('view_debts'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon" style="background:linear-gradient(135deg,#fde68a,#f59e0b); color:#92400e;">
+              <i class="bi bi-wallet2 fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">الذمم وكشف الحسابات</p>
+              <p class="module-sub">ذمم الطلاب — كشف حساب شامل لكل الحركات</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">
+              متابعة الذمم المالية للطلاب، وكشف حساب تفصيلي لكل شخص أو حركة في أي صندوق مع تصدير Excel.
+            </p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-danger">{{ $debtStats['has_debt'] }}</div>
+              <div class="sm-label"><i class="bi bi-exclamation-circle"></i> عليهم ذمة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $debtStats['paid'] }}</div>
+              <div class="sm-label"><i class="bi bi-check-circle"></i> مسدّد</div>
+            </div>
+
+
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ number_format($debtStats['total_remaining'], 0) }}</div>
+              <div class="sm-label"><i class="bi bi-currency-dollar"></i> إجمالي الذمم</div>
+            </div>
+
+            <div class="sm-item">
+              <div class="sm-val text-info">{{ $debtStats['total_students'] }}</div>
+              <div class="sm-label"><i class="bi bi-people"></i> إجمالي</div>
+            </div>
+          </div>
+          <div class="module-actions grid-2">
+            <a href="{{ route('debts.index') }}" class="btn btn-namaa w-100 w-sm-auto">
+              <i class="bi bi-wallet2"></i> الذمم المالية
+            </a>
+            @if(auth()->user()?->hasPermission('view_account_statement'))
+              <a href="{{ route('accounts.statement.index') }}" class="btn btn-soft w-100 w-sm-auto">
+                <i class="bi bi-receipt-cutoff"></i> كشف الحسابات
+              </a>
+            @endif
+          </div>
+        </div>
+      </div>
+    @endif
+
+
+    
+
+
+
+
+
+
+
     {{-- الدوام والإجازات --}}
     @if(auth()->user()?->hasPermission('view_attendance'))
       <div class="col-12 col-md-6 col-xl-4">
@@ -543,8 +988,6 @@
           <div class="module-body">
             <p class="section-note">تقويم شهري، سجلات حضور يومية، تقارير ساعات/تأخير/غياب.</p>
           </div>
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-success">{{ $attendanceStats['present_today'] }}</div>
@@ -564,25 +1007,150 @@
             </div>
           </div>
 
+      
 
+          {{-- ✅ الأزرار الرئيسية --}}
           <div class="module-actions grid-2">
-            <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100 w-sm-auto">التقويم</a>
-            <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح الدوام</a>
-
+            <a href="{{ route('attendance.calendar') }}" class="btn btn-namaa w-100">التقويم</a>
+            <a href="{{ route('attendance.index') }}" class="btn btn-namaa w-100">فتح الدوام</a>
             @if(auth()->user()?->hasPermission('export_attendance_reports'))
-              <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100 w-sm-auto">تقارير الدوام</a>
+              <a href="{{ route('attendance.reports') }}" class="btn btn-soft w-100">تقارير الدوام</a>
             @endif
             @if(auth()->user()?->hasPermission('view_leaves'))
-              <a href="{{ route('leaves.index') }}" class="btn btn-soft w-100 w-sm-auto">طلبات الإجازات</a>
+              <a href="{{ route('leaves.index') }}" class="btn btn-outline-secondary fw-bold w-100 position-relative">
+                طلبات الإجازات
+                @if($pendingLeaves > 0)
+                  <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size:.7rem;">
+                    {{ $pendingLeaves }}
+                  </span>
+                @endif
+              </a>
+            @endif
+          </div>
+
+
+
+              {{-- ✅ أزرار اليوم — صف كامل العرض --}}
+          <div style="padding: 0 16px 10px;">
+            <div class="small fw-bold text-muted mb-2">
+              <i class="bi bi-calendar-day"></i> دوام اليوم — {{ now()->locale('ar')->translatedFormat('l d/m') }}
+            </div>
+            <div class="d-flex gap-2">
+              <a href="{{ route('attendance.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->toDateString(),
+        'type' => 'employee'
+      ]) }}" class="btn fw-bold flex-fill" style="background:rgba(14,165,233,.1);
+                        color:#0369a1;
+                        border:1px solid rgba(14,165,233,.25);
+                        border-radius:10px;
+                        font-size:12px;">
+                <i class="bi bi-person-badge"></i><br>
+                دوام الموظفين
+              </a>
+              <a href="{{ route('attendance.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->toDateString(),
+        'type' => 'trainer'
+      ]) }}" class="btn fw-bold flex-fill" style="background:rgba(16,185,129,.1);
+                        color:#065f46;
+                        border:1px solid rgba(16,185,129,.25);
+                        border-radius:10px;
+                        font-size:12px;">
+                <i class="bi bi-mortarboard"></i><br>
+                دوام المدربين
+              </a>
+            </div>
+          </div>
+
+
+
+          
+        </div>
+      </div>
+    @endif
+
+
+    {{-- التقويم والأحداث --}}
+    @if(auth()->user()?->hasPermission('view_calendar'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;">
+              <i class="bi bi-calendar3 fs-3"></i>
+            </div>
+            <div>
+              <p class="module-title">التقويم والأحداث</p>
+              <p class="module-sub">جلسات — حملات — أعياد ميلاد — تذكيرات</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">إدارة الأحداث والمواعيد المهمة مع تنبيهات تلقائية.</p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ $calendarStats['total'] ?? 0 }}</div>
+              <div class="sm-label"><i class="bi bi-calendar3"></i> هذا الشهر</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $calendarStats['upcoming'] ?? 0 }}</div>
+              <div class="sm-label"><i class="bi bi-calendar-check"></i> قادمة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ $calendarStats['today'] ?? 0 }}</div>
+              <div class="sm-label"><i class="bi bi-calendar-day"></i> اليوم</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-secondary">{{ $calendarStats['passed'] ?? 0 }}</div>
+              <div class="sm-label"><i class="bi bi-calendar-x"></i> منتهية</div>
+            </div>
+          </div>
+
+          {{-- أقرب حدث قادم --}}
+          @if(isset($upcomingEvents2) && $upcomingEvents2->count())
+            <div style="padding:0 16px 12px;">
+              <div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:6px;">
+                <i class="bi bi-clock"></i> أقرب حدث
+              </div>
+
+
+
+
+              <div class="d-flex align-items-center gap-2 p-2 rounded"
+                style="background:{{ $next->color }}15; border-right:3px solid {{ $next->color }};">
+                <i class="bi {{ $eventTypes2[$next->type]['icon'] ?? 'bi-calendar' }}"
+                  style="color:{{ $next->color }}; font-size:16px;"></i>
+                <div>
+                  <div style="font-size:12px; font-weight:800; color:#1e293b;">{{ $next->title }}</div>
+                  <div style="font-size:11px; color:#94a3b8;">
+                    {{ $next->start_date->format('d/m/Y') }}
+                    {{ $next->start_time ? '— ' . $next->start_time : '' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          @endif
+
+          <div class="module-actions">
+            <a href="{{ route('calendar.index') }}" class="btn btn-namaa w-100 w-sm-auto">
+              <i class="bi bi-calendar3"></i> فتح التقويم
+            </a>
+            @if(auth()->user()?->hasPermission('create_events'))
+              <a href="{{ route('calendar.index') }}" class="btn btn-soft w-100 w-sm-auto">
+                <i class="bi bi-plus-circle"></i> إضافة حدث
+              </a>
             @endif
           </div>
         </div>
       </div>
     @endif
 
+
+
   </div>
 
-  {{-- ── القسم الثاني: الموارد البشرية والإدارة ── --}}
+  {{-- ══════════ القسم الثاني ══════════ --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-person-gear me-1"></i> الموارد البشرية والإدارة</span>
     <div class="sd-line"></div>
@@ -604,10 +1172,6 @@
           <div class="module-body">
             <p class="section-note">إنشاء مهام حسب الفرع، متابعة حالة التنفيذ، وتقارير يومية.</p>
           </div>
-
-
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $taskStats['total'] }}</div>
@@ -626,22 +1190,84 @@
               <div class="sm-label"><i class="bi bi-exclamation-circle"></i> متأخر</div>
             </div>
           </div>
-
-
-
-
+          {{-- Progress: نسبة الإنجاز --}}
+          <div class="prog-wrap">
+            <div class="prog-label">
+              <span>نسبة الإنجاز</span>
+              <span>{{ $doneRate }}%</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill" style="width:{{ $doneRate }}%; background:#10b981;"></div>
+            </div>
+          </div>
           <div class="module-actions grid-2">
             <a href="{{ route('tasks.index') }}" class="btn btn-namaa w-100 w-sm-auto">فتح المهام</a>
             @if(auth()->user()?->hasPermission('create_tasks'))
               <a href="{{ route('tasks.create') }}" class="btn btn-namaa w-100 w-sm-auto">إضافة مهمة</a>
             @endif
             <a href="{{ route('tasks.index', ['status' => 'todo']) }}" class="btn btn-soft w-100 w-sm-auto">مهام اليوم</a>
-            <a href="{{ route('reports.task.index') }}" class="btn btn-soft w-100 w-sm-auto"><i
-                class="bi bi-file-earmark-text"></i> تقارير المهام</a>
+            <a href="{{ route('reports.task.index') }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-file-earmark-text"></i> تقارير المهام
+            </a>
           </div>
         </div>
       </div>
     @endif
+
+
+    {{-- مجموعات الرؤية --}}
+    @if(auth()->user()?->hasRole('super_admin') || auth()->user()?->hasPermission('manage_roles'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-teal"><i class="bi bi-diagram-2-fill fs-3"></i></div>
+            <div>
+              <p class="module-title">مجموعات الرؤية</p>
+              <p class="module-sub">تحكم بمن يرى مهام وتقارير من</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">
+              تحديد صلاحيات الرؤية بشكل دقيق — كل مدير يرى فقط تقارير ومهام الموظفين المضافين لمجموعته.
+            </p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ \App\Models\VisibilityGroup::count() }}</div>
+              <div class="sm-label"><i class="bi bi-diagram-2"></i> مجموعة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">
+                {{ \DB::table('visibility_group_employee')->where('role_in_group', 'manager')->count() }}
+              </div>
+              <div class="sm-label"><i class="bi bi-person-check"></i> مدير</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-info">
+                {{ \DB::table('visibility_group_employee')->where('role_in_group', 'member')->count() }}
+              </div>
+              <div class="sm-label"><i class="bi bi-people"></i> عضو</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning">
+                {{ \DB::table('visibility_group_employee')->distinct('employee_id')->count('employee_id') }}
+              </div>
+              <div class="sm-label"><i class="bi bi-person-badge"></i> موظف مُدار</div>
+            </div>
+          </div>
+          <div class="module-actions">
+            <a href="{{ route('admin.visibility-groups.index') }}" class="btn btn-namaa w-100 w-sm-auto">
+              <i class="bi bi-diagram-2-fill"></i> إدارة المجموعات
+            </a>
+            <a href="{{ route('admin.visibility-groups.create') }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-plus-circle"></i> مجموعة جديدة
+            </a>
+          </div>
+        </div>
+      </div>
+    @endif
+
+
 
     {{-- المدربين والموظفين --}}
     @if(auth()->user()?->hasPermission('view_employees'))
@@ -692,7 +1318,7 @@
       </div>
     @endif
 
-    {{-- الأمان والمستخدمون --}}
+    {{-- الأمان --}}
     @if(auth()->user()?->hasPermission('manage_roles'))
       <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
@@ -737,7 +1363,7 @@
 
   </div>
 
-  {{-- ── القسم الثالث: البنية التحتية والبرامج ── --}}
+  {{-- ══════════ القسم الثالث ══════════ --}}
   <div class="section-divider">
     <span class="sd-title"><i class="bi bi-buildings me-1"></i> البنية التحتية والبرامج</span>
     <div class="sd-line"></div>
@@ -784,6 +1410,72 @@
         </div>
       </div>
     @endif
+
+
+
+    {{-- طلبات اللوجستيات --}}
+    @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasPermission('submit_asset_request'))
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="module-card">
+          <div class="module-head">
+            <div class="module-icon grad-yellow"><i class="bi bi-send-plus fs-3"></i></div>
+            <div>
+              <p class="module-title">طلبات اللوجستيات</p>
+              <p class="module-sub">طلبات الشراء والإصلاح — مراجعة المدير</p>
+            </div>
+          </div>
+          <div class="module-body">
+            <p class="section-note">
+              تقديم طلبات شراء أصول جديدة أو إصلاح أصول موجودة، ومتابعة حالة الطلب.
+            </p>
+          </div>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val text-warning">{{ $assetRequestStats['pending'] }}</div>
+              <div class="sm-label"><i class="bi bi-hourglass-split"></i> قيد المراجعة</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-success">{{ $assetRequestStats['approved'] }}</div>
+              <div class="sm-label"><i class="bi bi-check-circle"></i> مقبول</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger">{{ $assetRequestStats['rejected'] }}</div>
+              <div class="sm-label"><i class="bi bi-x-circle"></i> مرفوض</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-primary">{{ $assetRequestStats['total'] }}</div>
+              <div class="sm-label"><i class="bi bi-list-check"></i> إجمالي</div>
+            </div>
+          </div>
+          <div class="module-actions grid-2">
+
+            {{-- زر إدارة الطلبات — للمدير فقط --}}
+            @if(auth()->user()?->hasPermission('manage_assets') || auth()->user()?->hasRole('super_admin'))
+              <a href="{{ route('asset-requests.index') }}" class="btn btn-namaa w-100 w-sm-auto position-relative">
+                <i class="bi bi-inbox"></i> إدارة الطلبات
+                @if($assetRequestStats['pending'] > 0)
+                  <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size:10px;">
+                    {{ $assetRequestStats['pending'] }}
+                  </span>
+                @endif
+              </a>
+            @endif
+
+            {{-- زر تقديم طلب — لمن لديه صلاحية submit_asset_request --}}
+            @if(auth()->user()?->hasPermission('submit_asset_request'))
+              <a href="{{ route('asset-requests.create') }}" class="btn btn-soft w-100 w-sm-auto">
+                <i class="bi bi-send-plus"></i> تقديم طلب
+              </a>
+            @endif
+
+          </div>
+        </div>
+      </div>
+    @endif
+
+
+
 
     {{-- الفروع --}}
     @if(auth()->user()?->hasPermission('view_branches'))
@@ -883,14 +1575,11 @@
           <div class="module-body">
             <p class="section-note">متابعة قسم البرامج، الميديا، التسويق، الامتحانات وشؤون الطلاب.</p>
           </div>
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $programStats['total'] }}</div>
               <div class="sm-label"><i class="bi bi-diagram-3"></i> مُدارة</div>
             </div>
-
             <div class="sm-item">
               <div class="sm-val text-info">{{ $programStats['online'] }}</div>
               <div class="sm-label"><i class="bi bi-wifi"></i> أونلاين</div>
@@ -904,15 +1593,14 @@
               <div class="sm-label"><i class="bi bi-pause-circle"></i> غير نشط</div>
             </div>
           </div>
-
-
-
           <div class="module-actions grid-2">
             <a href="{{ route('programs.management.index') }}" class="btn btn-namaa w-100 w-sm-auto">كل البرامج</a>
-            <a href="{{ route('programs.management.index', ['type' => 'online']) }}" class="btn btn-soft w-100 w-sm-auto"><i
-                class="bi bi-wifi"></i> أونلاين</a>
-            <a href="{{ route('programs.management.index', ['type' => 'onsite']) }}" class="btn btn-soft w-100 w-sm-auto"><i
-                class="bi bi-building"></i> حضوري</a>
+            <a href="{{ route('programs.management.index', ['type' => 'online']) }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-wifi"></i> أونلاين
+            </a>
+            <a href="{{ route('programs.management.index', ['type' => 'onsite']) }}" class="btn btn-soft w-100 w-sm-auto">
+              <i class="bi bi-building"></i> حضوري
+            </a>
           </div>
         </div>
       </div>
@@ -932,9 +1620,6 @@
           <div class="module-body">
             <p class="section-note">إدارة طلبات التصميم والمحتوى الرقمي وجدولة النشر عبر المنصات.</p>
           </div>
-
-
-
           <div class="stats-mini">
             <div class="sm-item">
               <div class="sm-val text-primary">{{ $mediaStats['total'] }}</div>
@@ -953,50 +1638,101 @@
               <div class="sm-label"><i class="bi bi-calendar-month"></i> هذا الشهر</div>
             </div>
           </div>
-
-
-
-
           <div class="module-actions">
             <a href="{{ route('media.index') }}" class="btn btn-namaa w-100">فتح قسم الميديا</a>
           </div>
           <div class="module-actions">
-
             <a href="{{ route('media.publish.create') }}" class="btn btn-namaa w-100">
               <i class="bi bi-plus-lg"></i> إضافة سجل نشر
             </a>
           </div>
-
-
-
-
         </div>
       </div>
     @endif
 
-    {{-- إعدادات النظام --}}
+
+
+
+
+    {{-- ── إعدادات النظام — super_admin فقط ── --}}
     @if(auth()->user()?->hasRole('super_admin'))
-      <div class="col-12 col-md-6 col-xl-4" hidden>
+      <div class="col-12 col-md-6 col-xl-4">
         <div class="module-card">
           <div class="module-head">
-            <div class="module-icon grad-slate"><i class="bi bi-gear-fill fs-3"></i></div>
+            <div class="module-icon grad-slate">
+              <i class="bi bi-gear-fill fs-3"></i>
+            </div>
             <div>
               <p class="module-title">إعدادات النظام</p>
-              <p class="module-sub">النسخ الاحتياطية — حالة النظام — صيانة</p>
+              <p class="module-sub">المظهر، الألوان، وضبط الإشعارات</p>
             </div>
           </div>
           <div class="module-body">
-            <p class="section-note">إدارة النسخ الاحتياطية ومراقبة حالة السيرفر وقاعدة البيانات.</p>
+            <p class="section-note">
+              تخصيص مظهر النظام بين الوضع الفاتح والداكن، ضبط الألوان، وتحديد مدد تنبيهات متابعة العملاء.
+            </p>
           </div>
-          <div class="module-actions grid-2">
-            <a href="{{ route('system.backup.index') }}" class="btn btn-namaa w-100"><i class="bi bi-database"></i> النسخ
-              الاحتياطية</a>
-            <a href="{{ route('system.health') }}" class="btn btn-soft w-100"><i class="bi bi-activity"></i> حالة النظام</a>
+          <div class="stats-mini">
+            <div class="sm-item">
+              <div class="sm-val">
+                <i class="bi bi-{{ \App\Models\SystemSetting::get('theme_mode', 'light') === 'dark' ? 'moon-stars-fill text-primary' : 'sun-fill text-warning' }}"
+                  style="font-size:1.4rem;"></i>
+              </div>
+              <div class="sm-label">وضع العرض</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val">
+                <span
+                  style="display:inline-block;width:28px;height:28px;border-radius:50%;background:{{ \App\Models\SystemSetting::get('primary_color', '#0ea5e9') }};"></span>
+              </div>
+              <div class="sm-label">اللون الرئيسي</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-danger fw-bold">
+                {{ \App\Models\SystemSetting::get('alert_followup_hours', 48) }}س
+              </div>
+              <div class="sm-label">تنبيه عاجل</div>
+            </div>
+            <div class="sm-item">
+              <div class="sm-val text-warning fw-bold">
+                {{ \App\Models\SystemSetting::get('alert_warning_hours', 24) }}س
+              </div>
+              <div class="sm-label">تنبيه تحذيري</div>
+            </div>
+          </div>
+          <div class="module-actions">
+            <a href="{{ route('admin.settings.index') }}" class="btn btn-namaa w-100 fw-bold">
+              <i class="bi bi-sliders"></i> فتح الإعدادات
+            </a>
           </div>
         </div>
       </div>
     @endif
 
+
+
   </div>
+
+
+
+
+  {{-- رسالة نجاح طلب اللوجستيات --}}
+  @if(session('asset_request_success'))
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+          icon: 'success',
+          title: 'تم إرسال الطلب',
+          text: '{{ session('asset_request_success') }}',
+          confirmButtonText: 'ممتاز',
+          confirmButtonColor: '#0ea5e9',
+          timer: 4000,
+          timerProgressBar: true,
+        });
+      });
+    </script>
+  @endif
+
+
 
 @endsection

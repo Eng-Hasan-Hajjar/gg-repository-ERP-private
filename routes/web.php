@@ -821,4 +821,16 @@ Schedule::command('attendance:mark-absent')->hourly();
 
 
 
+
+// ✅ أضف هذين السطرين ضمن middleware auth في routes/web.php
+
+Route::get('students/reports', [StudentReportController::class, 'index'])
+    ->name('students.reports.index');
+
+Route::get('students/reports/export-excel', [StudentReportController::class, 'exportExcel'])
+    ->name('students.reports.exportExcel');
+
+
+
+
 require __DIR__ . '/auth.php';

@@ -53,7 +53,10 @@ class Student extends Model
         'rating',
 
         'ended_at',
-        'certificate_delivered'
+        'certificate_delivered',
+        'certificate_agreement',
+         'language_level',
+
       ])
       ->withTimestamps();
   }

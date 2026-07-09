@@ -6,61 +6,195 @@ use App\Models\Student;
 use App\Models\Branch;
 use App\Models\Diploma;
 use Illuminate\Http\Request;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StudentDynamicExport;
+use App\Traits\HasStudentLabels;
 
 class StudentReportController extends Controller
 {
-    // ══════════════════════════════════════════
-    // صفحة التقارير
-    // ══════════════════════════════════════════
-    public function index(Request $request)
+    use HasStudentLabels;
+    /**
+     * ✅ تعريف كل الأعمدة المتاحة — نفس المفتاح يُستخدم في:
+     *    - الجدول (data-col)
+     *    - checkbox الاختيار
+     *    - التصدير الديناميكي (StudentDynamicExport)
+     */
+    public function availableColumns(): array
     {
-        $q = Student::with(['branch', 'diplomas', 'profile', 'crmInfo']);
+        return [
+            'id'                    => '#',
+            'university_id'         => 'الرقم الجامعي',
+            'full_name'             => 'الاسم الكامل',
+            'latin_name'            => 'الاسم اللاتيني',
+            'phone'                 => 'الهاتف',
+            'whatsapp'              => 'واتساب',
+            'branch'                => 'الفرع',
+            'diplomas'              => 'الدبلومات',
+            'mode'                  => 'نوع الطالب',
+            'status'                => 'حالة الطالب',
+            'registration_status'   => 'حالة التسجيل',
+            'nationality'           => 'الجنسية',
+            'birth_date'            => 'تاريخ الميلاد',
+            'national_id'           => 'الرقم الوطني',
+            'crm_source'            => 'مصدر CRM',
+            'crm_stage'             => 'مرحلة CRM',
+            'organization'          => 'الجهة/المؤسسة',
+            'exam_score'            => 'العلامة الامتحانية',
+            'language_level'        => 'مستوى اللغة',
+            'certificate_agreement' => 'اتفاق الشهادة',
+            'created_at'            => 'تاريخ الإضافة',
+        ];
+    }
 
-        // فلاتر
-        if ($request->filled('branch_id')) {
-            $q->where('branch_id', $request->branch_id);
-        }
-        if ($request->filled('diploma_id')) {
-            $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $request->diploma_id));
-        }
-        if ($request->filled('status')) {
-            $q->where('status', $request->status);
-        }
+    /**
+     * الأعمدة الافتراضية عند أول زيارة (بدون تخزين مسبق في localStorage)
+     */
+    private function defaultColumns(): array
+    {
+        return ['university_id', 'full_name', 'branch', 'diplomas', 'status', 'registration_status', 'created_at'];
+    }
+
+    private function buildQuery(Request $request)
+    {
+        $q = Student::query()->with(['branch', 'diplomas', 'profile', 'crmInfo']);
+
         if ($request->filled('search')) {
             $s = trim($request->search);
             $q->where(fn($x) => $x
                 ->where('full_name', 'like', "%$s%")
                 ->orWhere('university_id', 'like', "%$s%")
                 ->orWhere('phone', 'like', "%$s%")
-            );
+                ->orWhere('whatsapp', 'like', "%$s%"));
         }
+
+        if ($request->filled('diploma_id')) {
+            $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $request->diploma_id));
+        }
+
+        if ($request->filled('branch_id')) {
+            $q->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('status')) {
+            $q->where('status', $request->status);
+        }
+
+        if ($request->filled('registration_status')) {
+            $q->where('registration_status', $request->registration_status);
+        }
+
+        if ($request->filled('mode')) {
+            $q->where('mode', $request->mode);
+        }
+
+        if ($request->filled('nationality')) {
+            $q->whereHas('profile', fn($p) => $p->where('nationality', $request->nationality));
+        }
+
+        if ($request->filled('crm_source')) {
+            $q->whereHas('crmInfo', fn($c) => $c->where('source', $request->crm_source));
+        }
+
+        if ($request->filled('crm_stage')) {
+            $q->whereHas('crmInfo', fn($c) => $c->where('stage', $request->crm_stage));
+        }
+
+        if ($request->filled('date_from')) {
+            $q->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $q->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        return $q;
+    }
+
+    public function index(Request $request)
+    {
+        $q = $this->buildQuery($request);
+
+        $totalCount      = (clone $q)->count();
+        $confirmedCount  = (clone $q)->where('registration_status', 'confirmed')->count();
+        $activeCount     = (clone $q)->where('status', 'active')->count();
+        $todayCount      = (clone $q)->whereDate('created_at', now())->count();
 
         $students = $q->latest()->paginate(20)->withQueryString();
 
-        // إحصائيات
-        $stats = [
-            'total'     => Student::count(),
-            'active'    => Student::where('status', 'active')->count(),
-            'confirmed' => Student::where('is_confirmed', true)->count(),
-            'today'     => Student::whereDate('created_at', today())->count(),
-        ];
+        $labels = $this->studentArabicLabels();
 
-        return view('students.reports.index', [
-            'students' => $students,
-            'branches' => Branch::orderBy('name')->get(),
-            'diplomas' => Diploma::orderBy('name')->get(),
-            'stats'    => $stats,
-            'statusOptions' => $this->statusLabels(),
+        $students->getCollection()->transform(function ($s) use ($labels) {
+            $s->status_ar       = $labels['student_status'][$s->status] ?? '-';
+            $s->registration_ar = $labels['registration_status'][$s->registration_status] ?? '-';
+            $s->mode_ar         = $labels['mode'][$s->mode] ?? '-';
+            $s->crm_source_ar   = $labels['crm_source'][$s->crmInfo->source ?? ''] ?? '-';
+            $s->crm_stage_ar    = $labels['crm_stage'][$s->crmInfo->stage ?? ''] ?? '-';
+            return $s;
+        });
+
+        return view('students.reports', [
+            'students'            => $students,
+            'branches'            => Branch::orderBy('name')->get(),
+            'diplomas'            => Diploma::with('branch')->orderBy('name')->get(),
+            'statusOptions'       => $labels['student_status'],
+            'registrationOptions' => $labels['registration_status'],
+            'modeOptions'         => $labels['mode'],
+            'availableColumns'    => $this->availableColumns(),
+            'defaultColumns'      => $this->defaultColumns(),
+            'totalCount'          => $totalCount,
+            'confirmedCount'      => $confirmedCount,
+            'activeCount'         => $activeCount,
+            'todayCount'          => $todayCount,
         ]);
     }
 
-    // ══════════════════════════════════════════
+    /**
+     * ✅ تصدير Excel ديناميكي — يعتمد فقط على الأعمدة المُرسلة عبر ?columns[]=...
+     */
+    public function exportExcel(Request $request)
+    {
+        $q = $this->buildQuery($request);
+        $students = $q->latest()->get();
+
+        $requestedColumns = $request->input('columns', $this->defaultColumns());
+
+        // ✅ حماية: تجاهل أي مفتاح غير معرّف في availableColumns()
+        $allColumns = $this->availableColumns();
+        $columns = array_values(array_intersect($requestedColumns, array_keys($allColumns)));
+
+        if (empty($columns)) {
+            $columns = $this->defaultColumns();
+        }
+
+       $labels = $this->studentArabicLabels();
+
+        return Excel::download(
+            new StudentDynamicExport($students, $columns, $allColumns, $labels),
+            'students_report_' . now()->format('Ymd_His') . '.xlsx'
+        );
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // ══════════════════════════════════════════
     // تقرير 1: قائمة الطلاب العامة
     // ══════════════════════════════════════════
     public function exportList(Request $request): StreamedResponse
@@ -355,38 +489,7 @@ class StudentReportController extends Controller
         return $this->download($spreadsheet, 'بيانات-CRM-الطلاب-' . now()->format('Y-m-d') . '.xlsx');
     }
 
-    // ── مساعدات ──
-    private function buildQuery(Request $request)
-    {
-        $q = Student::with(['branch', 'diplomas', 'profile', 'crmInfo']);
 
-        if ($request->filled('branch_id'))  $q->where('branch_id', $request->branch_id);
-        if ($request->filled('status'))     $q->where('status', $request->status);
-        if ($request->filled('diploma_id')) {
-            $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $request->diploma_id));
-        }
-        if ($request->filled('search')) {
-            $s = trim($request->search);
-            $q->where(fn($x) => $x
-                ->where('full_name', 'like', "%$s%")
-                ->orWhere('university_id', 'like', "%$s%")
-                ->orWhere('phone', 'like', "%$s%")
-            );
-        }
-        return $q;
-    }
-
-    private function download(Spreadsheet $spreadsheet, string $filename): StreamedResponse
-    {
-        while (ob_get_level()) ob_end_clean();
-        return response()->streamDownload(function () use ($spreadsheet) {
-            (new Xlsx($spreadsheet))->save('php://output');
-        }, $filename, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Cache-Control' => 'max-age=0',
-        ]);
-    }
 
     private function statusLabels(): array
     {
@@ -398,4 +501,6 @@ class StudentReportController extends Controller
             'dismissed' => 'فُصل الطالب', 'frozen' => 'تم تجميد القيد',
         ];
     }
+
+
 }

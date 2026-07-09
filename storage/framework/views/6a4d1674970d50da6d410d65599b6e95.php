@@ -4,11 +4,123 @@
 
 <?php $__env->startSection('content'); ?>
 
+<style>
+  /* ══════════════════════════════════════════
+     Select2 تخصيص للثيم
+  ══════════════════════════════════════════ */
+  .select2-container--default .select2-selection--single {
+    height: 38px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 8px !important;
+    display: flex;
+    align-items: center;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px !important;
+    padding-right: 12px !important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+  }
+  .select2-dropdown {
+    border-radius: 8px !important;
+    border-color: #ced4da !important;
+  }
+  .diploma-option-code {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 1px 8px;
+    border-radius: 6px;
+    margin-right: 6px;
+  }
+
+  /* ── فلاتر متقدمة ── */
+  .advanced-filters-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    user-select: none;
+  }
+  .advanced-filters-toggle:hover { background: #e2e8f0; color: #1e293b; }
+  .advanced-filters-toggle .af-icon { transition: transform .3s ease; font-size: 11px; }
+  .advanced-filters-toggle.open .af-icon { transform: rotate(180deg); }
+
+  .advanced-filters-panel {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height .35s ease, opacity .25s ease, margin .25s ease;
+  }
+  .advanced-filters-panel.open {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 14px;
+  }
+
+  .filter-section-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .active-filters-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .active-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 4px 6px 4px 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .active-filter-chip .remove-chip {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(37,99,235,.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .active-filter-chip .remove-chip:hover { background: rgba(220,38,38,.15); color: #dc2626; }
+
+  .sort-select {
+    min-width: 160px;
+  }
+</style>
+
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
   <div>
     <h4 class="mb-0 fw-bold">إدارة الطلاب</h4>
-    <div class="text-muted small">بحث متقدم + تصفية حسب الفرع والحالات</div>
+    <div class="text-muted small">بحث متقدم + تصفية حسب الفرع والدبلومة والحالات</div>
   </div>
   <div class="d-flex gap-2 flex-wrap">
     <a class="btn btn-primary rounded-pill px-4 fw-bold" href="<?php echo e(route('students.create')); ?>">
@@ -52,34 +164,53 @@
   </div>
 
   <?php if($needsVerificationCount > 0): ?>
-    <div class="alert border-0 shadow-sm mb-3 d-flex align-items-center gap-3"
-      style="background:rgba(245,158,11,.08); border-right:4px solid #f59e0b !important; border-radius:12px;">
-      <i class="bi bi-exclamation-triangle-fill fs-4" style="color:#f59e0b;"></i>
-      <div>
-        <div class="fw-bold" style="color:#92400e;">
-          <?php echo e($needsVerificationCount); ?> طالب يحتاج مراجعة بيانات
+    <div class="col-12">
+      <div class="alert border-0 shadow-sm mb-0 d-flex align-items-center gap-3"
+        style="background:rgba(245,158,11,.08); border-right:4px solid #f59e0b !important; border-radius:12px;">
+        <i class="bi bi-exclamation-triangle-fill fs-4" style="color:#f59e0b;"></i>
+        <div>
+          <div class="fw-bold" style="color:#92400e;">
+            <?php echo e($needsVerificationCount); ?> طالب يحتاج مراجعة بيانات
+          </div>
+          <div class="small text-muted">
+            ينقصهم: الاسم اللاتيني أو تاريخ الميلاد أو رقم الوثيقة
+          </div>
         </div>
-        <div class="small text-muted">
-          ينقصهم: الاسم اللاتيني أو تاريخ الميلاد أو رقم الوثيقة
-        </div>
+        <a href="<?php echo e(route('students.index', ['needs_verification' => 1])); ?>" class="btn btn-sm fw-bold ms-auto"
+          style="background:#f59e0b; color:#fff; border-radius:8px;">
+          عرض القائمة
+        </a>
       </div>
-      <a href="<?php echo e(route('students.index', ['needs_verification' => 1])); ?>" class="btn btn-sm fw-bold ms-auto"
-        style="background:#f59e0b; color:#fff; border-radius:8px;">
-        عرض القائمة
+    </div>
+  <?php endif; ?>
+</div>
+
+
+<form class="card card-body border-0 shadow-sm mb-3" method="GET" action="<?php echo e(route('students.index')); ?>" id="filterForm">
+
+  
+  <?php if(count($activeFilters)): ?>
+    <div class="active-filters-bar">
+      <span class="small fw-bold text-muted"><i class="bi bi-funnel-fill"></i> الفلاتر النشطة:</span>
+      <?php $__currentLoopData = $activeFilters; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $af): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <span class="active-filter-chip">
+          <?php echo e($af['label']); ?>
+
+          <a href="<?php echo e(request()->fullUrlWithQuery([$af['key'] => null, 'page' => null])); ?>"
+            class="remove-chip text-decoration-none" title="إزالة">
+            <i class="bi bi-x"></i>
+          </a>
+        </span>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+      <a href="<?php echo e(route('students.index')); ?>" class="small text-danger fw-bold text-decoration-none ms-1">
+        مسح الكل
       </a>
     </div>
   <?php endif; ?>
 
-
-</div>
-
-
-<form class="card card-body border-0 shadow-sm mb-3" method="GET" action="<?php echo e(route('students.index')); ?>">
   <div class="row g-2 align-items-end">
 
     
-
-
     <?php if($showMyOnly): ?>
       <div class="col-auto">
         <label class="form-label fw-bold d-block" style="font-size:.75rem; color:#64748b;">عرض</label>
@@ -100,12 +231,19 @@
         placeholder="الاسم / الرقم الجامعي / الهاتف">
     </div>
 
+    
     <div class="col-6 col-md-2">
       <label class="form-label fw-bold" style="font-size:.75rem; color:#64748b;">الدبلومة</label>
-      <select name="diploma_id" class="form-select">
+      <select name="diploma_id" class="form-select" id="diplomaFilterSelect">
         <option value="">كل الدبلومات</option>
         <?php $__currentLoopData = $diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <option value="<?php echo e($d->id); ?>" <?php if(request('diploma_id') == $d->id): echo 'selected'; endif; ?>><?php echo e($d->name); ?></option>
+          <option value="<?php echo e($d->id); ?>"
+            data-code="<?php echo e($d->code); ?>"
+            data-branch="<?php echo e($d->branch->name ?? ''); ?>"
+            <?php if(request('diploma_id') == $d->id): echo 'selected'; endif; ?>>
+            <?php echo e($d->name); ?> — <?php echo e($d->code); ?>
+
+          </option>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
       </select>
     </div>
@@ -154,6 +292,156 @@
   </div>
 
   
+  <div class="d-flex align-items-center justify-content-between mt-3">
+    <button type="button" class="advanced-filters-toggle" id="advFiltersToggle">
+      <i class="bi bi-sliders"></i>
+      <span>فلاتر متقدمة</span>
+      <i class="bi bi-chevron-down af-icon"></i>
+    </button>
+
+    <div class="d-flex align-items-center gap-2">
+      <label class="small fw-bold text-muted mb-0">ترتيب حسب</label>
+      <select name="sort_by" class="form-select form-select-sm sort-select">
+        <option value="created_at" <?php if($sortBy == 'created_at'): echo 'selected'; endif; ?>>تاريخ الإضافة</option>
+        <option value="updated_at" <?php if($sortBy == 'updated_at'): echo 'selected'; endif; ?>>آخر تحديث</option>
+        <option value="full_name" <?php if($sortBy == 'full_name'): echo 'selected'; endif; ?>>الاسم</option>
+        <option value="university_id" <?php if($sortBy == 'university_id'): echo 'selected'; endif; ?>>الرقم الجامعي</option>
+      </select>
+      <select name="sort_dir" class="form-select form-select-sm" style="width:auto">
+        <option value="desc" <?php if($sortDir == 'desc'): echo 'selected'; endif; ?>>تنازلي</option>
+        <option value="asc" <?php if($sortDir == 'asc'): echo 'selected'; endif; ?>>تصاعدي</option>
+      </select>
+    </div>
+  </div>
+
+  
+  <div class="advanced-filters-panel <?php echo e(request()->hasAny(['nationality','crm_source','crm_stage','language_level','certificate_agreement','date_from','date_to','exam_score_min','exam_score_max','has_message','needs_update','needs_verification','mode']) ? 'open' : ''); ?>"
+    id="advFiltersPanel">
+    <hr class="my-3">
+    <div class="row g-3">
+
+      
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-laptop"></i> نوع الطالب</div>
+        <select name="mode" class="form-select">
+          <option value="">الكل</option>
+          <?php $__currentLoopData = $modeOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($key); ?>" <?php if(request('mode') == $key): echo 'selected'; endif; ?>><?php echo e($label); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+      </div>
+
+      
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-flag"></i> الجنسية</div>
+        <select name="nationality" class="form-select" id="nationalityFilterSelect">
+          <option value="">كل الجنسيات</option>
+          <?php $__currentLoopData = $nationalities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $nat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($nat); ?>" <?php if(request('nationality') == $nat): echo 'selected'; endif; ?>><?php echo e($nat); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+      </div>
+
+      
+      <?php if(auth()->user()?->hasPermission('edit_crm_in_student')): ?>
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-graph-up-arrow"></i> مصدر CRM</div>
+        <select name="crm_source" class="form-select">
+          <option value="">الكل</option>
+          <?php $__currentLoopData = $crmSourceOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($key); ?>" <?php if(request('crm_source') == $key): echo 'selected'; endif; ?>><?php echo e($label); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+      </div>
+
+      
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-signpost-split"></i> مرحلة CRM</div>
+        <select name="crm_stage" class="form-select">
+          <option value="">الكل</option>
+          <?php $__currentLoopData = $crmStageOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($key); ?>" <?php if(request('crm_stage') == $key): echo 'selected'; endif; ?>><?php echo e($label); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+      </div>
+      <?php endif; ?>
+
+      
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-translate"></i> مستوى اللغة</div>
+        <select name="language_level" class="form-select">
+          <option value="">الكل</option>
+          <?php $__currentLoopData = ['A1','A2','B1','B2','C1','C2']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lvl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($lvl); ?>" <?php if(request('language_level') == $lvl): echo 'selected'; endif; ?>><?php echo e($lvl); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+      </div>
+
+      
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-patch-check"></i> اتفاق الشهادة</div>
+        <select name="certificate_agreement" class="form-select">
+          <option value="">الكل</option>
+          <?php $__currentLoopData = ['جراح باشا','بورد الماني','جامعة تركية','ميديبول']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $agr): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($agr); ?>" <?php if(request('certificate_agreement') == $agr): echo 'selected'; endif; ?>><?php echo e($agr); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+      </div>
+
+      
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-calendar-event"></i> تاريخ الإضافة من</div>
+        <input type="date" name="date_from" value="<?php echo e(request('date_from')); ?>" class="form-control">
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-calendar-event"></i> إلى</div>
+        <input type="date" name="date_to" value="<?php echo e(request('date_to')); ?>" class="form-control">
+      </div>
+
+      
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-award"></i> العلامة (من)</div>
+        <input type="number" step="0.01" name="exam_score_min" value="<?php echo e(request('exam_score_min')); ?>"
+          class="form-control" placeholder="0">
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="filter-section-label"><i class="bi bi-award"></i> العلامة (إلى)</div>
+        <input type="number" step="0.01" name="exam_score_max" value="<?php echo e(request('exam_score_max')); ?>"
+          class="form-control" placeholder="100">
+      </div>
+
+      
+      <div class="col-12">
+        <div class="filter-section-label"><i class="bi bi-toggles"></i> خيارات إضافية</div>
+        <div class="d-flex gap-3 flex-wrap">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="has_message" value="1" id="hasMsgCheck"
+              <?php if(request('has_message')): echo 'checked'; endif; ?>>
+            <label class="form-check-label small fw-bold" for="hasMsgCheck">لديه رسالة معلقة</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="needs_update" value="1" id="needsUpdateCheck"
+              <?php if(request('needs_update')): echo 'checked'; endif; ?>>
+            <label class="form-check-label small fw-bold" for="needsUpdateCheck">يحتاج تحديث (7+ أيام)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="needs_verification" value="1" id="needsVerifyCheck"
+              <?php if(request('needs_verification')): echo 'checked'; endif; ?>>
+            <label class="form-check-label small fw-bold" for="needsVerifyCheck">يحتاج مراجعة بيانات</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-namaa fw-bold px-4">
+          <i class="bi bi-funnel-fill"></i> تطبيق الفلاتر المتقدمة
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  
   <?php if(request()->boolean('my_only')): ?>
     <input type="hidden" name="my_only" value="1">
   <?php endif; ?>
@@ -188,7 +476,6 @@
                 data-bs-toggle="tooltip">📩</span>
             <?php endif; ?>
 
-            
             <?php if(
                         empty($s->profile?->arabic_full_name) ||
                         empty($s->profile?->birth_date) ||
@@ -203,14 +490,9 @@
                       </span>
             <?php endif; ?>
 
-
-            
             <?php if($s->created_by === auth()->id()): ?>
               <span class="badge ms-1" style="background:rgba(139,92,246,.12); color:#7c3aed; font-size:.7rem;">أنا</span>
             <?php endif; ?>
-
-
-
           </td>
           <td class="hide-mobile"><?php echo e($s->branch->name ?? '-'); ?></td>
           <td class="hide-mobile">
@@ -330,6 +612,78 @@
       document.getElementById('modalBody').innerHTML = html;
     });
   }
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ══ Select2 لفلتر الدبلومة — يعرض الاسم + الرمز، بحث ذكي ══ */
+    if (typeof $ !== 'undefined' && $.fn.select2) {
+      $('#diplomaFilterSelect').select2({
+        placeholder: 'ابحث بالاسم أو الرمز...',
+        allowClear: true,
+        width: '100%',
+        templateResult: function (data) {
+          if (!data.id) return data.text;
+          var code = $(data.element).data('code');
+          var branch = $(data.element).data('branch');
+          var $result = $(
+            '<div>' +
+              '<span class="diploma-option-code">' + (code || '') + '</span>' +
+              '<span>' + data.element.text.split(' — ')[0] + '</span>' +
+              (branch ? '<div class="small text-muted"><i class="bi bi-building"></i> ' + branch + '</div>' : '') +
+            '</div>'
+          );
+          return $result;
+        },
+        templateSelection: function (data) {
+          if (!data.id) return data.text;
+          var code = $(data.element).data('code');
+          return data.element.text.split(' — ')[0] + (code ? ' (' + code + ')' : '');
+        },
+        language: {
+          noResults: function () { return 'لا توجد دبلومات مطابقة'; },
+          searching: function () { return 'جاري البحث...'; }
+        }
+      });
+
+      $('#nationalityFilterSelect').select2({
+        placeholder: 'ابحث عن جنسية...',
+        allowClear: true,
+        width: '100%',
+        language: {
+          noResults: function () { return 'لا توجد نتائج'; },
+          searching: function () { return 'جاري البحث...'; }
+        }
+      });
+    }
+
+    /* ══ طي/توسيع الفلاتر المتقدمة ══ */
+    var toggle = document.getElementById('advFiltersToggle');
+    var panel  = document.getElementById('advFiltersPanel');
+
+    if (panel.classList.contains('open')) {
+      toggle.classList.add('open');
+    }
+
+    toggle.addEventListener('click', function () {
+      panel.classList.toggle('open');
+      toggle.classList.toggle('open');
+    });
+
+    /* ══ تفعيل tooltips ══ */
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (el) {
+      new bootstrap.Tooltip(el);
+    });
+
+    /* ══ إرسال تلقائي عند تغيير الترتيب ══ */
+    document.querySelector('select[name="sort_by"]')?.addEventListener('change', function () {
+      document.getElementById('filterForm').submit();
+    });
+    document.querySelector('select[name="sort_dir"]')?.addEventListener('change', function () {
+      document.getElementById('filterForm').submit();
+    });
+
+  });
 </script>
 
 <?php $__env->stopSection(); ?>
