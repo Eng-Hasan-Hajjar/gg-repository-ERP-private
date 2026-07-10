@@ -22,13 +22,18 @@ class LeadStoreRequest extends FormRequest
             'first_contact_date' => 'required|date',
             
             'job' => 'nullable|string|max:120',
-            'branch_id' => 'nullable|exists:branches,id',
+            'branch_id' => 'required|exists:branches,id',
             'country' => 'nullable|string|max:100',
             'source' => 'required|in:ad,referral,social,website,expo,other',
             'stage' => 'required|in:new,follow_up,interested,registered,rejected,postponed',
             'diploma_ids' => 'required|array|min:1',
             'diploma_ids.*' => 'exists:diplomas,id',
             'study' => 'nullable|string|max:150',
+
+            // ===== بيانات المنحة لكل دبلومة (اختياري) =====
+            'diploma_grants' => 'nullable|array',
+            'diploma_grants.*.has_grant' => 'nullable|boolean',
+            'diploma_grants.*.grant_details' => 'nullable|string|max:500',
 
             // ===== حقول تصبح required فقط عند strict_mode =====
             'whatsapp' => $strict ? 'required|string|max:120' : 'nullable|string|max:120',

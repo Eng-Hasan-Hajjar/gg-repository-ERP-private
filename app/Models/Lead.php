@@ -46,7 +46,7 @@ class Lead extends Model
   public function diplomas()
   {
     return $this->belongsToMany(Diploma::class, 'diploma_lead')
-      ->withPivot(['is_primary'])
+      ->withPivot(['is_primary', 'has_grant', 'grant_details'])
       ->withTimestamps();
   }
 

@@ -974,6 +974,8 @@ public function index(Request $request)
                     'certificate_delivered' => isset($data['certificate_delivered']),
                     'certificate_agreement' => $data['certificate_agreement'] ?? null,
                     'language_level' => $data['language_level'] ?? null,
+                    // ✅ هل تم إعطاء المنحة؟ (يحددها قسم شؤون الطلاب)
+                    'grant_given' => isset($data['grant_given']),
                 ]);
             }
 

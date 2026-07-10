@@ -956,6 +956,23 @@
             </select>
           </div>
 
+          {{-- ══ المنحة (قادمة من CRM) ══ --}}
+          @if($d->pivot->has_grant)
+            <div class="col-md-4">
+              <label class="nma-label">المنحة (من CRM)</label>
+              <div class="mb-2" style="font-size:13px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:6px 10px;">
+                <i class="bi bi-gift-fill"></i>
+                {{ $d->pivot->grant_details ?: 'يوجد منحة لهذه الدبلومة' }}
+              </div>
+              <label class="lang-check-row">
+                <input type="checkbox" class="form-check-input m-0"
+                  name="diplomas[{{ $d->id }}][grant_given]"
+                  @checked($d->pivot->grant_given)>
+                <span style="font-size:12.5px;color:var(--nma-slate-600)">هل تم إعطاء المنحة؟</span>
+              </label>
+            </div>
+          @endif
+
           {{-- ملاحظات الدبلومة --}}
           <div class="col-md-8">
             <label class="nma-label">ملاحظات خاصة بهذه الدبلومة</label>

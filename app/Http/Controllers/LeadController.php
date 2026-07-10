@@ -112,12 +112,16 @@ class LeadController extends Controller
       $branches = Branch::whereIn('id', $branchIds)->orderBy('name')->get();
     }
 
+    $diplomas = Diploma::with('branch')
+      ->where('is_active', true)
+      ->orderBy('name')
+      ->get();
+
     return view('crm.leads.create', [
       'branches' => $branches,
-      'diplomas' => Diploma::with('branch')
-        ->where('is_active', true)
-        ->orderBy('name')
-        ->get(),
+      'diplomas' => $diplomas,
+      'diplomasJson' => $this->buildDiplomasJson($diplomas),
+      'countries' => $this->leadCountriesList(),
     ]);
   }
 
@@ -161,9 +165,14 @@ class LeadController extends Controller
 
       $diplomaIds = $request->input('diploma_ids', []);
       if (!empty($diplomaIds)) {
+        $diplomaGrants = $request->input('diploma_grants', []);
         $sync = [];
         foreach ($diplomaIds as $i => $id) {
-          $sync[$id] = ['is_primary' => $i === 0];
+          $sync[$id] = [
+            'is_primary' => $i === 0,
+            'has_grant' => !empty($diplomaGrants[$id]['has_grant']),
+            'grant_details' => $diplomaGrants[$id]['grant_details'] ?? null,
+          ];
         }
         $lead->diplomas()->sync($sync);
       }
@@ -289,13 +298,17 @@ class LeadController extends Controller
 
 
 
+    $diplomas = Diploma::with('branch')
+      ->where('is_active', true)
+      ->orderBy('name')
+      ->get();
+
     return view('crm.leads.edit', [
       'lead' => $lead,
       'branches' => $branches,
-      'diplomas' => Diploma::with('branch')
-        ->where('is_active', true)
-        ->orderBy('name')
-        ->get(),
+      'diplomas' => $diplomas,
+      'diplomasJson' => $this->buildDiplomasJson($diplomas),
+      'countries' => $this->leadCountriesList(),
     ]);
 
 
@@ -347,9 +360,14 @@ class LeadController extends Controller
 
       $diplomaIds = $request->input('diploma_ids', null);
       if (is_array($diplomaIds)) {
+        $diplomaGrants = $request->input('diploma_grants', []);
         $sync = [];
         foreach ($diplomaIds as $i => $id) {
-          $sync[$id] = ['is_primary' => $i === 0];
+          $sync[$id] = [
+            'is_primary' => $i === 0,
+            'has_grant' => !empty($diplomaGrants[$id]['has_grant']),
+            'grant_details' => $diplomaGrants[$id]['grant_details'] ?? null,
+          ];
         }
         $lead->diplomas()->sync($sync);
       }
@@ -538,6 +556,10 @@ class LeadController extends Controller
           'is_primary' => $diploma->pivot->is_primary,
           'enrolled_at' => now(),
           'status' => 'active',
+          // ✅ نقل بيانات المنحة كما هي من العميل المحتمل
+          'has_grant' => $diploma->pivot->has_grant,
+          'grant_details' => $diploma->pivot->grant_details,
+          'grant_given' => false, // تُحدَّد لاحقاً من قسم شؤون الطلاب
         ]);
       }
 
@@ -616,6 +638,36 @@ class LeadController extends Controller
     } while (Student::where('university_id', $id)->exists());
 
     return $id;
+  }
+
+  /**
+   * قائمة الدول المتاحة في فورم العميل المحتمل
+   */
+  private function leadCountriesList(): array
+  {
+    return [
+      'تركيا', 'العراق', 'ليبيا', 'سوريا', 'الأردن', 'لبنان', 'فلسطين',
+      'الإمارات', 'قطر', 'الكويت', 'سلطنة عمان', 'ألمانيا', 'السويد',
+      'الولايات المتحدة', 'المملكة المتحدة',
+    ];
+  }
+
+  /**
+   * تجهيز بيانات الدبلومات بصيغة JSON لاستخدامها في منتقي الدبلومات (JS)
+   * — بدلاً من حسابها داخل ملف الـ Blade مباشرة.
+   */
+  private function buildDiplomasJson($diplomas)
+  {
+    return $diplomas->map(function ($d) {
+      return [
+        'id' => $d->id,
+        'name' => $d->name,
+        'code' => $d->code,
+        'type' => $d->type,
+        'branch_id' => $d->branch_id,
+        'branch_name' => $d->branch->name ?? '—',
+      ];
+    })->values();
   }
 
 

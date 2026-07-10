@@ -1,16 +1,16 @@
-@csrf
-@if(isset($lead)) @method('PUT') @endif
+<?php echo csrf_field(); ?>
+<?php if(isset($lead)): ?> <?php echo method_field('PUT'); ?> <?php endif; ?>
 
-@if ($errors->any())
+<?php if($errors->any()): ?>
   <div class="alert alert-danger">
     <strong>يوجد أخطاء في الإدخال:</strong>
     <ul class="mb-0 mt-2">
-      @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-      @endforeach
+      <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <li><?php echo e($error); ?></li>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </ul>
   </div>
-@endif
+<?php endif; ?>
 
 <style>
   /* ───── Diploma Picker ───── */
@@ -230,7 +230,7 @@
 </style>
 
 
-{{-- ===== Strict Mode Checkbox ===== --}}
+
 <div class="alert alert-warning d-flex align-items-center gap-3 mb-4" id="strict_mode_alert">
   <div class="form-check form-switch mb-0">
     <input class="form-check-input" type="checkbox" role="switch" id="strict_mode" name="strict_mode" value="1"
@@ -248,148 +248,331 @@
 
     <div class="row g-4">
 
-      {{-- الاسم --}}
+      
       <div class="col-md-4">
         <label class="form-label fw-bold">الاسم الكامل *</label>
-        <input name="full_name" value="{{ old('full_name', $lead->full_name ?? '') }}"
-          class="form-control @error('full_name') is-invalid @enderror">
-        @error('full_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <input name="full_name" value="<?php echo e(old('full_name', $lead->full_name ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['full_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+        <?php $__errorArgs = ['full_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- الهاتف --}}
+      
       <div class="col-md-4">
         <label class="form-label fw-bold">الهاتف *</label>
-        <input name="phone" value="{{ old('phone', $lead->phone ?? '') }}"
-          class="form-control @error('phone') is-invalid @enderror">
-        @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <input name="phone" value="<?php echo e(old('phone', $lead->phone ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+        <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- تاريخ التواصل --}}
+      
       <div class="col-md-4">
         <label class="form-label fw-bold">تاريخ أول تواصل *</label>
         <input type="date" name="first_contact_date"
-          value="{{ old('first_contact_date', isset($lead) ? \Carbon\Carbon::parse($lead->first_contact_date)->format('Y-m-d') : '') }}"
-          class="form-control @error('first_contact_date') is-invalid @enderror">
-        @error('first_contact_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          value="<?php echo e(old('first_contact_date', isset($lead) ? \Carbon\Carbon::parse($lead->first_contact_date)->format('Y-m-d') : '')); ?>"
+          class="form-control <?php $__errorArgs = ['first_contact_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+        <?php $__errorArgs = ['first_contact_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- العمر --}}
+      
       <div class="col-md-3">
         <label class="form-label fw-bold">العمر *</label>
-        <input type="number" name="age" value="{{ old('age', $lead->age ?? '') }}"
-          class="form-control @error('age') is-invalid @enderror">
-        @error('age') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <input type="number" name="age" value="<?php echo e(old('age', $lead->age ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['age'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+        <?php $__errorArgs = ['age'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- العمل --}}
+      
       <div class="col-md-5">
         <label class="form-label fw-bold">العمل *</label>
-        <input name="job" value="{{ old('job', $lead->job ?? '') }}"
-          class="form-control @error('job') is-invalid @enderror">
-        @error('job') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <input name="job" value="<?php echo e(old('job', $lead->job ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['job'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+        <?php $__errorArgs = ['job'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- الفرع --}}
+      
       <div class="col-md-4">
         <label class="form-label fw-bold">الفرع *</label>
-        <select name="branch_id" id="branch" class="form-select @error('branch_id') is-invalid @enderror">
+        <select name="branch_id" id="branch" class="form-select <?php $__errorArgs = ['branch_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
           <option value="">اختر الفرع</option>
-          @foreach($branches as $b)
-            <option value="{{ $b->id }}" data-name="{{ $b->name }}" @selected(old('branch_id', $lead->branch_id ?? '') == $b->id)>
-              {{ $b->name }}
+          <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($b->id); ?>" data-name="<?php echo e($b->name); ?>" <?php if(old('branch_id', $lead->branch_id ?? '') == $b->id): echo 'selected'; endif; ?>>
+              <?php echo e($b->name); ?>
+
             </option>
-          @endforeach
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
         <div class="form-text text-muted">عند اختيار فرع <b>أونلاين</b> سيتم إخفاء حقل مكان السكن تلقائياً.</div>
-        @error('branch_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <?php $__errorArgs = ['branch_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- البلد --}}
+      
       <div class="col-md-4">
         <label class="form-label fw-bold">البلد </label>
-        <select name="country" id="country" class="form-select @error('country') is-invalid @enderror">
+        <select name="country" id="country" class="form-select <?php $__errorArgs = ['country'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
           <option value="">اختر البلد</option>
-          @foreach($countries as $c)
-            <option value="{{ $c }}" @selected(old('country', $lead->country ?? '') == $c)>{{ $c }}</option>
-          @endforeach
+          <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($c); ?>" <?php if(old('country', $lead->country ?? '') == $c): echo 'selected'; endif; ?>><?php echo e($c); ?></option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
-        @error('country') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <?php $__errorArgs = ['country'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- المحافظة --}}
+      
       <div class="col-md-4" id="province_container">
         <label class="form-label fw-bold">المحافظة </label>
-        <input name="province" id="province_input" value="{{ old('province', $lead->province ?? '') }}"
-          class="form-control @error('province') is-invalid @enderror">
+        <input name="province" id="province_input" value="<?php echo e(old('province', $lead->province ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['province'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
         <select id="province_select" class="form-select" style="display:none;">
           <option value="">اختر المدينة</option>
         </select>
         <div class="form-text text-muted">إذا اخترت تركيا ستظهر قائمة المدن التركية.</div>
-        @error('province') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <?php $__errorArgs = ['province'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- الدراسة --}}
+      
       <div class="col-md-4">
         <label class="form-label fw-bold">الدراسة *</label>
-        <input name="study" value="{{ old('study', $lead->study ?? '') }}"
-          class="form-control @error('study') is-invalid @enderror">
-        @error('study') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <input name="study" value="<?php echo e(old('study', $lead->study ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['study'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+        <?php $__errorArgs = ['study'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- السكن --}}
+      
       <div class="col-md-6" id="residence_field">
         <label class="form-label fw-bold">مكان السكن *</label>
-        <input name="residence" value="{{ old('residence', $lead->residence ?? '') }}"
-          class="form-control @error('residence') is-invalid @enderror">
+        <input name="residence" value="<?php echo e(old('residence', $lead->residence ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['residence'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
         <div class="form-text text-muted">هذا الحقل يظهر فقط للفروع الحضورية.</div>
-        @error('residence') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <?php $__errorArgs = ['residence'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- المصدر --}}
+      
       <div class="col-md-3">
         <label class="form-label fw-bold">المصدر *</label>
-        <select name="source" class="form-select @error('source') is-invalid @enderror">
+        <select name="source" class="form-select <?php $__errorArgs = ['source'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
           <option value="">اختر المصدر</option>
-          <option value="ad" @selected(old('source', $lead->source ?? '') == 'ad')>إعلان</option>
-          <option value="referral" @selected(old('source', $lead->source ?? '') == 'referral')>إحالة</option>
-          <option value="social" @selected(old('source', $lead->source ?? '') == 'social')>سوشيال</option>
-          <option value="website" @selected(old('source', $lead->source ?? '') == 'website')>موقع</option>
-          <option value="expo" @selected(old('source', $lead->source ?? '') == 'expo')>فعالية</option>
-          <option value="other" @selected(old('source', $lead->source ?? '') == 'other')>أخرى</option>
+          <option value="ad" <?php if(old('source', $lead->source ?? '') == 'ad'): echo 'selected'; endif; ?>>إعلان</option>
+          <option value="referral" <?php if(old('source', $lead->source ?? '') == 'referral'): echo 'selected'; endif; ?>>إحالة</option>
+          <option value="social" <?php if(old('source', $lead->source ?? '') == 'social'): echo 'selected'; endif; ?>>سوشيال</option>
+          <option value="website" <?php if(old('source', $lead->source ?? '') == 'website'): echo 'selected'; endif; ?>>موقع</option>
+          <option value="expo" <?php if(old('source', $lead->source ?? '') == 'expo'): echo 'selected'; endif; ?>>فعالية</option>
+          <option value="other" <?php if(old('source', $lead->source ?? '') == 'other'): echo 'selected'; endif; ?>>أخرى</option>
         </select>
-        @error('source') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <?php $__errorArgs = ['source'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- المرحلة --}}
+      
       <div class="col-md-3">
         <label class="form-label fw-bold">المرحلة *</label>
-        <select name="stage" class="form-select @error('stage') is-invalid @enderror">
+        <select name="stage" class="form-select <?php $__errorArgs = ['stage'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
           <option value="">اختر المرحلة</option>
 
-          <option value="new" @selected(old('stage', $lead->stage ?? '') == 'new')>جديد</option>
-          <option value="follow_up" @selected(old('stage', $lead->stage ?? '') == 'follow_up')>متابعة</option>
-          <option value="interested" @selected(old('stage', $lead->stage ?? '') == 'interested')>مهتم</option>
-          <option value="registered" @selected(old('stage', $lead->stage ?? '') == 'registered')>مسجل</option>
-          <option value="rejected" @selected(old('stage', $lead->stage ?? '') == 'rejected')>لم يسجل</option>
-          <option value="postponed" @selected(old('stage', $lead->stage ?? '') == 'postponed')>مؤجل</option>
+          <option value="new" <?php if(old('stage', $lead->stage ?? '') == 'new'): echo 'selected'; endif; ?>>جديد</option>
+          <option value="follow_up" <?php if(old('stage', $lead->stage ?? '') == 'follow_up'): echo 'selected'; endif; ?>>متابعة</option>
+          <option value="interested" <?php if(old('stage', $lead->stage ?? '') == 'interested'): echo 'selected'; endif; ?>>مهتم</option>
+          <option value="registered" <?php if(old('stage', $lead->stage ?? '') == 'registered'): echo 'selected'; endif; ?>>مسجل</option>
+          <option value="rejected" <?php if(old('stage', $lead->stage ?? '') == 'rejected'): echo 'selected'; endif; ?>>لم يسجل</option>
+          <option value="postponed" <?php if(old('stage', $lead->stage ?? '') == 'postponed'): echo 'selected'; endif; ?>>مؤجل</option>
         </select>
         <div class="form-text text-muted">عند اختيار "مسجل" سيظهر حقل البريد الإلكتروني.</div>
-        @error('stage') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <?php $__errorArgs = ['stage'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
-      {{-- الإيميل --}}
+      
       <div class="col-md-6" id="email_field" style="display:none">
         <label class="form-label fw-bold">البريد الإلكتروني</label>
-        <input name="email" value="{{ old('email', $lead->email ?? '') }}"
-          class="form-control @error('email') is-invalid @enderror">
-        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <input name="email" value="<?php echo e(old('email', $lead->email ?? '')); ?>"
+          class="form-control <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+        <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
       </div>
 
       <hr class="my-4">
 
-      {{-- ═══════════════════════════════════════════════════ --}}
-      {{-- نظام اختيار الدبلومات المحسّن --}}
-      {{-- ═══════════════════════════════════════════════════ --}}
+      
+      
+      
       <div class="col-12">
         <label class="form-label fw-bold fs-6">
           <i class="bi bi-mortarboard text-primary"></i> الدبلومات المطلوبة *
@@ -397,20 +580,20 @@
 
         <div class="diploma-picker">
 
-          {{-- شريط البحث --}}
+          
           <div class="diploma-search-box">
             <i class="bi bi-search search-icon"></i>
             <input type="text" id="diplomaSearch" class="form-control" placeholder="ابحث عن دبلومة بالاسم...">
           </div>
 
-          {{-- قائمة الدبلومات --}}
+          
           <div class="diploma-list" id="diplomaList">
             <div class="diploma-list-empty" id="diplomaEmpty" style="display:none">
               <i class="bi bi-search"></i> لا توجد نتائج
             </div>
           </div>
 
-          {{-- الدبلومات المختارة --}}
+          
           <div class="selected-diplomas" id="selectedDiplomas">
             <div class="no-diplomas-msg" id="noDiplomasMsg">
               <i class="bi bi-info-circle"></i> لم يتم اختيار أي دبلومة بعد — اختر من القائمة أعلاه
@@ -419,14 +602,14 @@
 
         </div>
 
-        {{-- Hidden inputs container --}}
+        
         <div id="diplomaHiddenInputs"></div>
       </div>
 
-      {{-- ملاحظات --}}
+      
       <div class="col-12">
         <label class="form-label fw-bold">ملاحظات </label>
-        <textarea name="notes" class="form-control" rows="4">{{ old('notes', $lead->notes ?? '') }}</textarea>
+        <textarea name="notes" class="form-control" rows="4"><?php echo e(old('notes', $lead->notes ?? '')); ?></textarea>
       </div>
 
     </div>
@@ -442,7 +625,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
 
-    const allDiplomas = @json($diplomasJson);
+    const allDiplomas = <?php echo json_encode($diplomasJson, 15, 512) ?>;
 
 
     // تجميع الدبلومات بنفس الاسم (لعرض الأكواد والفروع المتعددة)
@@ -467,19 +650,19 @@
     const selectedDiplomas = new Map(); // name -> { variantId, code, branch_id }
 
     // الدبلومات المختارة مسبقاً (عند التعديل)
-    @if(isset($lead) && $lead->diplomas->count())
-      @foreach($lead->diplomas as $ld)
-        const existingName_{{ $ld->id }} = @json($ld->name);
-        const existingVariant_{{ $ld->id }} = {
-          variantId: {{ $ld->id }},
-          code: @json($ld->code),
-          branch_id: {{ $ld->branch_id ?? 'null' }},
-          hasGrant: {{ $ld->pivot->has_grant ? 'true' : 'false' }},
-          grantDetails: @json($ld->pivot->grant_details ?? ''),
+    <?php if(isset($lead) && $lead->diplomas->count()): ?>
+      <?php $__currentLoopData = $lead->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ld): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        const existingName_<?php echo e($ld->id); ?> = <?php echo json_encode($ld->name, 15, 512) ?>;
+        const existingVariant_<?php echo e($ld->id); ?> = {
+          variantId: <?php echo e($ld->id); ?>,
+          code: <?php echo json_encode($ld->code, 15, 512) ?>,
+          branch_id: <?php echo e($ld->branch_id ?? 'null'); ?>,
+          hasGrant: <?php echo e($ld->pivot->has_grant ? 'true' : 'false'); ?>,
+          grantDetails: <?php echo json_encode($ld->pivot->grant_details ?? '', 15, 512) ?>,
         };
-        selectedDiplomas.set(existingName_{{ $ld->id }}, existingVariant_{{ $ld->id }});
-      @endforeach
-    @endif
+        selectedDiplomas.set(existingName_<?php echo e($ld->id); ?>, existingVariant_<?php echo e($ld->id); ?>);
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
 
     const diplomaList = document.getElementById('diplomaList');
     const diplomaSearch = document.getElementById('diplomaSearch');
@@ -816,7 +999,7 @@
           const opt = document.createElement('option');
           opt.value = city;
           opt.textContent = city;
-          if ('{{ old('province', $lead->province ?? '') }}' === city) opt.selected = true;
+          if ('<?php echo e(old('province', $lead->province ?? '')); ?>' === city) opt.selected = true;
           provinceSelect.appendChild(opt);
         });
         provinceSelect.setAttribute('name', 'province');
@@ -875,4 +1058,4 @@
     applyStrictMode(strictCheckbox.checked);
 
   });
-</script>
+</script><?php /**PATH C:\Users\engya\Desktop\customers\namaa\laravel11-auth\resources\views/crm/leads/_form.blade.php ENDPATH**/ ?>

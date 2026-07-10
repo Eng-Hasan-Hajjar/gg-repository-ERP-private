@@ -1299,6 +1299,24 @@ unset($__errorArgs, $__bag); ?>
           </div>
 
           
+          <?php if($d->pivot->has_grant): ?>
+            <div class="col-md-4">
+              <label class="nma-label">المنحة (من CRM)</label>
+              <div class="mb-2" style="font-size:13px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:6px 10px;">
+                <i class="bi bi-gift-fill"></i>
+                <?php echo e($d->pivot->grant_details ?: 'يوجد منحة لهذه الدبلومة'); ?>
+
+              </div>
+              <label class="lang-check-row">
+                <input type="checkbox" class="form-check-input m-0"
+                  name="diplomas[<?php echo e($d->id); ?>][grant_given]"
+                  <?php if($d->pivot->grant_given): echo 'checked'; endif; ?>>
+                <span style="font-size:12.5px;color:var(--nma-slate-600)">هل تم إعطاء المنحة؟</span>
+              </label>
+            </div>
+          <?php endif; ?>
+
+          
           <div class="col-md-8">
             <label class="nma-label">ملاحظات خاصة بهذه الدبلومة</label>
             <textarea name="diplomas[<?php echo e($d->id); ?>][notes]" class="form-control"

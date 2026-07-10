@@ -56,6 +56,9 @@ class Student extends Model
         'certificate_delivered',
         'certificate_agreement',
          'language_level',
+        'has_grant',
+        'grant_details',
+        'grant_given',
 
       ])
       ->withTimestamps();
