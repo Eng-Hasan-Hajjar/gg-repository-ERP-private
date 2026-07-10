@@ -1177,6 +1177,51 @@ ERP Notifications Style
     .alert-item.alert-warning-item:hover {
       background: rgba(245, 158, 11, .09);
     }
+
+    /* ── فصل الأقسام: يحتاج إجراء / نشاط ── */
+    .alerts-section-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 8px 14px 4px;
+      color: #64748b;
+      background: #f8fafc;
+      position: sticky;
+      top: 0;
+    }
+    .alerts-section-label.action { color: #b91c1c; }
+
+    /* ── حالة "غير مقروء" ── */
+    .alert-item.is-unread {
+      background: rgba(14, 165, 233, .05);
+    }
+    .alert-item.is-unread .alert-title {
+      font-weight: 800;
+    }
+    .alert-item .unread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      flex-shrink: 0;
+      margin-inline-start: auto;
+      align-self: center;
+    }
+    .alert-item .unread-dot.hidden { display: none; }
+
+    /* زر تعليم الكل كمقروء */
+    .alerts-mark-read {
+      border: 0;
+      background: transparent;
+      color: #0ea5e9;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0;
+    }
+    .alerts-mark-read:hover { text-decoration: underline; }
   </style>
 
 
@@ -1247,9 +1292,11 @@ ERP Notifications Style
 
               <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0" id="alertList" style="width:340px">
 
-                <div class="alerts-header">
-                  <i class="bi bi-bell"></i>
-                  الإشعارات
+                <div class="alerts-header d-flex align-items-center justify-content-between">
+                  <span><i class="bi bi-bell"></i> الإشعارات</span>
+                  <button type="button" class="alerts-mark-read" id="markAllRead">
+                    تعليم الكل كمقروء
+                  </button>
                 </div>
 
                 <div id="alertsContainer">
@@ -1633,8 +1680,23 @@ ERP Notifications Style
       <?php endif; ?>
 
         // ═══════════════════════════════════════
-        // Alerts System
+        // Alerts System (محسّن: مقروء + فصل الأقسام)
         // ═══════════════════════════════════════
+        var NMA_READ_KEY = 'nma_read_alerts_v1';
+
+        function getReadIds() {
+          try {
+            return JSON.parse(localStorage.getItem(NMA_READ_KEY) || '[]');
+          } catch (e) { return []; }
+        }
+
+        function setReadIds(ids) {
+          try { localStorage.setItem(NMA_READ_KEY, JSON.stringify(ids)); } catch (e) {}
+        }
+
+        // آخر قائمة إشعارات وصلت (لاستخدامها عند التعليم كمقروء)
+        var NMA_lastAlerts = [];
+
         function formatTime(time) {
           if (!time) return 'الآن';
           const date = new Date(time);
@@ -1647,57 +1709,118 @@ ERP Notifications Style
           return Math.floor(hours / 24) + ' يوم';
         }
 
-      function buildAlertHTML(alerts) {
-        if (!alerts || alerts.length === 0) {
-          return '<div class="text-success text-center p-4"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>لا توجد تنبيهات</div>';
-        }
-
-        const sorted = [...alerts].sort(function (a, b) {
-          const order = { danger: 0, warning: 1, info: 2, success: 3 };
-          return (order[a.type] ?? 9) - (order[b.type] ?? 9);
-        });
-
-        return sorted.map(function (a) {
+        function alertItemHTML(a, readIds) {
+          const isUnread = a.id && readIds.indexOf(a.id) === -1;
           const extraClass = a.type === 'danger' ? 'alert-danger-item'
-            : a.type === 'warning' ? 'alert-warning-item'
-              : '';
-          return '<a href="' + (a.url || '#') + '" class="alert-item ' + extraClass + '">'
+            : a.type === 'warning' ? 'alert-warning-item' : '';
+          return '<a href="' + (a.url || '#') + '" class="alert-item ' + extraClass
+            + (isUnread ? ' is-unread' : '') + '">'
             + '<div class="alert-icon ' + a.type + '"><i class="bi ' + a.icon + '"></i></div>'
             + '<div class="alert-content">'
             + '<div class="alert-title">' + a.message + '</div>'
             + '<div class="alert-time">' + formatTime(a.time) + '</div>'
-            + '</div></a>';
-        }).join('');
-      }
+            + '</div>'
+            + '<span class="unread-dot' + (isUnread ? '' : ' hidden') + '"></span>'
+            + '</a>';
+        }
 
-      function loadAlerts() {
-        fetch('<?php echo e(route("alerts.navbar")); ?>', { credentials: 'same-origin' })
-          .then(function (res) { return res.json(); })
-          .then(function (data) {
-            var count = document.getElementById('alertCount');
-            var container = document.getElementById('alertsContainer');
-            if (!count || !container) return;
+        function buildAlertHTML(alerts) {
+          if (!alerts || alerts.length === 0) {
+            return '<div class="text-success text-center p-4"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>لا توجد تنبيهات</div>';
+          }
 
-            if (data.count > 0) {
-              count.style.display = 'inline-block';
-              count.innerText = data.count > 99 ? '99+' : data.count;
-            } else {
-              count.style.display = 'none';
-            }
+          const readIds = getReadIds();
 
-            var preview = (data.alerts || []).slice(0, 8);
-            container.innerHTML = buildAlertHTML(preview);
-          })
-          .catch(function () {
-            var container = document.getElementById('alertsContainer');
-            if (container) container.innerHTML = '<div class="text-muted text-center small p-3">تعذّر تحميل الإشعارات</div>';
+          // فصل: يحتاج إجراء أولاً، ثم النشاط
+          const action = alerts.filter(function (a) { return (a.category || 'activity') === 'action'; });
+          const activity = alerts.filter(function (a) { return (a.category || 'activity') !== 'action'; });
+
+          let html = '';
+          if (action.length) {
+            html += '<div class="alerts-section-label action"><i class="bi bi-exclamation-circle-fill"></i> يحتاج إجراء (' + action.length + ')</div>';
+            html += action.map(function (a) { return alertItemHTML(a, readIds); }).join('');
+          }
+          if (activity.length) {
+            html += '<div class="alerts-section-label"><i class="bi bi-activity"></i> نشاط اليوم</div>';
+            html += activity.map(function (a) { return alertItemHTML(a, readIds); }).join('');
+          }
+          return html;
+        }
+
+        function loadAlerts() {
+          fetch('<?php echo e(route("alerts.navbar")); ?>', { credentials: 'same-origin' })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+              var countEl = document.getElementById('alertCount');
+              var container = document.getElementById('alertsContainer');
+              if (!countEl || !container) return;
+
+              var alerts = data.alerts || [];
+              NMA_lastAlerts = alerts;
+
+              // ✅ العدّاد = عدد غير المقروء فقط (وليس الإجمالي)
+              var readIds = getReadIds();
+              var unread = alerts.filter(function (a) {
+                return a.id && readIds.indexOf(a.id) === -1;
+              }).length;
+
+              if (unread > 0) {
+                countEl.style.display = 'inline-block';
+                countEl.innerText = unread > 99 ? '99+' : unread;
+              } else {
+                countEl.style.display = 'none';
+              }
+
+              container.innerHTML = buildAlertHTML(alerts.slice(0, 8));
+            })
+            .catch(function () {
+              var container = document.getElementById('alertsContainer');
+              if (container) container.innerHTML = '<div class="text-muted text-center small p-3">تعذّر تحميل الإشعارات</div>';
+            });
+        }
+
+        // عند فتح الجرس: علّم المعروض كمقروء (يختفي العدّاد الأحمر)
+        function markVisibleAsRead() {
+          if (!NMA_lastAlerts.length) return;
+          var readIds = getReadIds();
+          NMA_lastAlerts.forEach(function (a) {
+            if (a.id && readIds.indexOf(a.id) === -1) readIds.push(a.id);
           });
-      }
+          // احتفظ بآخر 200 معرّف فقط لتفادي تضخّم localStorage
+          if (readIds.length > 200) readIds = readIds.slice(readIds.length - 200);
+          setReadIds(readIds);
 
-      document.addEventListener('DOMContentLoaded', function () {
-        loadAlerts();
-        setInterval(loadAlerts, 60000);
-      });
+          var countEl = document.getElementById('alertCount');
+          if (countEl) countEl.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+          loadAlerts();
+          // ✅ تهدئة: كل 3 دقائق بدل دقيقة
+          setInterval(loadAlerts, 180000);
+
+          // عند فتح القائمة المنسدلة → تعليم كمقروء
+          var bell = document.getElementById('alertBell');
+          if (bell) {
+            bell.addEventListener('click', function () {
+              // تأخير بسيط حتى يُفتح الـ dropdown ثم علّم كمقروء
+              setTimeout(markVisibleAsRead, 400);
+            });
+          }
+
+          // زر "تعليم الكل كمقروء"
+          var markBtn = document.getElementById('markAllRead');
+          if (markBtn) {
+            markBtn.addEventListener('click', function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              markVisibleAsRead();
+              // أعد رسم القائمة لإزالة تمييز "غير مقروء"
+              var container = document.getElementById('alertsContainer');
+              if (container) container.innerHTML = buildAlertHTML(NMA_lastAlerts.slice(0, 8));
+            });
+          }
+        });
 
       // ═══════════════════════════════════════
       // زر "عرض كل الإشعارات"

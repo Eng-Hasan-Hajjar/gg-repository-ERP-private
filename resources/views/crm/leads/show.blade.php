@@ -1031,7 +1031,7 @@
               </div>
             @endif
 
-            <form method="POST" action="{{ route('financial.pay') }}">
+            <form method="POST" action="{{ route('financial.pay') }}" enctype="multipart/form-data">
               @csrf
               <input type="hidden" name="financial_account_id" value="{{ $lead->financialAccount?->id }}">
               <div class="row g-3">
@@ -1046,7 +1046,7 @@
                 <div class="col-md-4">
                   <label class="form-label fw-bold">الصندوق</label>
                   <select name="cashbox_id" class="form-select" required>
-                    @foreach(\App\Models\Cashbox::where('status', 'active')->where('branch_id', $lead->branch_id)->get() as $box)
+                    @foreach($activeCashboxes as $box)
                       <option value="{{ $box->id }}">{{ $box->name }} — {{ $box->currency }}</option>
                     @endforeach
                   </select>
@@ -1059,6 +1059,25 @@
                   <label class="form-label fw-bold">ملاحظات</label>
                   <input type="text" name="notes" class="form-control" placeholder="اختياري">
                 </div>
+
+                {{-- ══ وصل الحوالة + هوية المرسل (اختياري) ══ --}}
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">
+                    <i class="bi bi-receipt"></i> وصل الحوالة
+                    <span class="text-muted fw-normal small">(اختياري — صورة أو PDF)</span>
+                  </label>
+                  <input type="file" name="transfer_receipt" class="form-control"
+                         accept=".jpg,.jpeg,.png,.pdf">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">
+                    <i class="bi bi-person-vcard"></i> هوية المرسل
+                    <span class="text-muted fw-normal small">(اختياري — صورة أو PDF)</span>
+                  </label>
+                  <input type="file" name="sender_identity" class="form-control"
+                         accept=".jpg,.jpeg,.png,.pdf">
+                </div>
+
                 <div class="col-12">
                   <button class="btn btn-success fw-bold px-4">
                     <i class="bi bi-check-circle-fill"></i> تسجيل الدفعة

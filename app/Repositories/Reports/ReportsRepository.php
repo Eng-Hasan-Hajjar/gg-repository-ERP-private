@@ -436,6 +436,7 @@ class ReportsRepository
                         : "{$lead->full_name} — يحتاج متابعة قريباً ({$hoursDiff} ساعة)",
                     'time'        => $lead->last_followup_at ?? $lead->lead_created,
                     'url'         => route('leads.show', $lead->id),
+                    'category'    => 'action',
                     'roles'       => ['super_admin', 'manager_crm_sales', 'staff_crm'],
                     'permissions' => [],
                 ];
@@ -455,27 +456,22 @@ class ReportsRepository
 
             $count = $pendingLeaves->count();
             if ($count > 0) {
+                // ✅ إشعار واحد مُجمّع (يحتاج إجراء) — بدل إشعار لكل طلب
+                $names = $pendingLeaves->take(3)->pluck('employee_name')->implode('، ');
+                $extra = $count > 3 ? " و{$count} طلبات أخرى" : '';
+
                 $alerts[] = [
                     'type'        => 'warning',
                     'icon'        => 'bi-calendar-x',
-                    'message'     => "يوجد {$count} طلب إجازة بانتظار الموافقة",
-                    'time'        => now()->toDateTimeString(),
+                    'message'     => $count === 1
+                        ? "طلب إجازة من {$names} بانتظار الموافقة"
+                        : "{$count} طلبات إجازة بانتظار الموافقة ({$names}{$extra})",
+                    'time'        => $pendingLeaves->first()->created_at,
                     'url'         => route('leaves.index'),
+                    'category'    => 'action',
                     'roles'       => ['super_admin', 'manager_attendance'],
                     'permissions' => [],
                 ];
-
-                foreach ($pendingLeaves as $leave) {
-                    $alerts[] = [
-                        'type'        => 'info',
-                        'icon'        => 'bi-person-slash',
-                        'message'     => "طلب إجازة من {$leave->employee_name} — من {$leave->start_date} إلى {$leave->end_date}",
-                        'time'        => $leave->created_at,
-                        'url'         => route('leaves.index'),
-                        'roles'       => ['super_admin', 'مدير الدوام والإجازات'],
-                        'permissions' => [],
-                    ];
-                }
             }
         }
 
@@ -495,6 +491,7 @@ class ReportsRepository
                     'message'     => "يوجد {$lateTasks} مهام متأخرة",
                     'time'        => now()->toDateTimeString(),
                     'url'         => route('tasks.index', ['late' => 1]),
+                    'category'    => 'action',
                     'roles'       => ['super_admin', 'manager_hr'],
                     'permissions' => [],
                 ];
@@ -505,19 +502,24 @@ class ReportsRepository
         // Students - استعلام واحد مدمج
         // =============================
         if ($this->has('students')) {
-            // ✅ استعلام واحد يجلب الاثنين
+            // ✅ الطلاب الجدد اليوم — إشعار مُجمّع واحد (نشاط)
             $todayStudents = DB::table('students')
                 ->whereDate('created_at', now())
                 ->orderByDesc('id')
                 ->get();
 
-            foreach ($todayStudents as $s) {
+            $newCount = $todayStudents->count();
+            if ($newCount > 0) {
+                $latest = $todayStudents->first();
                 $alerts[] = [
                     'type'        => 'info',
                     'icon'        => 'bi-person-check',
-                    'message'     => "تم تسجيل طالب جديد {$s->full_name}",
-                    'time'        => $s->created_at,
-                    'url'         => route('students.show', $s->id),
+                    'message'     => $newCount === 1
+                        ? "تم تسجيل طالب جديد: {$latest->full_name}"
+                        : "{$newCount} طلاب جدد اليوم (آخرهم {$latest->full_name})",
+                    'time'        => $latest->created_at,
+                    'url'         => route('students.index'),
+                    'category'    => 'activity',
                     'roles'       => ['super_admin', 'manager_student_affairs'],
                     'permissions' => [],
                 ];
@@ -530,13 +532,18 @@ class ReportsRepository
                     ->orderByDesc('id')
                     ->get();
 
-                foreach ($convertedStudents as $s) {
+                $confirmedCount = $convertedStudents->count();
+                if ($confirmedCount > 0) {
+                    $latest = $convertedStudents->first();
                     $alerts[] = [
                         'type'        => 'success',
                         'icon'        => 'bi-mortarboard',
-                        'message'     => "تم تثبيت الطالب بنجاح {$s->full_name}",
-                        'time'        => $s->confirmed_at,
-                        'url'         => route('students.show', $s->id),
+                        'message'     => $confirmedCount === 1
+                            ? "تم تثبيت الطالب: {$latest->full_name}"
+                            : "{$confirmedCount} طلاب تم تثبيتهم اليوم (آخرهم {$latest->full_name})",
+                        'time'        => $latest->confirmed_at,
+                        'url'         => route('students.index'),
+                        'category'    => 'activity',
                         'roles'       => ['super_admin', 'manager_crm_sales', 'staff_crm'],
                         'permissions' => [],
                     ];
@@ -550,16 +557,21 @@ class ReportsRepository
         if ($this->has('cashbox_transactions')) {
             $trx = DB::table('cashbox_transactions')
                 ->whereDate(DB::raw('COALESCE(trx_date, created_at)'), now()->toDateString())
-                ->orderByDesc('id')
                 ->get();
 
-            foreach ($trx as $t) {
+            $trxCount = $trx->count();
+            if ($trxCount > 0) {
+                $totalAmount = $trx->sum('amount');
+                $latest = $trx->sortByDesc('id')->first();
                 $alerts[] = [
                     'type'        => 'success',
                     'icon'        => 'bi-cash-coin',
-                    'message'     => "تم تسجيل حركة مالية بقيمة {$t->amount}",
-                    'time'        => $t->created_at,
-                    'url'         => route('cashboxes.show', $t->cashbox_id),
+                    'message'     => $trxCount === 1
+                        ? "حركة مالية بقيمة " . number_format($latest->amount, 2)
+                        : "{$trxCount} حركة مالية اليوم بإجمالي " . number_format($totalAmount, 2),
+                    'time'        => $latest->created_at,
+                    'url'         => route('cashboxes.show', $latest->cashbox_id),
+                    'category'    => 'activity',
                     'roles'       => ['super_admin', 'manager_finance'],
                     'permissions' => [],
                 ];
@@ -603,6 +615,7 @@ class ReportsRepository
                     'message'     => ($isUrgent ? '🔴 ' : '') . "طلب {$typeLabel}" . ($isUrgent ? ' عاجل' : ' جديد') . ": {$req->title}{$branchText} — {$req->user_name}",
                     'time'        => $req->created_at,
                     'url'         => route('asset-requests.index'),
+                    'category'    => 'action',
                     'roles'       => ['super_admin'],
                     'permissions' => ['manage_assets'],
                 ];
@@ -615,6 +628,7 @@ class ReportsRepository
                     'message'     => "يوجد {$totalPending} طلب لوجستي بانتظار المراجعة",
                     'time'        => now()->toDateTimeString(),
                     'url'         => route('asset-requests.index'),
+                    'category'    => 'action',
                     'roles'       => ['super_admin'],
                     'permissions' => ['manage_assets'],
                 ];
@@ -641,6 +655,14 @@ class ReportsRepository
         });
 
         usort($alerts, fn($a, $b) => strtotime($b['time'] ?? now()) - strtotime($a['time'] ?? now()));
+
+        // ✅ إعطاء كل إشعار معرّفاً ثابتاً (لتتبّع المقروء) + تصنيف افتراضي
+        $alerts = array_map(function ($a) {
+            $a['category'] = $a['category'] ?? 'activity';
+            // معرّف ثابت مبني على المحتوى — يبقى نفسه طالما الإشعار نفسه
+            $a['id'] = md5(($a['message'] ?? '') . '|' . ($a['url'] ?? '') . '|' . ($a['category'] ?? ''));
+            return $a;
+        }, $alerts);
 
         return array_values($alerts);
     }

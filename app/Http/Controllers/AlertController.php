@@ -11,20 +11,23 @@ class AlertController extends Controller
     {
         $isAll = $request->boolean('all');
 
+        // كل الإشعارات (مطلوبة دائماً لحساب الأعداد والتصنيف)
+        $all = $service->systemAlerts();
+
         if ($isAll) {
-            // ✅ كل الإشعارات بدون limit ولا فلتر تاريخ
-            $alerts = $service->systemAlerts();
+            $alerts = $all;
         } else {
-            // ✅ القائمة المنسدلة — أول 8 فقط
-            $alerts = $service->systemAlerts(8);
+            // القائمة المنسدلة — أول 8 فقط
+            $alerts = array_slice($all, 0, 8);
         }
 
-        // العدد الكلي دائماً بدون limit
-        $total = count($service->systemAlerts());
+        // ✅ عدد الإشعارات التي "تحتاج إجراء" فقط (للعدّاد الأحمر)
+        $actionCount = count(array_filter($all, fn($a) => ($a['category'] ?? 'activity') === 'action'));
 
         return response()->json([
-            'count'  => $total,
-            'alerts' => $alerts,
+            'count'        => count($all),   // الإجمالي (للتوافق الخلفي)
+            'action_count' => $actionCount,  // ✅ يحتاج إجراء
+            'alerts'       => $alerts,
         ]);
     }
 }

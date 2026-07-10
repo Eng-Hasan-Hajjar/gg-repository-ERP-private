@@ -1040,7 +1040,7 @@
               </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?php echo e(route('financial.pay')); ?>">
+            <form method="POST" action="<?php echo e(route('financial.pay')); ?>" enctype="multipart/form-data">
               <?php echo csrf_field(); ?>
               <input type="hidden" name="financial_account_id" value="<?php echo e($lead->financialAccount?->id); ?>">
               <div class="row g-3">
@@ -1055,7 +1055,7 @@
                 <div class="col-md-4">
                   <label class="form-label fw-bold">الصندوق</label>
                   <select name="cashbox_id" class="form-select" required>
-                    <?php $__currentLoopData = \App\Models\Cashbox::where('status', 'active')->where('branch_id', $lead->branch_id)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $activeCashboxes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                       <option value="<?php echo e($box->id); ?>"><?php echo e($box->name); ?> — <?php echo e($box->currency); ?></option>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
@@ -1068,6 +1068,25 @@
                   <label class="form-label fw-bold">ملاحظات</label>
                   <input type="text" name="notes" class="form-control" placeholder="اختياري">
                 </div>
+
+                
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">
+                    <i class="bi bi-receipt"></i> وصل الحوالة
+                    <span class="text-muted fw-normal small">(اختياري — صورة أو PDF)</span>
+                  </label>
+                  <input type="file" name="transfer_receipt" class="form-control"
+                         accept=".jpg,.jpeg,.png,.pdf">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">
+                    <i class="bi bi-person-vcard"></i> هوية المرسل
+                    <span class="text-muted fw-normal small">(اختياري — صورة أو PDF)</span>
+                  </label>
+                  <input type="file" name="sender_identity" class="form-control"
+                         accept=".jpg,.jpeg,.png,.pdf">
+                </div>
+
                 <div class="col-12">
                   <button class="btn btn-success fw-bold px-4">
                     <i class="bi bi-check-circle-fill"></i> تسجيل الدفعة

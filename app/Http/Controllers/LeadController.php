@@ -267,6 +267,11 @@ class LeadController extends Controller
 
 
 
+    // ✅ صناديق الفرع النشطة (بدل استعلام مباشر في الواجهة)
+    $activeCashboxes = \App\Models\Cashbox::where('status', 'active')
+      ->where('branch_id', $lead->branch_id)
+      ->get();
+
     return view('crm.leads.show', compact(
       'lead',
       'stage_ar',
@@ -275,7 +280,8 @@ class LeadController extends Controller
       ,
       'paymentPlans',
 
-      'plansByDiploma'
+      'plansByDiploma',
+      'activeCashboxes'
     ));
   }
 
