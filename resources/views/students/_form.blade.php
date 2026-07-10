@@ -523,13 +523,62 @@
       </div>
 
       {{-- الجهة --}}
-      <div class="col-md-6">
+      <div class="col-md-3">
         <label class="nma-label">الجهة / المؤسسة</label>
         <input name="crm[organization]"
           class="form-control @error('crm.organization') is-invalid @enderror"
           value="{{ old('crm.organization', $crm['organization'] ?? '') }}"
           placeholder="اسم الجهة أو المؤسسة">
         @error('crm.organization')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
+
+      {{-- ✅ الإيميل --}}
+      <div class="col-md-3">
+        <label class="nma-label">الإيميل</label>
+        <input type="email" name="crm[email]"
+          class="form-control @error('crm.email') is-invalid @enderror"
+          value="{{ old('crm.email', $crm['email'] ?? '') }}"
+          placeholder="example@email.com" dir="ltr">
+        @error('crm.email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
+
+      {{-- ✅ السكن --}}
+      <div class="col-md-3">
+        <label class="nma-label">السكن</label>
+        <input name="crm[residence]"
+          class="form-control @error('crm.residence') is-invalid @enderror"
+          value="{{ old('crm.residence', $crm['residence'] ?? '') }}"
+          placeholder="مكان السكن">
+        @error('crm.residence')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
+
+      {{-- ✅ العمر --}}
+      <div class="col-md-3">
+        <label class="nma-label">العمر</label>
+        <input type="number" min="1" max="120" name="crm[age]"
+          class="form-control @error('crm.age') is-invalid @enderror"
+          value="{{ old('crm.age', $crm['age'] ?? '') }}"
+          placeholder="العمر">
+        @error('crm.age')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
+
+      {{-- ✅ العمل --}}
+      <div class="col-md-3">
+        <label class="nma-label">العمل</label>
+        <input name="crm[job]"
+          class="form-control @error('crm.job') is-invalid @enderror"
+          value="{{ old('crm.job', $crm['job'] ?? '') }}"
+          placeholder="المهنة / العمل">
+        @error('crm.job')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
+
+      {{-- ✅ تاريخ أول تواصل --}}
+      <div class="col-md-3">
+        <label class="nma-label">تاريخ أول تواصل</label>
+        <input type="date" name="crm[first_contact_date]"
+          class="form-control @error('crm.first_contact_date') is-invalid @enderror"
+          value="{{ old('crm.first_contact_date', $crm['first_contact_date'] ?? '') }}">
+        @error('crm.first_contact_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
       </div>
 
       {{-- تاريخ التولد --}}
@@ -1444,11 +1493,6 @@ document.querySelectorAll('[id^="hasLangCheck_"]').forEach(function (chk) {
 
   }); // DOMContentLoaded
 })();
-
-
-
-
-
 
 
 </script>

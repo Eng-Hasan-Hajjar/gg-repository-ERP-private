@@ -588,7 +588,7 @@ unset($__errorArgs, $__bag); ?>
       </div>
 
       
-      <div class="col-md-6">
+      <div class="col-md-3">
         <label class="nma-label">الجهة / المؤسسة</label>
         <input name="crm[organization]"
           class="form-control <?php $__errorArgs = ['crm.organization'];
@@ -602,6 +602,125 @@ unset($__errorArgs, $__bag); ?>"
           value="<?php echo e(old('crm.organization', $crm['organization'] ?? '')); ?>"
           placeholder="اسم الجهة أو المؤسسة">
         <?php $__errorArgs = ['crm.organization'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+      </div>
+
+      
+      <div class="col-md-3">
+        <label class="nma-label">الإيميل</label>
+        <input type="email" name="crm[email]"
+          class="form-control <?php $__errorArgs = ['crm.email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+          value="<?php echo e(old('crm.email', $crm['email'] ?? '')); ?>"
+          placeholder="example@email.com" dir="ltr">
+        <?php $__errorArgs = ['crm.email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+      </div>
+
+      
+      <div class="col-md-3">
+        <label class="nma-label">السكن</label>
+        <input name="crm[residence]"
+          class="form-control <?php $__errorArgs = ['crm.residence'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+          value="<?php echo e(old('crm.residence', $crm['residence'] ?? '')); ?>"
+          placeholder="مكان السكن">
+        <?php $__errorArgs = ['crm.residence'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+      </div>
+
+      
+      <div class="col-md-3">
+        <label class="nma-label">العمر</label>
+        <input type="number" min="1" max="120" name="crm[age]"
+          class="form-control <?php $__errorArgs = ['crm.age'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+          value="<?php echo e(old('crm.age', $crm['age'] ?? '')); ?>"
+          placeholder="العمر">
+        <?php $__errorArgs = ['crm.age'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+      </div>
+
+      
+      <div class="col-md-3">
+        <label class="nma-label">العمل</label>
+        <input name="crm[job]"
+          class="form-control <?php $__errorArgs = ['crm.job'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+          value="<?php echo e(old('crm.job', $crm['job'] ?? '')); ?>"
+          placeholder="المهنة / العمل">
+        <?php $__errorArgs = ['crm.job'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+      </div>
+
+      
+      <div class="col-md-3">
+        <label class="nma-label">تاريخ أول تواصل</label>
+        <input type="date" name="crm[first_contact_date]"
+          class="form-control <?php $__errorArgs = ['crm.first_contact_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+          value="<?php echo e(old('crm.first_contact_date', $crm['first_contact_date'] ?? '')); ?>">
+        <?php $__errorArgs = ['crm.first_contact_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -1783,11 +1902,6 @@ document.querySelectorAll('[id^="hasLangCheck_"]').forEach(function (chk) {
 
   }); // DOMContentLoaded
 })();
-
-
-
-
-
 
 
 </script><?php /**PATH C:\Users\engya\Desktop\customers\namaa\laravel11-auth\resources\views/students/_form.blade.php ENDPATH**/ ?>

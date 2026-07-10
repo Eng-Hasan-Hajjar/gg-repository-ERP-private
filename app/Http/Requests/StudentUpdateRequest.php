@@ -41,6 +41,9 @@ class StudentUpdateRequest extends FormRequest
             'crm.study'        => 'nullable|string|max:150',
             'crm.job'          => 'nullable|string|max:150',
             'crm.first_contact_date' => 'nullable|date',
+            'crm.email'        => 'nullable|email|max:190',
+            'crm.residence'    => 'nullable|string|max:190',
+            'crm.age'          => 'nullable|integer|min:1|max:120',
 
             // ── Profile — كل شيء nullable ──
             'profile'                        => 'nullable|array',

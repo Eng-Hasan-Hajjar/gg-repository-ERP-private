@@ -755,13 +755,19 @@ public function index(Request $request)
 
 
 
+        // ✅ تجهيز بيانات CRM مع تنسيق التاريخ (بدون منطق PHP في الواجهة)
+        $crmData = $student->crmInfo?->toArray() ?? [];
+        if (!empty($crmData['first_contact_date'])) {
+            $crmData['first_contact_date'] = \Illuminate\Support\Carbon::parse($crmData['first_contact_date'])->format('Y-m-d');
+        }
+
         return view('students.edit', [
             'student' => $student,
             'branches' => $branches,
             'diplomas' => Diploma::with('branch')->orderBy('name')->get(),
             'studentDiplomas' => $student->diplomas,
             'studentDiplomasJson' => $studentDiplomasJson,
-            'crm' => old('crm', $student->crmInfo?->toArray() ?? []),    // ✅
+            'crm' => old('crm', $crmData),    // ✅
             'profile' => old('profile', $student->profile?->toArray() ?? []), // ✅
             'statusOptions' => $labels['student_status'],
             'registrationOptions' => $labels['registration_status'],
