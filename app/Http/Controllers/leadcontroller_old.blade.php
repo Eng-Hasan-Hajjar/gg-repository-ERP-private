@@ -187,12 +187,6 @@ class LeadController extends Controller
   {
     $lead->load(['branch', 'diplomas', 'followups', 'creator']);
 
-    // ✅ إذا كان العميل قد تحوّل إلى طالب — نحمّل الطالب الحيّ (مصدر الحقيقة)
-    //    لعرض بياناته المحدّثة للقراءة فقط داخل صفحة العميل.
-    if ($lead->student_id) {
-      $lead->load(['student.diplomas', 'student.branch']);
-    }
-
     $user = auth()->user();
 
     if (!$user->hasRole('super_admin')) {
@@ -281,14 +275,6 @@ class LeadController extends Controller
 
   public function edit(Lead $lead)
   {
-    // ✅ بعد التحويل إلى طالب: الطالب هو مصدر الحقيقة — يُمنع تعديل العميل
-    //    ويُوجَّه المستخدم إلى ملف الطالب لإجراء أي تعديل.
-    if ($lead->student_id) {
-      return redirect()
-        ->route('students.show', $lead->student_id)
-        ->with('info', 'هذا العميل أصبح طالباً — يتم تعديل بياناته من ملف الطالب.');
-    }
-
     $lead->load('branch', 'diplomas');
 
     $user = auth()->user();

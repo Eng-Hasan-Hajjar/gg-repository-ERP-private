@@ -128,6 +128,10 @@ class FinancialTransactionController extends Controller
                             'is_primary' => $diploma->pivot->is_primary ?? false,
                             'enrolled_at' => now(),
                             'status' => 'active',
+                            // ✅ نقل بيانات المنحة كما هي من العميل المحتمل
+                            'has_grant' => $diploma->pivot->has_grant ?? false,
+                            'grant_details' => $diploma->pivot->grant_details ?? null,
+                            'grant_given' => false, // تُحدَّد لاحقاً من قسم شؤون الطلاب
                         ]);
                     }
 

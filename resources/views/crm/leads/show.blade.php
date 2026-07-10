@@ -561,7 +561,13 @@
 
     {{-- Action buttons --}}
     <div class="action-bar" style="margin-bottom:0; align-items:flex-start;">
-      @if(auth()->user()?->hasPermission('edit_leads'))
+      @if($lead->student_id)
+        {{-- بعد التحويل: التعديل يتم من ملف الطالب فقط --}}
+        <a class="btn-edit-lead" href="{{ route('students.show', $lead->student_id) }}"
+           style="background:#059669;">
+          <i class="bi bi-person-check" style="font-size:13px"></i> إدارة من ملف الطالب
+        </a>
+      @elseif(auth()->user()?->hasPermission('edit_leads'))
         <a class="btn-edit-lead" href="{{ route('leads.edit', $lead) }}">
           <i class="bi bi-pencil" style="font-size:13px"></i> تعديل
         </a>
@@ -605,6 +611,78 @@
       </div>
     </div>
   </div>
+
+  {{-- ═══════════ بانر: هذا العميل أصبح طالباً (مصدر الحقيقة الواحد) ═══════════ --}}
+  @if($lead->student)
+    <div style="background:linear-gradient(135deg,#059669 0%,#10b981 100%); border-radius:16px; padding:18px 22px; margin-bottom:18px; color:#fff; display:flex; align-items:center; gap:16px; flex-wrap:wrap; box-shadow:0 12px 30px rgba(16,185,129,.22);">
+      <div style="width:52px; height:52px; border-radius:14px; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">
+        <i class="bi bi-person-check-fill"></i>
+      </div>
+      <div style="flex:1; min-width:200px;">
+        <div style="font-weight:800; font-size:16px; margin-bottom:2px;">
+          تم تحويل هذا العميل إلى طالب
+        </div>
+        <div style="font-size:13px; opacity:.92;">
+          البيانات المعروضة أدناه هي بيانات العميل وقت التحويل (للأرشيف).
+          البيانات الحيّة والمحدّثة تُدار من <b>ملف الطالب</b>.
+        </div>
+      </div>
+      <a href="{{ route('students.show', $lead->student_id) }}"
+         style="background:#fff; color:#059669; font-weight:800; padding:10px 20px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;">
+        <i class="bi bi-box-arrow-up-left"></i> فتح ملف الطالب
+      </a>
+    </div>
+
+    {{-- بطاقة البيانات الحيّة من الطالب (للقراءة فقط) --}}
+    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px 22px; margin-bottom:18px; box-shadow:0 4px 12px rgba(0,0,0,.05);">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+        <i class="bi bi-broadcast" style="color:#059669; font-size:18px;"></i>
+        <span style="font-weight:800; color:#1e293b; font-size:15px;">البيانات الحيّة (من ملف الطالب)</span>
+        <span style="background:#d1fae5; color:#065f46; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-right:auto;">
+          <i class="bi bi-lock-fill" style="font-size:10px;"></i> للقراءة فقط
+        </span>
+      </div>
+
+      <div class="row g-3" style="font-size:13.5px;">
+        <div class="col-md-4">
+          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الاسم الكامل</div>
+          <div style="color:#1e293b; font-weight:700;">{{ $lead->student->full_name ?? '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الهاتف</div>
+          <div style="color:#1e293b; font-weight:700;">{{ $lead->student->phone ?? '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">واتساب</div>
+          <div style="color:#1e293b; font-weight:700;">{{ $lead->student->whatsapp ?? '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الرقم الجامعي</div>
+          <div style="color:#1e293b; font-weight:700;"><code>{{ $lead->student->university_id ?? '—' }}</code></div>
+        </div>
+        <div class="col-md-4">
+          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الفرع</div>
+          <div style="color:#1e293b; font-weight:700;">{{ $lead->student->branch->name ?? '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">عدد الدبلومات</div>
+          <div style="color:#1e293b; font-weight:700;">{{ $lead->student->diplomas->count() }}</div>
+        </div>
+        <div class="col-12">
+          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:4px;">الدبلومات الحالية</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            @forelse($lead->student->diplomas as $sd)
+              <span style="background:#eff6ff; color:#2563eb; font-size:12px; font-weight:700; padding:4px 12px; border-radius:20px;">
+                <i class="bi bi-mortarboard-fill" style="font-size:11px;"></i> {{ $sd->name }} ({{ $sd->code }})
+              </span>
+            @empty
+              <span style="color:#94a3b8; font-size:12.5px;">لا توجد دبلومات</span>
+            @endforelse
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
 
   {{-- Pending banner --}}
   @if($lead->registration_status === 'pending')

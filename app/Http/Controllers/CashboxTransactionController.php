@@ -492,6 +492,10 @@ class CashboxTransactionController extends Controller
                     'is_primary'  => (bool) ($d->pivot->is_primary) || $i === 0,
                     'enrolled_at' => now()->toDateString(),
                     'status'      => 'active',
+                    // ✅ نقل بيانات المنحة كما هي من العميل المحتمل
+                    'has_grant'     => $d->pivot->has_grant ?? false,
+                    'grant_details' => $d->pivot->grant_details ?? null,
+                    'grant_given'   => false, // تُحدَّد لاحقاً من قسم شؤون الطلاب
                 ];
             }
             if (!empty($sync)) {

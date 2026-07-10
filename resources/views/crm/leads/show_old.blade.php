@@ -1,7 +1,7 @@
+@extends('layouts.app')
+@section('title', 'CRM - تفاصيل العميل المحتمل')
 
-<?php $__env->startSection('title', 'CRM - تفاصيل العميل المحتمل'); ?>
-
-<?php $__env->startPush('styles'); ?>
+@push('styles')
   <style>
     /* ── Lead Profile Page ── */
     .lead-hero {
@@ -505,90 +505,79 @@
       color: #1e293b;
     }
   </style>
-<?php $__env->stopPush(); ?>
+@endpush
 
-<?php $__env->startSection('content'); ?>
+@section('content')
 
-  
-  <a class="btn-back" href="<?php echo e(route('leads.index')); ?>">
+  {{-- Back --}}
+  <a class="btn-back" href="{{ route('leads.index') }}">
     <i class="bi bi-arrow-right"></i> العودة إلى قائمة العملاء
   </a>
 
-  
+  {{-- ═══════════ Hero ═══════════ --}}
   <div class="lead-hero">
     <div class="lead-avatar">
-      <?php echo e(mb_substr($lead->full_name, 0, 1, 'UTF-8')); ?>
-
+      {{ mb_substr($lead->full_name, 0, 1, 'UTF-8') }}
     </div>
 
     <div class="lead-hero-info">
-      <h4><?php echo e($lead->full_name); ?></h4>
+      <h4>{{ $lead->full_name }}</h4>
       <div style="font-size:13px; color:#64748b; margin-bottom:6px;">
-        <i class="bi bi-building" style="font-size:12px"></i> <?php echo e($lead->branch->name ?? '—'); ?>
-
-        <?php if($lead->phone): ?>
+        <i class="bi bi-building" style="font-size:12px"></i> {{ $lead->branch->name ?? '—' }}
+        @if($lead->phone)
           &nbsp;·&nbsp;
           <i class="bi bi-telephone" style="font-size:12px"></i>
-          <a href="tel:<?php echo e($lead->phone); ?>" style="color:#0369a1; font-weight:700;"><?php echo e($lead->phone); ?></a>
-        <?php endif; ?>
-        <?php if($lead->email): ?>
+          <a href="tel:{{ $lead->phone }}" style="color:#0369a1; font-weight:700;">{{ $lead->phone }}</a>
+        @endif
+        @if($lead->email)
           &nbsp;·&nbsp;
           <i class="bi bi-envelope" style="font-size:12px"></i>
-          <a href="mailto:<?php echo e($lead->email); ?>" style="color:#0369a1; font-weight:700;"><?php echo e($lead->email); ?></a>
-        <?php endif; ?>
+          <a href="mailto:{{ $lead->email }}" style="color:#0369a1; font-weight:700;">{{ $lead->email }}</a>
+        @endif
       </div>
       <div class="lead-badges">
-        <span class="badge-stage"><i class="bi bi-flag" style="font-size:11px"></i><?php echo e($stage_ar); ?></span>
-        <?php
+        <span class="badge-stage"><i class="bi bi-flag" style="font-size:11px"></i>{{ $stage_ar }}</span>
+        @php
           $statusClass = match ($lead->registration_status) {
             'pending' => 'badge-status-pending',
             'converted' => 'badge-status-converted',
             'canceled' => 'badge-status-canceled',
             default => 'badge-status-pending',
           };
-        ?>
-        <span class="badge-stage <?php echo e($statusClass); ?>">
-          <i class="bi bi-circle-fill" style="font-size:8px"></i><?php echo e($registration_ar); ?>
-
+        @endphp
+        <span class="badge-stage {{ $statusClass }}">
+          <i class="bi bi-circle-fill" style="font-size:8px"></i>{{ $registration_ar }}
         </span>
-        <?php if($lead->source): ?>
-          <span class="badge-source"><i class="bi bi-signpost" style="font-size:11px"></i><?php echo e($source_ar); ?></span>
-        <?php endif; ?>
-        <?php $__currentLoopData = $lead->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <span class="diploma-pill <?php echo e($d->pivot->is_primary ? 'primary-pill' : ''); ?>">
-            <i class="bi bi-mortarboard-fill" style="font-size:11px"></i><?php echo e($d->name); ?>
-
+        @if($lead->source)
+          <span class="badge-source"><i class="bi bi-signpost" style="font-size:11px"></i>{{ $source_ar }}</span>
+        @endif
+        @foreach($lead->diplomas as $d)
+          <span class="diploma-pill {{ $d->pivot->is_primary ? 'primary-pill' : '' }}">
+            <i class="bi bi-mortarboard-fill" style="font-size:11px"></i>{{ $d->name }}
           </span>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        @endforeach
       </div>
     </div>
 
-    
+    {{-- Action buttons --}}
     <div class="action-bar" style="margin-bottom:0; align-items:flex-start;">
-      <?php if($lead->student_id): ?>
-        
-        <a class="btn-edit-lead" href="<?php echo e(route('students.show', $lead->student_id)); ?>"
-           style="background:#059669;">
-          <i class="bi bi-person-check" style="font-size:13px"></i> إدارة من ملف الطالب
-        </a>
-      <?php elseif(auth()->user()?->hasPermission('edit_leads')): ?>
-        <a class="btn-edit-lead" href="<?php echo e(route('leads.edit', $lead)); ?>">
+      @if(auth()->user()?->hasPermission('edit_leads'))
+        <a class="btn-edit-lead" href="{{ route('leads.edit', $lead) }}">
           <i class="bi bi-pencil" style="font-size:13px"></i> تعديل
         </a>
-      <?php endif; ?>
+      @endif
 
 
     </div>
   </div>
 
-  
+  {{-- ═══════════ Quick Stats ═══════════ --}}
   <div class="stats-row">
     <div class="stat-tile">
       <div class="stat-tile-icon blue"><i class="bi bi-calendar-event"></i></div>
       <div>
         <div class="stat-tile-label">أول تواصل</div>
-        <div class="stat-tile-val"><?php echo e($lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—'); ?>
-
+        <div class="stat-tile-val">{{ $lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—' }}
         </div>
       </div>
     </div>
@@ -596,8 +585,7 @@
       <div class="stat-tile-icon amber"><i class="bi bi-clock-history"></i></div>
       <div>
         <div class="stat-tile-label">منذ التواصل</div>
-        <div class="stat-tile-val"><?php echo e($lead->first_contact_date ? $lead->first_contact_date->diffForHumans() : '—'); ?>
-
+        <div class="stat-tile-val">{{ $lead->first_contact_date ? $lead->first_contact_date->diffForHumans() : '—' }}
         </div>
       </div>
     </div>
@@ -605,364 +593,290 @@
       <div class="stat-tile-icon green"><i class="bi bi-chat-dots"></i></div>
       <div>
         <div class="stat-tile-label">عدد المتابعات</div>
-        <div class="stat-tile-val"><?php echo e($lead->followups->count()); ?> متابعة</div>
+        <div class="stat-tile-val">{{ $lead->followups->count() }} متابعة</div>
       </div>
     </div>
     <div class="stat-tile">
       <div class="stat-tile-icon purple"><i class="bi bi-person-circle"></i></div>
       <div>
         <div class="stat-tile-label">مسؤول التواصل</div>
-        <div class="stat-tile-val" style="font-size:13px;"><?php echo e($lead->creator->name ?? $lead->creator->email ?? '—'); ?>
-
+        <div class="stat-tile-val" style="font-size:13px;">{{ $lead->creator->name ?? $lead->creator->email ?? '—' }}
         </div>
       </div>
     </div>
   </div>
 
-  
-  <?php if($lead->student): ?>
-    <div style="background:linear-gradient(135deg,#059669 0%,#10b981 100%); border-radius:16px; padding:18px 22px; margin-bottom:18px; color:#fff; display:flex; align-items:center; gap:16px; flex-wrap:wrap; box-shadow:0 12px 30px rgba(16,185,129,.22);">
-      <div style="width:52px; height:52px; border-radius:14px; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">
-        <i class="bi bi-person-check-fill"></i>
-      </div>
-      <div style="flex:1; min-width:200px;">
-        <div style="font-weight:800; font-size:16px; margin-bottom:2px;">
-          تم تحويل هذا العميل إلى طالب
-        </div>
-        <div style="font-size:13px; opacity:.92;">
-          البيانات المعروضة أدناه هي بيانات العميل وقت التحويل (للأرشيف).
-          البيانات الحيّة والمحدّثة تُدار من <b>ملف الطالب</b>.
-        </div>
-      </div>
-      <a href="<?php echo e(route('students.show', $lead->student_id)); ?>"
-         style="background:#fff; color:#059669; font-weight:800; padding:10px 20px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;">
-        <i class="bi bi-box-arrow-up-left"></i> فتح ملف الطالب
-      </a>
-    </div>
-
-    
-    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px 22px; margin-bottom:18px; box-shadow:0 4px 12px rgba(0,0,0,.05);">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-        <i class="bi bi-broadcast" style="color:#059669; font-size:18px;"></i>
-        <span style="font-weight:800; color:#1e293b; font-size:15px;">البيانات الحيّة (من ملف الطالب)</span>
-        <span style="background:#d1fae5; color:#065f46; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-right:auto;">
-          <i class="bi bi-lock-fill" style="font-size:10px;"></i> للقراءة فقط
-        </span>
-      </div>
-
-      <div class="row g-3" style="font-size:13.5px;">
-        <div class="col-md-4">
-          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الاسم الكامل</div>
-          <div style="color:#1e293b; font-weight:700;"><?php echo e($lead->student->full_name ?? '—'); ?></div>
-        </div>
-        <div class="col-md-4">
-          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الهاتف</div>
-          <div style="color:#1e293b; font-weight:700;"><?php echo e($lead->student->phone ?? '—'); ?></div>
-        </div>
-        <div class="col-md-4">
-          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">واتساب</div>
-          <div style="color:#1e293b; font-weight:700;"><?php echo e($lead->student->whatsapp ?? '—'); ?></div>
-        </div>
-        <div class="col-md-4">
-          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الرقم الجامعي</div>
-          <div style="color:#1e293b; font-weight:700;"><code><?php echo e($lead->student->university_id ?? '—'); ?></code></div>
-        </div>
-        <div class="col-md-4">
-          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">الفرع</div>
-          <div style="color:#1e293b; font-weight:700;"><?php echo e($lead->student->branch->name ?? '—'); ?></div>
-        </div>
-        <div class="col-md-4">
-          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:2px;">عدد الدبلومات</div>
-          <div style="color:#1e293b; font-weight:700;"><?php echo e($lead->student->diplomas->count()); ?></div>
-        </div>
-        <div class="col-12">
-          <div style="color:#94a3b8; font-weight:700; font-size:11.5px; margin-bottom:4px;">الدبلومات الحالية</div>
-          <div style="display:flex; flex-wrap:wrap; gap:6px;">
-            <?php $__empty_1 = true; $__currentLoopData = $lead->student->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sd): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-              <span style="background:#eff6ff; color:#2563eb; font-size:12px; font-weight:700; padding:4px 12px; border-radius:20px;">
-                <i class="bi bi-mortarboard-fill" style="font-size:11px;"></i> <?php echo e($sd->name); ?> (<?php echo e($sd->code); ?>)
-              </span>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-              <span style="color:#94a3b8; font-size:12.5px;">لا توجد دبلومات</span>
-            <?php endif; ?>
-          </div>
-        </div>
-      </div>
-    </div>
-  <?php endif; ?>
-
-  
-  <?php if($lead->registration_status === 'pending'): ?>
+  {{-- Pending banner --}}
+  @if($lead->registration_status === 'pending')
     <div class="pending-banner">
       <i class="bi bi-info-circle-fill" style="font-size:16px"></i>
       العميل قيد الانتظار — سيُحوَّل إلى طالب تلقائياً بعد ترحيل أول دفعة
     </div>
-  <?php endif; ?>
+  @endif
 
-  
+  {{-- ═══════════ Info Sections ═══════════ --}}
   <div class="row g-3">
     <div class="col-lg-8">
 
-      
+      {{-- المعلومات الشخصية --}}
       <div class="info-card">
         <div class="info-card-title"><i class="bi bi-person-vcard"></i> المعلومات الشخصية</div>
         <div class="info-grid">
           <div class="info-item">
             <div class="lbl">الاسم الكامل</div>
-            <div class="val"><?php echo e($lead->full_name); ?></div>
+            <div class="val">{{ $lead->full_name }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">الهاتف</div>
             <div class="val">
-              <?php if($lead->phone): ?>
-                <a href="tel:<?php echo e($lead->phone); ?>" style="color:#0369a1;"><?php echo e($lead->phone); ?></a>
-              <?php else: ?> <span class="muted">—</span> <?php endif; ?>
+              @if($lead->phone)
+                <a href="tel:{{ $lead->phone }}" style="color:#0369a1;">{{ $lead->phone }}</a>
+              @else <span class="muted">—</span> @endif
             </div>
           </div>
           <div class="info-item">
             <div class="lbl">واتساب</div>
             <div class="val">
-              <?php if($lead->whatsapp): ?>
-                <a href="https://wa.me/<?php echo e($lead->whatsapp); ?>" target="_blank" style="color:#059669;">
-                  <i class="bi bi-whatsapp" style="font-size:13px"></i> <?php echo e($lead->whatsapp); ?>
-
+              @if($lead->whatsapp)
+                <a href="https://wa.me/{{ $lead->whatsapp }}" target="_blank" style="color:#059669;">
+                  <i class="bi bi-whatsapp" style="font-size:13px"></i> {{ $lead->whatsapp }}
                 </a>
-              <?php else: ?> <span class="muted">—</span> <?php endif; ?>
+              @else <span class="muted">—</span> @endif
             </div>
           </div>
           <div class="info-item">
             <div class="lbl">البريد الإلكتروني</div>
             <div class="val">
-              <?php if($lead->email): ?>
-                <a href="mailto:<?php echo e($lead->email); ?>" style="color:#0369a1;"><?php echo e($lead->email); ?></a>
-              <?php else: ?> <span class="muted">—</span> <?php endif; ?>
+              @if($lead->email)
+                <a href="mailto:{{ $lead->email }}" style="color:#0369a1;">{{ $lead->email }}</a>
+              @else <span class="muted">—</span> @endif
             </div>
           </div>
           <div class="info-item">
             <div class="lbl">العمر</div>
-            <div class="val"><?php echo e($lead->age ? $lead->age . ' سنة' : '—'); ?></div>
+            <div class="val">{{ $lead->age ? $lead->age . ' سنة' : '—' }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">العمل / المهنة</div>
-            <div class="val"><?php echo e($lead->job ?? '—'); ?></div>
+            <div class="val">{{ $lead->job ?? '—' }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">المؤسسة / الشركة</div>
-            <div class="val"><?php echo e($lead->organization ?? '—'); ?></div>
+            <div class="val">{{ $lead->organization ?? '—' }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">مكان السكن</div>
-            <div class="val"><?php echo e($lead->residence ?? '—'); ?></div>
+            <div class="val">{{ $lead->residence ?? '—' }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">الدراسة</div>
-            <div class="val"><?php echo e($lead->study ?? '—'); ?></div>
+            <div class="val">{{ $lead->study ?? '—' }}</div>
           </div>
         </div>
       </div>
 
-      
+      {{-- الموقع الجغرافي --}}
       <div class="info-card">
         <div class="info-card-title"><i class="bi bi-geo-alt"></i> الموقع الجغرافي</div>
         <div class="info-grid">
           <div class="info-item">
             <div class="lbl">البلد</div>
-            <div class="val"><?php echo e($lead->country ?? '—'); ?></div>
+            <div class="val">{{ $lead->country ?? '—' }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">المحافظة / المدينة</div>
-            <div class="val"><?php echo e($lead->province ?? '—'); ?></div>
+            <div class="val">{{ $lead->province ?? '—' }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">الفرع المسجَّل</div>
-            <div class="val"><?php echo e($lead->branch->name ?? '—'); ?></div>
+            <div class="val">{{ $lead->branch->name ?? '—' }}</div>
           </div>
         </div>
       </div>
 
-      
+      {{-- معلومات CRM --}}
       <div class="info-card">
         <div class="info-card-title"><i class="bi bi-headset"></i> معلومات CRM</div>
         <div class="info-grid">
           <div class="info-item">
             <div class="lbl">تاريخ أول تواصل</div>
-            <div class="val"><?php echo e($lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—'); ?></div>
+            <div class="val">{{ $lead->first_contact_date ? $lead->first_contact_date->format('Y/m/d') : '—' }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">مرحلة العميل</div>
-            <div class="val"><?php echo e($stage_ar); ?></div>
+            <div class="val">{{ $stage_ar }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">حالة التسجيل</div>
-            <div class="val"><?php echo e($registration_ar); ?></div>
+            <div class="val">{{ $registration_ar }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">المصدر</div>
-            <div class="val"><?php echo e($source_ar); ?></div>
+            <div class="val">{{ $source_ar }}</div>
           </div>
           <div class="info-item">
             <div class="lbl">مسؤول التواصل</div>
-            <div class="val"><?php echo e($lead->creator->name ?? $lead->creator->email ?? '—'); ?></div>
+            <div class="val">{{ $lead->creator->name ?? $lead->creator->email ?? '—' }}</div>
           </div>
-          <?php if($lead->registered_at): ?>
+          @if($lead->registered_at)
             <div class="info-item">
               <div class="lbl">تاريخ التسجيل</div>
-              <div class="val"><?php echo e($lead->registered_at->format('Y/m/d')); ?></div>
+              <div class="val">{{ $lead->registered_at->format('Y/m/d') }}</div>
             </div>
-          <?php endif; ?>
-          <?php if($lead->student_id): ?>
+          @endif
+          @if($lead->student_id)
             <div class="info-item">
               <div class="lbl">رقم الطالب</div>
               <div class="val">
-                <a href="<?php echo e(route('students.show', $lead->student_id)); ?>" class="btn btn-success fw-bold">
+                <a href="{{ route('students.show', $lead->student_id) }}" class="btn btn-success fw-bold">
                   <i class="bi bi-mortarboard-fill"></i> عرض ملف الطالب
                 </a>
 
                 <button class="btn btn-outline-success fw-bold"
-                  onclick="showFinancial(<?php echo e($lead->student_id); ?>, '<?php echo e(addslashes($lead->full_name)); ?>')"
+                  onclick="showFinancial({{ $lead->student_id }}, '{{ addslashes($lead->full_name) }}')"
                   title="المعلومات المالية">
                   <i class="bi bi-cash-coin"></i> المعلومات المالية
                 </button>
               </div>
             </div>
-          <?php endif; ?>
+          @endif
         </div>
-        <?php if($lead->need): ?>
+        @if($lead->need)
           <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(226,232,240,.9);">
             <div class="lbl"
               style="font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.4px; margin-bottom:5px;">
               الاحتياج / الهدف</div>
-            <div style="font-size:14px; color:#1e293b; line-height:1.7;"><?php echo e($lead->need); ?></div>
+            <div style="font-size:14px; color:#1e293b; line-height:1.7;">{{ $lead->need }}</div>
           </div>
-        <?php endif; ?>
-        <?php if($lead->notes): ?>
+        @endif
+        @if($lead->notes)
           <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(226,232,240,.9);">
             <div class="lbl"
               style="font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.4px; margin-bottom:5px;">
               ملاحظات عامة</div>
-            <div style="font-size:14px; color:#1e293b; line-height:1.7; white-space:pre-line;"><?php echo e($lead->notes); ?></div>
+            <div style="font-size:14px; color:#1e293b; line-height:1.7; white-space:pre-line;">{{ $lead->notes }}</div>
           </div>
-        <?php endif; ?>
+        @endif
       </div>
 
 
 
 
 
-      
+      {{-- ════════════════════════════════════════════════════════
+      قسم خطة الدفع ← يظهر فقط للعميل قبل التحويل
+      ════════════════════════════════════════════════════════ --}}
 
 
-      <?php if(auth()->user()?->hasPermission('manage_lead_payment_plan') || auth()->user()?->hasRole('super_admin')): ?>
+      @if(auth()->user()?->hasPermission('manage_lead_payment_plan') || auth()->user()?->hasRole('super_admin'))
 
-        <?php if($lead->registration_status === 'pending'): ?>
+        @if($lead->registration_status === 'pending')
 
-          
-          <?php if($paymentPlans->count()): ?>
+          {{-- ── الخطط الموجودة ── --}}
+          @if($paymentPlans->count())
             <div class="info-card" style="border-color:rgba(16,185,129,.3);">
               <div class="info-card-title" style="color:#047857;">
                 <i class="bi bi-calendar-check-fill"></i> خطط الدفع المسجّلة
               </div>
 
-              <?php $__currentLoopData = $paymentPlans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              @foreach($paymentPlans as $plan)
                 <div class="plan-card">
                   <div class="plan-card-header">
                     <div class="plan-card-title">
                       <i class="bi bi-mortarboard-fill" style="color:#0ea5e9; font-size:14px"></i>
-                      <?php echo e($plan->diploma->name); ?>
-
+                      {{ $plan->diploma->name }}
                     </div>
-                    <span class="badge bg-info text-dark"><?php echo e($plan->currency); ?></span>
+                    <span class="badge bg-info text-dark">{{ $plan->currency }}</span>
                   </div>
 
                   <div class="plan-kv">
                     <div class="k">المبلغ الإجمالي</div>
-                    <div class="v fw-bold"><?php echo e(number_format($plan->total_amount, 2)); ?></div>
+                    <div class="v fw-bold">{{ number_format($plan->total_amount, 2) }}</div>
                   </div>
                   <div class="plan-kv">
                     <div class="k">نوع الدفع</div>
-                    <div class="v"><?php echo e($plan->payment_type === 'full' ? 'كامل' : 'دفعات'); ?></div>
+                    <div class="v">{{ $plan->payment_type === 'full' ? 'كامل' : 'دفعات' }}</div>
                   </div>
-                  <?php if($plan->payment_type === 'installments'): ?>
+                  @if($plan->payment_type === 'installments')
                     <div class="plan-kv">
                       <div class="k">عدد الدفعات</div>
-                      <div class="v"><?php echo e($plan->installments_count); ?></div>
+                      <div class="v">{{ $plan->installments_count }}</div>
                     </div>
-                  <?php endif; ?>
+                  @endif
                   <div class="plan-kv">
                     <div class="k">المدفوع</div>
-                    <div class="v text-success fw-bold"><?php echo e(number_format($plan->paid ?? 0, 2)); ?></div>
+                    <div class="v text-success fw-bold">{{ number_format($plan->paid ?? 0, 2) }}</div>
                   </div>
                   <div class="plan-kv">
                     <div class="k">المتبقي</div>
-                    <div class="v text-warning fw-bold"><?php echo e(number_format(max($plan->remaining ?? 0, 0), 2)); ?></div>
+                    <div class="v text-warning fw-bold">{{ number_format(max($plan->remaining ?? 0, 0), 2) }}</div>
                   </div>
 
-                  <?php if($plan->installments->count()): ?>
+                  @if($plan->installments->count())
                     <div class="mt-3 pt-2 border-top">
                       <div class="fw-bold small text-muted mb-2">جدول الأقساط:</div>
-                      <?php $__currentLoopData = $plan->installments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      @foreach($plan->installments as $i)
                         <div class="plan-kv">
-                          <div class="k">الدفعة <?php echo e($loop->iteration); ?></div>
+                          <div class="k">الدفعة {{ $loop->iteration }}</div>
                           <div class="v">
-                            <?php echo e(number_format($i->amount, 2)); ?>
-
-                            <span class="text-muted">(<?php echo e($i->due_date->format('Y-m-d')); ?>)</span>
+                            {{ number_format($i->amount, 2) }}
+                            <span class="text-muted">({{ $i->due_date->format('Y-m-d') }})</span>
                           </div>
                         </div>
-                      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                      @endforeach
                     </div>
-                  <?php endif; ?>
+                  @endif
 
-                  
-                  <?php if(($plan->payments_count ?? 0) <= 1): ?>
+                  {{-- زر التعديل إذا لم تكن هناك أكثر من دفعة ── --}}
+                  @if(($plan->payments_count ?? 0) <= 1)
                     <div class="mt-3">
-                      <a href="<?php echo e(route('payment.plan.edit', $plan->id)); ?>" class="btn btn-sm btn-outline-warning fw-bold">
+                      <a href="{{ route('payment.plan.edit', $plan->id) }}" class="btn btn-sm btn-outline-warning fw-bold">
                         <i class="bi bi-pencil"></i> تعديل الخطة
                       </a>
                     </div>
-                  <?php else: ?>
+                  @else
                     <div class="mt-3">
                       <span class="badge bg-secondary">
                         <i class="bi bi-lock"></i> لا يمكن تعديل الخطة بعد وجود دفعات
                       </span>
                     </div>
-                  <?php endif; ?>
+                  @endif
                 </div>
-              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              @endforeach
             </div>
-          <?php endif; ?>
+          @endif
 
-          
-          <?php
+          {{-- ── إنشاء خطة دفع جديدة (للدبلومات التي ليس لها خطة) ── --}}
+          @php
             $diplomasWithoutPlan = $lead->diplomas->filter(fn($d) => !isset($plansByDiploma[$d->id]));
-          ?>
+          @endphp
 
-          <?php if($diplomasWithoutPlan->count()): ?>
+          @if($diplomasWithoutPlan->count())
             <div class="payment-plan-section">
               <div class="section-head">
                 <i class="bi bi-wallet2" style="font-size:20px"></i>
                 إنشاء خطة دفع
               </div>
 
-              <form method="POST" action="<?php echo e(route('payment.plan.store')); ?>" id="lead-plan-form">
-                <?php echo csrf_field(); ?>
-                <input type="hidden" name="lead_id" value="<?php echo e($lead->id); ?>">
+              <form method="POST" action="{{ route('payment.plan.store') }}" id="lead-plan-form">
+                @csrf
+                <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                 <input type="hidden" name="diploma_id" id="lead_selected_diploma">
 
-                <?php if($errors->any()): ?>
+                @if ($errors->any())
                   <div class="alert alert-danger fw-semibold mb-3">
                     <i class="bi bi-exclamation-triangle"></i>
-                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $e): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><div><?php echo e($e); ?></div><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach
                   </div>
-                <?php endif; ?>
+                @endif
 
                 <div class="row g-3">
                   <div class="col-md-4">
                     <label class="fw-bold">الدبلومة</label>
                     <select class="form-select" id="lead_diploma_preview">
-                      <?php $__currentLoopData = $diplomasWithoutPlan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($d->id); ?>"><?php echo e($d->name); ?></option>
-                      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                      @foreach($diplomasWithoutPlan as $d)
+                        <option value="{{ $d->id }}">{{ $d->name }}</option>
+                      @endforeach
                     </select>
                   </div>
 
@@ -1006,58 +920,57 @@
                 <div id="lead_installments_summary"></div>
 
                 <div class="row mt-3">
-                  <?php $__currentLoopData = $diplomasWithoutPlan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  @foreach($diplomasWithoutPlan as $d)
                     <div class="col-md-6 mt-2">
                       <button type="submit" class="btn btn-success fw-bold w-100 lead-plan-save-btn"
-                        onclick="selectLeadDiploma(<?php echo e($d->id); ?>)">
-                        <i class="bi bi-check2-circle"></i> حفظ خطة <?php echo e($d->name); ?>
-
+                        onclick="selectLeadDiploma({{ $d->id }})">
+                        <i class="bi bi-check2-circle"></i> حفظ خطة {{ $d->name }}
                       </button>
                     </div>
-                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                  @endforeach
                 </div>
               </form>
             </div>
-          <?php endif; ?>
+          @endif
 
-          
+          {{-- ════════════════════════════════════════════════════════
+          تسجيل دفعة مالية
+          ════════════════════════════════════════════════════════ --}}
           <div class="info-card" style="background:rgba(16,185,129,.04); border-color:rgba(16,185,129,.2);">
             <div class="info-card-title" style="color:#047857;">
               <i class="bi bi-cash-coin"></i> تسجيل دفعة مالية
             </div>
 
-            <?php if(session('success')): ?>
+            @if(session('success'))
               <div class="alert alert-success fw-bold">
-                <i class="bi bi-check-circle"></i> <?php echo e(session('success')); ?>
-
+                <i class="bi bi-check-circle"></i> {{ session('success') }}
               </div>
-            <?php endif; ?>
+            @endif
 
-            <?php if($errors->has('amount')): ?>
+            @if($errors->has('amount'))
               <div class="alert alert-danger fw-bold">
-                <i class="bi bi-exclamation-triangle"></i> <?php echo e($errors->first('amount')); ?>
-
+                <i class="bi bi-exclamation-triangle"></i> {{ $errors->first('amount') }}
               </div>
-            <?php endif; ?>
+            @endif
 
-            <form method="POST" action="<?php echo e(route('financial.pay')); ?>">
-              <?php echo csrf_field(); ?>
-              <input type="hidden" name="financial_account_id" value="<?php echo e($lead->financialAccount?->id); ?>">
+            <form method="POST" action="{{ route('financial.pay') }}">
+              @csrf
+              <input type="hidden" name="financial_account_id" value="{{ $lead->financialAccount?->id }}">
               <div class="row g-3">
                 <div class="col-md-4">
                   <label class="form-label fw-bold">الدبلومة</label>
                   <select name="diploma_id" class="form-select" required>
-                    <?php $__currentLoopData = $lead->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $diploma): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                      <option value="<?php echo e($diploma->id); ?>"><?php echo e($diploma->name); ?></option>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    @foreach($lead->diplomas as $diploma)
+                      <option value="{{ $diploma->id }}">{{ $diploma->name }}</option>
+                    @endforeach
                   </select>
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-bold">الصندوق</label>
                   <select name="cashbox_id" class="form-select" required>
-                    <?php $__currentLoopData = \App\Models\Cashbox::where('status', 'active')->where('branch_id', $lead->branch_id)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                      <option value="<?php echo e($box->id); ?>"><?php echo e($box->name); ?> — <?php echo e($box->currency); ?></option>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    @foreach(\App\Models\Cashbox::where('status', 'active')->where('branch_id', $lead->branch_id)->get() as $box)
+                      <option value="{{ $box->id }}">{{ $box->name }} — {{ $box->currency }}</option>
+                    @endforeach
                   </select>
                 </div>
                 <div class="col-md-2">
@@ -1077,9 +990,9 @@
             </form>
           </div>
 
-        <?php else: ?>
-          
-          <?php if($lead->student_id): ?>
+        @else
+          {{-- ── العميل تم تحويله إلى طالب ── --}}
+          @if($lead->student_id)
             <div class="info-card" style="background:rgba(16,185,129,.04); border-color:rgba(16,185,129,.3);">
               <div class="info-card-title" style="color:#047857;">
                 <i class="bi bi-person-check-fill"></i> تم التحويل إلى طالب
@@ -1089,26 +1002,26 @@
                   <i class="bi bi-check-circle-fill"></i>
                   تم تحويل هذا العميل إلى طالب بنجاح
                 </div>
-                <a href="<?php echo e(route('students.show', $lead->student_id)); ?>" class="btn btn-success fw-bold">
+                <a href="{{ route('students.show', $lead->student_id) }}" class="btn btn-success fw-bold">
                   <i class="bi bi-mortarboard-fill"></i> عرض ملف الطالب
                 </a>
               </div>
             </div>
-          <?php endif; ?>
-        <?php endif; ?>
-      <?php endif; ?>
+          @endif
+        @endif
+      @endif
 
 
 
     </div>
 
-    
+    {{-- ═══ Sidebar ═══ --}}
     <div class="col-lg-4">
 
-      
+      {{-- الدبلومات --}}
       <div class="info-card">
         <div class="info-card-title"><i class="bi bi-mortarboard-fill"></i> الدبلومات</div>
-        <?php $__empty_1 = true; $__currentLoopData = $lead->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+        @forelse($lead->diplomas as $d)
           <div
             style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(226,232,240,.7);">
             <div
@@ -1116,79 +1029,77 @@
               <i class="bi bi-book-fill"></i>
             </div>
             <div>
-              <div style="font-size:13px;font-weight:800;color:#1e293b;"><?php echo e($d->name); ?></div>
+              <div style="font-size:13px;font-weight:800;color:#1e293b;">{{ $d->name }}</div>
               <div style="font-size:11px;color:#94a3b8;">
-                <?php echo e($d->code ?? ''); ?>
-
-                <?php if($d->pivot->is_primary): ?>
+                {{ $d->code ?? '' }}
+                @if($d->pivot->is_primary)
                   · <span style="color:#059669; font-weight:700;">رئيسية</span>
-                <?php endif; ?>
+                @endif
               </div>
             </div>
           </div>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+        @empty
           <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">
             <i class="bi bi-mortarboard" style="font-size:22px;display:block;margin-bottom:6px;"></i>
             لا توجد دبلومات مرتبطة
           </div>
-        <?php endif; ?>
+        @endforelse
       </div>
 
-      
-      <?php if($lead->financialAccount): ?>
+      {{-- معلومات الحساب المالي --}}
+      @if($lead->financialAccount)
         <div class="info-card">
           <div class="info-card-title"><i class="bi bi-wallet2"></i> الحساب المالي</div>
-          <?php
+          @php
             $account = $lead->financialAccount;
             $totalIn = $account->transactions()->where('type', 'in')->sum('amount');
             $totalOut = $account->transactions()->where('type', 'out')->sum('amount');
             $lastTrx = $account->transactions()->latest()->first();
-          ?>
+          @endphp
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
             <div
               style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:10px 12px;">
               <div style="font-size:11px;color:#047857;font-weight:700;">إجمالي المدفوع</div>
-              <div style="font-size:16px;font-weight:900;color:#047857;"><?php echo e(number_format($totalIn, 0)); ?></div>
+              <div style="font-size:16px;font-weight:900;color:#047857;">{{ number_format($totalIn, 0) }}</div>
             </div>
             <div
               style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:10px 12px;">
               <div style="font-size:11px;color:#b91c1c;font-weight:700;">إجمالي المسحوب</div>
-              <div style="font-size:16px;font-weight:900;color:#b91c1c;"><?php echo e(number_format($totalOut, 0)); ?></div>
+              <div style="font-size:16px;font-weight:900;color:#b91c1c;">{{ number_format($totalOut, 0) }}</div>
             </div>
           </div>
-          <?php if($lastTrx): ?>
+          @if($lastTrx)
             <div style="font-size:12px;color:#94a3b8;">
-              آخر حركة: <?php echo e(\Carbon\Carbon::parse($lastTrx->created_at)->format('Y/m/d')); ?>
-
+              آخر حركة: {{ \Carbon\Carbon::parse($lastTrx->created_at)->format('Y/m/d') }}
             </div>
-          <?php endif; ?>
+          @endif
         </div>
-      <?php endif; ?>
+      @endif
 
-      
+      {{-- Created At --}}
       <div class="info-card" style="padding:14px 18px;">
         <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#94a3b8;">
           <i class="bi bi-calendar-plus" style="font-size:14px"></i>
-          <span>أُنشئ بتاريخ: <b style="color:#64748b;"><?php echo e($lead->created_at->format('Y/m/d — H:i')); ?></b></span>
+          <span>أُنشئ بتاريخ: <b style="color:#64748b;">{{ $lead->created_at->format('Y/m/d — H:i') }}</b></span>
         </div>
-        <?php if($lead->updated_at != $lead->created_at): ?>
+        @if($lead->updated_at != $lead->created_at)
           <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#94a3b8;margin-top:6px;">
             <i class="bi bi-pencil-square" style="font-size:14px"></i>
-            <span>آخر تعديل: <b style="color:#64748b;"><?php echo e($lead->updated_at->format('Y/m/d — H:i')); ?></b></span>
+            <span>آخر تعديل: <b style="color:#64748b;">{{ $lead->updated_at->format('Y/m/d — H:i') }}</b></span>
           </div>
-        <?php endif; ?>
+        @endif
       </div>
 
     </div>
   </div>
 
-  
+  {{-- ═══════════ المتابعات ═══════════ --}}
   <div class="info-card">
     <div class="info-card-title"><i class="bi bi-chat-square-dots-fill"></i> سجل المتابعات</div>
 
-    <form method="POST" action="<?php echo e(route('leads.followups.store', $lead)); ?>"
+    <form method="POST" action="{{ route('leads.followups.store', $lead) }}"
       style="background:rgba(248,250,252,.8);border:1px solid rgba(226,232,240,.9);border-radius:12px;padding:16px;margin-bottom:20px;">
-      <?php echo csrf_field(); ?>
+      @csrf
       <div style="font-size:13px;font-weight:800;color:#64748b;margin-bottom:12px;">
         <i class="bi bi-plus-circle"></i> إضافة متابعة جديدة
       </div>
@@ -1196,17 +1107,17 @@
         <div class="col-md-3">
           <label class="form-label" style="font-size:12px;color:#94a3b8;font-weight:700;">تاريخ المتابعة</label>
           <input type="date" name="followup_date" class="form-control form-control-sm"
-            value="<?php echo e(old('followup_date', now()->format('Y-m-d'))); ?>">
+            value="{{ old('followup_date', now()->format('Y-m-d')) }}">
         </div>
         <div class="col-md-4">
           <label class="form-label" style="font-size:12px;color:#94a3b8;font-weight:700;">نتيجة المتابعة</label>
           <input name="result" class="form-control form-control-sm" placeholder="مثال: مهتم، يحتاج وقت..."
-            value="<?php echo e(old('result')); ?>">
+            value="{{ old('result') }}">
         </div>
         <div class="col-md-5">
           <label class="form-label" style="font-size:12px;color:#94a3b8;font-weight:700;">ملاحظات</label>
           <input name="notes" class="form-control form-control-sm" placeholder="تفاصيل إضافية..."
-            value="<?php echo e(old('notes')); ?>">
+            value="{{ old('notes') }}">
         </div>
         <div class="col-12">
           <button class="btn btn-primary btn-sm fw-bold px-4">
@@ -1216,31 +1127,30 @@
       </div>
     </form>
 
-    <?php if($lead->followups->count()): ?>
+    @if($lead->followups->count())
       <div class="followup-timeline">
-        <?php $__currentLoopData = $lead->followups->sortByDesc('followup_date'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        @foreach($lead->followups->sortByDesc('followup_date') as $f)
           <div class="followup-item">
             <div class="followup-date">
               <i class="bi bi-calendar3" style="font-size:11px"></i>
-              <?php echo e($f->followup_date?->format('Y/m/d') ?? 'غير محدد'); ?>
-
+              {{ $f->followup_date?->format('Y/m/d') ?? 'غير محدد' }}
             </div>
-            <?php if($f->result): ?>
-              <div class="followup-result"><?php echo e($f->result); ?></div>
-            <?php endif; ?>
-            <?php if($f->notes): ?>
-              <div class="followup-notes"><?php echo e($f->notes); ?></div>
-            <?php endif; ?>
+            @if($f->result)
+              <div class="followup-result">{{ $f->result }}</div>
+            @endif
+            @if($f->notes)
+              <div class="followup-notes">{{ $f->notes }}</div>
+            @endif
           </div>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        @endforeach
       </div>
-    <?php else: ?>
+    @else
       <div style="text-align:center;padding:30px 20px;color:#94a3b8;">
         <i class="bi bi-chat-square-dots" style="font-size:28px;display:block;margin-bottom:8px;"></i>
         <div style="font-size:14px;font-weight:700;">لا توجد متابعات مسجّلة بعد</div>
         <div style="font-size:12px;margin-top:4px;">أضف أول متابعة للعميل من النموذج أعلاه</div>
       </div>
-    <?php endif; ?>
+    @endif
   </div>
 
 
@@ -1248,7 +1158,7 @@
 
 
 
-  
+  {{-- Modal المالي --}}
 <div class="modal fade" id="financialModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -1300,9 +1210,9 @@ function showFinancial(id, name) {
 </script>
 
 
-<?php $__env->stopSection(); ?>
+@endsection
 
-<?php $__env->startPush('scripts'); ?>
+@push('scripts')
   <script>
     (function () {
       'use strict';
@@ -1433,5 +1343,4 @@ function showFinancial(id, name) {
       runValidation();
     })();
   </script>
-<?php $__env->stopPush(); ?>
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\customers\namaa\laravel11-auth\resources\views/crm/leads/show.blade.php ENDPATH**/ ?>
+@endpush
