@@ -675,6 +675,26 @@
                     </span>
                   </div>
                 @endif
+
+                {{-- ══ المنحة ══ --}}
+                @if($d->pivot->has_grant)
+                  <div class="ddc-meta-item mt-2">
+                    <span class="ddc-meta-label">المنحة</span>
+                    <span class="lang-level-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                      <i class="bi bi-gift-fill"></i> {{ $d->pivot->grant_details ?? 'يوجد منحة' }}
+                    </span>
+                    @if($d->pivot->grant_given)
+                      <span class="badge-soft success ms-2">
+                        <i class="bi bi-check2-circle"></i> تم إعطاء المنحة
+                      </span>
+                    @else
+                      <span class="badge-soft warn ms-2">
+                        <i class="bi bi-hourglass-split"></i> لم تُعطَ بعد
+                      </span>
+                    @endif
+                  </div>
+                @endif
+
                 {{-- ملاحظات الدبلومة --}}
                 @if(!empty($d->pivot->notes))
                   <div class="mt-3">

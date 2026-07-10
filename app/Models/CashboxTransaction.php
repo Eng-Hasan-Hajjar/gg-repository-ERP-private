@@ -25,6 +25,7 @@ class CashboxTransaction extends Model
         'status',
         'posted_at',
         'attachment_path',
+        'sender_identity_path',
         'financial_account_id',
         'diploma_id',
         'to_cashbox_id',

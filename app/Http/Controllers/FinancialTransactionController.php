@@ -26,6 +26,9 @@ class FinancialTransactionController extends Controller
             'cashbox_id' => 'required|exists:cashboxes,id',
             'diploma_id' => 'required|exists:diplomas,id',
             'amount' => 'required|numeric|min:0.01',
+            // ملفات اختيارية: وصل الحوالة + صورة هوية المرسل
+            'transfer_receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'sender_identity' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         $account = FinancialAccount::findOrFail($request->financial_account_id);
@@ -59,6 +62,19 @@ class FinancialTransactionController extends Controller
             }
         }
 
+        // ✅ رفع وصل الحوالة + صورة هوية المرسل (إن وُجدا)
+        $receiptPath = null;
+        if ($request->hasFile('transfer_receipt')) {
+            $receiptPath = $request->file('transfer_receipt')
+                ->store('transactions/receipts', 'public');
+        }
+
+        $senderIdentityPath = null;
+        if ($request->hasFile('sender_identity')) {
+            $senderIdentityPath = $request->file('sender_identity')
+                ->store('transactions/sender_identities', 'public');
+        }
+
         // إنشاء الحركة المالية
         CashboxTransaction::create([
             'cashbox_id' => $request->cashbox_id,
@@ -72,6 +88,8 @@ class FinancialTransactionController extends Controller
             'notes' => $request->notes,
             'status' => 'draft',
             'posted_at' => null,
+            'attachment_path' => $receiptPath,
+            'sender_identity_path' => $senderIdentityPath,
         ]);
 
         return back()->with('success', 'تم تسجيل الدفعة بنجاح');

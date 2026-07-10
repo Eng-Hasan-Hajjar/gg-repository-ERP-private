@@ -183,6 +183,21 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
+    Route::get('/assets/{asset}/print', function (\App\Models\Asset $asset) {
+        $asset->load('category', 'branch');
+        return view('assets.print', compact('asset'));
+    })->name('assets.print');
+
+
+    Route::get('/asset-requests/{assetRequest}/print', function (\App\Models\AssetRequest $assetRequest) {
+        $assetRequest->load('user', 'branch', 'asset');
+        return view('asset_requests.print', compact('assetRequest')); // ← underscore وليس dash
+    })->name('asset-requests.print');
+
+
+
+    
     Route::resource('assets', AssetController::class);
 
     // Asset Categories

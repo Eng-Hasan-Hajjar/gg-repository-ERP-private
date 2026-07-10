@@ -309,136 +309,12 @@ public function index(Request $request)
         return $activeFilters;
     }
 
-    
-/*
-    public function index(Request $request)
-    {
-        $q = Student::query()->with(['branch', 'diplomas', 'profile', 'crmInfo']);
-        $user = auth()->user();
-
-        // ✅ فلتر "طلابي فقط" — يُضاف فوق الـ GlobalScope
-        if ($request->boolean('my_only')) {
-            $q->where('created_by', $user->id);
-        }
-
-        if ($request->filled('branch_id')) {
-            $q->where('branch_id', $request->branch_id);
-        }
-        if ($request->filled('diploma_id')) {
-            $q->whereHas('diplomas', fn($x) => $x->where('diplomas.id', $request->diploma_id));
-        }
-        if ($request->filled('status')) {
-            $q->where('status', $request->status);
-        }
-        if ($request->filled('registration_status')) {
-            $q->where('registration_status', $request->registration_status);
-        }
-        if ($request->filled('search')) {
-            $s = trim($request->search);
-            $q->where(
-                fn($x) => $x
-                    ->where('full_name', 'like', "%$s%")
-                    ->orWhere('university_id', 'like', "%$s%")
-                    ->orWhere('phone', 'like', "%$s%")
-            );
-        }
-        if ($request->filled('has_message')) {
-            $q->whereHas(
-                'profile',
-                fn($p) =>
-                $p->whereNotNull('message_to_send')->where('message_to_send', '!=', '')
-            );
-        }
-        if ($request->filled('needs_update')) {
-            $q->where('updated_at', '<=', now()->subDays(7))->where('status', 'active');
-        }
-
-        // ✅ أضف هذا مع باقي الفلاتر
-        if ($request->boolean('needs_verification')) {
-            $q->whereHas('profile', function ($p) {
-                $p->where(function ($inner) {
-                    $inner->whereNull('arabic_full_name')
-                        ->orWhere('arabic_full_name', '')
-                        ->orWhereNull('birth_date')
-                        ->orWhereNull('national_id')
-                        ->orWhere('national_id', '');
-                });
-            });
-        }
-
-
-
-        // ✅ إحصائيات سريعة — نفس الـ query بدون pagination
-        $statsQuery = clone $q;
-        $totalCount = (clone $statsQuery)->count();
-        $confirmedCount = (clone $statsQuery)->where('registration_status', 'confirmed')->count();
-        $pendingCount = (clone $statsQuery)->where('registration_status', 'pending')->count();
-        $myCount = (clone $statsQuery)->where('created_by', $user->id)->count();
-
-        $students = $q->latest()->paginate(15)->withQueryString();
-
-        $labels = $this->studentArabicLabels();
-        $currentUserId = $user->id;
-        $isAdmin = $user->hasRole('super_admin')
-            || $user->hasRole('manager_student_affairs')
-            || $user->hasPermission('view_all_students');
-
-        $students->getCollection()->transform(function ($s) use ($labels, $currentUserId, $isAdmin) {
-            $s->status_ar = $labels['student_status'][$s->status] ?? '-';
-            $s->registration_ar = $labels['registration_status'][$s->registration_status] ?? '-';
-            $s->mode_ar = $labels['mode'][$s->mode] ?? '-';
-            $s->is_readonly = !$isAdmin && ($s->created_by !== $currentUserId);
-            return $s;
-        });
-
-
-        $showMyOnly = !$user->hasRole('super_admin')
-            && !$user->hasRole('manager_student_affairs')
-            && !$user->hasPermission('view_all_students');
-
-
-
-        // ✅ أضف هذا مع باقي الإحصائيات
-        $needsVerificationCount = \App\Models\StudentProfile::query()
-            ->where(function ($q) {
-                $q->whereNull('arabic_full_name')
-                    ->orWhere('arabic_full_name', '')
-                    ->orWhereNull('birth_date')
-                    ->orWhereNull('national_id')
-                    ->orWhere('national_id', '');
-            })
-            ->whereHas(
-                'student',
-                fn($sq) =>
-                $sq->where('registration_status', 'confirmed')
-            )
-            ->count();
-
-        return view('students.index', [
-            'students' => $students,
-            'branches' => \App\Models\Branch::orderBy('name')->get(),
-            'diplomas' => \App\Models\Diploma::orderBy('name')->get(),
-            'labels' => $labels,
-            'statusOptions' => $labels['student_status'],
-            'registrationOptions' => $labels['registration_status'],
-            'modeOptions' => $labels['mode'],
-            // ✅ إحصائيات
-            'totalCount' => $totalCount,
-            'confirmedCount' => $confirmedCount,
-            'pendingCount' => $pendingCount,
-            'myCount' => $myCount,
-            'showMyOnly' => $showMyOnly,
-            'needsVerificationCount' => $needsVerificationCount,
-        ]);
-    }
-
-*/  
   public function create()  
     {
         $labels = $this->studentArabicLabels();
         $user = auth()->user();
 
-        if ($user->hasRole('super_admin')) {
+        if ($user->hasRole('super_admin') || $user->hasRole('manager_student_affairs') ) {
 
             $branches = Branch::orderBy('name')->get();
 
@@ -607,7 +483,7 @@ public function index(Request $request)
     public function show(Student $student)
     {
         $student->load(['branch', 'diplomas', 'profile', 'crmInfo']);
-//$student->load(['branch', 'diplomas.branch', 'profile', 'crmInfo.creator', 'diplomaCertificates']);
+        //$student->load(['branch', 'diplomas.branch', 'profile', 'crmInfo.creator', 'diplomaCertificates']);
         $results = \App\Models\ExamResult::with(['exam.diploma'])
             ->where('student_id', $student->id)
             ->get();
@@ -847,7 +723,7 @@ public function index(Request $request)
 
 
 
-        if ($user->hasRole('super_admin')) {
+        if ($user->hasRole('super_admin') || $user->hasRole('manager_student_affairs') ) {
 
             $branches = Branch::orderBy('name')->get();
 

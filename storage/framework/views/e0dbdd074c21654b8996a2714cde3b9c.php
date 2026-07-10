@@ -1,26 +1,25 @@
-@extends('layouts.app')
-@section('title', 'طلبات اللوجستيات')
+<?php $__env->startSection('title', 'طلبات اللوجستيات'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
   <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
     <div>
       <h4 class="fw-bold mb-0">طلبات اللوجستيات</h4>
       <div class="text-muted small">طلبات الشراء والإصلاح — مرتبة حسب الأولوية</div>
     </div>
-    @if(auth()->user()?->hasPermission('submit_asset_request'))
-      <a href="{{ route('asset-requests.create') }}" class="btn btn-namaa rounded-pill px-4 fw-bold">
+    <?php if(auth()->user()?->hasPermission('submit_asset_request')): ?>
+      <a href="<?php echo e(route('asset-requests.create')); ?>" class="btn btn-namaa rounded-pill px-4 fw-bold">
         <i class="bi bi-plus-circle"></i> تقديم طلب
       </a>
-    @endif
+    <?php endif; ?>
   </div>
 
-  {{-- فلاتر موسعة --}}
+  
   <form class="card border-0 shadow-sm mb-3" method="GET">
     <div class="card-body">
       <div class="row g-2">
 
-        {{-- بحث نصي --}}
+        
         <div class="col-12 col-md-4">
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0">
@@ -28,141 +27,149 @@
             </span>
             <input type="text" name="search" class="form-control border-start-0"
               placeholder="ابحث بالعنوان أو الوصف..."
-              value="{{ request('search') }}">
+              value="<?php echo e(request('search')); ?>">
           </div>
         </div>
 
-        {{-- الحالة --}}
+        
         <div class="col-6 col-md-2">
           <select name="status" class="form-select">
             <option value="">الحالة (الكل)</option>
-            <option value="pending"     @selected(request('status') == 'pending')>قيد المراجعة</option>
-            <option value="approved"    @selected(request('status') == 'approved')>مقبول</option>
-            <option value="rejected"    @selected(request('status') == 'rejected')>مرفوض</option>
-            <option value="transferred" @selected(request('status') == 'transferred')>مُرحَّل</option>
+            <option value="pending"     <?php if(request('status') == 'pending'): echo 'selected'; endif; ?>>قيد المراجعة</option>
+            <option value="approved"    <?php if(request('status') == 'approved'): echo 'selected'; endif; ?>>مقبول</option>
+            <option value="rejected"    <?php if(request('status') == 'rejected'): echo 'selected'; endif; ?>>مرفوض</option>
+            <option value="transferred" <?php if(request('status') == 'transferred'): echo 'selected'; endif; ?>>مُرحَّل</option>
           </select>
         </div>
 
-        {{-- النوع --}}
+        
         <div class="col-6 col-md-2">
           <select name="type" class="form-select">
             <option value="">النوع (الكل)</option>
-            <option value="purchase" @selected(request('type') == 'purchase')>شراء</option>
-            <option value="repair"   @selected(request('type') == 'repair')>إصلاح</option>
-            <option value="transfer" @selected(request('type') == 'transfer')>نقل</option>
+            <option value="purchase" <?php if(request('type') == 'purchase'): echo 'selected'; endif; ?>>شراء</option>
+            <option value="repair"   <?php if(request('type') == 'repair'): echo 'selected'; endif; ?>>إصلاح</option>
+            <option value="transfer" <?php if(request('type') == 'transfer'): echo 'selected'; endif; ?>>نقل</option>
           </select>
         </div>
 
-        {{-- الأولوية --}}
+        
         <div class="col-6 col-md-2">
           <select name="priority" class="form-select">
             <option value="">الأولوية (الكل)</option>
-            <option value="urgent" @selected(request('priority') == 'urgent')>🔴 عاجل</option>
-            <option value="normal" @selected(request('priority') == 'normal')>➖ عادية</option>
-            <option value="low"    @selected(request('priority') == 'low')>🔽 منخفضة</option>
+            <option value="urgent" <?php if(request('priority') == 'urgent'): echo 'selected'; endif; ?>>🔴 عاجل</option>
+            <option value="normal" <?php if(request('priority') == 'normal'): echo 'selected'; endif; ?>>➖ عادية</option>
+            <option value="low"    <?php if(request('priority') == 'low'): echo 'selected'; endif; ?>>🔽 منخفضة</option>
           </select>
         </div>
 
-        {{-- الفرع --}}
+        
         <div class="col-6 col-md-3">
           <select name="branch_id" class="form-select">
             <option value="">الفرع (الكل)</option>
-            @foreach($branches as $branch)
-              <option value="{{ $branch->id }}" @selected(request('branch_id') == $branch->id)>
-                {{ $branch->name }}
+            <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $branch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <option value="<?php echo e($branch->id); ?>" <?php if(request('branch_id') == $branch->id): echo 'selected'; endif; ?>>
+                <?php echo e($branch->name); ?>
+
               </option>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </select>
         </div>
 
-        {{-- مقدم الطلب (للمدير فقط) --}}
-        @if(auth()->user()?->hasPermission('manage_assets'))
+        
+        <?php if(auth()->user()?->hasPermission('manage_assets')): ?>
           <div class="col-6 col-md-3">
             <select name="user_id" class="form-select">
               <option value="">مقدم الطلب (الكل)</option>
-              @foreach($users as $u)
-                <option value="{{ $u->id }}" @selected(request('user_id') == $u->id)>
-                  {{ $u->name }}
+              <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($u->id); ?>" <?php if(request('user_id') == $u->id): echo 'selected'; endif; ?>>
+                  <?php echo e($u->name); ?>
+
                 </option>
-              @endforeach
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
-        @endif
+        <?php endif; ?>
 
-        {{-- من تاريخ --}}
+        
         <div class="col-6 col-md-2">
           <input type="date" name="date_from" class="form-control"
             placeholder="من تاريخ"
-            value="{{ request('date_from') }}">
+            value="<?php echo e(request('date_from')); ?>">
         </div>
 
-        {{-- إلى تاريخ --}}
+        
         <div class="col-6 col-md-2">
           <input type="date" name="date_to" class="form-control"
             placeholder="إلى تاريخ"
-            value="{{ request('date_to') }}">
+            value="<?php echo e(request('date_to')); ?>">
         </div>
 
-        {{-- أزرار --}}
+        
         <div class="col-6 col-md-2 d-grid">
           <button class="btn btn-namaa fw-bold">
             <i class="bi bi-funnel"></i> تصفية
           </button>
         </div>
 
-        @if(request()->hasAny(['search','status','type','priority','branch_id','user_id','date_from','date_to']))
+        <?php if(request()->hasAny(['search','status','type','priority','branch_id','user_id','date_from','date_to'])): ?>
           <div class="col-6 col-md-1 d-grid">
-            <a href="{{ route('asset-requests.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر">
+            <a href="<?php echo e(route('asset-requests.index')); ?>" class="btn btn-outline-secondary" title="مسح الفلاتر">
               <i class="bi bi-x-lg"></i>
             </a>
           </div>
 
-          {{-- ملخص الفلاتر النشطة --}}
+          
           <div class="col-12">
             <div class="d-flex flex-wrap gap-1 mt-1">
-              @if(request('search'))
+              <?php if(request('search')): ?>
                 <span class="badge bg-light text-dark border">
-                  🔍 {{ request('search') }}
+                  🔍 <?php echo e(request('search')); ?>
+
                 </span>
-              @endif
-              @if(request('status'))
+              <?php endif; ?>
+              <?php if(request('status')): ?>
                 <span class="badge bg-light text-dark border">
-                  الحالة: {{ ['pending'=>'قيد المراجعة','approved'=>'مقبول','rejected'=>'مرفوض','transferred'=>'مُرحَّل'][request('status')] ?? request('status') }}
+                  الحالة: <?php echo e(['pending'=>'قيد المراجعة','approved'=>'مقبول','rejected'=>'مرفوض','transferred'=>'مُرحَّل'][request('status')] ?? request('status')); ?>
+
                 </span>
-              @endif
-              @if(request('type'))
+              <?php endif; ?>
+              <?php if(request('type')): ?>
                 <span class="badge bg-light text-dark border">
-                  النوع: {{ ['purchase'=>'شراء','repair'=>'إصلاح','transfer'=>'نقل'][request('type')] ?? request('type') }}
+                  النوع: <?php echo e(['purchase'=>'شراء','repair'=>'إصلاح','transfer'=>'نقل'][request('type')] ?? request('type')); ?>
+
                 </span>
-              @endif
-              @if(request('priority'))
+              <?php endif; ?>
+              <?php if(request('priority')): ?>
                 <span class="badge bg-light text-dark border">
-                  الأولوية: {{ ['urgent'=>'عاجل','normal'=>'عادية','low'=>'منخفضة'][request('priority')] ?? request('priority') }}
+                  الأولوية: <?php echo e(['urgent'=>'عاجل','normal'=>'عادية','low'=>'منخفضة'][request('priority')] ?? request('priority')); ?>
+
                 </span>
-              @endif
-              @if(request('branch_id'))
+              <?php endif; ?>
+              <?php if(request('branch_id')): ?>
                 <span class="badge bg-light text-dark border">
-                  الفرع: {{ $branches->firstWhere('id', request('branch_id'))?->name }}
+                  الفرع: <?php echo e($branches->firstWhere('id', request('branch_id'))?->name); ?>
+
                 </span>
-              @endif
-              @if(request('date_from') || request('date_to'))
+              <?php endif; ?>
+              <?php if(request('date_from') || request('date_to')): ?>
                 <span class="badge bg-light text-dark border">
-                  📅 {{ request('date_from') }} — {{ request('date_to') }}
+                  📅 <?php echo e(request('date_from')); ?> — <?php echo e(request('date_to')); ?>
+
                 </span>
-              @endif
+              <?php endif; ?>
             </div>
           </div>
-        @endif
+        <?php endif; ?>
 
       </div>
     </div>
   </form>
 
-  {{-- عدد النتائج --}}
+  
   <div class="d-flex justify-content-between align-items-center mb-2">
     <div class="text-muted small">
       إجمالي النتائج:
-      <strong>{{ $requests->total() }}</strong> طلب
+      <strong><?php echo e($requests->total()); ?></strong> طلب
     </div>
   </div>
 
@@ -184,125 +191,128 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($requests as $r)
-            <tr class="{{ $r->priority === 'urgent' && $r->status === 'pending' ? 'table-danger' : '' }}">
-              <td class="text-muted small">{{ $r->id }}</td>
+          <?php $__empty_1 = true; $__currentLoopData = $requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <tr class="<?php echo e($r->priority === 'urgent' && $r->status === 'pending' ? 'table-danger' : ''); ?>">
+              <td class="text-muted small"><?php echo e($r->id); ?></td>
               <td>
                 <div class="fw-bold">
-                  @if($r->priority === 'urgent')
+                  <?php if($r->priority === 'urgent'): ?>
                     <i class="bi bi-exclamation-circle-fill text-danger me-1"></i>
-                  @endif
-                  {{ $r->title }}
+                  <?php endif; ?>
+                  <?php echo e($r->title); ?>
+
                 </div>
-                @if($r->description)
-                  <div class="text-muted small">{{ Str::limit($r->description, 60) }}</div>
-                @endif
+                <?php if($r->description): ?>
+                  <div class="text-muted small"><?php echo e(Str::limit($r->description, 60)); ?></div>
+                <?php endif; ?>
               </td>
               <td>
-                <span class="badge {{ $r->type === 'purchase' ? 'bg-primary' : 'bg-warning text-dark' }}">
-                  {{ $r->type_label }}
+                <span class="badge <?php echo e($r->type === 'purchase' ? 'bg-primary' : 'bg-warning text-dark'); ?>">
+                  <?php echo e($r->type_label); ?>
+
                 </span>
               </td>
               <td>
-                <span class="badge bg-{{ $r->priority_color }}">
-                  <i class="bi {{ $r->priority_icon }} me-1"></i>
-                  {{ $r->priority_label }}
+                <span class="badge bg-<?php echo e($r->priority_color); ?>">
+                  <i class="bi <?php echo e($r->priority_icon); ?> me-1"></i>
+                  <?php echo e($r->priority_label); ?>
+
                 </span>
               </td>
-              <td class="small">{{ $r->user->name ?? '-' }}</td>
-              <td class="small">{{ $r->branch->name ?? '-' }}</td>
-              <td class="small text-muted">{{ $r->asset->name ?? '—' }}</td>
+              <td class="small"><?php echo e($r->user->name ?? '-'); ?></td>
+              <td class="small"><?php echo e($r->branch->name ?? '-'); ?></td>
+              <td class="small text-muted"><?php echo e($r->asset->name ?? '—'); ?></td>
               <td class="text-center">
-                <span class="badge bg-{{ $r->status_color }}">{{ $r->status_label }}</span>
+                <span class="badge bg-<?php echo e($r->status_color); ?>"><?php echo e($r->status_label); ?></span>
               </td>
-              <td class="small text-muted">{{ $r->created_at->format('Y-m-d') }}</td>
+              <td class="small text-muted"><?php echo e($r->created_at->format('Y-m-d')); ?></td>
               <td class="text-end">
                 <div class="d-flex gap-1 justify-content-end flex-wrap">
 
-                  {{-- زر الطباعة --}}
-                  <a href="{{ route('asset-requests.print', $r) }}"
+                  
+                  <a href="<?php echo e(route('asset-requests.print', $r)); ?>"
                      class="btn btn-sm btn-outline-secondary rounded-pill"
                      target="_blank" title="طباعة">
                     <i class="bi bi-printer"></i>
                   </a>
 
-                  {{-- زر العرض --}}
-                  <a href="{{ route('asset-requests.show', $r) }}" class="btn btn-sm btn-outline-info rounded-pill"
+                  
+                  <a href="<?php echo e(route('asset-requests.show', $r)); ?>" class="btn btn-sm btn-outline-info rounded-pill"
                     title="عرض التفاصيل">
                     <i class="bi bi-eye"></i>
                   </a>
 
-                  {{-- زر التعديل --}}
-                  @if($r->status === 'pending' && ($r->user_id === auth()->id() || auth()->user()?->hasPermission('manage_assets')))
-                    <a href="{{ route('asset-requests.edit', $r) }}" class="btn btn-sm btn-outline-primary rounded-pill"
+                  
+                  <?php if($r->status === 'pending' && ($r->user_id === auth()->id() || auth()->user()?->hasPermission('manage_assets'))): ?>
+                    <a href="<?php echo e(route('asset-requests.edit', $r)); ?>" class="btn btn-sm btn-outline-primary rounded-pill"
                       title="تعديل الطلب">
                       <i class="bi bi-pencil"></i>
                     </a>
-                  @endif
+                  <?php endif; ?>
 
-                  {{-- ✅ قبول الطلب --}}
-                  @if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending')
-                    <form method="POST" action="{{ route('asset-requests.approve', $r) }}">
-                      @csrf
+                  
+                  <?php if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending'): ?>
+                    <form method="POST" action="<?php echo e(route('asset-requests.approve', $r)); ?>">
+                      <?php echo csrf_field(); ?>
                       <button class="btn btn-sm btn-success">
                         <i class="bi bi-check2-circle"></i> قبول
                       </button>
                     </form>
 
                     <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                      data-bs-target="#rejectModal{{ $r->id }}">
+                      data-bs-target="#rejectModal<?php echo e($r->id); ?>">
                       <i class="bi bi-x-circle"></i> رفض
                     </button>
-                  @endif
+                  <?php endif; ?>
 
-                  {{-- ✅ ترحيل إلى أصل — يظهر فقط للمقبول --}}
-                  @if($r->status === 'approved' && auth()->user()?->hasPermission('manage_assets'))
-                    <button class="btn btn-sm btn-namaa" data-bs-toggle="modal" data-bs-target="#transferModal{{ $r->id }}">
+                  
+                  <?php if($r->status === 'approved' && auth()->user()?->hasPermission('manage_assets')): ?>
+                    <button class="btn btn-sm btn-namaa" data-bs-toggle="modal" data-bs-target="#transferModal<?php echo e($r->id); ?>">
                       <i class="bi bi-box-arrow-in-down"></i> ترحيل
                     </button>
-                  @endif
+                  <?php endif; ?>
 
-                  {{-- ✅ حذف الطلب --}}
-                  @if(
+                  
+                  <?php if(
                       $r->status !== 'transferred' &&
                       (auth()->user()?->hasPermission('manage_assets') || $r->created_by === auth()->id() || $r->user_id === auth()->id())
-                    )
-                    <form method="POST" action="{{ route('asset-requests.destroy', $r) }}" class="d-inline"
+                    ): ?>
+                    <form method="POST" action="<?php echo e(route('asset-requests.destroy', $r)); ?>" class="d-inline"
                       onsubmit="return confirm('هل أنت متأكد من حذف هذا الطلب؟')">
-                      @csrf @method('DELETE')
+                      <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                       <button class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-trash"></i>
                       </button>
                     </form>
-                  @endif
+                  <?php endif; ?>
 
-                  {{-- ✅ ملاحظة الرفض --}}
-                  @if($r->status === 'rejected' && $r->manager_notes)
-                    <button class="btn btn-sm btn-outline-dark" data-bs-toggle="tooltip" title="{{ $r->manager_notes }}">
+                  
+                  <?php if($r->status === 'rejected' && $r->manager_notes): ?>
+                    <button class="btn btn-sm btn-outline-dark" data-bs-toggle="tooltip" title="<?php echo e($r->manager_notes); ?>">
                       <i class="bi bi-chat-text"></i>
                     </button>
-                  @endif
+                  <?php endif; ?>
 
-                  {{-- ✅ عرض الأصل بعد الترحيل --}}
-                  @if($r->status === 'transferred' && $r->transferred_to)
-                    <a href="{{ route('assets.show', $r->transferred_to) }}" class="btn btn-sm btn-outline-success">
+                  
+                  <?php if($r->status === 'transferred' && $r->transferred_to): ?>
+                    <a href="<?php echo e(route('assets.show', $r->transferred_to)); ?>" class="btn btn-sm btn-outline-success">
                       <i class="bi bi-box-seam"></i> عرض الأصل
                     </a>
-                  @endif
+                  <?php endif; ?>
 
                 </div>
               </td>
             </tr>
 
-            {{-- ✅ Modal الرفض --}}
-            @if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending')
-              <div class="modal fade" id="rejectModal{{ $r->id }}" tabindex="-1">
+            
+            <?php if(auth()->user()?->hasPermission('manage_assets') && $r->status === 'pending'): ?>
+              <div class="modal fade" id="rejectModal<?php echo e($r->id); ?>" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
-                    <form method="POST" action="{{ route('asset-requests.reject', $r) }}">
-                      @csrf
+                    <form method="POST" action="<?php echo e(route('asset-requests.reject', $r)); ?>">
+                      <?php echo csrf_field(); ?>
                       <div class="modal-header">
-                        <h6 class="modal-title fw-bold">رفض الطلب: {{ $r->title }}</h6>
+                        <h6 class="modal-title fw-bold">رفض الطلب: <?php echo e($r->title); ?></h6>
                         <button class="btn-close" data-bs-dismiss="modal"></button>
                       </div>
                       <div class="modal-body">
@@ -318,27 +328,28 @@
                   </div>
                 </div>
               </div>
-            @endif
+            <?php endif; ?>
 
-            {{-- ✅ Modal الترحيل --}}
-            @if($r->status === 'approved' && auth()->user()?->hasPermission('manage_assets'))
-              <div class="modal fade" id="transferModal{{ $r->id }}" tabindex="-1">
+            
+            <?php if($r->status === 'approved' && auth()->user()?->hasPermission('manage_assets')): ?>
+              <div class="modal fade" id="transferModal<?php echo e($r->id); ?>" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title fw-bold">
-                        <i class="bi bi-box-seam"></i> ترحيل إلى أصل — {{ $r->title }}
+                        <i class="bi bi-box-seam"></i> ترحيل إلى أصل — <?php echo e($r->title); ?>
+
                       </h5>
                       <button class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <form method="POST" action="{{ route('asset-requests.transfer', $r) }}">
-                      @csrf
+                    <form method="POST" action="<?php echo e(route('asset-requests.transfer', $r)); ?>">
+                      <?php echo csrf_field(); ?>
                       <div class="modal-body">
                         <div class="mb-3">
                           <label class="form-label fw-bold">
                             اسم الأصل <span class="text-danger">*</span>
                           </label>
-                          <input name="asset_name" class="form-control" value="{{ $r->title }}" required>
+                          <input name="asset_name" class="form-control" value="<?php echo e($r->title); ?>" required>
                         </div>
                         <div class="mb-3">
                           <label class="form-label fw-bold">الرقم التسلسلي</label>
@@ -379,22 +390,22 @@
                   </div>
                 </div>
               </div>
-            @endif
+            <?php endif; ?>
 
-          @empty
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <tr>
               <td colspan="10" class="text-center text-muted py-4">
                 <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                 لا توجد طلبات
               </td>
             </tr>
-          @endforelse
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="mt-3">{{ $requests->links() }}</div>
+  <div class="mt-3"><?php echo e($requests->links()); ?></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -403,4 +414,5 @@
     });
   </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\engya\Desktop\customers\namaa\laravel11-auth\resources\views/asset_requests/index.blade.php ENDPATH**/ ?>

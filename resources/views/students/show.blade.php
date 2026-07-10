@@ -199,6 +199,9 @@
         </div>
       </div>
       <div class="d-flex flex-wrap gap-2">
+         <a class="btn btn-outline-primary btn-pill" href="{{ route('students.index') }}">
+          <i class="bi bi-people"></i> إدارة الطلاب
+        </a>
         <a class="btn btn-outline-dark btn-pill" href="{{ route('students.edit', $student) }}">
           <i class="bi bi-pencil"></i> تعديل أساسي
         </a>
@@ -994,6 +997,23 @@
                         @if($trx->notes)
                           <div class="mt-2 small text-muted">{{ $trx->notes }}</div>
                         @endif
+                        {{-- ══ مرفقات: وصل الحوالة + هوية المرسل ══ --}}
+                        @if($trx->attachment_path || $trx->sender_identity_path)
+                          <div class="mt-2 d-flex flex-wrap gap-2">
+                            @if($trx->attachment_path)
+                              <a href="{{ asset('storage/' . $trx->attachment_path) }}" target="_blank"
+                                 class="badge-soft" style="text-decoration:none;">
+                                <i class="bi bi-receipt"></i> وصل الحوالة
+                              </a>
+                            @endif
+                            @if($trx->sender_identity_path)
+                              <a href="{{ asset('storage/' . $trx->sender_identity_path) }}" target="_blank"
+                                 class="badge-soft" style="text-decoration:none;">
+                                <i class="bi bi-person-vcard"></i> هوية المرسل
+                              </a>
+                            @endif
+                          </div>
+                        @endif
                       </div>
                       <div class="text-end">
                         <div class="fw-bold fs-5 {{ $trx->type == 'in' ? 'text-success' : 'text-warning' }}">
@@ -1026,7 +1046,7 @@
       <div class="row g-3">
         <div class="section-header"><i class="bi bi-plus-circle"></i> إضافة دفعة جديدة</div>
         <div class="p-3 p-md-4">
-          <form method="POST" action="{{ route('financial.pay') }}">
+          <form method="POST" action="{{ route('financial.pay') }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="financial_account_id" value="{{ $financial->id }}">
             <div class="row g-3">
@@ -1050,6 +1070,25 @@
                 <label class="fw-bold mb-1">المبلغ</label>
                 <input type="number" step="0.01" name="amount" class="form-control" required>
               </div>
+
+              {{-- ══ وصل الحوالة + هوية المرسل (اختياري) ══ --}}
+              <div class="col-md-6">
+                <label class="fw-bold mb-1">
+                  <i class="bi bi-receipt"></i> وصل الحوالة
+                  <span class="text-muted fw-normal small">(اختياري — صورة أو PDF)</span>
+                </label>
+                <input type="file" name="transfer_receipt" class="form-control"
+                       accept=".jpg,.jpeg,.png,.pdf">
+              </div>
+              <div class="col-md-6">
+                <label class="fw-bold mb-1">
+                  <i class="bi bi-person-vcard"></i> هوية المرسل
+                  <span class="text-muted fw-normal small">(اختياري — صورة أو PDF)</span>
+                </label>
+                <input type="file" name="sender_identity" class="form-control"
+                       accept=".jpg,.jpeg,.png,.pdf">
+              </div>
+
               <div class="col-12 text-end">
                 <button class="btn btn-namaa btn-pill">
                   <i class="bi bi-check2-circle"></i> تسجيل دفعة
