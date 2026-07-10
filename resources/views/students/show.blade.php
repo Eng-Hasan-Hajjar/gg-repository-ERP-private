@@ -217,6 +217,118 @@
     </div>
   </div>
 
+
+
+
+  {{-- ══════════════════════════════════════════
+     مؤشر عدد الدبلومات — بارز وواضح
+══════════════════════════════════════════ --}}
+<style>
+  .diploma-count-hero {
+    background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 55%, #8b5cf6 100%);
+    border-radius: 20px;
+    padding: 20px 26px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 20px 50px rgba(99, 102, 241, .25);
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .diploma-count-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -10%;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(255,255,255,.15), transparent 70%);
+    border-radius: 50%;
+  }
+  .dch-icon {
+    width: 62px; height: 62px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .dch-number {
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1;
+    position: relative;
+  }
+  .dch-label {
+    font-size: 13px;
+    font-weight: 700;
+    opacity: .9;
+    margin-top: 2px;
+    position: relative;
+  }
+  .dch-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-right: auto;
+    position: relative;
+  }
+  .dch-chip {
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dch-chip .primary-star { color: #fde047; }
+  .dch-empty {
+    font-size: 13px;
+    font-weight: 700;
+    opacity: .9;
+    position: relative;
+  }
+  @media(max-width:767px) {
+    .diploma-count-hero { flex-direction: column; align-items: flex-start; }
+    .dch-list { margin-right: 0; }
+  }
+</style>
+
+
+
+<div class="diploma-count-hero">
+  <div class="dch-icon"><i class="bi bi-mortarboard-fill"></i></div>
+  <div>
+    <div class="dch-number">{{ $student->diplomas->count() }}</div>
+<div class="dch-label">{{ $student->diplomas->count() === 1 ? 'دبلومة مسجّل بها' : 'دبلومات مسجّل بها' }}</div>  </div>
+
+  @if($student->diplomas->count() > 0)
+    <div class="dch-list">
+      @foreach($student->diplomas as $d)
+        <span class="dch-chip">
+          @if($d->pivot->is_primary)
+            <i class="bi bi-star-fill primary-star"></i>
+          @endif
+          {{ $d->name }}
+          <span class="opacity-75">({{ $d->code }})</span>
+        </span>
+      @endforeach
+    </div>
+  @else
+    <div class="dch-empty ms-auto">
+      <i class="bi bi-exclamation-triangle"></i> لم يتم تسجيل الطالب بأي دبلومة بعد
+    </div>
+  @endif
+</div>
+
+
+
+
+
   <div class="row g-3">
 
     {{-- ══ البيانات الأساسية ══ --}}
@@ -350,56 +462,297 @@
             <div class="col-12 mt-3">
               <div class="section-header"><i class="bi bi-mortarboard"></i> تفاصيل الدبلومات</div>
             </div>
-            @foreach($student->diplomas as $d)
-              <div class="col-12">
-                <div class="glass-card mb-3 p-3">
-                  <h6 class="fw-bold mb-2">{{ $d->name }}</h6>
-                  <div class="kv"><div class="k">الحالة</div><div class="v">{{ $d->pivot->status_ar }}</div></div>
-                  <div class="kv"><div class="k">تاريخ الانتهاء</div><div class="v">{{ $d->pivot->ended_at ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">تسليم الشهادة كرتون</div><div class="v">{{ $d->pivot->certificate_delivered ? 'نعم' : 'لا' }}</div></div>
-                  <div class="kv">
-                    <div class="k">شهادة الحضور</div>
-                    <div class="v">
-                      @if($d->pivot->attendance_certificate_path)
-                        <a target="_blank" href="{{ asset('storage/' . $d->pivot->attendance_certificate_path) }}">فتح الملف</a>
-                      @else غير موجودة @endif
-                    </div>
-                  </div>
-                  <div class="kv">
-                    <div class="k">الشهادة PDF</div>
-                    <div class="v">
-                      @if($d->pivot->certificate_pdf_path)
-                        <a target="_blank" href="{{ asset('storage/' . $d->pivot->certificate_pdf_path) }}">فتح الملف</a>
-                      @else غير موجودة @endif
-                    </div>
-                  </div>
-                  <div class="kv">
-                    <div class="k">كرت الشهادة</div>
-                    <div class="v">
-                      @if($d->pivot->certificate_card_path)
-                        <a target="_blank" href="{{ asset('storage/' . $d->pivot->certificate_card_path) }}">فتح الملف</a>
-                      @else غير موجود @endif
-                    </div>
-                  </div>
-                  <div class="kv"><div class="k">ملاحظات</div><div class="v">{{ $d->pivot->notes ?? '-' }}</div></div>
-                </div>
-              </div>
-            @endforeach
+         {{-- ══════════════════════════════════════════
+     تفاصيل الدبلومات — النسخة المحدثة
+══════════════════════════════════════════ --}}
+<style>
+  .diploma-detail-card {
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(226,232,240,.95);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 10px 30px rgba(2,6,23,.05);
+  }
+  .ddc-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #eff6ff 0%, #fff 100%);
+    border-bottom: 1px solid rgba(226,232,240,.95);
+    flex-wrap: wrap;
+  }
+  .ddc-header h6 {
+    margin: 0;
+    font-weight: 900;
+    color: #0f172a;
+    font-size: 15px;
+  }
+  .ddc-code-badge {
+    font-size: 11px;
+    font-weight: 800;
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 2px 9px;
+    border-radius: 6px;
+  }
+  .ddc-status-badge {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-right: auto;
+  }
+  .status-active   { background: #d1fae5; color: #065f46; }
+  .status-waiting  { background: #fef3c7; color: #92400e; }
+  .status-withdrawn,
+  .status-dismissed,
+  .status-frozen   { background: #f1f5f9; color: #475569; }
+  .status-failed,
+  .status-absent_exam { background: #fee2e2; color: #991b1b; }
+  .status-certificate_delivered { background: #dbeafe; color: #1e40af; }
+  .status-certificate_waiting   { background: #e0f2fe; color: #075985; }
+  .status-registration_ended    { background: #f1f5f9; color: #475569; }
 
-            <div class="col-12">
-              <div class="glass-card">
-                <div class="p-3">
-                  <h6 class="fw-bold mb-2">ملاحظات ورسالة</h6>
-                  <div class="kv"><div class="k">ملاحظات</div><div class="v">{{ $p->notes ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">رسالة لاحقة للطالب</div><div class="v">{{ $p->message_to_send ?? '-' }}</div></div>
+  .ddc-body { padding: 16px 18px; }
+
+  .ddc-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+  .ddc-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .ddc-meta-label { font-size: 11px; color: #94a3b8; font-weight: 700; }
+  .ddc-meta-value { font-size: 13.5px; color: #0f172a; font-weight: 800; }
+
+  .lang-level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  /* ── الشهادات ── */
+  .certs-wrap {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 10px;
+  }
+  .certs-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .cert-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+  }
+  .cert-item:last-child { margin-bottom: 0; }
+  .cert-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: #d1fae5;
+    color: #059669;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .cert-program { font-size: 13px; font-weight: 800; color: #0f172a; }
+  .cert-sub { font-size: 11px; color: #94a3b8; }
+  .no-certs-note {
+    font-size: 12.5px;
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  /* ── الملفات ── */
+  .ddc-files {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .ddc-file-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .ddc-file-btn:hover { background: #f1f5f9; color: #1e293b; }
+  .ddc-file-btn.missing { opacity: .45; pointer-events: none; }
+</style>
+
+<div class="col-12 mt-3">
+  <div class="section-header"><i class="bi bi-mortarboard"></i> تفاصيل الدبلومات</div>
+</div>
+
+<div class="col-12">
+  @php
+    $statusLabelsMap = [
+      'active'                 => 'مستمر في الدراسة',
+      'waiting'                => 'قيد الانتظار',
+      'withdrawn'              => 'منسحب',
+      'failed'                 => 'راسب',
+      'absent_exam'            => 'لم يتقدّم للامتحان',
+      'certificate_delivered'  => 'تم تسليم الشهادة',
+      'certificate_waiting'    => 'بانتظار الشهادة',
+      'registration_ended'     => 'انتهى التسجيل',
+      'dismissed'              => 'فُصل الطالب',
+      'frozen'                 => 'تم تجميد القيد الدراسي',
+    ];
+  @endphp
+
+          @forelse($student->diplomas as $d)
+            <div class="diploma-detail-card">
+
+              {{-- رأس الكارد --}}
+              <div class="ddc-header">
+                <i class="bi bi-mortarboard-fill" style="color:#2563eb;font-size:18px;"></i>
+                <h6>{{ $d->name }}</h6>
+                <span class="ddc-code-badge">{{ $d->code }}</span>
+                @if($d->pivot->is_primary)
+                  <span class="ddc-code-badge" style="background:#fef3c7;color:#92400e;">
+                    <i class="bi bi-star-fill"></i> رئيسية
+                  </span>
+                @endif
+                <span class="ddc-status-badge status-{{ $d->pivot->status }}">
+                  {{ $statusLabelsMap[$d->pivot->status] ?? $d->pivot->status }}
+                </span>
+              </div>
+
+              <div class="ddc-body">
+
+                {{-- الصف العلوي: معلومات سريعة --}}
+                <div class="ddc-meta-row">
+                  <div class="ddc-meta-item">
+                    <span class="ddc-meta-label">تاريخ التسجيل</span>
+                    <span class="ddc-meta-value">{{ $d->pivot->enrolled_at ?? '-' }}</span>
+                  </div>
+
+                  <div class="ddc-meta-item">
+                    <span class="ddc-meta-label">تاريخ الانتهاء</span>
+                    <span class="ddc-meta-value">{{ $d->pivot->ended_at ?? '-' }}</span>
+                  </div>
+
+                  <div class="ddc-meta-item">
+                    <span class="ddc-meta-label">النوع</span>
+                    <span class="ddc-meta-value">
+                      <i class="bi bi-{{ $d->type === 'online' ? 'wifi' : 'geo-alt' }}"></i>
+                      {{ $d->type === 'online' ? 'أونلاين' : 'حضوري' }}
+                    </span>
+                  </div>
+
+                  @if(!empty($d->pivot->language_level))
+                    <div class="ddc-meta-item">
+                      <span class="ddc-meta-label">مستوى اللغة</span>
+                      <span class="lang-level-badge">
+                        <i class="bi bi-translate"></i> {{ $d->pivot->language_level }}
+                      </span>
+                    </div>
+                  @endif
+
+                  <div class="ddc-meta-item">
+                    <span class="ddc-meta-label">تسليم الشهادة</span>
+                    <span class="ddc-meta-value">
+                      @if($d->pivot->certificate_delivered)
+                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> تم التسليم</span>
+                      @else
+                        <span class="text-muted"><i class="bi bi-clock"></i> لم يتم بعد</span>
+                      @endif
+                    </span>
+                  </div>
+                </div>
+
+              @if(!empty($d->pivot->certificate_agreement))
+                  <div class="ddc-meta-item mt-2">
+                    <span class="ddc-meta-label">اتفاق الشهادة</span>
+                    <span class="lang-level-badge" style="background:linear-gradient(135deg,#10b981,#059669);">
+                      <i class="bi bi-patch-check-fill"></i> {{ $d->pivot->certificate_agreement }}
+                    </span>
+                  </div>
+                @endif
+                {{-- ملاحظات الدبلومة --}}
+                @if(!empty($d->pivot->notes))
+                  <div class="mt-3">
+                    <div class="ddc-meta-label mb-1">ملاحظات</div>
+                    <div class="ddc-meta-value" style="font-weight:600;">{{ $d->pivot->notes }}</div>
+                  </div>
+                @endif
+
+                {{-- ملفات الدبلومة --}}
+                <div class="ddc-files">
+                  @php
+                    $diplomaFiles = [
+                      ['path' => $d->pivot->attendance_certificate_path, 'label' => 'شهادة الحضور', 'icon' => 'bi-file-earmark-check'],
+                      ['path' => $d->pivot->certificate_pdf_path,        'label' => 'الشهادة PDF',   'icon' => 'bi-file-earmark-pdf'],
+                      ['path' => $d->pivot->certificate_card_path,       'label' => 'كرت الشهادة',   'icon' => 'bi-file-earmark-image'],
+                    ];
+                  @endphp
+                  @foreach($diplomaFiles as $file)
+                    @if(!empty($file['path']))
+                      <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" class="ddc-file-btn">
+                        <i class="bi {{ $file['icon'] }}"></i> {{ $file['label'] }}
+                      </a>
+                    @else
+                      <span class="ddc-file-btn missing">
+                        <i class="bi {{ $file['icon'] }}"></i> {{ $file['label'] }} (غير موجود)
+                      </span>
+                    @endif
+                  @endforeach
+                </div>
+
+              </div>
+            </div>
+          @empty
+            <div class="glass-card p-4 text-center text-muted">
+              <i class="bi bi-mortarboard fs-2 d-block mb-2 opacity-50"></i>
+              لا توجد دبلومات مسجّلة لهذا الطالب
+            </div>
+          @endforelse
+        </div>
+
+
+          @if($p)
+              <div class="col-12">
+                <div class="glass-card">
+                  <div class="p-3">
+                    <h6 class="fw-bold mb-2">ملاحظات ورسالة</h6>
+                    <div class="kv"><div class="k">ملاحظات</div><div class="v">{{ $p->notes ?? '-' }}</div></div>
+                    <div class="kv"><div class="k">رسالة لاحقة للطالب</div><div class="v">{{ $p->message_to_send ?? '-' }}</div></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        @endif
+          @endif
       </div>
     </div>
-
+@endif
     {{-- ══ العلامات الامتحانية ══ --}}
     <div class="section-header"><i class="bi bi-journal-check"></i> العلامات الامتحانية</div>
     <div class="row g-3">

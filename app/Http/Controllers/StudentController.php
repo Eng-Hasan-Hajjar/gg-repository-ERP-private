@@ -432,7 +432,8 @@ public function index(Request $request)
         ]);
     }
 
-*/    public function create()
+*/  
+  public function create()  
     {
         $labels = $this->studentArabicLabels();
         $user = auth()->user();
@@ -510,6 +511,8 @@ public function index(Request $request)
         $data['certificate_agreement'] = $request->certificate_agreement ?? null;
 
 
+
+        
         $student = DB::transaction(function () use ($data, $request) {
 
             $student = Student::create($data);
@@ -593,6 +596,8 @@ public function index(Request $request)
             return $student;
         });
 
+
+        
         return redirect()->route('students.show', $student)->with('success', 'تم إنشاء الطالب مع التفاصيل بنجاح.');
     }
 
@@ -602,7 +607,7 @@ public function index(Request $request)
     public function show(Student $student)
     {
         $student->load(['branch', 'diplomas', 'profile', 'crmInfo']);
-
+//$student->load(['branch', 'diplomas.branch', 'profile', 'crmInfo.creator', 'diplomaCertificates']);
         $results = \App\Models\ExamResult::with(['exam.diploma'])
             ->where('student_id', $student->id)
             ->get();
