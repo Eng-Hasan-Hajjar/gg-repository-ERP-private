@@ -1,9 +1,8 @@
 
-<?php($activeModule = 'students')
 
-@section('title', 'ملف الطالب')
+<?php $__env->startSection('title', 'ملف الطالب'); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
   <style>
     :root {
       --namaa-blue: #0ea5e9;
@@ -135,84 +134,84 @@
       .page-head { padding: 14px; }
     }
   </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
-  @if(session('currency_error'))
+<?php $__env->startPush('scripts'); ?>
+  <?php if(session('currency_error')): ?>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         Swal.fire({
           icon: 'error',
           title: 'اختلاف العملة',
           html: `لا يمكن تسجيل الدفعة لأن عملة الصندوق لا تطابق عملة خطة الدفع.<br><br>
-                 <b>عملة الخطة هي: {{ session('currency_error') }}</b>`,
+                 <b>عملة الخطة هي: <?php echo e(session('currency_error')); ?></b>`,
           confirmButtonText: 'حسناً',
           confirmButtonColor: '#3085d6'
         });
       });
     </script>
-  @endif
-@endpush
+  <?php endif; ?>
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-  {{-- ══ رأس الصفحة ══ --}}
+  
   <div class="page-head mb-3">
     <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
       <div class="flex-grow-1">
         <div class="d-flex align-items-center gap-3">
           <div class="avatar">
-            @if(!empty($files['photo']['exists']) && $files['photo']['exists'])
-              <img src="{{ $files['photo']['url'] }}" alt="photo">
-            @else
+            <?php if(!empty($files['photo']['exists']) && $files['photo']['exists']): ?>
+              <img src="<?php echo e($files['photo']['url']); ?>" alt="photo">
+            <?php else: ?>
               <i class="bi bi-person fs-2 text-muted"></i>
-            @endif
+            <?php endif; ?>
           </div>
           <div class="flex-grow-1">
-            <h4 class="page-title">{{ $student->full_name }}</h4>
+            <h4 class="page-title"><?php echo e($student->full_name); ?></h4>
             <div class="meta-line small">
-              رقم جامعي: <code>{{ $student->university_id }}</code>
+              رقم جامعي: <code><?php echo e($student->university_id); ?></code>
               <span class="mx-2">—</span>
-              الفرع: <b>{{ $student->branch->name ?? '-' }}</b>
+              الفرع: <b><?php echo e($student->branch->name ?? '-'); ?></b>
             </div>
             <div class="mt-2 d-flex flex-wrap gap-2">
-              @if($student->is_confirmed)
+              <?php if($student->is_confirmed): ?>
                 <span class="badge-soft success">
                   <i class="bi bi-check2-circle"></i> مثبّت
-                  <span class="text-muted fw-bold">({{ optional($student->confirmed_at)->format('Y-m-d H:i') }})</span>
+                  <span class="text-muted fw-bold">(<?php echo e(optional($student->confirmed_at)->format('Y-m-d H:i')); ?>)</span>
                 </span>
-              @else
+              <?php else: ?>
                 <span class="badge-soft gray"><i class="bi bi-hourglass-split"></i> غير مثبّت</span>
-              @endif
-              <span class="badge-soft"><i class="bi bi-diagram-3"></i> دبلومات: {{ $student->diplomas->count() }}</span>
-              <span class="badge-soft warn"><i class="bi bi-info-circle"></i> الحالة: {{ $status_ar }}</span>
-              <span class="badge-soft"><i class="bi bi-shield-check"></i> التسجيل: {{ $registration_ar ?? '-' }}</span>
+              <?php endif; ?>
+              <span class="badge-soft"><i class="bi bi-diagram-3"></i> دبلومات: <?php echo e($student->diplomas->count()); ?></span>
+              <span class="badge-soft warn"><i class="bi bi-info-circle"></i> الحالة: <?php echo e($status_ar); ?></span>
+              <span class="badge-soft"><i class="bi bi-shield-check"></i> التسجيل: <?php echo e($registration_ar ?? '-'); ?></span>
             </div>
             <div class="mt-2">
               <b>الدبلومات:</b>
-              @forelse($student->diplomas as $d)
-                <span class="badge bg-light text-dark border">{{ $d->name }} ({{ $d->code }})</span>
-              @empty
+              <?php $__empty_1 = true; $__currentLoopData = $student->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <span class="badge bg-light text-dark border"><?php echo e($d->name); ?> (<?php echo e($d->code); ?>)</span>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <span class="text-muted">لا يوجد دبلومات</span>
-              @endforelse
+              <?php endif; ?>
             </div>
           </div>
         </div>
       </div>
       <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-outline-dark btn-pill" href="{{ route('students.edit', $student) }}">
+        <a class="btn btn-outline-dark btn-pill" href="<?php echo e(route('students.edit', $student)); ?>">
           <i class="bi bi-pencil"></i> تعديل أساسي
         </a>
-        @if($student->is_confirmed)
-          <a class="btn btn-namaa btn-pill" href="{{ route('students.profile.edit', $student) }}">
+        <?php if($student->is_confirmed): ?>
+          <a class="btn btn-namaa btn-pill" href="<?php echo e(route('students.profile.edit', $student)); ?>">
             <i class="bi bi-person-vcard"></i> الملف التفصيلي
           </a>
-        @endif
-        @if($waLink)
-          <a class="btn btn-success btn-pill" target="_blank" href="{{ $waLink }}">
+        <?php endif; ?>
+        <?php if($waLink): ?>
+          <a class="btn btn-success btn-pill" target="_blank" href="<?php echo e($waLink); ?>">
             <i class="bi bi-whatsapp"></i> واتساب الطالب
           </a>
-        @endif
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -220,9 +219,7 @@
 
 
 
-  {{-- ══════════════════════════════════════════
-     مؤشر عدد الدبلومات — بارز وواضح
-══════════════════════════════════════════ --}}
+  
 <style>
   .diploma-count-hero {
     background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 55%, #8b5cf6 100%);
@@ -303,26 +300,27 @@
 <div class="diploma-count-hero">
   <div class="dch-icon"><i class="bi bi-mortarboard-fill"></i></div>
   <div>
-    <div class="dch-number">{{ $student->diplomas->count() }}</div>
-<div class="dch-label">{{ $student->diplomas->count() === 1 ? 'دبلومة مسجّل بها' : 'دبلومات مسجّل بها' }}</div>  </div>
+    <div class="dch-number"><?php echo e($student->diplomas->count()); ?></div>
+<div class="dch-label"><?php echo e($student->diplomas->count() === 1 ? 'دبلومة مسجّل بها' : 'دبلومات مسجّل بها'); ?></div>  </div>
 
-  @if($student->diplomas->count() > 0)
+  <?php if($student->diplomas->count() > 0): ?>
     <div class="dch-list">
-      @foreach($student->diplomas as $d)
+      <?php $__currentLoopData = $student->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <span class="dch-chip">
-          @if($d->pivot->is_primary)
+          <?php if($d->pivot->is_primary): ?>
             <i class="bi bi-star-fill primary-star"></i>
-          @endif
-          {{ $d->name }}
-          <span class="opacity-75">({{ $d->code }})</span>
+          <?php endif; ?>
+          <?php echo e($d->name); ?>
+
+          <span class="opacity-75">(<?php echo e($d->code); ?>)</span>
         </span>
-      @endforeach
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
-  @else
+  <?php else: ?>
     <div class="dch-empty ms-auto">
       <i class="bi bi-exclamation-triangle"></i> لم يتم تسجيل الطالب بأي دبلومة بعد
     </div>
-  @endif
+  <?php endif; ?>
 </div>
 
 
@@ -331,88 +329,89 @@
 
   <div class="row g-3">
 
-    {{-- ══ البيانات الأساسية ══ --}}
+    
     <div class="col-12 col-lg-6">
       <div class="glass-card h-100">
         <div class="section-header"><i class="bi bi-person-vcard"></i> البيانات الأساسية</div>
         <div class="p-3 p-md-4">
-          <div class="kv"><div class="k">الاسم</div><div class="v">{{ $student->first_name ?? '-' }}</div></div>
-          <div class="kv"><div class="k">الكنية</div><div class="v">{{ $student->last_name ?? '-' }}</div></div>
-          <div class="kv"><div class="k">الاسم والكنية</div><div class="v">{{ $student->full_name ?? '-' }}</div></div>
-          <div class="kv"><div class="k">الهاتف</div><div class="v">{{ $student->phone ?? '-' }}</div></div>
+          <div class="kv"><div class="k">الاسم</div><div class="v"><?php echo e($student->first_name ?? '-'); ?></div></div>
+          <div class="kv"><div class="k">الكنية</div><div class="v"><?php echo e($student->last_name ?? '-'); ?></div></div>
+          <div class="kv"><div class="k">الاسم والكنية</div><div class="v"><?php echo e($student->full_name ?? '-'); ?></div></div>
+          <div class="kv"><div class="k">الهاتف</div><div class="v"><?php echo e($student->phone ?? '-'); ?></div></div>
           <div class="kv">
             <div class="k">واتساب</div>
             <div class="v">
-              @if($waLink)
-                <a class="fw-bold" target="_blank" href="{{ $waLink }}">
-                  <i class="bi bi-whatsapp"></i> {{ $student->whatsapp }}
+              <?php if($waLink): ?>
+                <a class="fw-bold" target="_blank" href="<?php echo e($waLink); ?>">
+                  <i class="bi bi-whatsapp"></i> <?php echo e($student->whatsapp); ?>
+
                 </a>
-              @else -
-              @endif
+              <?php else: ?> -
+              <?php endif; ?>
             </div>
           </div>
-          <div class="kv"><div class="k">الفرع</div><div class="v">{{ $student->branch->name ?? '-' }}</div></div>
-          <div class="kv" hidden><div class="k">نوع الطالب</div><div class="v">{{ $mode_ar ?? '-' }}</div></div>
-          <div class="kv"><div class="k">حالة الطالب</div><div class="v">{{ $status_ar ?? '-' }}</div></div>
-          <div class="kv"><div class="k">حالة التسجيل</div><div class="v">{{ $registration_ar ?? '-' }}</div></div>
-          <div class="kv"><div class="k">الرقم الجامعي</div><div class="v"><code>{{ $student->university_id }}</code></div></div>
+          <div class="kv"><div class="k">الفرع</div><div class="v"><?php echo e($student->branch->name ?? '-'); ?></div></div>
+          <div class="kv" hidden><div class="k">نوع الطالب</div><div class="v"><?php echo e($mode_ar ?? '-'); ?></div></div>
+          <div class="kv"><div class="k">حالة الطالب</div><div class="v"><?php echo e($status_ar ?? '-'); ?></div></div>
+          <div class="kv"><div class="k">حالة التسجيل</div><div class="v"><?php echo e($registration_ar ?? '-'); ?></div></div>
+          <div class="kv"><div class="k">الرقم الجامعي</div><div class="v"><code><?php echo e($student->university_id); ?></code></div></div>
           <div class="kv">
             <div class="k">اتفاق الشهادة الممنوحة</div>
-            <div class="v">{{ $student->certificate_agreement ?? 'لا يوجد' }}</div>
+            <div class="v"><?php echo e($student->certificate_agreement ?? 'لا يوجد'); ?></div>
           </div>
         
         </div>
       </div>
     </div>
 
-    {{-- ══ CRM ══ --}}
+    
     <div class="col-12 col-lg-6">
       <div class="glass-card h-100">
         <div class="section-header"><i class="bi bi-headset"></i> بيانات CRM</div>
         <div class="p-3 p-md-4">
-          @if(!$student->crmInfo)
+          <?php if(!$student->crmInfo): ?>
             <div class="alert alert-info mb-0 fw-semibold">
               <i class="bi bi-info-circle"></i> لا يوجد بيانات CRM لهذا الطالب.
             </div>
-          @else
-            <div class="kv"><div class="k">تاريخ أول تواصل</div><div class="v">{{ $student->crmInfo->first_contact_date?->format('Y-m-d') ?? '-' }}</div></div>
-            <div class="kv"><div class="k">السكن</div><div class="v">{{ $student->crmInfo->residence ?? '-' }}</div></div>
-            <div class="kv"><div class="k">العمر</div><div class="v">{{ $student->crmInfo->age ?? '-' }}</div></div>
-            <div class="kv"><div class="k">الجهة/المؤسسة</div><div class="v">{{ $student->crmInfo->organization ?? '-' }}</div></div>
-            <div class="kv"><div class="k">المصدر</div><div class="v">{{ $crm_source_ar ?? '-' }}</div></div>
-            <div class="kv"><div class="k">المرحلة</div><div class="v">{{ $crm_stage_ar ?? '-' }}</div></div>
-            <div class="kv"><div class="k">الإيميل</div><div class="v">{{ $student->crmInfo->email ?? '-' }}</div></div>
-            <div class="kv"><div class="k">العمل</div><div class="v">{{ $student->crmInfo->job ?? '-' }}</div></div>
-            <div class="kv"><div class="k">البلد</div><div class="v">{{ $student->crmInfo->country ?? '-' }}</div></div>
-            <div class="kv"><div class="k">المحافظة</div><div class="v">{{ $student->crmInfo->province ?? '-' }}</div></div>
-            <div class="kv"><div class="k">الدراسة</div><div class="v">{{ $student->crmInfo->study ?? '-' }}</div></div>
-            <div class="kv"><div class="k">مسؤول التواصل</div><div class="v">{{ $student->crmInfo->creator->name ?? $student->crmInfo->creator->email ?? '-' }}</div></div>
-            <div class="kv"><div class="k">الاحتياج</div><div class="v">{{ $student->crmInfo->need ?? '-' }}</div></div>
-            <div class="kv"><div class="k">ملاحظات CRM</div><div class="v">{{ $student->crmInfo->notes ?? '-' }}</div></div>
-            <div class="kv"><div class="k">تاريخ التحويل</div><div class="v">{{ $student->crmInfo->converted_at?->format('Y-m-d H:i') ?? '-' }}</div></div>
-          @endif
+          <?php else: ?>
+            <div class="kv"><div class="k">تاريخ أول تواصل</div><div class="v"><?php echo e($student->crmInfo->first_contact_date?->format('Y-m-d') ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">السكن</div><div class="v"><?php echo e($student->crmInfo->residence ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">العمر</div><div class="v"><?php echo e($student->crmInfo->age ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">الجهة/المؤسسة</div><div class="v"><?php echo e($student->crmInfo->organization ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">المصدر</div><div class="v"><?php echo e($crm_source_ar ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">المرحلة</div><div class="v"><?php echo e($crm_stage_ar ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">الإيميل</div><div class="v"><?php echo e($student->crmInfo->email ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">العمل</div><div class="v"><?php echo e($student->crmInfo->job ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">البلد</div><div class="v"><?php echo e($student->crmInfo->country ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">المحافظة</div><div class="v"><?php echo e($student->crmInfo->province ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">الدراسة</div><div class="v"><?php echo e($student->crmInfo->study ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">مسؤول التواصل</div><div class="v"><?php echo e($student->crmInfo->creator->name ?? $student->crmInfo->creator->email ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">الاحتياج</div><div class="v"><?php echo e($student->crmInfo->need ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">ملاحظات CRM</div><div class="v"><?php echo e($student->crmInfo->notes ?? '-'); ?></div></div>
+            <div class="kv"><div class="k">تاريخ التحويل</div><div class="v"><?php echo e($student->crmInfo->converted_at?->format('Y-m-d H:i') ?? '-'); ?></div></div>
+          <?php endif; ?>
         </div>
       </div>
     </div>
 
-    {{-- ══ الملف التفصيلي ══ --}}
+    
     <div class="col-12">
       <div class="glass-card">
         <div class="section-header"><i class="bi bi-file-earmark-person"></i> الملف التفصيلي</div>
-        @if(!$p)
+        <?php if(!$p): ?>
           <div class="alert alert-warning m-3 fw-semibold">
             <i class="bi bi-exclamation-triangle"></i> لا يوجد ملف تفصيلي لهذا الطالب بعد.
           </div>
-        @else
+        <?php else: ?>
           <div class="row g-3 p-3">
             <div class="col-12 col-lg-6">
               <div class="glass-card h-100">
                 <div class="p-3">
                   <h6 class="fw-bold">بيانات شخصية</h6>
-                  <div class="kv"><div class="k">الاسم بالعربي</div><div class="v">{{ $p->arabic_full_name ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">الجنسية</div><div class="v">{{ $p->nationality ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">تاريخ التولد</div><div class="v">{{ $p->birth_date?->format('Y-m-d') ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">الرقم الوطني</div><div class="v">{{ $p->national_id ?? '-' }}</div></div>
+                  <div class="kv"><div class="k">الاسم بالعربي</div><div class="v"><?php echo e($p->arabic_full_name ?? '-'); ?></div></div>
+                  <div class="kv"><div class="k">الجنسية</div><div class="v"><?php echo e($p->nationality ?? '-'); ?></div></div>
+                  <div class="kv"><div class="k">تاريخ التولد</div><div class="v"><?php echo e($p->birth_date?->format('Y-m-d') ?? '-'); ?></div></div>
+                  <div class="kv"><div class="k">الرقم الوطني</div><div class="v"><?php echo e($p->national_id ?? '-'); ?></div></div>
                 </div>
               </div>
             </div>
@@ -420,51 +419,43 @@
               <div class="glass-card h-100">
                 <div class="p-3">
                   <h6 class="fw-bold">معلومات إضافية</h6>
-                  <div class="kv"><div class="k">مستوى اللغة</div><div class="v">{{ $p->level ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">ستاج/مرحلة بالولاية</div><div class="v">{{ $p->stage_in_state ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">المستوى التعليمي</div><div class="v">{{ $p->education_level ?? '-' }}</div></div>
-                  <div class="kv"><div class="k">العلامة الامتحانية</div><div class="v">{{ $p->exam_score ?? '-' }}</div></div>
+                  <div class="kv"><div class="k">مستوى اللغة</div><div class="v"><?php echo e($p->level ?? '-'); ?></div></div>
+                  <div class="kv"><div class="k">ستاج/مرحلة بالولاية</div><div class="v"><?php echo e($p->stage_in_state ?? '-'); ?></div></div>
+                  <div class="kv"><div class="k">المستوى التعليمي</div><div class="v"><?php echo e($p->education_level ?? '-'); ?></div></div>
+                  <div class="kv"><div class="k">العلامة الامتحانية</div><div class="v"><?php echo e($p->exam_score ?? '-'); ?></div></div>
                 </div>
               </div>
             </div>
 
-            {{-- الوثائق --}}
+            
             <div class="col-12">
               <div class="glass-card">
                 <div class="section-header"><i class="bi bi-mortarboard"></i> الوثائق والملفات</div>
                 <div class="row g-2 p-3">
-                  @foreach([
-                    ['info',             'ملف المعلومات',   'btn-outline-primary',  'bi-file-earmark-text'],
-                    ] as [$key, $label, $btnClass, $icon])
+                  <?php $__currentLoopData = $profileDocuments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-12 col-md-4">
                       <div class="kv">
-                        <div class="k">{{ $label }}</div>
+                        <div class="k"><?php echo e($doc['label']); ?></div>
                         <div class="v">
-                          @if(!empty($files[$key]['exists']) && $files[$key]['exists'])
+                          <?php if(!empty($files[$doc['key']]['exists']) && $files[$doc['key']]['exists']): ?>
                             <span class="badge-soft success"><i class="bi bi-check2-circle"></i> موجود</span>
                             <div class="mt-2">
-                              <a class="btn {{ $btnClass }} btn-sm" target="_blank" href="{{ $files[$key]['url'] }}">
-                                <i class="bi {{ $icon }}"></i> فتح
+                              <a class="btn <?php echo e($doc['btnClass']); ?> btn-sm" target="_blank" href="<?php echo e($files[$doc['key']]['url']); ?>">
+                                <i class="bi <?php echo e($doc['icon']); ?>"></i> فتح
                               </a>
                             </div>
-                          @else
+                          <?php else: ?>
                             <span class="badge-soft gray"><i class="bi bi-x-circle"></i> غير موجود</span>
-                          @endif
+                          <?php endif; ?>
                         </div>
                       </div>
                     </div>
-                  @endforeach
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
               </div>
             </div>
 
-            {{-- تفاصيل الدبلومات --}}
-            <div class="col-12 mt-3">
-              <div class="section-header"><i class="bi bi-mortarboard"></i> تفاصيل الدبلومات</div>
-            </div>
-         {{-- ══════════════════════════════════════════
-     تفاصيل الدبلومات — النسخة المحدثة
-══════════════════════════════════════════ --}}
+         
 <style>
   .diploma-detail-card {
     background: rgba(255,255,255,.9);
@@ -613,21 +604,6 @@
 </div>
 
 <div class="col-12">
-  @php
-    $statusLabelsMap = [
-      'active'                 => 'مستمر في الدراسة',
-      'waiting'                => 'قيد الانتظار',
-      'withdrawn'              => 'منسحب',
-      'failed'                 => 'راسب',
-      'absent_exam'            => 'لم يتقدّم للامتحان',
-      'certificate_delivered'  => 'تم تسليم الشهادة',
-      'certificate_waiting'    => 'بانتظار الشهادة',
-      'registration_ended'     => 'انتهى التسجيل',
-      'dismissed'              => 'فُصل الطالب',
-      'frozen'                 => 'تم تجميد القيد الدراسي',
-    ];
-  ?>
-
           <?php $__empty_1 = true; $__currentLoopData = $student->diplomas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
             <div class="diploma-detail-card">
 
@@ -642,7 +618,7 @@
                   </span>
                 <?php endif; ?>
                 <span class="ddc-status-badge status-<?php echo e($d->pivot->status); ?>">
-                  <?php echo e($statusLabelsMap[$d->pivot->status] ?? $d->pivot->status); ?>
+                  <?php echo e($diplomaStatusLabels[$d->pivot->status] ?? $d->pivot->status); ?>
 
                 </span>
               </div>
@@ -711,14 +687,7 @@
 
                 
                 <div class="ddc-files">
-                  <?php
-                    $diplomaFiles = [
-                      ['path' => $d->pivot->attendance_certificate_path, 'label' => 'شهادة الحضور', 'icon' => 'bi-file-earmark-check'],
-                      ['path' => $d->pivot->certificate_pdf_path,        'label' => 'الشهادة PDF',   'icon' => 'bi-file-earmark-pdf'],
-                      ['path' => $d->pivot->certificate_card_path,       'label' => 'كرت الشهادة',   'icon' => 'bi-file-earmark-image'],
-                    ];
-                  ?>
-                  <?php $__currentLoopData = $diplomaFiles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <?php $__currentLoopData = $diplomaFilesMap[$d->id]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <?php if(!empty($file['path'])): ?>
                       <a href="<?php echo e(asset('storage/' . $file['path'])); ?>" target="_blank" class="ddc-file-btn">
                         <i class="bi <?php echo e($file['icon']); ?>"></i> <?php echo e($file['label']); ?>
@@ -742,7 +711,6 @@
           <?php endif; ?>
         </div>
 
-
           <?php if($p): ?>
               <div class="col-12">
                 <div class="glass-card">
@@ -753,11 +721,12 @@
                   </div>
                 </div>
               </div>
-            </div>
           <?php endif; ?>
+
+          </div>
+        <?php endif; ?>
       </div>
     </div>
-<?php endif; ?>
     
     <div class="section-header"><i class="bi bi-journal-check"></i> العلامات الامتحانية</div>
     <div class="row g-3">
@@ -1063,7 +1032,7 @@
               <div class="col-md-4">
                 <label class="fw-bold mb-1">الصندوق</label>
                 <select name="cashbox_id" class="form-select" required>
-                  <?php $__currentLoopData = \App\Models\Cashbox::where('status','active')->where('branch_id',$student->branch_id)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <?php $__currentLoopData = $activeCashboxes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option value="<?php echo e($box->id); ?>"><?php echo e($box->name); ?> - <?php echo e($box->currency); ?></option>
                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>

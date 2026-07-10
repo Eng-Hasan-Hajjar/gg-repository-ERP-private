@@ -1,5 +1,4 @@
 @extends('layouts.app')
-@php($activeModule = 'students')
 
 @section('title', 'ملف الطالب')
 
@@ -433,18 +432,16 @@
               <div class="glass-card">
                 <div class="section-header"><i class="bi bi-mortarboard"></i> الوثائق والملفات</div>
                 <div class="row g-2 p-3">
-                  @foreach([
-                    ['info',             'ملف المعلومات',   'btn-outline-primary',  'bi-file-earmark-text'],
-                    ] as [$key, $label, $btnClass, $icon])
+                  @foreach($profileDocuments as $doc)
                     <div class="col-12 col-md-4">
                       <div class="kv">
-                        <div class="k">{{ $label }}</div>
+                        <div class="k">{{ $doc['label'] }}</div>
                         <div class="v">
-                          @if(!empty($files[$key]['exists']) && $files[$key]['exists'])
+                          @if(!empty($files[$doc['key']]['exists']) && $files[$doc['key']]['exists'])
                             <span class="badge-soft success"><i class="bi bi-check2-circle"></i> موجود</span>
                             <div class="mt-2">
-                              <a class="btn {{ $btnClass }} btn-sm" target="_blank" href="{{ $files[$key]['url'] }}">
-                                <i class="bi {{ $icon }}"></i> فتح
+                              <a class="btn {{ $doc['btnClass'] }} btn-sm" target="_blank" href="{{ $files[$doc['key']]['url'] }}">
+                                <i class="bi {{ $doc['icon'] }}"></i> فتح
                               </a>
                             </div>
                           @else
@@ -458,10 +455,6 @@
               </div>
             </div>
 
-            {{-- تفاصيل الدبلومات --}}
-            <div class="col-12 mt-3">
-              <div class="section-header"><i class="bi bi-mortarboard"></i> تفاصيل الدبلومات</div>
-            </div>
          {{-- ══════════════════════════════════════════
      تفاصيل الدبلومات — النسخة المحدثة
 ══════════════════════════════════════════ --}}
@@ -613,21 +606,6 @@
 </div>
 
 <div class="col-12">
-  @php
-    $statusLabelsMap = [
-      'active'                 => 'مستمر في الدراسة',
-      'waiting'                => 'قيد الانتظار',
-      'withdrawn'              => 'منسحب',
-      'failed'                 => 'راسب',
-      'absent_exam'            => 'لم يتقدّم للامتحان',
-      'certificate_delivered'  => 'تم تسليم الشهادة',
-      'certificate_waiting'    => 'بانتظار الشهادة',
-      'registration_ended'     => 'انتهى التسجيل',
-      'dismissed'              => 'فُصل الطالب',
-      'frozen'                 => 'تم تجميد القيد الدراسي',
-    ];
-  @endphp
-
           @forelse($student->diplomas as $d)
             <div class="diploma-detail-card">
 
@@ -642,7 +620,7 @@
                   </span>
                 @endif
                 <span class="ddc-status-badge status-{{ $d->pivot->status }}">
-                  {{ $statusLabelsMap[$d->pivot->status] ?? $d->pivot->status }}
+                  {{ $diplomaStatusLabels[$d->pivot->status] ?? $d->pivot->status }}
                 </span>
               </div>
 
@@ -707,14 +685,7 @@
 
                 {{-- ملفات الدبلومة --}}
                 <div class="ddc-files">
-                  @php
-                    $diplomaFiles = [
-                      ['path' => $d->pivot->attendance_certificate_path, 'label' => 'شهادة الحضور', 'icon' => 'bi-file-earmark-check'],
-                      ['path' => $d->pivot->certificate_pdf_path,        'label' => 'الشهادة PDF',   'icon' => 'bi-file-earmark-pdf'],
-                      ['path' => $d->pivot->certificate_card_path,       'label' => 'كرت الشهادة',   'icon' => 'bi-file-earmark-image'],
-                    ];
-                  @endphp
-                  @foreach($diplomaFiles as $file)
+                  @foreach($diplomaFilesMap[$d->id] as $file)
                     @if(!empty($file['path']))
                       <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" class="ddc-file-btn">
                         <i class="bi {{ $file['icon'] }}"></i> {{ $file['label'] }}
@@ -737,7 +708,6 @@
           @endforelse
         </div>
 
-
           @if($p)
               <div class="col-12">
                 <div class="glass-card">
@@ -748,11 +718,12 @@
                   </div>
                 </div>
               </div>
-            </div>
           @endif
-      </div>
-    </div>
-@endif
+
+          </div>{{-- closes row g-3 p-3 --}}
+        @endif
+      </div>{{-- closes glass-card --}}
+    </div>{{-- closes col-12 profile section --}}
     {{-- ══ العلامات الامتحانية ══ --}}
     <div class="section-header"><i class="bi bi-journal-check"></i> العلامات الامتحانية</div>
     <div class="row g-3">
@@ -1050,7 +1021,7 @@
               <div class="col-md-4">
                 <label class="fw-bold mb-1">الصندوق</label>
                 <select name="cashbox_id" class="form-select" required>
-                  @foreach(\App\Models\Cashbox::where('status','active')->where('branch_id',$student->branch_id)->get() as $box)
+                  @foreach($activeCashboxes as $box)
                     <option value="{{ $box->id }}">{{ $box->name }} - {{ $box->currency }}</option>
                   @endforeach
                 </select>

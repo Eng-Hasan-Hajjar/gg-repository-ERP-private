@@ -700,6 +700,39 @@ public function index(Request $request)
         // هل الخطة قادمة من Lead (قراءة فقط في بعض الحالات)؟
         $planFromLead = $paymentPlans->filter(fn($p) => !is_null($p->lead_id))->keyBy('diploma_id');
 
+        // ══ متغيرات محسوبة للـ View (بدون @php في Blade) ══
+        $activeModule = 'students';
+
+        $diplomaStatusLabels = [
+            'active'                 => 'مستمر في الدراسة',
+            'waiting'                => 'قيد الانتظار',
+            'withdrawn'              => 'منسحب',
+            'failed'                 => 'راسب',
+            'absent_exam'            => 'لم يتقدّم للامتحان',
+            'certificate_delivered'  => 'تم تسليم الشهادة',
+            'certificate_waiting'    => 'بانتظار الشهادة',
+            'registration_ended'     => 'انتهى التسجيل',
+            'dismissed'              => 'فُصل الطالب',
+            'frozen'                 => 'تم تجميد القيد الدراسي',
+        ];
+
+        $diplomaFilesMap = [];
+        foreach ($student->diplomas as $d) {
+            $diplomaFilesMap[$d->id] = [
+                ['path' => $d->pivot->attendance_certificate_path, 'label' => 'شهادة الحضور', 'icon' => 'bi-file-earmark-check'],
+                ['path' => $d->pivot->certificate_pdf_path,        'label' => 'الشهادة PDF',   'icon' => 'bi-file-earmark-pdf'],
+                ['path' => $d->pivot->certificate_card_path,       'label' => 'كرت الشهادة',   'icon' => 'bi-file-earmark-image'],
+            ];
+        }
+
+        $profileDocuments = [
+            ['key' => 'info', 'label' => 'ملف المعلومات', 'btnClass' => 'btn-outline-primary', 'icon' => 'bi-file-earmark-text'],
+        ];
+
+        $activeCashboxes = \App\Models\Cashbox::where('status', 'active')
+            ->where('branch_id', $student->branch_id)
+            ->get();
+
         return view('students.show', compact(
             'student',
             'p',
@@ -716,7 +749,12 @@ public function index(Request $request)
             'balancesByCurrency',
             'paymentPlans',
             'plansByDiploma',
-            'planFromLead'    // ← جديد: الخطط المنقولة من Lead
+            'planFromLead',
+            'activeModule',
+            'diplomaStatusLabels',
+            'diplomaFilesMap',
+            'profileDocuments',
+            'activeCashboxes'
         ));
     }
 
